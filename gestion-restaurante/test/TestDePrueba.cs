@@ -8,5 +8,12 @@
          Assert.True(true);
 
       }
+
+      [Fact]
+      public void Otro_test_que_da_true()
+      {
+         Assert.True(true);
+
+      }
    }
 }
