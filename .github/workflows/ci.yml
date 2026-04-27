@@ -1,0 +1,60 @@
+name: prueba-ci
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # ==========================================
+  # JOB 1: BACKEND (.NET)
+  # ==========================================
+  backend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+          
+      - name: Caché de NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          
+      - name: Restore & Test
+        run: |
+          dotnet restore
+          dotnet build --no-restore -c Release
+          dotnet test --no-build -c Release
+
+  # ==========================================
+  # JOB 2: FRONTEND (Angular)
+  # ==========================================
+  frontend-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        # IMPORTANTE: Apunta esto a la carpeta donde está tu package.json
+        working-directory: ./gestion-restaurante.client 
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # LTS
+          cache: 'npm' # Optimización de caché nativa de GitHub
+          cache-dependency-path: './gestion-restaurante.Server/package-lock.json'
+          
+      - name: Instalar dependencias
+        # 'ci' es obligatorio en pipelines: es más rápido y estricto que 'install'
+        run: npm ci 
+        
+      - name: Ejecutar pruebas (Headless)
+        run: npm run test:ci
