@@ -1,0 +1,381 @@
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+# =============================================
+# ENV FILES
+# =============================================
+.env
+
+# =============================================
+# NODE / NPM
+# =============================================
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# =============================================
+# BUILD OUTPUT - Client (Angular)
+# =============================================
+/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# =============================================
+# BUILD OUTPUT - Server (.NET)
+# =============================================
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+csx/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+.tye/
+
+appsettings.Development.json
+appsettings.Local.json
+
+# =============================================
+# TEST RESULTS
+# =============================================
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.VisualState.xml
+TestResult.xml
+nunit-*.xml
+[Dd]ebugPS/
+[Rr]eleasePS/
+[Tt]est[Rr]esult*/
+BenchmarkDotNet.Artifacts/
+coverage/
+coverage*.json
+coverage*.xml
+coverage*.info
+*.coverage
+*.coveragexml
+_Chutzpah*
+_nCrunch_*
+.*crunch*.local.xml
+nCrunchTemp_*
+healthchecksdb
+
+# =============================================
+# VISUAL STUDIO / .NET
+# =============================================
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.rsuser
+*.userprefs
+mono_crash.*
+[Dd]ebugPS/
+[Rr]eleasePS/
+dlldata.c
+Generated\ Files/
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.pch
+*.pdb
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.log
+*.tlog
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+*.psess
+*.vsp
+*.vspx
+*.sap
+*.e2e
+$tf/
+*.gpState
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+_TeamCity*
+*.dotCover
+.axoCover/*
+!.axoCover/settings.json
+.ionide/
+.fake/
+.paket/paket.exe
+paket-files/
+.cr/personal
+
+# Visual Studio cache files
+*.[Cc]ache
+!.?*.[Cc]ache/
+
+# Visual C++
+ipch/
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+
+# ASP.NET / Scaffolding
+ScaffoldingReadMe.txt
+StyleCopReport.xml
+
+# SQL Server / BI
+*.mdf
+*.ldf
+*.ndf
+*.rdl.data
+*.bim.layout
+*.bim_*.settings
+*.rptproj.rsuser
+*- [Bb]ackup.rdl
+*- [Bb]ackup ([0-9]).rdl
+*- [Bb]ackup ([0-9][0-9]).rdl
+
+# Business Intelligence
+*.mdf
+*.ldf
+
+# Fakes / GhostDoc / CodeRush
+FakesAssemblies/
+*.GhostDoc.xml
+.cr/personal
+
+# MSBuild / NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+*.binlog
+csx/
+*.build.csdef
+
+# Azure
+ecf/
+rcf/
+AppPackages/
+BundleArtifacts/
+Package.StoreAssociation.xml
+_pkginfo.txt
+*.appx
+*.appxbundle
+*.appxupload
+PublishScripts/
+
+# Click-Once / Publish
+*.[Pp]ublish.xml
+*.azurePubxml
+*.pubxml
+*.publishproj
+publish/
+ClientBin/
+~$*
+*~
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+*.pfx
+*.publishsettings
+orleans.codegen.cs
+Generated_Code/
+_UpgradeReport_Files/
+Backup*/
+UpgradeLog*.XML
+UpgradeLog*.htm
+ServiceFabricBackup/
+*.rptproj.bak
+
+# Strong name / RIA
+#*.snk
+
+# TFS / ReSharper
+$tf/
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# MSTest / NUnit
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.VisualState.xml
+TestResult.xml
+nunit-*.xml
+
+# =============================================
+# ANGULAR / CLIENT
+# =============================================
+/.angular/
+/.angular/cache
+.sass-cache/
+/connect.lock
+/libpeerconnection.log
+testem.log
+/typings
+
+# =============================================
+# IDE / EDITORS
+# =============================================
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+*.sublime-workspace
+.vscode/*
+!/.vscode/settings.json
+!/.vscode/tasks.json
+!/.vscode/launch.json
+!/.vscode/extensions.json
+.history/
+*.code-workspace
+.vshistory/
+.localhistory/
+.userprefs
+*.opt
+.vbw
+.vbp
+.dsw
+.dsp
+.ncb
+.mm.*
+AutoTest.Net/
+.installshield/
+[Ee]xpress/
+DocProject/
+
+# =============================================
+# PYTHON / PTVS
+# =============================================
+__pycache__/
+*.pyc
+
+# =============================================
+# WEB (Sass)
+# =============================================
+.sass-cache/
+/connect.lock
+
+# =============================================
+# VISUAL STUDIO 6
+# =============================================
+*.plg
+*.opt
+*.vbw
+*.vbp
+*.dsw
+*.dsp
+*.ncb
+
+# LightSwitch
+**/*.HTMLClient/GeneratedArtifacts
+**/*.DesktopClient/GeneratedArtifacts
+**/*.DesktopClient/ModelManifest.xml
+**/*.Server/GeneratedArtifacts
+**/*.Server/ModelManifest.xml
+_Pvt_Extensions
+
+# Tabs Studio / BizTalk / OpenCover / Azure
+*.tss
+*.jmconfig
+*.btp.cs
+*.btm.cs
+*.odx.cs
+*.xsd.cs
+OpenCover/
+ASALocalRun/
+
+# NVidia / MFractors
+*.nvuser
+.mfractor/
+
+# Fody / Ionide
+FodyWeavers.xsd
+.ionide/
+
+# Windows Installer
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# JetBrains Rider
+*.sln.iml
+
+# =============================================
+# GLOBAL: macOS
+# =============================================
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# =============================================
+# GLOBAL: WINDOWS
+# =============================================
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# =============================================
+# GLOBAL: VIM / LINUX
+# =============================================
+*.swp
+*.swo
+*~
