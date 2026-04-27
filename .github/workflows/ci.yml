@@ -12,6 +12,9 @@ jobs:
   # ==========================================
   backend-tests:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./gestion-restaurante
     steps:
       - uses: actions/checkout@v4
       
@@ -40,7 +43,7 @@ jobs:
     defaults:
       run:
         # IMPORTANTE: Apunta esto a la carpeta donde está tu package.json
-        working-directory: ./gestion-restaurante.client 
+        working-directory: ./gestion-restaurante/gestion-restaurante.client 
     
     steps:
       - uses: actions/checkout@v4
@@ -50,7 +53,7 @@ jobs:
         with:
           node-version: '20' # LTS
           cache: 'npm' # Optimización de caché nativa de GitHub
-          cache-dependency-path: './gestion-restaurante.Server/package-lock.json'
+          cache-dependency-path: './gestion-restaurante/gestion-restaurante.client/package-lock.json'
           
       - name: Instalar dependencias
         # 'ci' es obligatorio en pipelines: es más rápido y estricto que 'install'
