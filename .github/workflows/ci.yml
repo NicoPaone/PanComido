@@ -61,3 +61,16 @@ jobs:
         
       - name: Ejecutar pruebas (Headless)
         run: npm run test:ci
+
+
+  # ==========================================
+  # JOB 3: DEPLOY backend (Render)
+  # ==========================================
+  deploy-backend:
+    needs: [backend-tests] # Solo se ejecuta si los tests de backend pasaron
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dar la orden a Render
+        # webhook. Render descarga el código y usa en Dockerfile
+        run: curl -f -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"    
