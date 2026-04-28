@@ -8,7 +8,7 @@ WORKDIR /src
 COPY gestion-restaurante/gestion-restaurante.Server/ gestion-restaurante/gestion-restaurante.Server/
 RUN dotnet restore "gestion-restaurante/gestion-restaurante.Server/gestion-restaurante.Server.csproj"
 
-COPY . .
+COPY gestion-restaurante/gestion-restaurante.Server/ gestion-restaurante/gestion-restaurante.Server/
 WORKDIR "/src/gestion-restaurante/gestion-restaurante.Server"
 RUN dotnet publish "gestion-restaurante.Server.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
