@@ -379,3 +379,6 @@ $RECYCLE.BIN/
 *.swp
 *.swo
 *~
+
+*.md
+!README.md
