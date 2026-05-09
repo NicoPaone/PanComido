@@ -136,16 +136,3 @@ jobs:
           app-name: 'api-pan-comido' # El nombre del App Service en Azure
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: './backend/api-pan-comido/publish' # Ruta desde la raíz del repo
-
-##DEJO EL CODIGO DE EJEMPLO POR LAS DUDAS.
-  # # ==========================================
-  # # DEPLOY backend (Render)
-  # # ==========================================
-  # deploy-backend:
-  #   needs: [backend-tests] # Solo se ejecuta si los tests de backend pasaron
-  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Dar la orden a Render
-  #       # webhook. Render descarga el código y usa en Dockerfile
-  #       run: curl -f -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"    
