@@ -17,6 +17,13 @@ namespace Tests
 
          }
 
+         [Fact]
+         public void Test_que_falla_para_testear_CI()
+         {
+            Assert.True(false);
+
+         }
+
       
    }
 }
