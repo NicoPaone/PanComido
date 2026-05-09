@@ -1,5 +1,5 @@
 export const environment = {
    production: true,
-   apiUrl: 'api-pan-comido.azurewebsites.net' 
+   apiUrl: 'https://api-pan-comido.azurewebsites.net' 
 
 };
