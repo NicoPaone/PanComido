@@ -100,6 +100,43 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
 
+  # ==========================================
+  # JOB 4: DEPLOY BACKEND (Azure App Service)
+  # ==========================================
+  deploy-backend:
+    needs: [backend-tests] # Regla estricta: solo despliega si los tests pasaron
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend/api-pan-comido
+        
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+          
+      # Opcional pero recomendado: restaurar caché de NuGet aquí también para ganar velocidad
+      - name: Caché de NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+
+      - name: Publish API
+        # dotnet publish compila y prepara los archivos finales en la carpeta 'publish', osea los compilados
+        run: dotnet publish -c Release -o ./publish
+
+      - name: Desplegar a Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'api-pan-comido' # El nombre del App Service en Azure
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: './backend/api-pan-comido/publish' # Ruta desde la raíz del repo
+
 ##DEJO EL CODIGO DE EJEMPLO POR LAS DUDAS.
   # # ==========================================
   # # DEPLOY backend (Render)
