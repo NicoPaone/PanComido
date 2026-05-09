@@ -3,12 +3,12 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
 
    {
-      path: '',redirectTo: 'inicio', pathMatch: 'full'
+      path: '',redirectTo: 'prueba', pathMatch: 'full'
 
    },
    {
-      path: 'inicio', loadComponent: () =>
-          import('./shared/components/inicio/inicio').then(m => m.Inicio)
+      path: 'prueba', loadComponent: () =>
+          import('./shared/components/prueba/prueba').then(m => m.Prueba)
    }
 
 ];

@@ -1,19 +1,23 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 
 @Component({
-  selector: 'app-inicio',
+  selector: 'app-prueba',
   imports: [],
-  templateUrl: './inicio.html',
-  styleUrl: './inicio.css',
+  templateUrl: './prueba.html',
+  styleUrl: './prueba.css',
 })
-
-
-export class Inicio {
+export class Prueba {
   http = inject(HttpClient);
-  endpoint = 'https://localhost:7204/weatherforecast/';
+  endpoint = environment.apiUrl + '/weatherforecast'; 
 
   constructor() {
+    console.log('Endpoint configurado:', this.endpoint);
+    this.testearConexion();
+  }
+  NgOnInit() {
+    console.log('Endpoint configurado en OnInit:', this.endpoint);
     this.testearConexion();
   }
   testearConexion() {
@@ -22,8 +26,8 @@ export class Inicio {
         console.log('Respuesta del backend:', response);
       },
       error: (error) => {
+        console.log(this.endpoint);
         console.error('Error al conectar con el backend:', error);
       }
     });
-  }
-}
+  }}
