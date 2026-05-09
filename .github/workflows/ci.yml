@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend/pan-comido-api
+        working-directory: ./backend/api-pan-comido
     steps:
       - uses: actions/checkout@v4
       

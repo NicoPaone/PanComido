@@ -1,0 +1,6 @@
+@api_pan_comido_HostAddress = http://localhost:5173
+
+GET {{api_pan_comido_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
