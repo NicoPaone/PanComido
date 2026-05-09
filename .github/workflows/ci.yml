@@ -135,4 +135,4 @@ jobs:
         with:
           app-name: 'api-pan-comido' # El nombre del App Service en Azure
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: './backend/api-pan-comido/publish' # Ruta desde la raíz del repo
+          package: './backend/api-pan-comido/publish' # Ruta desde la raíz del repo 
