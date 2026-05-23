@@ -1,20 +1,44 @@
 <div class="container-fluid p-4 bg-light min-vh-100">
-  <!-- Top Bar -->
-  <div class="row mb-4 align-items-center">
-    <div class="col-md-6 mb-3 mb-md-0">
-      <app-buscador placeholder="Buscar plato" (busquedaCambiada)="onSearch($event)"></app-buscador>
-    </div>
-    <div class="col-md-6 d-flex justify-content-start justify-content-md-end flex-wrap gap-3">
-      <app-boton-categorias (categoriaSeleccionada)="onCategoriaSeleccionada($event)"></app-boton-categorias>
-      <app-boton [label]="'Nuevo plato'" variant="orange">
-        <span class="material-symbols-outlined fw-bold">add</span>
-      </app-boton>
-    </div>
-  </div>
+  
+  <app-page-toolbar>
+    
+    <app-buscador 
+      buscador 
+      placeholder="Buscar plato" 
+      (busquedaCambiada)="onSearch($event)">
+    </app-buscador>
+   <app-dropdown filtros>
 
-  <!-- Lista de Platos Encapsulada -->
+     <app-boton 
+     trigger
+     acciones
+     label="Categorías" 
+     variante="teal" 
+     tamanio="md">
+    </app-boton>
+    <div menu>
+      <ul>
+        <li (click)="onCategoriaSeleccionada('Entradas')">Entradas</li>
+      <li (click)="onCategoriaSeleccionada('Principales')">Principales</li>
+      <li (click)="onCategoriaSeleccionada('Bebidas')">Bebidas</li>
+      </ul>
+    </div>
+    
+  </app-dropdown>
+   
+
+    <app-boton 
+      acciones
+      label="Nuevo plato" 
+      variante="secondary" 
+      tamanio="md">
+    </app-boton>
+
+  </app-page-toolbar>
+
   <app-lista-platos 
     [platos]="filteredPlatos" 
     (toggleVisible)="toggleVisibility($event)">
   </app-lista-platos>
+  
 </div>

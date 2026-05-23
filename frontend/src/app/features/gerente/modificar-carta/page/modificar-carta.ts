@@ -5,11 +5,13 @@ import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Plato } from '../../../../core/models/plato';
 import { ListaPlatosComponent } from '../components/lista-platos/lista-platos';
 import { BotonCategoriasComponent } from '../../../../shared/ui/botones/boton-categorias/boton-categorias';
+import { PageToolbar } from '../../../../shared/ui/page-toolbar/page-toolbar';
+import { Dropdown } from '../../../../shared/ui/dropdown/dropdown';
 
 @Component({
   selector: 'app-modificar-carta',
   standalone: true,
-  imports: [CommonModule, Buscador, Boton, ListaPlatosComponent, BotonCategoriasComponent],
+  imports: [CommonModule, Buscador, Boton, ListaPlatosComponent, BotonCategoriasComponent,Dropdown, PageToolbar],
   templateUrl: './modificar-carta.html',
   styleUrls: ['./modificar-carta.css']
 })

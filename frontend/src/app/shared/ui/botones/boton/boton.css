@@ -36,3 +36,4 @@
 .btn-primary { background-color: var(--primary-red); color: white; }
 .btn-secondary { background-color: var(--primary-orange); color: white; }
 .btn-danger { background-color: var(--status-danger); color: white; }
+.btn-teal { background-color: var(--primary-teal); color: white; }

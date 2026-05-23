@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, input, output } from '@angular/core';
 
-export type BotonVariante = 'primary' | 'secondary' | 'danger' | 'outline' | 'tab';
+export type BotonVariante = 'primary' | 'secondary' | 'danger' | 'outline' | 'tab' | 'teal';
 export type BotonTamanio = 'sm' | 'md' | 'lg';
 
 @Component({
@@ -13,7 +13,7 @@ export type BotonTamanio = 'sm' | 'md' | 'lg';
 export class Boton {
   
   
-  label = input.required<string>();
+  label = input<string>();
   variante = input<BotonVariante>('primary');
   color = input<string>();
   tamanio = input<BotonTamanio>('md');
