@@ -1,18 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Buscador } from '../../../../shared/ui/buscador/buscador';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Plato } from '../../../../core/models/plato';
 import { ListaPlatosComponent } from '../components/lista-platos/lista-platos';
+import { BotonCategoriasComponent } from '../../../../shared/ui/botones/boton-categorias/boton-categorias';
 
 @Component({
   selector: 'app-modificar-carta',
   standalone: true,
-  imports: [CommonModule, Buscador, Boton, ListaPlatosComponent],
+  imports: [CommonModule, Buscador, Boton, ListaPlatosComponent, BotonCategoriasComponent],
   templateUrl: './modificar-carta.html',
   styleUrls: ['./modificar-carta.css']
 })
-export class ModificarCartaComponent {
+export class ModificarCartaComponent implements OnInit {
   platos: Plato[] = [
     {
       id: 1,
@@ -79,6 +80,23 @@ export class ModificarCartaComponent {
       imagen: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&q=80&w=200&h=150'
     }
   ];
+
+  filteredPlatos: Plato[] = [];
+
+  ngOnInit() {
+    this.filteredPlatos = [...this.platos];
+  }
+
+  onSearch(term: string) {
+    const lowerTerm = term.toLowerCase().trim();
+    if (!lowerTerm) {
+      this.filteredPlatos = [...this.platos];
+    } else {
+      this.filteredPlatos = this.platos.filter(plato => 
+        plato.nombre.toLowerCase().includes(lowerTerm)
+      );
+    }
+  }
 
   toggleVisibility(plato: Plato) {
     plato.visible = !plato.visible;
