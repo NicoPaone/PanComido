@@ -1,0 +1,14 @@
+<div class="position-relative d-inline-block">
+  <app-boton variant="teal" (click)="toggle()">
+    Categorías
+    <span class="material-symbols-outlined" style="transition: transform 0.3s;" [style.transform]="isOpen ? 'rotate(180deg)' : 'rotate(0)'">
+      expand_more
+    </span>
+  </app-boton>
+
+  <div *ngIf="isOpen" class="dropdown-menu show shadow rounded-3 border-0 mt-2 position-absolute w-100" style="z-index: 1000; left: 0;">
+    <button class="dropdown-item py-2" *ngFor="let cat of categorias">
+      {{ cat }}
+    </button>
+  </div>
+</div>
