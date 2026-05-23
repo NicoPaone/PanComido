@@ -128,7 +128,7 @@ jobs:
 
       - name: Publish API
         # dotnet publish compila y prepara los archivos finales en la carpeta 'publish', osea los compilados
-        run: dotnet publish -c Release -o ./publish
+        run: dotnet publish PanComido.sln -c Release -o ./publish
 
       - name: Desplegar a Azure App Service
         uses: azure/webapps-deploy@v3
