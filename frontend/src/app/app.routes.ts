@@ -11,6 +11,10 @@ export const routes: Routes = [
                 import('./shared/components/prueba/prueba').then(m => m.Prueba)
          },
          {
+            path: 'gerente',
+            loadChildren: () => import('./features/gerente/gerente.routes').then(m => m.GERENTE_ROUTES)
+         },
+         {
             path: '',redirectTo: 'prueba', pathMatch: 'full'
          }
       ]

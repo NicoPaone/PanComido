@@ -67,35 +67,35 @@ export class SidebarComponent {
   // Configuración de menú por rol
   private menuConfig: Record<string, MenuItem[]> = {
     Gerente: [
-      { label: 'Usuarios', icon: 'faUsers', route: 'staff/gerente/usuarios', roles: ['Gerente'] },
-      { label: 'Configuración', icon: 'faCog', route: 'staff/gerente/configuracion', roles: ['Gerente'] },
-      { label: 'Dashboard', icon: 'faChartBar', route: 'staff/gerente/dashboard', roles: ['Gerente'] },
-      { label: 'Stock/Mercadería', icon: 'faBox', route: 'staff/gerente/stock', roles: ['Gerente'] },
+      { label: 'Usuarios', icon: 'faUsers', route: 'gerente/usuarios', roles: ['Gerente'] },
+      { label: 'Configuración', icon: 'faCog', route: 'gerente/configuracion', roles: ['Gerente'] },
+      { label: 'Dashboard', icon: 'faChartBar', route: 'gerente/dashboard', roles: ['Gerente'] },
+      { label: 'Stock/Mercadería', icon: 'faBox', route: 'gerente/stock-mercaderia', roles: ['Gerente'] },
       {
         label: 'Pedidos y Proveedor',
         icon: 'faTruck',
         roles: ['Gerente'],
         children: [
-          { label: 'Hacer pedido', icon: '', route: 'staff/gerente/pedidos/hacer', roles: ['Gerente'] },
-          { label: 'Nuevo proveedor', icon: '', route: 'staff/gerente/pedidos/proveedor', roles: ['Gerente'] }
+          { label: 'Hacer pedido', icon: '', route: 'gerente/pedidos/hacer', roles: ['Gerente'] },
+          { label: 'Nuevo proveedor', icon: '', route: 'gerente/pedidos/proveedor', roles: ['Gerente'] }
         ]
       },
-      { label: 'Cerrar Caja', icon: 'faReceipt', route: 'staff/gerente/caja', roles: ['Gerente'] },
-      { label: 'Platos y Precios', icon: 'faUtensils', route: 'staff/gerente/platos', roles: ['Gerente'] },
-      { label: 'Modificar Carta', icon: 'faClipboardList', route: 'staff/gerente/carta', roles: ['Gerente'] },
-      { label: 'Plato del día', icon: 'faTag', route: 'staff/gerente/plato-dia', roles: ['Gerente'] },
-      { label: 'Mapa de mesas', icon: 'faTableCells', route: 'staff/gerente/mesas', roles: ['Gerente'] }
+      { label: 'Cerrar Caja', icon: 'faReceipt', route: 'gerente/caja', roles: ['Gerente'] },
+      { label: 'Platos y Precios', icon: 'faUtensils', route: 'gerente/platos', roles: ['Gerente'] },
+      { label: 'Modificar Carta', icon: 'faClipboardList', route: 'gerente/carta', roles: ['Gerente'] },
+      { label: 'Plato del día', icon: 'faTag', route: 'gerente/plato-dia', roles: ['Gerente'] },
+      { label: 'Mapa de mesas', icon: 'faTableCells', route: 'gerente/mesas', roles: ['Gerente'] }
     ],
     Mozo: [
-      { label: 'Mesas', icon: 'faTableCells', route: 'staff/mozo/mesas', roles: ['Mozo'] },
-      { label: 'Comandas', icon: 'faListCheck', route: 'staff/mozo/comandas', roles: ['Mozo'] },
-      { label: 'Llamados', icon: 'faBell', route: 'staff/mozo/llamado', roles: ['Mozo'] }
+      { label: 'Mesas', icon: 'faTableCells', route: 'mozo/mesas', roles: ['Mozo'] },
+      { label: 'Comandas', icon: 'faListCheck', route: 'mozo/comandas', roles: ['Mozo'] },
+      { label: 'Llamados', icon: 'faBell', route: 'mozo/llamado', roles: ['Mozo'] }
     ],
     Cocina: [
-      { label: 'Comandas', icon: 'faListCheck', route: 'staff/cocina/comandas', roles: ['Cocina'] },
-      { label: 'Ingredientes', icon: 'faCarrot', route: 'staff/cocina/ingredientes', roles: ['Cocina'] },
+      { label: 'Comandas', icon: 'faListCheck', route: 'cocina/comandas', roles: ['Cocina'] },
+      { label: 'Ingredientes', icon: 'faCarrot', route: 'cocina/ingredientes', roles: ['Cocina'] },
       { label: 'Platos', icon: 'faUtensils', route: 'staff/cocina/platos', roles: ['Cocina'] },
-      { label: 'Mise and place', icon: 'faFireBurner', route: 'staff/cocina/mise-and-place', roles: ['Cocina'] }
+      { label: 'Mise and place', icon: 'faFireBurner', route: 'cocina/mise-and-place', roles: ['Cocina'] }
 
     ]
   };

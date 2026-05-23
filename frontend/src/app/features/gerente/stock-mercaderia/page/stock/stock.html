@@ -1,0 +1,7 @@
+<app-stock-toolbar 
+(busquedaCambiada)="termino.set($event)"
+ (categoriaCambiada)="categoria.set($event)">
+</app-stock-toolbar>
+<app-stock-list 
+[productos]="productosFiltrados()">
+</app-stock-list>
