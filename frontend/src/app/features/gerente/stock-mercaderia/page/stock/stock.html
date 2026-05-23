@@ -2,6 +2,33 @@
 (busquedaCambiada)="termino.set($event)"
  (categoriaCambiada)="categoria.set($event)">
 </app-stock-toolbar>
+<div class="stock-list-container">
+
+   <div class="stock-list-button">
+
+      <app-boton 
+      label="Productos"
+      variante="tab"
+      tamanio="md"
+      [activo]="tabSeleccionada() === 'productos'"
+      (clicked)="tabSeleccionada.set('productos')">
+   </app-boton>
+   <app-boton 
+   label="Bodegas" 
+   variante="tab"
+   [activo]="tabSeleccionada() === 'bodegas'"
+   (clicked)="tabSeleccionada.set('bodegas')">
+</app-boton>
+
+<app-boton 
+label="Lotes" 
+variante="tab"
+[activo]="tabSeleccionada() === 'lotes'"
+(clicked)="tabSeleccionada.set('lotes')">
+</app-boton>
+
+</div>
 <app-stock-list 
 [productos]="productosFiltrados()">
 </app-stock-list>
+</div>

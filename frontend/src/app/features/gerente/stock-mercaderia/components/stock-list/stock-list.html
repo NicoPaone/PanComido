@@ -1,1 +1,32 @@
-<p>stock-list works!</p>
+<table class="stock-table">
+      <thead>
+        <tr>
+          <th>PRODUCTO <fa-icon [icon]="faSort"></fa-icon></th>
+          <th class="text-center">STOCK</th>
+          <th class="text-center">U. MEDIDA</th>
+          <th class="text-center">F. VENCIMIENTO</th>
+          <th class="text-center">STOCK MÍN</th>
+          <th class="text-end"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of productos(); track item.id) {
+          <tr>
+            <td class="font-bold">{{ item.nombre }}</td>
+            <td class="text-center">
+              <span class="stock-pill" [ngClass]="getBadgeClass(item)">
+                {{ item.stock }}
+              </span>
+            </td>
+            <td class="text-center gray-text">{{ item.unidadMedida }}</td>
+            <td class="text-center gray-text">{{ item.fechaVencimiento | date:'dd/MM/yyyy' }}</td>
+            <td class="text-center gray-text">{{ item.stockMinimo }}</td>
+            <td class="text-end">
+              <button class="btn-icon" (click)="onAction.emit(item.id)">
+                <fa-icon [icon]="faCog"></fa-icon>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
