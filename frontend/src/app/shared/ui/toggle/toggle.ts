@@ -1,5 +1,14 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
+/**
+ * Componente Toggle - Control de activación/desactivación
+ * 
+ * Uso moderno con Signals (Angular 21+):
+ * - `active` es un Signal de entrada (read-only)
+ * - `label` es un Signal de entrada con valor por defecto
+ * - `toggled` es un Signal de salida que emite void
+ * - No requiere @Input/@Output/@EventEmitter
+ */
 @Component({
   selector: 'app-toggle',
   standalone: true,
@@ -7,10 +16,19 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./toggle.css']
 })
 export class ToggleComponent {
-  @Input() active: boolean = false;
-  @Input() label: string = 'Visible en carta';
-  @Output() toggled = new EventEmitter<void>();
+  // Entrada: estado del toggle
+  active = input<boolean>(false);
+  
+  // Entrada: etiqueta visible al usuario
+  label = input<string>('Visible en carta');
+  
+  // Salida: evento cuando el usuario clickea el toggle
+  toggled = output<void>();
 
+  /**
+   * Maneja el click del usuario.
+   * Emite el evento toggled sin datos (void).
+   */
   onToggle() {
     this.toggled.emit();
   }

@@ -2,26 +2,26 @@
   <div class="row g-0 h-100">
     <!-- Image -->
     <div class="col-12 col-sm-4 mb-3 mb-sm-0 text-center text-sm-start">
-      <img [src]="plato.imagen" class="img-fluid rounded-3 object-fit-cover dish-img" [alt]="plato.nombre">
+      <img [src]="plato().imagen" class="img-fluid rounded-3 object-fit-cover dish-img" [alt]="plato().nombre">
     </div>
     <!-- Content -->
     <div class="col-12 col-sm-6 ps-0 ps-sm-3 d-flex flex-column justify-content-center">
-      <h5 class="fw-bold mb-2 text-dark">{{ plato.nombre }}</h5>
-      <p class="mb-1 text-muted small">Precio de venta: <span class="fw-bold text-dark fs-6">$ {{ plato.precioVenta | number }}</span></p>
-      <p class="mb-2 text-muted small">Costo: <span class="text-dark">$ {{ plato.costo | number }}</span></p>
+      <h5 class="fw-bold mb-2 text-dark">{{ plato().nombre }}</h5>
+      <p class="mb-1 text-muted small">Precio de venta: <span class="fw-bold text-dark fs-6">$ {{ plato().precioVenta | number }}</span></p>
+      <p class="mb-2 text-muted small">Costo: <span class="text-dark">$ {{ plato().costo | number }}</span></p>
       
       <app-toggle 
-        [active]="plato.visible" 
+        [active]="plato().visible" 
         label="Visible en carta" 
         (toggled)="onToggle()">
       </app-toggle>
     </div>
     <!-- Actions -->
     <div class="col-12 col-sm-2 d-flex flex-row flex-sm-column justify-content-end justify-content-sm-center align-items-end gap-3 pe-2 mt-3 mt-sm-0">
-      <app-boton variant="edit">
+      <app-boton [label]="'Editar'" variant="edit">
         <span class="material-symbols-outlined">edit</span>
       </app-boton>
-      <app-boton variant="delete">
+      <app-boton [label]="'Eliminar'" variant="delete">
         <span class="material-symbols-outlined">delete</span>
       </app-boton>
     </div>

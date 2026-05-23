@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Plato } from '../../../../../core/models/plato';
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
@@ -12,10 +12,17 @@ import { ToggleComponent } from '../../../../../shared/ui/toggle/toggle';
   styleUrls: ['./card-plato.css'],
 })
 export class CardPlatoComponent {
-  @Input({ required: true }) plato!: Plato;
-  @Output() toggleVisible = new EventEmitter<Plato>();
+  // Entrada: datos del plato (requerido)
+  plato = input.required<Plato>();
+  
+  // Salida: evento cuando se toggle la visibilidad del plato
+  toggleVisible = output<Plato>();
 
+  /**
+   * Emite el evento de toggle con el plato actual
+   */
   onToggle() {
-    this.toggleVisible.emit(this.plato);
+    this.toggleVisible.emit(this.plato());
   }
 }
+

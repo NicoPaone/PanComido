@@ -1,5 +1,5 @@
 <div class="row row-cols-1 row-cols-xl-2 g-4">
-  <div class="col" *ngFor="let plato of platos">
+  <div class="col" *ngFor="let plato of platos()">
     <app-card-plato 
       [plato]="plato" 
       (toggleVisible)="onToggleVisible($event)">

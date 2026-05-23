@@ -101,4 +101,13 @@ export class ModificarCartaComponent implements OnInit {
   toggleVisibility(plato: Plato) {
     plato.visible = !plato.visible;
   }
+
+  /**
+   * Maneja la selección de una categoría del dropdown
+   * Aquí puedes agregar lógica para filtrar por categoría
+   */
+  onCategoriaSeleccionada(categoria: string) {
+    console.log('Categoría seleccionada:', categoria);
+    // TODO: Agregar lógica de filtro por categoría si el modelo de Plato tiene esa propiedad
+  }
 }

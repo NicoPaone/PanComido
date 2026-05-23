@@ -1,14 +1,38 @@
-import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, computed, input, output } from '@angular/core';
+
+export type BotonVariante = 'primary' | 'secondary' | 'danger' | 'outline' | 'tab';
+export type BotonTamanio = 'sm' | 'md' | 'lg';
 
 @Component({
   selector: 'app-boton',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './boton.html',
-  styleUrls: ['./boton.css'],
+  styleUrl: './boton.css',
 })
 export class Boton {
-  @Input() variant: 'teal' | 'orange' | 'edit' | 'delete' = 'teal';
-  @Input() customClass: string = '';
+  
+  
+  label = input.required<string>();
+  variante = input<BotonVariante>('primary');
+  color = input<string>();
+  tamanio = input<BotonTamanio>('md');
+  type = input<'button' | 'submit' | 'reset'>('button');
+  activo = input<boolean>(false);
+
+  disabled = input<boolean>(false);
+
+  clicked = output<MouseEvent>();
+
+  
+  clasesCalculadas = computed(() => {
+    const baseClasses = `btn btn-${this.tamanio()} btn-${this.variante()}`;
+    return this.activo() ? `${baseClasses} active` : baseClasses;
+  });
+
+  manejarClick(event: MouseEvent) {
+    if (!this.disabled()) {
+      this.clicked.emit(event);
+    }
+  }
 }

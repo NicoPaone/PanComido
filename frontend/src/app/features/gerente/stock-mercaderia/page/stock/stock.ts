@@ -3,7 +3,7 @@ import { StockList } from '../../components/stock-list/stock-list';
 import { StockToolbar } from '../../components/stock-toolbar/stock-toolbar';
 import { CommonModule } from '@angular/common';
 import { ProductoStockMock, PRODUCTOS_STOCK_MOCK } from '../../../../../core/model/producto-stock-mock';
-import { Boton } from "../../../../../shared/ui/boton/boton";
+import { Boton } from "../../../../../shared/ui/botones/boton/boton";
 
 @Component({
   selector: 'app-stock',
