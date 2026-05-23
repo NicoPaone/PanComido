@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend/api-pan-comido
+        working-directory: ./backend/PanComido.API
     steps:
       - uses: actions/checkout@v4
       
@@ -31,9 +31,9 @@ jobs:
           
       - name: Restore & Test
         run: |
-          dotnet restore
-          dotnet build --no-restore -c Release
-          dotnet test --no-build -c Release
+          dotnet restore PanComido.sln
+          dotnet build PanComido.sln --no-restore -c Release
+          dotnet test PanComido.sln --no-build -c Release
 
   # ==========================================
   # JOB 2: FRONTEND (Angular)
@@ -109,7 +109,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend/api-pan-comido
+        working-directory: ./backend/PanComido.API
         
     steps:
       - uses: actions/checkout@v4
@@ -128,11 +128,11 @@ jobs:
 
       - name: Publish API
         # dotnet publish compila y prepara los archivos finales en la carpeta 'publish', osea los compilados
-        run: dotnet publish -c Release -o ./publish
+        run: dotnet publish PanComido.sln -c Release -o ./publish
 
       - name: Desplegar a Azure App Service
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'api-pan-comido' # El nombre del App Service en Azure
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: './backend/api-pan-comido/publish' # Ruta desde la raíz del repo 
+          package: './backend/PanComido.API/publish' # Ruta desde la raíz del repo 

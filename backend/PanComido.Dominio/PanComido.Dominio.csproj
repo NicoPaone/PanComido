@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>PanComido.Dominio</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Entidades\" />
+    <Folder Include="Excepciones\" />
+    <Folder Include="Interfaces\" />
+    <Folder Include="Servicios\" />
+    <Folder Include="ObjetosDeValor\" />
+  </ItemGroup>
+
+</Project>

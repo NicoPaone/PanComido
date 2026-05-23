@@ -1,4 +1,4 @@
-namespace api_pan_comido
+namespace PanComido.API
 {
     public class WeatherForecast
     {
