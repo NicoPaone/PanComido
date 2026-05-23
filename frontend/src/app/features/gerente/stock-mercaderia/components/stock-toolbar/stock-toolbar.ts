@@ -1,8 +1,9 @@
 import { Component, output } from '@angular/core';
+import { Buscador } from "../../../../../shared/ui/buscador/buscador";
 
 @Component({
   selector: 'app-stock-toolbar',
-  imports: [],
+  imports: [Buscador],
   templateUrl: './stock-toolbar.html',
   styleUrl: './stock-toolbar.css',
 })

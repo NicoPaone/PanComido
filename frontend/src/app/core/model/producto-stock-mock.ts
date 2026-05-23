@@ -1,5 +1,6 @@
 export type UnidadMedida= 'KG'| 'L' |'GR' | 'UN';
 export type CategoriaIngrediente = 'Verdura' | 'Almacen' | 'Carne';
+
 export interface ProductoStockMock{
     id: string;
     nombre: string;
