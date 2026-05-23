@@ -1,45 +1,36 @@
-# PanComido - Frontend 🍽️
+# PanComido - Frontend
+
+Sistema de gestión para restaurante desarrollado con Angular.
 
 ---
 
-## 🏗️ Arquitectura del Proyecto
+### 1. Gestión de Estado y Datos
+```typescript
+// Ejemplo de patrón StateService con Signals (Próxima implementación)
+protected readonly user = computed(() => this._user()); 
+```
 
-Usamos una arquitectura basada en **Features** (Funcionalidades). La idea es que el código esté cerca de donde se usa. Nada de tener archivos perdidos por cualquier lado. Separamos las responsabilidades para que, si algo rompe, sepas exactamente dónde meter mano.
+### 2. Estándares de Desarrollo
+- **Standalone Components**: Arquitectura sin NgModules para una gestión de dependencias granular.
+- **Signals**: Uso de reactividad fina para la gestión de estados locales y globales.
+- **Clean Code**: Priorización de legibilidad y tipado estricto en TypeScript.
 
-### Estructura de Carpetas
+### 3. Convenciones de Nomenclatura
+- **Archivos**: `kebab-case` (ej: `stock-list.ts`).
+- **Clases**: `PascalCase` (ej: `StockList`).
+- **Selectores**: Prefijo `app-` (ej: `app-stock-list`).
 
-La posta está en `src/app`. Así es como separamos los tantos:
+### 4. Organización Modular
+- **core/**: Servicios singleton, interceptores y modelos compartidos globales (se cargan una vez en el root).
+- **features/**: Módulos organizados por dominio funcional (auth, cocina, comensal, gerente, mozo). Implementación de lazy loading.
+- **shared/**: Componentes de UI reutilizables (botones, modales, buscadores) y componentes transversales sin lógica de negocio pesada.
+- **layouts/**: Estructuras de contenedores principales para diferentes roles de usuario.
 
-*   **`core/`**: Es el corazón del sistema. Acá va todo lo que es **singleton** (una sola instancia) o global.
-    *   `models/`: Interfaces y tipos de TypeScript que se usan en todo el proyecto.
-    *   `services/`: Servicios globales (facades, interceptors, etc.).
-*   **`features/`**: Acá vive la lógica de negocio. Cada carpeta es un "módulo" funcional.
-    *   `auth/`, `gerente/`, `cocina/`, `mozo/`, `comensal/`.
-    *   Cada feature tiene sus propias `pages`, `components` y su archivo de `routes.ts`.
-*   **`shared/`**: Todo lo que se puede reutilizar en distintas partes de la aplicación.
-    *   `ui/`: Componentes básicos y puros (Botones, Inputs, Modals, Buscadores). Seguimos una onda parecida al **Atomic Design** para los componentes de UI.
-    *   `components/`: Componentes compartidos que tienen un poco más de contexto (Header, Sidebar).
-*   **`layouts/`**: Definimos las estructuras visuales grandes. Por ejemplo, el layout para el staff (con sidebar) y el layout para el comensal.
-
----
-
-## 🛠️ Estándares de Desarrollo
-
-### Componentes Standalone
-Acá no usamos `NgModules` gigantes que son un quilombo de mantener. Todos los componentes nuevos son **Standalone**. Esto nos da más claridad en las dependencias y hace que el árbol de componentes sea más fácil de razonar.
-
-### Convenciones de Nombres
-*   **Archivos**: `nombre-del-componente.ts`, `nombre.model.ts`.
-*   **Clases**: `PascalCase` (ej: `ModificarCartaComponent`).
-*   **Selectores**: `app-nombre-del-componente`.
+### 5. Guía de Ejecución
+```bash
+npm install   # Instalación de dependencias
+npm start     # Servidor de desarrollo en localhost:4200
+```
 
 ---
-
-## 🚀 Próximos Pasos (Hoja de Ruta)
-
-A medida que el proyecto crezca, vamos a ir metiendo agregando:
-
-1.  **State Management**: Vamos a usar un patrón de `StateService` basado en **Signals**. Nada de estados perdidos en los componentes; la verdad siempre va a estar en el servicio.
-2.  **Service Layer**: Los componentes no deberían saber de dónde vienen los datos. Vamos a centralizar las llamadas a la API en servicios dedicados.
-3.  **Guards**: Seguridad ante todo. Vamos a implementar Guards para que nadie entre a donde no debe (ej: un mozo no debería poder ver el dashboard del gerente).
-
+*Documentación técnica de referencia para el equipo de PanComido.*
