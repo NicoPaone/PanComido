@@ -1,59 +1,45 @@
-# Frontend
+# PanComido - Frontend 🍽️
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.8.
+---
 
-## Development server
+## 🏗️ Arquitectura del Proyecto
 
-To start a local development server, run:
+Usamos una arquitectura basada en **Features** (Funcionalidades). La idea es que el código esté cerca de donde se usa. Nada de tener archivos perdidos por cualquier lado. Separamos las responsabilidades para que, si algo rompe, sepas exactamente dónde meter mano.
 
-```bash
-ng serve
-```
+### Estructura de Carpetas
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+La posta está en `src/app`. Así es como separamos los tantos:
 
-## Code scaffolding
+*   **`core/`**: Es el corazón del sistema. Acá va todo lo que es **singleton** (una sola instancia) o global.
+    *   `models/`: Interfaces y tipos de TypeScript que se usan en todo el proyecto.
+    *   `services/`: Servicios globales (facades, interceptors, etc.).
+*   **`features/`**: Acá vive la lógica de negocio. Cada carpeta es un "módulo" funcional.
+    *   `auth/`, `gerente/`, `cocina/`, `mozo/`, `comensal/`.
+    *   Cada feature tiene sus propias `pages`, `components` y su archivo de `routes.ts`.
+*   **`shared/`**: Todo lo que se puede reutilizar en distintas partes de la aplicación.
+    *   `ui/`: Componentes básicos y puros (Botones, Inputs, Modals, Buscadores). Seguimos una onda parecida al **Atomic Design** para los componentes de UI.
+    *   `components/`: Componentes compartidos que tienen un poco más de contexto (Header, Sidebar).
+*   **`layouts/`**: Definimos las estructuras visuales grandes. Por ejemplo, el layout para el staff (con sidebar) y el layout para el comensal.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+---
 
-```bash
-ng generate component component-name
-```
+## 🛠️ Estándares de Desarrollo
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Componentes Standalone
+Acá no usamos `NgModules` gigantes que son un quilombo de mantener. Todos los componentes nuevos son **Standalone**. Esto nos da más claridad en las dependencias y hace que el árbol de componentes sea más fácil de razonar.
 
-```bash
-ng generate --help
-```
+### Convenciones de Nombres
+*   **Archivos**: `nombre-del-componente.ts`, `nombre.model.ts`.
+*   **Clases**: `PascalCase` (ej: `ModificarCartaComponent`).
+*   **Selectores**: `app-nombre-del-componente`.
 
-## Building
+---
 
-To build the project run:
+## 🚀 Próximos Pasos (Hoja de Ruta)
 
-```bash
-ng build
-```
+A medida que el proyecto crezca, vamos a ir metiendo agregando:
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+1.  **State Management**: Vamos a usar un patrón de `StateService` basado en **Signals**. Nada de estados perdidos en los componentes; la verdad siempre va a estar en el servicio.
+2.  **Service Layer**: Los componentes no deberían saber de dónde vienen los datos. Vamos a centralizar las llamadas a la API en servicios dedicados.
+3.  **Guards**: Seguridad ante todo. Vamos a implementar Guards para que nadie entre a donde no debe (ej: un mozo no debería poder ver el dashboard del gerente).
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
