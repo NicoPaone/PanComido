@@ -1,0 +1,30 @@
+<div class="card h-100 border-0 shadow-sm rounded-4 p-3 dish-card">
+  <div class="row g-0 h-100 align-items-center">
+    <!-- Image -->
+    <div class="col-4">
+      <img [src]="plato.imagen" class="img-fluid rounded-3 object-fit-cover dish-img" [alt]="plato.nombre">
+    </div>
+    <!-- Content -->
+    <div class="col-6 ps-3 d-flex flex-column justify-content-center">
+      <h5 class="fw-bold mb-2 text-dark">{{ plato.nombre }}</h5>
+      <p class="mb-1 text-muted small">Precio de venta: <span class="fw-bold text-dark fs-6">$ {{ plato.precioVenta | number }}</span></p>
+      <p class="mb-2 text-muted small">Costo: <span class="text-dark">$ {{ plato.costo | number }}</span></p>
+      
+      <div class="d-flex align-items-center gap-2 mt-1">
+        <span class="text-muted small">Visible en carta</span>
+        <div class="custom-toggle" [class.active]="plato.visible" (click)="onToggle()">
+          <div class="toggle-circle"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Actions -->
+    <div class="col-2 d-flex flex-column justify-content-center align-items-end gap-3 pe-2">
+      <app-boton variant="edit">
+        <span class="material-symbols-outlined">edit</span>
+      </app-boton>
+      <app-boton variant="delete">
+        <span class="material-symbols-outlined">delete</span>
+      </app-boton>
+    </div>
+  </div>
+</div>

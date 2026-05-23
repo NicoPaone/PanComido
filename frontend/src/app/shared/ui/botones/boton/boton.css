@@ -1,0 +1,56 @@
+/* Botones Superiores */
+.btn-teal {
+  background-color: var(--primary-teal, #02596C);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-teal:hover {
+  background-color: #024655;
+  color: white;
+}
+.btn-orange {
+  background-color: var(--primary-orange, #ff9800);
+  border: none;
+  color: white !important;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-orange:hover {
+  background-color: #e68a00;
+  color: white;
+}
+
+/* Botones de Accion (Editar/Eliminar) */
+.btn-action {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  color: white;
+}
+.btn-edit {
+  background-color: yellow;
+  color: black;
+}
+.btn-edit:hover {
+  background-color: #e6e600;
+  color: black;
+}
+.btn-delete {
+  background-color: var(--primary-red, #ea1d2c);
+}
+.btn-delete:hover {
+  background-color: #cc0000;
+}

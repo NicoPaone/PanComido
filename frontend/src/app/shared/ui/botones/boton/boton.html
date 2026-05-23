@@ -1,0 +1,10 @@
+<button 
+  class="btn {{ customClass }}" 
+  [ngClass]="{
+    'btn-teal': variant === 'teal',
+    'btn-orange': variant === 'orange',
+    'btn-action btn-edit': variant === 'edit',
+    'btn-action btn-delete': variant === 'delete'
+  }">
+  <ng-content></ng-content>
+</button>

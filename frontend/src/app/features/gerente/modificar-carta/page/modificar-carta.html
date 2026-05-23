@@ -1,0 +1,24 @@
+<div class="container-fluid p-4 bg-light min-vh-100">
+  <!-- Top Bar -->
+  <div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+      <app-buscador placeholder="Buscar plato"></app-buscador>
+    </div>
+    <div class="col-md-6 text-end d-flex justify-content-end gap-3">
+      <app-boton variant="teal">
+        Categorías
+        <span class="material-symbols-outlined">expand_more</span>
+      </app-boton>
+      <app-boton variant="orange">
+        <span class="material-symbols-outlined fw-bold">add</span>
+        Nuevo plato
+      </app-boton>
+    </div>
+  </div>
+
+  <!-- Lista de Platos Encapsulada -->
+  <app-lista-platos 
+    [platos]="platos" 
+    (toggleVisible)="toggleVisibility($event)">
+  </app-lista-platos>
+</div>
