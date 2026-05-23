@@ -31,9 +31,9 @@ jobs:
           
       - name: Restore & Test
         run: |
-          dotnet restore
-          dotnet build --no-restore -c Release
-          dotnet test --no-build -c Release
+          dotnet restore PanComido.sln
+          dotnet build PanComido.sln --no-restore -c Release
+          dotnet test PanComido.sln --no-build -c Release
 
   # ==========================================
   # JOB 2: FRONTEND (Angular)
