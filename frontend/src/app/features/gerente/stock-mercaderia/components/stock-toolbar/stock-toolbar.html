@@ -1,6 +1,7 @@
 <div style="max-width: 50%; width: 100%;">
   <app-buscador 
     placeholder="Buscar ingrediente..."
+    (busquedaCambiada)="onBuscar($event)"
    >
   </app-buscador>
 </div>
