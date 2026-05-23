@@ -1,0 +1,12 @@
+.stock-list-container {
+  padding: 20px;
+  background-color: #f4f4f4; /* Color de fondo del contenedor */
+  border-radius: 8px;
+}
+.stock-list-button{
+   margin-bottom: 15px;
+   background-color: #9ca3af7e;
+
+   padding: 10px 20px;
+   border-radius: 8px;
+}

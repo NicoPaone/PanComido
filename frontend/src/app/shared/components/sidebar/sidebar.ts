@@ -70,7 +70,7 @@ export class SidebarComponent {
       { label: 'Usuarios', icon: 'faUsers', route: 'gerente/usuarios', roles: ['Gerente'] },
       { label: 'Configuración', icon: 'faCog', route: 'gerente/configuracion', roles: ['Gerente'] },
       { label: 'Dashboard', icon: 'faChartBar', route: 'gerente/dashboard', roles: ['Gerente'] },
-      { label: 'Stock/Mercadería', icon: 'faBox', route: 'gerente/stock', roles: ['Gerente'] },
+      { label: 'Stock/Mercadería', icon: 'faBox', route: 'gerente/stock-mercaderia', roles: ['Gerente'] }, 
       {
         label: 'Pedidos y Proveedor',
         icon: 'faTruck',
