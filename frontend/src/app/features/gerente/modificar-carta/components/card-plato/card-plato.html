@@ -1,11 +1,9 @@
-<div class="card h-100 border-0 shadow-sm p-3 dish-card">
+<div class="card h-100 border-0 shadow-sm p-3 dish-card" [class.disabled-card]="!plato().visible">
   <div class="d-flex flex-column flex-sm-row align-items-center gap-3 h-100">
-    <!-- Image -->
     <div class="flex-shrink-0 text-center">
       <img [src]="plato().imagen" class="dish-img rounded-3 object-fit-cover" [alt]="plato().nombre">
     </div>
     
-    <!-- Content -->
     <div class="flex-grow-1 min-w-0 text-center text-sm-start">
       <h5 class="fw-bold mb-2 text-dark text-truncate">{{ plato().nombre }}</h5>
       <p class="mb-1 text-muted small">Precio de venta: <span class="fw-bold text-dark fs-6">$ {{ plato().precioVenta | number }}</span></p>
@@ -20,7 +18,6 @@
       </div>
     </div>
 
-    <!-- Actions -->
     <div class="d-flex flex-row flex-sm-column gap-2 mt-2 mt-sm-0 flex-shrink-0 justify-content-center">
       <app-boton variante="warning" tamanio="md" class="btn-icon">
         <span class="material-symbols-outlined fs-5">edit</span>

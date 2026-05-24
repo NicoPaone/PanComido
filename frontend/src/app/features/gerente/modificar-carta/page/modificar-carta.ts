@@ -18,6 +18,7 @@ import { Dropdown } from '../../../../shared/ui/dropdown/dropdown';
 })
 export class ModificarCartaComponent implements OnInit {
   private router = inject(Router);
+  searchTerm = '';
   platos: Plato[] = [
     {
       id: 1,
@@ -88,28 +89,35 @@ export class ModificarCartaComponent implements OnInit {
   filteredPlatos: Plato[] = [];
 
   ngOnInit() {
-    this.filteredPlatos = [...this.platos];
+    this.ordenarYFiltrar();
   }
 
-  onSearch(term: string) {
-    const lowerTerm = term.toLowerCase().trim();
+  ordenarYFiltrar() {
+    const sorted = [...this.platos].sort((a, b) => {
+      if (a.visible === b.visible) return 0;
+      return a.visible ? -1 : 1;
+    });
+
+    const lowerTerm = this.searchTerm.toLowerCase().trim();
     if (!lowerTerm) {
-      this.filteredPlatos = [...this.platos];
+      this.filteredPlatos = sorted;
     } else {
-      this.filteredPlatos = this.platos.filter(plato => 
+      this.filteredPlatos = sorted.filter(plato => 
         plato.nombre.toLowerCase().includes(lowerTerm)
       );
     }
   }
 
-  toggleVisibility(plato: Plato) {
-    plato.visible = !plato.visible;
+  onSearch(term: string) {
+    this.searchTerm = term;
+    this.ordenarYFiltrar();
   }
 
-  /**
-   * Maneja la selección de una categoría del dropdown
-   * Aquí puedes agregar lógica para filtrar por categoría
-   */
+  toggleVisibility(plato: Plato) {
+    plato.visible = !plato.visible;
+    this.ordenarYFiltrar();
+  }
+
   onCategoriaSeleccionada(categoria: string) {
     console.log('Categoría seleccionada:', categoria);
   }
