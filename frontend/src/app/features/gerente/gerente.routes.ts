@@ -11,6 +11,10 @@ export const GERENTE_ROUTES: Routes = [
   {
     path: 'modificar-carta',
     loadComponent: () => import('./modificar-carta/page/modificar-carta').then(m => m.ModificarCartaComponent)
+  },
+  {
+    path: 'crear-plato',
+    loadComponent: () => import('./crear-plato/page/crear-plato').then(m => m.CrearPlatoComponent)
   }
 
 ];

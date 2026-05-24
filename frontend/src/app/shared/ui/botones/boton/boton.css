@@ -38,3 +38,6 @@
 .btn-danger { background-color: var(--status-danger); color: white; }
 .btn-teal { background-color: var(--primary-teal); color: white; }
 .btn-warning { background-color: var(--primary-yellow, #ffea00); color: var(--gray-800, #333); }
+.btn-success { background-color: var(--status-success, #6abf3f); color: white; }
+.btn-outline { background-color: #ffffff; border: 1px solid var(--gray-300, #d1d5db); color: var(--gray-700, #374151); }
+.btn-outline:hover { background-color: var(--gray-100, #f3f4f6); }

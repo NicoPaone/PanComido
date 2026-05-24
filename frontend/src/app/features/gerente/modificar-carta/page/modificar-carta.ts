@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { Buscador } from '../../../../shared/ui/buscador/buscador';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Plato } from '../../../../core/models/plato';
@@ -16,6 +17,7 @@ import { Dropdown } from '../../../../shared/ui/dropdown/dropdown';
   styleUrls: ['./modificar-carta.css']
 })
 export class ModificarCartaComponent implements OnInit {
+  private router = inject(Router);
   platos: Plato[] = [
     {
       id: 1,
@@ -110,6 +112,9 @@ export class ModificarCartaComponent implements OnInit {
    */
   onCategoriaSeleccionada(categoria: string) {
     console.log('Categoría seleccionada:', categoria);
-    // TODO: Agregar lógica de filtro por categoría si el modelo de Plato tiene esa propiedad
+  }
+
+  irACrearPlato() {
+    this.router.navigate(['/staff/gerente/crear-plato']);
   }
 }
