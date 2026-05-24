@@ -2,7 +2,10 @@
   <div class="col mb-4" *ngFor="let plato of platos()">
     <app-card-plato 
       [plato]="plato" 
-      (toggleVisible)="onToggleVisible($event)">
+      [isExploding]="plato.id === explodingId()"
+      (toggleVisible)="onToggleVisible($event)"
+      (editPlato)="onEditPlato($event)"
+      (deletePlato)="onDeletePlato($event)">
     </app-card-plato>
   </div>
 </div>
