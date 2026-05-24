@@ -16,7 +16,7 @@
 
 .image-preview-card {
   border-radius: 12px;
-  background-color: #ffffff;
+  background-color: #ffffff !important;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -31,16 +31,33 @@
   object-fit: cover;
 }
 
+.image-placeholder {
+  height: 180px;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  color: #9ca3af;
+}
+
+.placeholder-icon {
+  font-size: 3rem !important;
+}
+
+.placeholder-text {
+  font-weight: 700;
+}
+
 .edit-photo-btn {
   width: 100%;
 }
 
 .visibility-toggle-wrapper {
   border-radius: 12px;
+  background-color: #ffffff !important;
 }
 
 .form-card {
   border-radius: 12px;
+  background-color: #ffffff !important;
 }
 
 .font-bold {
@@ -130,5 +147,63 @@
 @media (max-width: 991.98px) {
   .main-content-row {
     flex-direction: column;
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-card {
+  width: 90%;
+  max-width: 400px;
+  border-radius: 16px;
+  border: none;
+  animation: modalScaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-success-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.success-icon {
+  font-size: 64px;
+  color: #3cd000;
+}
+
+.modal-title {
+  font-weight: 800;
+  color: #111827;
+  font-size: 1.35rem;
+}
+
+.modal-text {
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.modal-action-btn ::ng-deep .btn {
+  width: 100% !important;
+}
+
+@keyframes modalScaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
   }
 }

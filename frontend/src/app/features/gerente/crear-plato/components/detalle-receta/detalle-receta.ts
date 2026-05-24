@@ -23,14 +23,7 @@ export class DetalleRecetaComponent {
 
   busqueda = signal<string>('');
   
-  ingredientesSeleccionados = signal<RecetaIngrediente[]>([
-    { id: '12', nombre: 'Aceite de oliva', cantidad: 10, unidadMedida: 'L' },
-    { id: '13', nombre: 'Ají molido', cantidad: 5, unidadMedida: 'GR' },
-    { id: '14', nombre: 'Morrón asado', cantidad: 200, unidadMedida: 'GR' },
-    { id: '15', nombre: 'Orégano', cantidad: 20, unidadMedida: 'GR' },
-    { id: '16', nombre: 'Provoleta', cantidad: 170, unidadMedida: 'GR' },
-    { id: '17', nombre: 'Tomate asado', cantidad: 200, unidadMedida: 'GR' }
-  ]);
+  ingredientesSeleccionados = signal<RecetaIngrediente[]>([]);
 
   sugerencias = computed(() => {
     const query = this.busqueda().toLowerCase().trim();

@@ -16,22 +16,21 @@ import { DetalleRecetaComponent, RecetaIngrediente } from '../components/detalle
 export class CrearPlatoComponent {
   private router = inject(Router);
 
-  nombre = signal<string>('Provolone fundido con morrones y tomates asados');
-  costo = signal<number>(2100);
-  precioVenta = signal<number>(4800);
-  tiempoPreparacion = signal<number>(10);
-  tipoPlato = signal<string>('Entrada');
-  descripcion = signal<string>(
-    'Queso provolone fundido al horno sobre base de morrones y tomates asados, condimentado con orégano, ají molido y aceite de oliva. Se sirve en cazuela individual bien caliente.'
-  );
+  nombre = signal<string>('');
+  costo = signal<number | null>(null);
+  precioVenta = signal<number | null>(null);
+  tiempoPreparacion = signal<number | null>(null);
+  tipoPlato = signal<string>('');
+  descripcion = signal<string>('');
   visible = signal<boolean>(true);
-  imagen = signal<string>('https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&q=80&w=300&h=250');
+  imagen = signal<string>('');
 
   vegano = signal<boolean>(false);
-  vegetariano = signal<boolean>(true);
+  vegetariano = signal<boolean>(false);
   celiaco = signal<boolean>(false);
 
   receta = signal<RecetaIngrediente[]>([]);
+  mostrarExito = signal<boolean>(false);
 
   toggleTag(tag: 'vegano' | 'vegetariano' | 'celiaco') {
     if (tag === 'vegano') {
@@ -70,6 +69,11 @@ export class CrearPlatoComponent {
     };
 
     console.log('Guardando plato:', platoFinal);
+    this.mostrarExito.set(true);
+  }
+
+  cerrarExito() {
+    this.mostrarExito.set(false);
     this.router.navigate(['/staff/gerente/modificar-carta']);
   }
 
