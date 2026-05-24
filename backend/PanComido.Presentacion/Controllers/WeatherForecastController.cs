@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace PanComido.API.Controllers
+namespace PanComido.Presentacion.Controllers
 {
     [ApiController]
     [Route("[controller]")]
