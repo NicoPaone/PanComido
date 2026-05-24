@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, input, output } from '@angular/core';
 
-export type BotonVariante = 'primary' | 'secondary' | 'danger' | 'outline' | 'tab' | 'teal';
+export type BotonVariante = 'primary' | 'secondary' | 'danger' | 'outline' | 'tab' | 'teal' | 'warning';
 export type BotonTamanio = 'sm' | 'md' | 'lg';
 
 @Component({
