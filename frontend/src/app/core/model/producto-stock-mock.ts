@@ -1,9 +1,9 @@
 
 export type UnidadMedida= 'KG'| 'L' |'GR' | 'UN';
-export type CategoriaIngrediente = 'Verdura' | 'Almacen' | 'Carne';
+export type CategoriaIngrediente = 'Verdura' | 'Almacen' | 'Carne' | 'Lacteos'| 'Bebidas';
 
 export interface ProductoStockMock{
-    id: string;
+    id: number;
     nombre: string;
     stock: number;
     fechaVencimiento: string;
@@ -15,7 +15,7 @@ export interface ProductoStockMock{
 
 export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
   {
-    id: '1', 
+    id: 1, 
     nombre: 'Ajo',
     stock: 5, 
     unidadMedida: 'KG',
@@ -24,7 +24,7 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
     categoriaIngrediente: 'Verdura'
   },
   {
-    id: '2', 
+    id: 2, 
     nombre: 'Cebolla',
     stock: 25, 
     unidadMedida: 'KG',
@@ -33,7 +33,7 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
     categoriaIngrediente: 'Verdura'
   },
   {
-    id: '3', 
+    id: 3, 
     nombre: 'Aceite de Girasol',
     stock: 15, 
     unidadMedida: 'L',
@@ -42,7 +42,7 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
     categoriaIngrediente: 'Almacen'
   },
   {
-    id: '4', 
+    id: 4, 
     nombre: 'Harina 0000',
     stock: 50, 
     unidadMedida: 'KG',
@@ -51,7 +51,7 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
     categoriaIngrediente: 'Almacen'
   },
   {
-    id: '5', 
+    id: 5, 
     nombre: 'Tomate Perita',
     stock: 12, 
     unidadMedida: 'KG',
@@ -60,7 +60,7 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
     categoriaIngrediente: 'Verdura'
   },
   {
-    id: '6', 
+    id: 6, 
     nombre: 'Bife de Chorizo',
     stock: 30, 
     unidadMedida: 'KG',
@@ -69,7 +69,7 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
     categoriaIngrediente: 'Carne'
   },
   {
-    id: '7', 
+    id: 7, 
     nombre: 'Huevos Blancos',
     stock: 120, 
     unidadMedida: 'UN',
@@ -78,7 +78,7 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
     categoriaIngrediente: 'Almacen'
   },
   {
-    id: '8', 
+    id: 8, 
     nombre: 'Sal Fina',
     stock: 10, 
     unidadMedida: 'KG',
@@ -87,7 +87,7 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
     categoriaIngrediente: 'Almacen'
   },
   {
-    id: '9', 
+    id: 9, 
     nombre: 'Papa Negra',
     stock: 45, 
     unidadMedida: 'KG',
@@ -96,7 +96,7 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
     categoriaIngrediente: 'Verdura'
   },
   {
-    id: '10', 
+    id: 10, 
     nombre: 'Vinagre de Alcohol',
     stock: 8, 
     unidadMedida: 'L',
@@ -105,7 +105,7 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
     categoriaIngrediente: 'Almacen'
   },
   {
-    id: '11', 
+    id: 11, 
     nombre: 'Pimienta Negra en Grano',
     stock: 2, 
     unidadMedida: 'KG',

@@ -18,10 +18,12 @@
     <div menu>
       <ul>
         <li (click)="categoria.set(''); filtroDropdown.cerrar()">Todos</li>
-        <li (click)="categoria.set('Verduras'); filtroDropdown.cerrar()">Verduras</li>
-        <li (click)="categoria.set('Carnes'); filtroDropdown.cerrar()">Carnes</li>
-        <li (click)="categoria.set('Lácteos'); filtroDropdown.cerrar()">Lácteos</li>
-        <li (click)="categoria.set('Bebidas'); filtroDropdown.cerrar()">Bebidas</li>
+        <li (click)="categoria.set('Verdura'); filtroDropdown.cerrar()">Verduras</li>
+        <li (click)="categoria.set('Carne'); filtroDropdown.cerrar()">Carnes</li>
+        <li (click)="categoria.set('Lacteo'); filtroDropdown.cerrar()">Lácteos</li>
+        <li (click)="categoria.set('Bebida'); filtroDropdown.cerrar()">Bebidas</li>
+        <li (click)="categoria.set('Almacen'); filtroDropdown.cerrar()">Almacén</li>
+
       </ul>
     </div>
   </app-dropdown>
@@ -31,7 +33,7 @@
     label="NUEVO PRODUCTO" 
     variante="secondary" 
     tamanio="md"
-    (clicked)="agregarNuevoProducto()">
+    (clicked)="abrirModalCrear(modalFormulario)">
   </app-boton>
   
 </app-page-toolbar>
@@ -43,5 +45,12 @@
     <app-boton label="Lotes" variante="tab" [activo]="tabSeleccionada() === 'lotes'" (clicked)="tabSeleccionada.set('lotes')"></app-boton>
   </div>
 
-  <app-stock-list [productos]="productosFiltrados()"></app-stock-list>
+  <app-stock-list 
+    [productos]="productosFiltrados()"
+    (editar)="abrirModalEditar(modalFormulario, $event)">
+  </app-stock-list>
 </div>
+
+ <!-- ?ESTO ES NECESARIO PARA RENDERIZAR EL MODAL EN LA VISTA -->
+<app-modal #modalFormulario [titulo]="tituloModal()" (cerrado)="productoEditandoId.set(null)">
+   </app-modal>
