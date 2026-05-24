@@ -20,4 +20,9 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Dominio\" />
+    <Folder Include="Infraestructura\" />
+  </ItemGroup>
+
 </Project>
