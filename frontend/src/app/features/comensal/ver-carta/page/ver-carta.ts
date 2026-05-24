@@ -1,19 +1,40 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Buscador } from '../../../../shared/ui/buscador/buscador';
+
+import { Plato } from '../../../../../app/core/models/plato';
+import { Buscador } from '../../../../../app/shared/ui/buscador/buscador';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
-import { Plato } from '../../../../core/models/plato';
-import { ListaPlatosComponent } from '../components/lista-platos/lista-platos';
+
+import { ListaPlatosComensalComponent } from '../components/lista-platos-comensal/lista-platos-comensal';
 import { BotonCategoriasComponent } from '../../../../shared/ui/botones/boton-categorias/boton-categorias';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faFilter } from '@fortawesome/free-solid-svg-icons';
+
+import { Router } from '@angular/router';
+import { PedidoService } from '../../../../../app/core/services/pedido.service';
 
 @Component({
-  selector: 'app-modificar-carta',
+  selector: 'app-ver-carta',
   standalone: true,
-  imports: [CommonModule, Buscador, Boton, ListaPlatosComponent, BotonCategoriasComponent],
-  templateUrl: './modificar-carta.html',
-  styleUrls: ['./modificar-carta.css']
+  imports: [
+    CommonModule,
+    ListaPlatosComensalComponent,
+    Buscador,
+    Boton,
+    BotonCategoriasComponent,
+    FontAwesomeModule
+  ],
+  templateUrl: './ver-carta.html',
+  styleUrls: ['./ver-carta.css'],
+  
 })
-export class ModificarCartaComponent implements OnInit {
+export class VerCartaComponent {
+
+constructor(
+  private router: Router,
+  private pedidoService: PedidoService
+) {}
+
 platos: Plato[] = [
   {
     id: 1,
@@ -89,24 +110,27 @@ platos: Plato[] = [
   }
 ];
 
-  filteredPlatos: Plato[] = [];
+  filteredPlatos: Plato[] = this.platos;
 
-  ngOnInit() {
-    this.filteredPlatos = [...this.platos];
+  onSearch(valor: string) {
+
+    this.filteredPlatos = this.platos.filter(plato =>
+      plato.nombre.toLowerCase().includes(valor.toLowerCase())
+    );
+
   }
 
-  onSearch(term: string) {
-    const lowerTerm = term.toLowerCase().trim();
-    if (!lowerTerm) {
-      this.filteredPlatos = [...this.platos];
-    } else {
-      this.filteredPlatos = this.platos.filter(plato => 
-        plato.nombre.toLowerCase().includes(lowerTerm)
-      );
-    }
-  }
+irAPedido() {
+  this.router.navigate(['/comensal/pedido']);
+}
 
-  toggleVisibility(plato: Plato) {
-    plato.visible = !plato.visible;
-  }
+agregarAlPedido(plato: Plato) {
+
+  this.pedidoService.agregarPedido(plato);
+
+  console.log('Pedido agregado:', plato);
+
+}
+  faFilter = faFilter;
+
 }

@@ -5,4 +5,5 @@ export interface Plato {
   costo: number;
   visible: boolean;
   imagen: string;
+  descripcion: string;
 }

@@ -9,6 +9,6 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./boton.css'],
 })
 export class Boton {
-  @Input() variant: 'teal' | 'orange' | 'edit' | 'delete' = 'teal';
+  @Input() variant: 'teal' | 'orange' | 'edit' | 'add' | 'delete' = 'teal';
   @Input() customClass: string = '';
 }

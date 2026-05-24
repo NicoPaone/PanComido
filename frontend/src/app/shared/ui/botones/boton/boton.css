@@ -59,3 +59,17 @@
 .btn-delete:hover {
   background-color: #cc0000;
 }
+
+.btn-add {
+  
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--status-success,#6ABF3F );
+  justify-content: center;
+}
+

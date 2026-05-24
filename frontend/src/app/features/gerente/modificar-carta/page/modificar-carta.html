@@ -2,7 +2,7 @@
   <!-- Top Bar -->
   <div class="row mb-4 align-items-center">
     <div class="col-md-6 mb-3 mb-md-0">
-      <app-buscador placeholder="Buscar plato" (searchChange)="onSearch($event)"></app-buscador>
+    <app-buscador placeholder="Buscar plato" (busquedaCambiada)="onSearch($event)"></app-buscador>
     </div>
     <div class="col-md-6 d-flex justify-content-start justify-content-md-end flex-wrap gap-3">
       <app-boton-categorias></app-boton-categorias>
