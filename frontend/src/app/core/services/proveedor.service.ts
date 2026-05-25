@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { delay, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { PRODUCTOS_STOCK_MOCK, ProductoStockMock } from '../model/producto-stock-mock';
-import { NuevoPedidoProveedor, PedidoProveedor, Proveedor } from '../models/proveedor';
+import { NuevoPedidoProveedor, NuevoProveedor, PedidoProveedor, Proveedor } from '../models/proveedor';
 
 export const PROVEEDOR_ENDPOINTS = {
   base: `${environment.apiUrl}/proveedores`,
@@ -10,6 +10,7 @@ export const PROVEEDOR_ENDPOINTS = {
   historial: (id: number) => `${environment.apiUrl}/proveedores/${id}/historial`,
   pedidos: (id: number) => `${environment.apiUrl}/proveedores/${id}/pedidos`,
   crearPedido: (id: number) => `${environment.apiUrl}/proveedores/${id}/pedidos`,
+  crearProveedor: `${environment.apiUrl}/proveedores`,
   productos: `${environment.apiUrl}/proveedores/productos-disponibles`
 };
 
@@ -199,5 +200,22 @@ export class ProveedorService {
 
   registrarPedido(id: number, pedido: NuevoPedidoProveedor): Observable<Proveedor> {
     return this.crearPedidoProveedor(id, pedido);
+  }
+
+  crearProveedor(proveedor: NuevoProveedor): Observable<Proveedor> {
+    const nuevoProveedor: Proveedor = {
+      id: Date.now(),
+      nombre: proveedor.nombre,
+      contacto: proveedor.contacto,
+      telefono: proveedor.telefono,
+      email: proveedor.email,
+      direccion: proveedor.direccion,
+      activo: true,
+      fechaUltimoPedido: null,
+      historialPedidos: []
+    };
+
+    this.proveedoresSignal.update(proveedores => [nuevoProveedor, ...proveedores]);
+    return of(nuevoProveedor).pipe(delay(180));
   }
 }

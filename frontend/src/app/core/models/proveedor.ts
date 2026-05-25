@@ -39,6 +39,14 @@ export interface NuevoPedidoProveedor {
   items: PedidoProveedorItem[];
 }
 
+export interface NuevoProveedor {
+  nombre: string;
+  contacto: string;
+  telefono: string;
+  email: string;
+  direccion: string;
+}
+
 export interface ProductoPedidoProveedor {
   id: string;
   nombre: string;

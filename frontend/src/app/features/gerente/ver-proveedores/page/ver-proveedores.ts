@@ -7,7 +7,7 @@ import { Buscador } from '../../../../shared/ui/buscador/buscador';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Dropdown } from '../../../../shared/ui/dropdown/dropdown';
 import { PageToolbar } from '../../../../shared/ui/page-toolbar/page-toolbar';
-import { PedidoProveedorItem, EstadoPedidoProveedor, Proveedor } from '../../../../core/models/proveedor';
+import { NuevoProveedor, PedidoProveedor, PedidoProveedorItem, EstadoPedidoProveedor, Proveedor } from '../../../../core/models/proveedor';
 import { ProveedorService } from '../../../../core/services/proveedor.service';
 import { ProveedorListComponent } from '../components/proveedor-list/proveedor-list';
 import { ProductoStockMock, UnidadMedida } from '../../../../core/model/producto-stock-mock';
@@ -33,6 +33,19 @@ export class VerProveedoresComponent implements OnInit {
   productoSeleccionadoId = signal<string | null>(null);
   cantidadProducto = signal<number | null>(1);
   pedidoItems = signal<PedidoProveedorItem[]>([]);
+  pedidoHistorialSeleccionado = signal<PedidoProveedor | null>(null);
+  mostrarModalProveedor = signal(false);
+  nuevoProveedor = signal<NuevoProveedor>({
+    nombre: '',
+    contacto: '',
+    telefono: '',
+    email: '',
+    direccion: ''
+  });
+  puedeGuardarProveedor = computed(() => {
+    const proveedor = this.nuevoProveedor();
+    return proveedor.nombre.trim().length > 2 && proveedor.contacto.trim().length > 2;
+  });
   faCheck = faCheck;
   faXmark = faXmark;
 
@@ -106,9 +119,40 @@ export class VerProveedoresComponent implements OnInit {
     });
   }
 
+  abrirModalProveedor(): void {
+    this.nuevoProveedor.set({
+      nombre: '',
+      contacto: '',
+      telefono: '',
+      email: '',
+      direccion: ''
+    });
+    this.mostrarModalProveedor.set(true);
+  }
+
+  cerrarModalProveedor(): void {
+    this.mostrarModalProveedor.set(false);
+  }
+
+  guardarProveedor(): void {
+    const proveedor = this.nuevoProveedor();
+    if (!proveedor.nombre.trim() || !proveedor.contacto.trim()) {
+      return;
+    }
+
+    this.proveedorService.crearProveedor(proveedor).subscribe(nuevo => {
+      this.proveedores.update(lista => [nuevo, ...lista]);
+      this.proveedorSeleccionadoId.set(nuevo.id);
+      this.panelModo.set('historial');
+      this.cerrarModalProveedor();
+      this.mensajeAccion.set('Proveedor agregado correctamente');
+    });
+  }
+
   seleccionarProveedor(proveedor: Proveedor): void {
     this.proveedorSeleccionadoId.set(proveedor.id);
     this.mensajeAccion.set(null);
+    this.pedidoHistorialSeleccionado.set(null);
   }
 
   abrirPedido(proveedor: Proveedor): void {
@@ -122,12 +166,21 @@ export class VerProveedoresComponent implements OnInit {
     this.panelModo.set('historial');
   }
 
+  abrirDetallePedido(pedido: PedidoProveedor): void {
+    this.pedidoHistorialSeleccionado.set(pedido);
+  }
+
+  cerrarDetallePedido(): void {
+    this.pedidoHistorialSeleccionado.set(null);
+  }
+
   cambiarProveedorDesdePedido(proveedor: Proveedor, dropdown?: Dropdown): void {
     this.proveedorSeleccionadoId.set(proveedor.id);
     this.panelModo.set('pedido');
     this.limpiarPedido();
     dropdown?.cerrar();
     this.mensajeAccion.set(null);
+    this.pedidoHistorialSeleccionado.set(null);
   }
 
   seleccionarProducto(producto: ProductoStockMock): void {
@@ -206,12 +259,35 @@ export class VerProveedoresComponent implements OnInit {
       return;
     }
 
-    const pedido = {
-      proveedorId: proveedor.id,
+    const fechaPedido = new Date().toISOString();
+    const nuevoPedido: PedidoProveedor = {
+      id: Date.now(),
+      fecha: fechaPedido,
       concepto: 'Pedido de insumos',
       monto: this.calcularMontoEstimado(),
+      estado: 'Pendiente',
       observacion: this.observacionPedido().trim() || 'Pedido generado desde la vista de gerente',
       items: this.pedidoItems()
+    };
+
+    this.proveedores.update(lista =>
+      lista.map(item =>
+        item.id === proveedor.id
+          ? {
+              ...item,
+              fechaUltimoPedido: fechaPedido,
+              historialPedidos: [nuevoPedido, ...item.historialPedidos]
+            }
+          : item
+      )
+    );
+
+    const pedido = {
+      proveedorId: proveedor.id,
+      concepto: nuevoPedido.concepto,
+      monto: nuevoPedido.monto,
+      observacion: nuevoPedido.observacion,
+      items: nuevoPedido.items
     };
 
     this.proveedorService.crearPedidoProveedor(proveedor.id, pedido).subscribe(actualizado => {
@@ -219,6 +295,7 @@ export class VerProveedoresComponent implements OnInit {
       this.proveedorSeleccionadoId.set(actualizado.id);
       this.panelModo.set('historial');
       this.limpiarPedido();
+      this.cerrarDetallePedido();
       this.mensajeAccion.set('Pedido agregado correctamente');
     });
   }
