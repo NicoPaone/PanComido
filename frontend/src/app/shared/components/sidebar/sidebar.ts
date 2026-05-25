@@ -76,6 +76,7 @@ export class SidebarComponent {
         icon: 'faTruck',
         roles: ['Gerente'],
         children: [
+          { label: 'Ver proveedores', icon: '', route: 'gerente/ver-proveedores', roles: ['Gerente'] },
           { label: 'Hacer pedido', icon: '', route: 'gerente/pedidos/hacer', roles: ['Gerente'] },
           { label: 'Nuevo proveedor', icon: '', route: 'gerente/pedidos/proveedor', roles: ['Gerente'] }
         ]

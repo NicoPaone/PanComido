@@ -13,6 +13,10 @@ export const GERENTE_ROUTES: Routes = [
     loadComponent: () => import('./modificar-carta/page/modificar-carta').then(m => m.ModificarCartaComponent)
   },
   {
+    path: 'ver-proveedores',
+    loadComponent: () => import('./ver-proveedores/page/ver-proveedores').then(m => m.VerProveedoresComponent)
+  },
+  {
     path: 'crear-plato',
     loadComponent: () => import('./crear-plato/page/crear-plato').then(m => m.CrearPlatoComponent)
   }

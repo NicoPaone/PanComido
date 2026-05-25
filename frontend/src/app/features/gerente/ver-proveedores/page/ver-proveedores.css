@@ -1,0 +1,471 @@
+.ver-proveedores-page {
+  background-color: #f9fafb;
+  min-height: 100vh;
+  font-family: var(--font-family);
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.page-subtitle {
+  font-size: 0.92rem;
+  color: #6b7280;
+}
+
+.proveedores-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.95fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.panel-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+  padding: 1.25rem;
+}
+
+.panel-header,
+.detail-top,
+.history-card-header,
+.history-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.counter-pill,
+.status-pill,
+.estado-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.45rem 0.8rem;
+  white-space: nowrap;
+}
+
+.counter-pill {
+  background: rgba(2, 89, 108, 0.1);
+  color: var(--primary-teal);
+}
+
+.counter-pill.small {
+  padding: 0.32rem 0.65rem;
+}
+
+.status-pill {
+  background: rgba(34, 197, 94, 0.12);
+  color: #15803d;
+}
+
+.status-pill.inactivo {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+}
+
+.detail-panel {
+  position: sticky;
+  top: 1rem;
+}
+
+.detail-kicker,
+.info-label,
+.history-date,
+.detail-text {
+  color: #6b7280;
+}
+
+.detail-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.info-card {
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.info-card strong {
+  color: #111827;
+  font-weight: 800;
+}
+
+.action-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.panel-section {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.nested-section {
+  margin-top: 1rem;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.section-header.compact {
+  margin-bottom: 0.75rem;
+}
+
+.section-subtitle {
+  color: #6b7280;
+  font-size: 0.92rem;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.field-group-wide {
+  width: 100%;
+}
+
+.picker-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 180px 92px;
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.product-field {
+  min-width: 0;
+}
+
+.quantity-field {
+  align-self: end;
+}
+
+.quantity-field input {
+  text-align: center;
+}
+
+.quantity-field input::placeholder {
+  color: #94a3b8;
+}
+
+.selector-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.readonly-input {
+  background-color: #eef2f7;
+}
+
+.confirm-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+
+.confirm-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.custom-input {
+  background-color: #f3f4f6;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  color: #1f2937;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.custom-input:focus {
+  background-color: #ffffff;
+  border-color: #d1d5db;
+  box-shadow: none;
+}
+
+.custom-textarea {
+  resize: none;
+}
+
+.dropdown-list {
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.dropdown-list-scrollable {
+  max-height: 320px;
+}
+
+.dropdown-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.dropdown-list strong {
+  color: #111827;
+}
+
+.dropdown-list span {
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+.ingredients-list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.ingredient-card {
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 0.9rem;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.ingredient-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.ingredient-card strong {
+  color: #111827;
+  font-weight: 800;
+}
+
+.ingredient-meta {
+  color: #64748b;
+  font-size: 0.88rem;
+  margin-top: 0.2rem;
+}
+
+.ingredient-quantity-field {
+  margin-bottom: 0;
+}
+
+.empty-ingredients-state {
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 1rem;
+  color: #64748b;
+  background: #ffffff;
+}
+
+.panel-footer-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.estimated-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: rgba(2, 89, 108, 0.1);
+  color: var(--primary-teal);
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 0.55rem 0.9rem;
+}
+
+.footer-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.history-items {
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+.history-list {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.history-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f8fafc;
+  padding: 1rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.history-card-header {
+  align-items: center;
+}
+
+.history-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  color: #64748b;
+  font-size: 0.92rem;
+}
+
+.estado-pill {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.estado-recibido {
+  background: rgba(34, 197, 94, 0.14);
+  color: #15803d;
+}
+
+.estado-confirmado {
+  background: rgba(2, 132, 199, 0.14);
+  color: #0369a1;
+}
+
+.estado-pendiente {
+  background: rgba(234, 179, 8, 0.18);
+  color: #a16207;
+}
+
+.estado-cancelado {
+  background: rgba(239, 68, 68, 0.14);
+  color: #b91c1c;
+}
+
+.success-note {
+  margin-top: 1rem;
+  border-radius: 12px;
+  background: rgba(34, 197, 94, 0.12);
+  color: #166534;
+  font-weight: 700;
+  padding: 0.85rem 1rem;
+}
+
+.empty-state-panel {
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+::ng-deep .action-row app-boton {
+  flex: 1;
+}
+
+::ng-deep .action-row app-boton .btn {
+  width: 100%;
+}
+
+@media (max-width: 1199.98px) {
+  .proveedores-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .panel-header,
+  .detail-top,
+  .history-card-header,
+  .history-header {
+    flex-direction: column;
+  }
+
+  .info-grid,
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action-row {
+    flex-direction: column;
+  }
+
+  .picker-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .selector-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .confirm-field {
+    align-items: stretch;
+  }
+
+  .panel-footer-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .footer-buttons {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .estimated-pill {
+    width: 100%;
+    justify-content: center;
+  }
+
+  ::ng-deep .panel-footer-actions app-boton .btn {
+    width: 100%;
+  }
+}
