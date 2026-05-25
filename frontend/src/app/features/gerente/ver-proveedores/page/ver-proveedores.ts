@@ -62,6 +62,27 @@ export class VerProveedoresComponent implements OnInit {
     return lista.filter(producto => producto.nombre.toLowerCase().includes(texto));
   });
 
+  productoBaseActual = computed(() => {
+    const productoSeleccionado = this.productos().find(producto => producto.id === this.productoSeleccionadoId());
+    if (productoSeleccionado) {
+      return productoSeleccionado;
+    }
+
+    const textoNormalizado = this.productoTexto().toLowerCase().trim();
+    if (!textoNormalizado) {
+      return null;
+    }
+
+    const coincidencias = this.productosFiltrados();
+    const exacto = coincidencias.find(producto => producto.nombre.toLowerCase() === textoNormalizado);
+
+    if (exacto) {
+      return exacto;
+    }
+
+    return coincidencias.length === 1 ? coincidencias[0] : null;
+  });
+
   proveedorSeleccionado = computed(() => {
     const proveedorId = this.proveedorSeleccionadoId();
     if (proveedorId === null) {
@@ -101,8 +122,11 @@ export class VerProveedoresComponent implements OnInit {
     this.panelModo.set('historial');
   }
 
-  seleccionarProveedorDesdePedido(proveedor: Proveedor): void {
+  cambiarProveedorDesdePedido(proveedor: Proveedor, dropdown?: Dropdown): void {
     this.proveedorSeleccionadoId.set(proveedor.id);
+    this.panelModo.set('pedido');
+    this.limpiarPedido();
+    dropdown?.cerrar();
     this.mensajeAccion.set(null);
   }
 
@@ -114,27 +138,28 @@ export class VerProveedoresComponent implements OnInit {
 
   onProductoTextoChange(valor: string): void {
     this.productoTexto.set(valor);
-    const encontrado = this.productos().find(producto => producto.nombre.toLowerCase() === valor.toLowerCase().trim());
+    const valorNormalizado = valor.toLowerCase().trim();
+    const encontrado = this.productos().find(producto => producto.nombre.toLowerCase() === valorNormalizado);
 
     if (encontrado) {
       this.productoSeleccionadoId.set(encontrado.id);
+      this.cantidadProducto.set(this.getCantidadInicial(encontrado.unidadMedida));
     } else {
       this.productoSeleccionadoId.set(null);
     }
   }
 
   agregarItemPedido(): void {
-    const nombre = this.productoTexto().trim();
+    const producto = this.productoBaseActual();
+    const nombre = producto?.nombre ?? this.productoTexto().trim();
     const cantidad = this.cantidadProducto();
 
     if (!nombre || cantidad === null || cantidad <= 0) {
       return;
     }
 
-    const productoCatalogo = this.productos().find(producto => producto.id === this.productoSeleccionadoId())
-      ?? this.productos().find(producto => producto.nombre.toLowerCase() === nombre.toLowerCase());
-    const unidadMedida = productoCatalogo?.unidadMedida ?? 'UN';
-    const itemId = productoCatalogo?.id ?? `manual-${nombre.toLowerCase().replace(/\s+/g, '-')}`;
+    const unidadMedida = producto?.unidadMedida ?? 'UN';
+    const itemId = producto?.id ?? `manual-${nombre.toLowerCase().replace(/\s+/g, '-')}`;
 
     this.pedidoItems.update(items => {
       const index = items.findIndex(item => item.id === itemId);
@@ -241,15 +266,15 @@ export class VerProveedoresComponent implements OnInit {
   }
 
   get cantidadPasoProducto(): number {
-    return this.getCantidadConfiguracion(this.productoSeleccionadoActual?.unidadMedida ?? 'KG').step;
+    return this.getCantidadConfiguracion(this.productoBaseActual()?.unidadMedida ?? 'KG').step;
   }
 
   get cantidadMinimaProducto(): number {
-    return this.getCantidadConfiguracion(this.productoSeleccionadoActual?.unidadMedida ?? 'KG').min;
+    return this.getCantidadConfiguracion(this.productoBaseActual()?.unidadMedida ?? 'KG').min;
   }
 
   get cantidadPlaceholderProducto(): string {
-    return this.getCantidadConfiguracion(this.productoSeleccionadoActual?.unidadMedida ?? 'KG').placeholder;
+    return this.getCantidadConfiguracion(this.productoBaseActual()?.unidadMedida ?? 'KG').placeholder;
   }
 
   private getCantidadInicial(unidadMedida: UnidadMedida): number {

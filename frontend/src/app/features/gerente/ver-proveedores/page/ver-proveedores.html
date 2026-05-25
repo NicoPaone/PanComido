@@ -95,60 +95,62 @@
 
             <div class="field-group field-group-wide">
               <span>Proveedor</span>
-              <div class="selector-row">
-                <input
-                  type="text"
-                  class="form-control custom-input readonly-input"
-                  [value]="proveedorSeleccionadoPedido?.nombre ?? ''"
-                  readonly>
+              <app-dropdown #proveedorDropdown>
+                <div trigger class="selector-row selector-trigger">
+                  <input
+                    type="text"
+                    class="form-control custom-input readonly-input"
+                    [value]="proveedorSeleccionadoPedido?.nombre ?? ''"
+                    readonly>
+                </div>
 
-                <app-dropdown #proveedorDropdown>
-                  <app-boton trigger label="Cambiar" variante="teal" tamanio="md"></app-boton>
-
-                  <div menu>
-                    <ul class="dropdown-list">
-                      @for (item of proveedores(); track item.id) {
-                        <li (click)="seleccionarProveedorDesdePedido(item); proveedorDropdown.cerrar()">
-                          <strong>{{ item.nombre }}</strong>
-                          <span>{{ item.contacto }}</span>
-                        </li>
-                      }
-                    </ul>
-                  </div>
-                </app-dropdown>
-              </div>
+                <div menu>
+                  <ul class="dropdown-list">
+                    @for (item of proveedores(); track item.id) {
+                      <li (click)="cambiarProveedorDesdePedido(item, proveedorDropdown)">
+                        <strong>{{ item.nombre }}</strong>
+                        <span>{{ item.contacto }}</span>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              </app-dropdown>
             </div>
 
             <div class="picker-grid">
               <label class="field-group product-field">
                 <span>Producto</span>
-                <div class="selector-row">
-                  <input
-                    type="text"
-                    class="form-control custom-input"
-                    placeholder="Escribe un nombre o selecciona del listado"
-                    [ngModel]="productoTexto()"
-                    (ngModelChange)="onProductoTextoChange($event)">
+                <input
+                  type="text"
+                  class="form-control custom-input"
+                  placeholder="Escribe un nombre o selecciona una sugerencia"
+                  [ngModel]="productoTexto()"
+                  (ngModelChange)="onProductoTextoChange($event)">
 
-                  <app-dropdown #productoDropdown>
-                    <app-boton trigger label="Listar" variante="outline" tamanio="md"></app-boton>
-
-                    <div menu>
-                      <ul class="dropdown-list dropdown-list-scrollable">
-                        @for (producto of productosFiltrados(); track producto.id) {
-                          <li (click)="seleccionarProducto(producto); productoDropdown.cerrar()">
+                @if (productoTexto().trim().length > 0) {
+                  <div class="predictive-list">
+                    @if (productosFiltrados().length > 0) {
+                      @for (producto of productosFiltrados(); track producto.id) {
+                        <button type="button" class="predictive-item" (click)="seleccionarProducto(producto)">
+                          <div class="predictive-item-main">
                             <strong>{{ producto.nombre }}</strong>
-                            <span>Stock: {{ producto.stock }} {{ producto.unidadMedida }} · {{ producto.categoriaIngrediente }}</span>
-                          </li>
-                        }
-                      </ul>
-                    </div>
-                  </app-dropdown>
-                </div>
+                            <span>{{ producto.categoriaIngrediente }}</span>
+                          </div>
+
+                          <div class="predictive-item-meta">
+                            <span>{{ producto.stock }} {{ producto.unidadMedida }}</span>
+                          </div>
+                        </button>
+                      }
+                    } @else {
+                      <div class="predictive-empty">No hay coincidencias</div>
+                    }
+                  </div>
+                }
               </label>
 
               <label class="field-group quantity-field">
-                <span>Cantidad</span>
+                <span>Cantidad {{ productoBaseActual()?.unidadMedida ? '(' + productoBaseActual()!.unidadMedida + ')' : '' }}</span>
                 <input
                   type="number"
                   class="form-control custom-input"
