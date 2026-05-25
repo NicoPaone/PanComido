@@ -16,4 +16,9 @@ export class PedidoService {
     return this.pedidos;
   }
 
+  eliminarPedido(index: number) {
+
+  this.pedidos.splice(index, 1);
+
+}
 }
