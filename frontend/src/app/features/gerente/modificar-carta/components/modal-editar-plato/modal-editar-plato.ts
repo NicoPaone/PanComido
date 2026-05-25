@@ -1,14 +1,17 @@
-import { Component, effect, input, output, signal } from '@angular/core';
+import { Component, effect, input, output, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Plato } from '../../../../../core/models/plato';
+import { Plato, RecetaIngrediente } from '../../../../../core/models/plato';
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
 import { ToggleComponent } from '../../../../../shared/ui/toggle/toggle';
+import { Buscador } from '../../../../../shared/ui/buscador/buscador';
+import { PRODUCTOS_STOCK_MOCK, ProductoStockMock } from '../../../../../core/model/producto-stock-mock';
+import { calcularCostoReceta } from '../../../../../core/services/plato.service';
 
 @Component({
   selector: 'app-modal-editar-plato',
   standalone: true,
-  imports: [CommonModule, FormsModule, Boton, ToggleComponent],
+  imports: [CommonModule, FormsModule, Boton, ToggleComponent, Buscador],
   templateUrl: './modal-editar-plato.html',
   styleUrls: ['./modal-editar-plato.css']
 })
@@ -19,9 +22,25 @@ export class ModalEditarPlatoComponent {
 
   nombre = signal('');
   precioVenta = signal<number | null>(null);
-  costo = signal<number | null>(null);
   imagen = signal('');
   visible = signal(true);
+
+  receta = signal<RecetaIngrediente[]>([]);
+  busqueda = signal<string>('');
+
+  costo = computed(() => {
+    return calcularCostoReceta(this.receta());
+  });
+
+  sugerencias = computed(() => {
+    const query = this.busqueda().toLowerCase().trim();
+    if (!query) return [];
+    
+    return PRODUCTOS_STOCK_MOCK.filter(prod => 
+      prod.nombre.toLowerCase().includes(query) &&
+      !this.receta().some(selected => selected.id === prod.id)
+    );
+  });
 
   constructor() {
     effect(() => {
@@ -29,15 +48,41 @@ export class ModalEditarPlatoComponent {
       if (p) {
         this.nombre.set(p.nombre);
         this.precioVenta.set(p.precioVenta);
-        this.costo.set(p.costo);
         this.imagen.set(p.imagen);
         this.visible.set(p.visible);
+        this.receta.set(p.receta ? JSON.parse(JSON.stringify(p.receta)) : []);
       }
     });
   }
 
   onToggleVisible() {
     this.visible.update(v => !v);
+  }
+
+  onSearchChanged(value: string) {
+    this.busqueda.set(value);
+  }
+
+  agregarIngrediente(producto: ProductoStockMock) {
+    const nuevo: RecetaIngrediente = {
+      id: producto.id,
+      nombre: producto.nombre,
+      cantidad: 1,
+      unidadMedida: producto.unidadMedida
+    };
+
+    this.receta.update(items => [...items, nuevo]);
+    this.busqueda.set('');
+  }
+
+  eliminarIngrediente(id: string) {
+    this.receta.update(items => items.filter(item => item.id !== id));
+  }
+
+  onCantidadCambiada() {
+  }
+
+  onUnidadCambiada() {
   }
 
   onSave() {
@@ -49,7 +94,8 @@ export class ModalEditarPlatoComponent {
       precioVenta: this.precioVenta()!,
       costo: this.costo()!,
       imagen: this.imagen(),
-      visible: this.visible()
+      visible: this.visible(),
+      receta: this.receta()
     });
   }
 

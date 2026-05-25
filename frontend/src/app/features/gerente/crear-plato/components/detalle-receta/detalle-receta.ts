@@ -3,13 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Buscador } from '../../../../../shared/ui/buscador/buscador';
 import { PRODUCTOS_STOCK_MOCK, ProductoStockMock, UnidadMedida } from '../../../../../core/model/producto-stock-mock';
-
-export interface RecetaIngrediente {
-  id: string;
-  nombre: string;
-  cantidad: number;
-  unidadMedida: UnidadMedida;
-}
+import { RecetaIngrediente } from '../../../../../core/models/plato';
 
 @Component({
   selector: 'app-detalle-receta',

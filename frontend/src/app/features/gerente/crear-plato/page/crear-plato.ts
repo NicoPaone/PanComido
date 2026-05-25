@@ -4,7 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { ToggleComponent } from '../../../../shared/ui/toggle/toggle';
-import { DetalleRecetaComponent, RecetaIngrediente } from '../components/detalle-receta/detalle-receta';
+import { DetalleRecetaComponent } from '../components/detalle-receta/detalle-receta';
+import { RecetaIngrediente } from '../../../../core/models/plato';
 
 @Component({
   selector: 'app-crear-plato',
