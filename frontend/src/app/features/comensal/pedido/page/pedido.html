@@ -24,9 +24,21 @@
 
   <!-- CARD PLATOS -->
   <div
-    *ngFor="let plato of pedidos"
+    *ngFor="let plato of pedidos; let i = index"
     class="card border-0 shadow-sm rounded-4 p-3 mb-4"
   >
+
+  <div class="d-flex justify-content-end">
+
+  <span
+    class="material-symbols-outlined text-dark"
+    style="cursor: pointer;"
+   (click)="eliminarPedido(i)"
+  >
+    close
+  </span>
+
+</div>
 
     <!-- TITULO Y PRECIO -->
     <div class="d-flex justify-content-between align-items-center mb-3">

@@ -30,4 +30,12 @@ volver() {
     this.pedidos = this.pedidoService.obtenerPedidos();
   }
 
+ eliminarPedido(index: number) {
+
+  this.pedidoService.eliminarPedido(index);
+
+  this.pedidos = this.pedidoService.obtenerPedidos();
+
+}
+
 }

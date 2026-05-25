@@ -45,9 +45,12 @@
   </div>
 
   <!-- FILTRO -->
-<button class="btn btn-light shadow-sm rounded-3 px-3">
+<button
+  class="btn filtro-btn shadow-sm rounded-3 px-3"
+  (click)="mostrarFiltros = true"
+>
 
- <fa-icon [icon]="faFilter"></fa-icon>
+  <fa-icon [icon]="faFilter"></fa-icon>
 
 </button>
 
@@ -71,13 +74,36 @@
 
   <div>
 
-    <app-boton
-      variant="orange"
-      label="Ordenar">
+   <select
+    class="custom-select"
+  (change)="ordenar($any($event.target).value)"
+>
 
-      Ordenar
+  <option value="">
+    Ordenar por
+  </option>
 
-    </app-boton>
+ <option value="default">
+    Predeterminado
+  </option>
+
+  <option value="precio-menor">
+    Menor precio
+  </option>
+
+  <option value="precio-mayor">
+    Mayor precio
+  </option>
+
+  <option value="tiempo">
+    Más rápidos
+  </option>
+
+  <option value="nombre">
+    A-Z
+  </option>
+
+</select>
 
   </div>
 
@@ -87,5 +113,156 @@
     [platos]="filteredPlatos"
     (agregarPedido)="agregarAlPedido($event)">
   </app-lista-platos-comensal>
+
+</div>
+
+<!-- MODAL FILTROS -->
+<div
+  *ngIf="mostrarFiltros"
+  class="filtros-overlay"
+>
+
+  <!-- HEADER -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h3 class="fw-bold mb-0">
+      Filtros
+    </h3>
+
+    <span
+      class="material-symbols-outlined"
+      style="cursor:pointer;"
+      (click)="mostrarFiltros = false"
+    >
+      close
+    </span>
+
+  </div>
+
+  <!-- TIPO -->
+  <div class="mb-4">
+
+    <h5 class="fw-semibold mb-3">
+      Tipo de plato
+    </h5>
+
+    <div class="d-flex flex-column gap-2">
+
+     <label>
+
+<input
+  type="checkbox"
+  value="entrada"
+  (change)="toggleFiltro($event, tiposSeleccionados)"
+>
+
+  Entrada
+
+</label>
+<label>
+
+<input
+  type="checkbox"
+  value="principal"
+  (change)="toggleFiltro($event, tiposSeleccionados)"
+>
+
+  Principal
+
+</label>
+
+      <label>
+        <input
+  type="checkbox"
+  value="postre"
+  (change)="toggleFiltro($event, tiposSeleccionados)"
+>
+        Postre
+      </label>
+
+    </div>
+
+  </div>
+
+  <!-- BEBIDAS -->
+  <div class="mb-4">
+
+    <h5 class="fw-semibold mb-3">
+      Bebidas
+    </h5>
+
+    <div class="d-flex flex-column gap-2">
+
+      <label>
+        <input
+  type="checkbox"
+  value="sin-alcohol"
+  (change)="toggleFiltro($event, bebidasSeleccionadas)"
+>
+        Sin alcohol
+      </label>
+
+      <label>
+        <input
+  type="checkbox"
+  value="con-alcohol"
+  (change)="toggleFiltro($event, bebidasSeleccionadas)"
+>
+        Con alcohol
+      </label>
+
+    </div>
+
+  </div>
+
+  <!-- RESTRICCIONES -->
+  <div class="mb-4">
+
+    <h5 class="fw-semibold mb-3">
+      Restricciones
+    </h5>
+
+    <div class="d-flex flex-column gap-2">
+
+      <label>
+   <input
+  type="checkbox"
+  value="vegano"
+  (change)="toggleFiltro($event, restriccionesSeleccionadas)"
+>Vegano
+      </label>
+
+      <label>
+       <input
+  type="checkbox"
+  value="vegetariano"
+  (change)="toggleFiltro($event, restriccionesSeleccionadas)"
+>
+        Vegetariano
+      </label>
+
+      <label>
+       <input
+  type="checkbox"
+  value="celiaco"
+  (change)="toggleFiltro($event, restriccionesSeleccionadas)"
+>
+        Celíaco
+      </label>
+
+    </div>
+
+  </div>
+
+  <!-- BOTON -->
+  <app-boton
+    variant="add"
+    customClass="w-100"
+      (click)="aplicarFiltros()"
+  >
+
+    Aplicar filtros
+
+  </app-boton>
 
 </div>
