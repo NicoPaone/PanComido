@@ -45,14 +45,31 @@
           <input type="text" class="form-control custom-input" placeholder="Ej. CABA" [ngModel]="nuevoProveedor().ciudad" (ngModelChange)="nuevoProveedor.update(v => ({ ...v, ciudad: $event }))">
         </label>
 
-        <label class="field-group">
+        <label class="field-group categories-group">
           <span>Categorías <strong class="field-required">*</strong></span>
-          <select multiple class="form-control custom-input" [ngModel]="nuevoProveedor().categorias" (ngModelChange)="nuevoProveedor.update(v => ({ ...v, categorias: $event }))">
-            <option value="distribuidora">Distribuidora</option>
-            <option value="mayorista">Mayorista</option>
-            <option value="minorista">Minorista</option>
-            <option value="insumos">Insumos</option>
-          </select>
+
+          <ul class="category-list">
+            <li *ngFor="let cat of availableCategories">
+              <label class="category-checkbox">
+                <input type="checkbox" [checked]="(nuevoProveedor().categorias || []).includes(cat)" (change)="toggleCategoria(cat)">
+                <span class="checkbox-pill">{{ cat }}</span>
+              </label>
+            </li>
+          </ul>
+
+          <div class="add-category">
+            <input type="text" class="form-control custom-input" placeholder="Presiona Enter para agregar" [(ngModel)]="customCategory" (keyup.enter)="agregarCategoriaPersonalizada()">
+            <app-boton label="Agregar" variante="outline" tamanio="sm" (clicked)="agregarCategoriaPersonalizada()"></app-boton>
+          </div>
+
+          <div class="category-chips" *ngIf="(nuevoProveedor().categorias || []).length > 0">
+            <span class="chip" *ngFor="let c of nuevoProveedor().categorias">
+              <span class="chip-label">{{ c }}</span>
+              <button type="button" class="chip-remove" aria-label="Eliminar {{c}}" (click)="removerCategoria(c)">
+                <fa-icon [icon]="faTrash"></fa-icon>
+              </button>
+            </span>
+          </div>
         </label>
       </div>
 

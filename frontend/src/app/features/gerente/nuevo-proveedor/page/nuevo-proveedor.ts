@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faXmark, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Router } from '@angular/router';
 import { ProveedorService } from '../../../../core/services/proveedor.service';
@@ -25,6 +25,9 @@ export class NuevoProveedorComponent {
   gerenteValidado = signal(false);
   faCheck = faCheck;
   faXmark = faXmark;
+  faTrash = faTrash;
+  availableCategories = ['Distribuidora', 'Mayorista', 'Minorista', 'Insumos'];
+  customCategory = '';
 
   puedeGuardar = computed(() => {
     const prov = this.nuevoProveedor();
@@ -39,6 +42,36 @@ export class NuevoProveedorComponent {
     } else {
       this.gerenteValidado.set(false);
     }
+  }
+
+  toggleCategoria(cat: string): void {
+    const actuales = [...(this.nuevoProveedor().categorias ?? [])];
+    const idx = actuales.indexOf(cat);
+    if (idx >= 0) {
+      actuales.splice(idx, 1);
+    } else {
+      actuales.push(cat);
+    }
+    this.nuevoProveedor.update(v => ({ ...v, categorias: actuales }));
+  }
+
+  agregarCategoriaPersonalizada(): void {
+    const text = (this.customCategory || '').trim();
+    if (!text) return;
+    const actuales = [...(this.nuevoProveedor().categorias ?? [])];
+    if (!actuales.includes(text)) {
+      actuales.push(text);
+      this.nuevoProveedor.update(v => ({ ...v, categorias: actuales }));
+    }
+    if (!this.availableCategories.includes(text)) {
+      this.availableCategories = [...this.availableCategories, text];
+    }
+    this.customCategory = '';
+  }
+
+  removerCategoria(cat: string): void {
+    const actuales = (this.nuevoProveedor().categorias ?? []).filter(c => c !== cat);
+    this.nuevoProveedor.update(v => ({ ...v, categorias: actuales }));
   }
 
   cancelar(): void {
