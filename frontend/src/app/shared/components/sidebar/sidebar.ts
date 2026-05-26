@@ -77,8 +77,7 @@ export class SidebarComponent {
         roles: ['Gerente'],
         children: [
           { label: 'Ver proveedores', icon: '', route: 'gerente/ver-proveedores', roles: ['Gerente'] },
-          { label: 'Hacer pedido', icon: '', route: 'gerente/pedidos/hacer', roles: ['Gerente'] },
-          { label: 'Nuevo proveedor', icon: '', route: 'gerente/pedidos/proveedor', roles: ['Gerente'] }
+          { label: 'Nuevo proveedor', icon: '', route: '/staff/gerente/nuevo-proveedor', roles: ['Gerente'] }
         ]
       },
       { label: 'Cerrar Caja', icon: 'faReceipt', route: 'gerente/caja', roles: ['Gerente'] },

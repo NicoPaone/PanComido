@@ -11,7 +11,7 @@
       label="Nuevo proveedor"
       variante="secondary"
       tamanio="md"
-      (clicked)="abrirModalProveedor()">
+      (clicked)="abrirNuevoProveedorRoute()">
     </app-boton>
   </app-page-toolbar>
 
@@ -305,14 +305,14 @@
 
   @if (pedidoHistorialSeleccionado(); as pedido) {
     <div class="pedido-modal-overlay" (click)="cerrarDetallePedido()">
-      <div class="pedido-modal-card" (click)="$event.stopPropagation()">
+      <div class="pedido-modal-card" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="pedido-modal-title" (click)="$event.stopPropagation()" (keydown.escape)="cerrarDetallePedido()">
         <div class="pedido-modal-header">
           <div>
             <p class="detail-kicker mb-1">Detalle del pedido</p>
-            <h3 class="pedido-modal-title mb-0">{{ pedido.concepto }}</h3>
+            <h3 id="pedido-modal-title" class="pedido-modal-title mb-0">{{ pedido.concepto }}</h3>
           </div>
 
-          <button type="button" class="pedido-modal-close" (click)="cerrarDetallePedido()">
+          <button type="button" class="pedido-modal-close" aria-label="Cerrar detalle" (click)="cerrarDetallePedido()">
             <fa-icon [icon]="faXmark"></fa-icon>
           </button>
         </div>
@@ -320,6 +320,12 @@
         <div class="pedido-modal-meta">
           <span>{{ pedido.fecha | date:'dd/MM/yyyy HH:mm' }}</span>
           <span class="estado-pill" [ngClass]="getEstadoClase(pedido.estado)">{{ pedido.estado }}</span>
+        </div>
+
+        <div class="pedido-modal-summary-row">
+          <span>{{ pedido.items.length }} ítems</span>
+          <span class="summary-dot">•</span>
+          <strong class="summary-amount">Monto: ${{ pedido.monto | number:'1.0-0' }}</strong>
         </div>
 
         <div class="pedido-modal-grid">
@@ -357,87 +363,5 @@
     </div>
   }
 
-  @if (mostrarModalProveedor()) {
-    <div class="pedido-modal-overlay" (click)="cerrarModalProveedor()">
-      <div class="pedido-modal-card proveedor-modal-card" (click)="$event.stopPropagation()">
-        <div class="pedido-modal-header">
-          <div>
-            <p class="detail-kicker mb-1">Alta de proveedor</p>
-            <h3 class="pedido-modal-title mb-0">Nuevo proveedor</h3>
-            <p class="pedido-modal-helper mb-0">Carga la información principal para dejarlo listo en la grilla de proveedores.</p>
-          </div>
-
-          <button type="button" class="pedido-modal-close" (click)="cerrarModalProveedor()">
-            <fa-icon [icon]="faXmark"></fa-icon>
-          </button>
-        </div>
-
-        <div class="proveedor-modal-layout">
-          <div class="form-grid proveedor-form-grid">
-            <label class="field-group">
-              <span>Nombre <strong class="field-required">*</strong></span>
-              <input type="text" class="form-control custom-input" placeholder="Ej. Distribuidora Central" [ngModel]="nuevoProveedor().nombre" (ngModelChange)="nuevoProveedor.update(value => ({ ...value, nombre: $event }))">
-            </label>
-
-            <label class="field-group">
-              <span>Contacto <strong class="field-required">*</strong></span>
-              <input type="text" class="form-control custom-input" placeholder="Ej. Laura Pérez" [ngModel]="nuevoProveedor().contacto" (ngModelChange)="nuevoProveedor.update(value => ({ ...value, contacto: $event }))">
-            </label>
-
-            <label class="field-group">
-              <span>Teléfono</span>
-              <input type="text" class="form-control custom-input" placeholder="Ej. +54 11 5555-1234" [ngModel]="nuevoProveedor().telefono" (ngModelChange)="nuevoProveedor.update(value => ({ ...value, telefono: $event }))">
-            </label>
-
-            <label class="field-group">
-              <span>Email</span>
-              <input type="email" class="form-control custom-input" placeholder="Ej. ventas@empresa.com" [ngModel]="nuevoProveedor().email" (ngModelChange)="nuevoProveedor.update(value => ({ ...value, email: $event }))">
-            </label>
-
-            <label class="field-group field-group-wide">
-              <span>Dirección</span>
-              <textarea rows="3" class="form-control custom-input custom-textarea" placeholder="Calle, número, ciudad" [ngModel]="nuevoProveedor().direccion" (ngModelChange)="nuevoProveedor.update(value => ({ ...value, direccion: $event }))"></textarea>
-            </label>
-          </div>
-
-          <aside class="proveedor-modal-summary">
-            <div>
-              <p class="summary-label mb-1">Vista previa</p>
-              <strong>{{ nuevoProveedor().nombre || 'Sin nombre aún' }}</strong>
-              <div class="summary-text">{{ nuevoProveedor().contacto || 'Contacto pendiente' }}</div>
-            </div>
-
-            <div class="summary-list">
-              <div>
-                <span class="summary-label">Teléfono</span>
-                <strong>{{ nuevoProveedor().telefono || 'No informado' }}</strong>
-              </div>
-
-              <div>
-                <span class="summary-label">Email</span>
-                <strong>{{ nuevoProveedor().email || 'No informado' }}</strong>
-              </div>
-
-              <div>
-                <span class="summary-label">Dirección</span>
-                <strong>{{ nuevoProveedor().direccion || 'No informada' }}</strong>
-              </div>
-            </div>
-
-            <div class="summary-note">
-              Se agregará como proveedor activo y quedará disponible para pedidos de inmediato.
-            </div>
-          </aside>
-        </div>
-
-        <div class="panel-footer-actions pedido-actions">
-          <div class="form-hint">Los campos marcados con * son obligatorios.</div>
-          <div class="footer-buttons">
-            <app-boton label="Cancelar" variante="outline" tamanio="md" (clicked)="cerrarModalProveedor()"></app-boton>
-            <app-boton label="Guardar proveedor" variante="secondary" tamanio="md" [disabled]="!puedeGuardarProveedor()" (clicked)="guardarProveedor()"></app-boton>
-          </div>
-        </div>
-      </div>
-    </div>
-  }
+  <!-- Nuevo proveedor moved to separate page: /gerente/nuevo-proveedor -->
 </div>

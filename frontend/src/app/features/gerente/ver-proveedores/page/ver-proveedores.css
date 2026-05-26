@@ -25,7 +25,7 @@
 .panel-card {
   background: #ffffff;
   border: 1px solid #e5e7eb;
-  border-radius: 16px;
+  border-radius: 8px;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
   padding: 1.25rem;
 }
@@ -98,9 +98,9 @@
 }
 
 .info-card {
-  border-radius: 12px;
+  border-radius: 8px;
   border: 1px solid #e5e7eb;
-  background: #f8fafc;
+  background: #ffffff;
   padding: 0.9rem 1rem;
   display: flex;
   flex-direction: column;
@@ -121,6 +121,16 @@
   margin-top: 1.25rem;
 }
 
+/* Pedido buttons in the proveedores list should use the specified yellow */
+::ng-deep .acciones-grupo app-boton .btn-secondary {
+  background-color: #f7d627 !important;
+  color: #1f2937 !important;
+}
+
+::ng-deep .acciones-grupo app-boton .btn-secondary:hover {
+  background-color: #f7d627 !important;
+}
+
 .panel-section {
   margin-top: 1.25rem;
   padding-top: 1.25rem;
@@ -129,9 +139,9 @@
 
 .nested-section {
   margin-top: 1rem;
-  background: #f8fafc;
+  background: #ffffff;
   border: 1px solid #e5e7eb;
-  border-radius: 14px;
+  border-radius: 8px;
   padding: 1rem;
 }
 
@@ -195,7 +205,7 @@
   max-height: 18rem;
   overflow-y: auto;
   border: 1px solid #dbe5f0;
-  border-radius: 12px;
+  border-radius: 8px;
   background: #ffffff;
   box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
   z-index: 30;
@@ -290,7 +300,7 @@
 .custom-input {
   background-color: #f3f4f6;
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 10px 12px;
   font-size: 0.95rem;
   color: #1f2937;
@@ -336,7 +346,7 @@
 .ingredient-card {
   border: 1px solid #e5e7eb;
   background: #ffffff;
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 0.9rem;
   display: grid;
   gap: 0.8rem;
@@ -366,7 +376,7 @@
 
 .empty-ingredients-state {
   border: 1px dashed #cbd5e1;
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 1rem;
   color: #64748b;
   background: #ffffff;
@@ -409,8 +419,8 @@
 
 .history-card {
   border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  background: #f8fafc;
+  border-radius: 8px;
+  background: #ffffff;
   padding: 1rem;
   display: grid;
   gap: 0.75rem;
@@ -498,8 +508,8 @@
 
 .proveedor-modal-summary {
   border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  border-radius: 8px;
+  background: #ffffff;
   padding: 1rem;
   display: flex;
   flex-direction: column;
@@ -517,6 +527,51 @@
 .summary-list {
   display: grid;
   gap: 0.8rem;
+}
+
+.whatsapp-visual-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.whatsapp-btn {
+  background: #25D366;
+  color: white;
+  border: none;
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+.whatsapp-note {
+  color: #6b7280;
+  font-size: 0.86rem;
+}
+
+.credentials-section {
+  margin-top: 1rem;
+  padding: 0.85rem;
+  border: 1px dashed #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.credentials-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.cred-status {
+  font-weight: 800;
+  color: #b91c1c;
+}
+
+.cred-status.ok {
+  color: #15803d;
 }
 
 .summary-list strong,
@@ -546,7 +601,7 @@
   width: min(720px, 100%);
   max-height: min(90vh, 760px);
   overflow: auto;
-  border-radius: 18px;
+  border-radius: 8px;
   background: #ffffff;
   box-shadow: 0 30px 80px rgba(15, 23, 42, 0.24);
   padding: 1.25rem;
@@ -588,6 +643,24 @@
   flex-wrap: wrap;
 }
 
+.pedido-modal-summary-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+  color: #374151;
+  font-weight: 700;
+}
+
+.pedido-modal-summary-row .summary-dot {
+  color: #9ca3af;
+}
+
+.pedido-modal-summary-row .summary-amount {
+  color: #0f172a;
+  font-weight: 900;
+}
+
 .pedido-modal-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -596,9 +669,9 @@
 }
 
 .pedido-modal-info {
-  border-radius: 12px;
+  border-radius: 8px;
   border: 1px solid #e5e7eb;
-  background: #f8fafc;
+  background: #ffffff;
   padding: 0.9rem 1rem;
   display: flex;
   flex-direction: column;
@@ -617,6 +690,52 @@
 
 .pedido-modal-items {
   margin-top: 1rem;
+}
+
+.pedido-modal-items {
+  max-height: 36vh;
+  overflow: auto;
+  padding-right: 0.25rem;
+}
+
+.pedido-modal-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 0.2rem;
+  border-bottom: 1px dashed #eef2f7;
+}
+
+.pedido-modal-item:last-child {
+  border-bottom: none;
+}
+
+.pedido-modal-card:focus {
+  outline: none;
+  box-shadow: 0 10px 40px rgba(2, 89, 108, 0.12), 0 0 0 4px rgba(2,89,108,0.06);
+}
+
+.pedido-modal-close:hover {
+  background: #e6e9ee;
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalPopIn {
+  from { transform: translateY(8px) scale(0.99); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.pedido-modal-overlay {
+  animation: overlayFadeIn 180ms ease;
+}
+
+.pedido-modal-card {
+  animation: modalPopIn 180ms cubic-bezier(.2,.9,.3,1) both;
 }
 
 .pedido-modal-quantity {

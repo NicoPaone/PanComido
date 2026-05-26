@@ -44,7 +44,10 @@ export interface NuevoProveedor {
   contacto: string;
   telefono: string;
   email: string;
-  direccion: string;
+  calle?: string;
+  numero?: string;
+  ciudad?: string;
+  categorias?: string[];
 }
 
 export interface ProductoPedidoProveedor {

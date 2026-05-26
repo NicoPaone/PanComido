@@ -8,6 +8,7 @@ import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Dropdown } from '../../../../shared/ui/dropdown/dropdown';
 import { PageToolbar } from '../../../../shared/ui/page-toolbar/page-toolbar';
 import { NuevoProveedor, PedidoProveedor, PedidoProveedorItem, EstadoPedidoProveedor, Proveedor } from '../../../../core/models/proveedor';
+import { Router, RouterModule } from '@angular/router';
 import { ProveedorService } from '../../../../core/services/proveedor.service';
 import { ProveedorListComponent } from '../components/proveedor-list/proveedor-list';
 import { ProductoStockMock, UnidadMedida } from '../../../../core/model/producto-stock-mock';
@@ -15,9 +16,9 @@ import { ProductoStockMock, UnidadMedida } from '../../../../core/model/producto
 @Component({
   selector: 'app-ver-proveedores',
   standalone: true,
-  imports: [CommonModule, FormsModule, FontAwesomeModule, Buscador, Boton, Dropdown, PageToolbar, ProveedorListComponent],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, Buscador, Boton, Dropdown, PageToolbar, ProveedorListComponent, RouterModule],
   templateUrl: './ver-proveedores.html',
-  styleUrl: './ver-proveedores.css'
+  styleUrls: ['./ver-proveedores.css']
 })
 export class VerProveedoresComponent implements OnInit {
   private readonly proveedorService = inject(ProveedorService);
@@ -34,18 +35,8 @@ export class VerProveedoresComponent implements OnInit {
   cantidadProducto = signal<number | null>(1);
   pedidoItems = signal<PedidoProveedorItem[]>([]);
   pedidoHistorialSeleccionado = signal<PedidoProveedor | null>(null);
-  mostrarModalProveedor = signal(false);
-  nuevoProveedor = signal<NuevoProveedor>({
-    nombre: '',
-    contacto: '',
-    telefono: '',
-    email: '',
-    direccion: ''
-  });
-  puedeGuardarProveedor = computed(() => {
-    const proveedor = this.nuevoProveedor();
-    return proveedor.nombre.trim().length > 2 && proveedor.contacto.trim().length > 2;
-  });
+  // Router for navigation to nuevo proveedor page
+  private readonly router = inject(Router);
   faCheck = faCheck;
   faXmark = faXmark;
 
@@ -117,36 +108,17 @@ export class VerProveedoresComponent implements OnInit {
     this.proveedorService.getProductosDisponibles().subscribe(productos => {
       this.productos.set(productos);
     });
-  }
 
-  abrirModalProveedor(): void {
-    this.nuevoProveedor.set({
-      nombre: '',
-      contacto: '',
-      telefono: '',
-      email: '',
-      direccion: ''
-    });
-    this.mostrarModalProveedor.set(true);
-  }
-
-  cerrarModalProveedor(): void {
-    this.mostrarModalProveedor.set(false);
-  }
-
-  guardarProveedor(): void {
-    const proveedor = this.nuevoProveedor();
-    if (!proveedor.nombre.trim() || !proveedor.contacto.trim()) {
-      return;
+    // show success message when navigated back from nuevo-proveedor
+    const navState = history.state as { created?: boolean; message?: string } | undefined;
+    if (navState?.created) {
+      this.mensajeAccion.set(navState.message ?? 'Proveedor creado correctamente');
+      setTimeout(() => this.mensajeAccion.set(null), 3500);
     }
+  }
 
-    this.proveedorService.crearProveedor(proveedor).subscribe(nuevo => {
-      this.proveedores.update(lista => [nuevo, ...lista]);
-      this.proveedorSeleccionadoId.set(nuevo.id);
-      this.panelModo.set('historial');
-      this.cerrarModalProveedor();
-      this.mensajeAccion.set('Proveedor agregado correctamente');
-    });
+  abrirNuevoProveedorRoute(): void {
+    this.router.navigate(['/staff', 'gerente', 'nuevo-proveedor']);
   }
 
   seleccionarProveedor(proveedor: Proveedor): void {
@@ -168,10 +140,22 @@ export class VerProveedoresComponent implements OnInit {
 
   abrirDetallePedido(pedido: PedidoProveedor): void {
     this.pedidoHistorialSeleccionado.set(pedido);
+    setTimeout(() => this.focusModal('.pedido-modal-card'), 0);
   }
 
   cerrarDetallePedido(): void {
     this.pedidoHistorialSeleccionado.set(null);
+  }
+
+  private focusModal(selector: string): void {
+    try {
+      const el = document.querySelector(selector) as HTMLElement | null;
+      if (el) {
+        el.focus({ preventScroll: true });
+      }
+    } catch (e) {
+      // ignore focus errors in some browsers/environments
+    }
   }
 
   cambiarProveedorDesdePedido(proveedor: Proveedor, dropdown?: Dropdown): void {

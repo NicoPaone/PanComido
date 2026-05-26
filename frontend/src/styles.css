@@ -36,9 +36,46 @@
 body {
   font-family: var(--font-family);
   color: var(--gray-800);
-  background-color: #ffffff;
+  background-color: var(--gray-50);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Force consistent page / container backgrounds
+   Keep the general app background gray and internal cards white
+   Prevent hover rules from swapping these colors. */
+.layout-wrapper,
+.main-content,
+.ver-proveedores-page,
+.nuevo-proveedor-page,
+.page-wrapper,
+body {
+  background-color: var(--gray-50) !important;
+}
+
+.panel-card,
+.info-card,
+.nested-section,
+.predictive-item,
+.predictive-empty,
+.proveedor-form .form-control,
+.panel-section {
+  background: #ffffff !important;
+}
+
+/* Ensure hover does not change the general background */
+.layout-wrapper:hover,
+.main-content:hover,
+.ver-proveedores-page:hover,
+.nuevo-proveedor-page:hover {
+  background-color: var(--gray-50) !important;
+}
+
+/* Ensure panel cards remain white on hover */
+.panel-card:hover,
+.info-card:hover,
+.nested-section:hover {
+  background: #ffffff !important;
 }
 
 h1, h2, h3, h4, h5, h6 {

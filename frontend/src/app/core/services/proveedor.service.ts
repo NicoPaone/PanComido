@@ -203,13 +203,16 @@ export class ProveedorService {
   }
 
   crearProveedor(proveedor: NuevoProveedor): Observable<Proveedor> {
+    const direccion = [proveedor.calle, proveedor.numero].filter(Boolean).join(' ').trim();
+    const direccionCompleta = direccion + (proveedor.ciudad ? `, ${proveedor.ciudad}` : '');
+
     const nuevoProveedor: Proveedor = {
       id: Date.now(),
       nombre: proveedor.nombre,
       contacto: proveedor.contacto,
       telefono: proveedor.telefono,
       email: proveedor.email,
-      direccion: proveedor.direccion,
+      direccion: direccionCompleta,
       activo: true,
       fechaUltimoPedido: null,
       historialPedidos: []
