@@ -1,9 +1,8 @@
 import { Component, input, output } from '@angular/core';
-import { ProductoStockMock } from '../../../../../core/model/producto-stock';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
 import { faCog, faSort } from '@fortawesome/free-solid-svg-icons';
-import { Modal } from '../../../../../shared/ui/modal/modal';
+import { ProductoStock } from '../../../../../core/model/producto-stock';
 
 @Component({
   selector: 'app-stock-list',
@@ -13,12 +12,12 @@ import { Modal } from '../../../../../shared/ui/modal/modal';
 })
 export class StockList {
 
-  productos = input.required<ProductoStockMock[]>();
+  productos = input.required<ProductoStock[]>();
   onAction = output<number>();
   faCog = faCog;
   faSort = faSort;
   editar = output<number>();
- getBadgeClass(item: ProductoStockMock): string {
+ getBadgeClass(item: ProductoStock): string {
     if (item.stock <= item.stockMinimo * 0.5) return 'bg-critical';
     if (item.stock <= item.stockMinimo) return 'bg-warning';
     return 'bg-success';
