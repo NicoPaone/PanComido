@@ -2,7 +2,7 @@
 export type UnidadMedida= 'KG'| 'L' |'GR' | 'UN';
 export type CategoriaIngrediente = 'Verdura' | 'Almacen' | 'Carne' | 'Lacteos'| 'Bebidas';
 
-export interface ProductoStockMock{
+export interface ProductoStock{
     id: number;
     nombre: string;
     stock: number;
@@ -13,7 +13,7 @@ export interface ProductoStockMock{
 
 }
 
-export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
+export const PRODUCTOS_STOCK_MOCK: ProductoStock[] = [
   {
     id: 1, 
     nombre: 'Ajo',

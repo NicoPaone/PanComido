@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { ProductoStockMock } from '../../../../core/model/producto-stock-mock';
+import { ProductoStock } from '../../../../core/model/producto-stock';
 import { StockMercaderiaClient } from './stock-mercaderia-client';
 
 @Injectable({
@@ -9,7 +9,7 @@ export class StockMercaderiaState {
 
   private api = inject(StockMercaderiaClient);
  
-  private _productos = signal<ProductoStockMock[]>([]);
+  private _productos = signal<ProductoStock[]>([]);
   private _cargando = signal<boolean>(false);
 
   productos = this._productos.asReadonly();
@@ -36,7 +36,7 @@ export class StockMercaderiaState {
       }
     })
   }
-  guardarProducto(producto: ProductoStockMock): void {
+  guardarProducto(producto: ProductoStock): void {
     this._cargando.set(true);
     
     if (producto.id) {

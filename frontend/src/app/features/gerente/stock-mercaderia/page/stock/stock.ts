@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { StockList } from '../../components/stock-list/stock-list';
 import { CommonModule } from '@angular/common';
-import { ProductoStockMock, PRODUCTOS_STOCK_MOCK } from '../../../../../core/model/producto-stock-mock';
 import { Boton } from "../../../../../shared/ui/botones/boton/boton";
 import { PageToolbar } from "../../../../../shared/ui/page-toolbar/page-toolbar";
 import { Buscador } from "../../../../../shared/ui/buscador/buscador";
@@ -20,7 +19,6 @@ export class Stock {
 
   protected state = inject(StockMercaderiaState);
 
-  productosMock = signal<ProductoStockMock[]>(PRODUCTOS_STOCK_MOCK);
   
   
   termino = signal<string>('');
@@ -37,7 +35,7 @@ export class Stock {
   })
   
   productosFiltrados = computed(() => {
-    let lista = this.productosMock();
+    let lista = this.state.productos();
     const busqueda = this.termino().toLowerCase();
     const cat = this.categoria();
     

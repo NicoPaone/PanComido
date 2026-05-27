@@ -1,5 +1,5 @@
 import { Component, input, output } from '@angular/core';
-import { ProductoStockMock } from '../../../../../core/model/producto-stock-mock';
+import { ProductoStockMock } from '../../../../../core/model/producto-stock';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
 import { faCog, faSort } from '@fortawesome/free-solid-svg-icons';
