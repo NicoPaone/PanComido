@@ -32,7 +32,6 @@ export class VerProveedoresComponent implements OnInit {
   observacionPedido = signal('');
   mensajeAccion = signal<string | null>(null);
   
-  // Product search and selection in order form
   productoTexto = signal('');
   productoSeleccionadoId = signal<string | null>(null);
   cantidadProducto = signal<number | null>(1);
@@ -124,7 +123,7 @@ export class VerProveedoresComponent implements OnInit {
       }
     });
 
-    // NOTE: El endpoint del back para listar productos/ingredientes disponibles debe conectarse aquí
+    // NOTE: El endpoint del back para listar productos disponibles debe conectarse aquí
     this.proveedorService.getProductosDisponibles().subscribe(productos => {
       this.productos.set(productos);
     });
@@ -173,7 +172,7 @@ export class VerProveedoresComponent implements OnInit {
         el.focus({ preventScroll: true });
       }
     } catch (e) {
-      // ignore focus errors
+      // Ignorar errores de foco
     }
   }
 
@@ -310,7 +309,7 @@ export class VerProveedoresComponent implements OnInit {
         this.mensajeAccion.set('Pedido agregado correctamente');
       },
       error: () => {
-        this.mensajeAccion.set('Ocurrió un error al registrar el pedido en el servidor. Por favor reintente.');
+        // NOTE: El manejo de errores de comunicación debe integrarse aquí
       }
     });
   }

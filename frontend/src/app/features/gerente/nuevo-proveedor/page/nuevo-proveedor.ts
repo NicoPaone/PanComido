@@ -22,7 +22,6 @@ export class NuevoProveedorComponent {
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
 
-  // Form for provider data
   proveedorForm = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(3)]],
     contacto: ['', [Validators.required, Validators.minLength(3)]],
@@ -34,7 +33,6 @@ export class NuevoProveedorComponent {
     customCategory: ['']
   });
 
-  // Form for manager validation
   gerenteForm = this.fb.group({
     usuario: ['', [Validators.required, Validators.minLength(3)]],
     contrasena: ['', [Validators.required, Validators.minLength(6)]]
@@ -65,7 +63,6 @@ export class NuevoProveedorComponent {
     this.cargandoGerente.set(true);
     this.mensajeErrorGerente.set(null);
 
-    // MOCK: Llamada al servicio de autenticación para simular validación en el backend.
     this.authService.validateManagerCredentials(user, pass).subscribe({
       next: (esValido) => {
         this.cargandoGerente.set(false);
@@ -140,7 +137,7 @@ export class NuevoProveedorComponent {
         });
       },
       error: () => {
-        // En un futuro se manejaría el error del backend mostrando una alerta visual
+        // NOTE: El manejo de errores de comunicación debe integrarse aquí
       }
     });
   }

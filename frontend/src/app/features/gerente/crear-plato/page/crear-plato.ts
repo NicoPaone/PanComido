@@ -20,7 +20,6 @@ export class CrearPlatoComponent {
   private readonly fb = inject(FormBuilder);
   private readonly platoService = inject(PlatoService);
 
-  // Form group for dish inputs
   platoForm = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(3)]],
     costo: [0, [Validators.required, Validators.min(0.01)]],
@@ -65,7 +64,6 @@ export class CrearPlatoComponent {
   });
 
   constructor() {
-    // Automatically update the form's cost input when ingredients in the recipe change
     effect(() => {
       const sugerido = this.costoSugerido();
       if (sugerido > 0) {
@@ -127,7 +125,7 @@ export class CrearPlatoComponent {
         this.mostrarExito.set(true);
       },
       error: () => {
-        // En un futuro se informará del fallo en el servidor
+        // NOTE: El manejo de errores de comunicación debe integrarse aquí
       }
     });
   }
