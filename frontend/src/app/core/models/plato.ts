@@ -1,3 +1,12 @@
+import { UnidadMedida } from '../model/producto-stock-mock';
+
+export interface RecetaIngrediente {
+  id: string;
+  nombre: string;
+  cantidad: number;
+  unidadMedida: UnidadMedida;
+}
+
 export interface Plato {
   id: number;
   nombre: string;
@@ -5,4 +14,5 @@ export interface Plato {
   costo: number;
   visible: boolean;
   imagen: string;
+  receta?: RecetaIngrediente[];
 }

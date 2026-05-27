@@ -1,28 +1,31 @@
-<div class="card h-100 border-0 shadow-sm rounded-4 p-3 dish-card">
-  <div class="row g-0 h-100">
-    <!-- Image -->
-    <div class="col-12 col-sm-4 mb-3 mb-sm-0 text-center text-sm-start">
-      <img [src]="plato().imagen" class="img-fluid rounded-3 object-fit-cover dish-img" [alt]="plato().nombre">
+<div class="card h-100 border-0 shadow-sm p-3 dish-card" 
+     [class.disabled-card]="!plato().visible"
+     [class.exploding-card]="isExploding()">
+  <div class="d-flex flex-column flex-sm-row align-items-center gap-3 h-100">
+    <div class="flex-shrink-0 text-center">
+      <img [src]="plato().imagen" class="dish-img rounded-3 object-fit-cover" [alt]="plato().nombre">
     </div>
-    <!-- Content -->
-    <div class="col-12 col-sm-6 ps-0 ps-sm-3 d-flex flex-column justify-content-center">
-      <h5 class="fw-bold mb-2 text-dark">{{ plato().nombre }}</h5>
+    
+    <div class="flex-grow-1 min-w-0 text-center text-sm-start">
+      <h5 class="fw-bold mb-2 text-dark text-truncate">{{ plato().nombre }}</h5>
       <p class="mb-1 text-muted small">Precio de venta: <span class="fw-bold text-dark fs-6">$ {{ plato().precioVenta | number }}</span></p>
       <p class="mb-2 text-muted small">Costo: <span class="text-dark">$ {{ plato().costo | number }}</span></p>
       
-      <app-toggle 
-        [active]="plato().visible" 
-        label="Visible en carta" 
-        (toggled)="onToggle()">
-      </app-toggle>
+      <div class="d-flex justify-content-center justify-content-sm-start">
+        <app-toggle 
+          [active]="plato().visible" 
+          label="Visible en carta" 
+          (toggled)="onToggle()">
+        </app-toggle>
+      </div>
     </div>
-    <!-- Actions -->
-    <div class="col-12 col-sm-2 d-flex flex-row flex-sm-column justify-content-end justify-content-sm-center align-items-end gap-3 pe-2 mt-3 mt-sm-0">
-      <app-boton [label]="'Editar'" variant="edit">
-        <span class="material-symbols-outlined">edit</span>
+
+    <div class="d-flex flex-row flex-sm-column gap-2 mt-2 mt-sm-0 flex-shrink-0 justify-content-center">
+      <app-boton variante="warning" tamanio="md" class="btn-icon" (clicked)="onEdit()">
+        <span class="material-symbols-outlined fs-5">edit</span>
       </app-boton>
-      <app-boton [label]="'Eliminar'" variant="delete">
-        <span class="material-symbols-outlined">delete</span>
+      <app-boton variante="danger" tamanio="md" class="btn-icon" (clicked)="onDelete()">
+        <span class="material-symbols-outlined fs-5">delete</span>
       </app-boton>
     </div>
   </div>

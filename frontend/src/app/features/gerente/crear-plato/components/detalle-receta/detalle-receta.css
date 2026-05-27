@@ -1,0 +1,179 @@
+.receta-container {
+  background-color: #ffffff !important;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  height: 100%;
+}
+
+.receta-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.info-tooltip-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.info-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.info-icon:hover + .info-tooltip-box,
+.info-tooltip-container:hover .info-tooltip-box {
+  display: block;
+}
+
+.info-tooltip-box {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 30px;
+  width: 280px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  color: #374151;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.info-tooltip-box::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 8px;
+  width: 10px;
+  height: 10px;
+  background-color: #ffffff;
+  border-left: 1px solid #e5e7eb;
+  border-top: 1px solid #e5e7eb;
+  transform: rotate(45deg);
+}
+
+.sugerencias-dropdown {
+  top: 100%;
+  left: 0;
+  z-index: 50;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.sugerencia-item {
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.sugerencia-item:hover {
+  background-color: #f3f4f6;
+}
+
+.ingredient-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+
+.ingredient-table thead tr {
+  background-color: #cbebfa;
+}
+
+.ingredient-table thead th {
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #1f2937;
+  border: none;
+}
+
+.ingredient-table thead th:first-child {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+.ingredient-table thead th:last-child {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.ingredient-table tbody tr {
+  background-color: #ffffff;
+}
+
+.ingredient-table tbody td {
+  padding: 8px 6px;
+  border: none;
+  font-size: 0.85rem;
+}
+
+.ingredient-checkbox {
+  width: 16px;
+  height: 16px;
+  border-color: #9ca3af;
+  border-radius: 4px;
+}
+
+.ingredient-name {
+  color: #374151;
+  font-weight: 500;
+}
+
+.qty-input {
+  background-color: #f3f4f6;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  width: 100%;
+  font-weight: 600;
+  padding: 4px 6px;
+}
+
+.qty-input:focus {
+  background-color: #ffffff;
+  border-color: #d1d5db;
+  box-shadow: none;
+}
+
+.unit-select {
+  background-color: #f3f4f6;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 4px 20px 4px 6px;
+  width: 100%;
+}
+
+.unit-select:focus {
+  background-color: #ffffff;
+  border-color: #d1d5db;
+  box-shadow: none;
+}
+
+.btn-delete {
+  width: 32px;
+  height: 32px;
+  background-color: #fee2e2;
+  color: #ef4444;
+  border: none;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-delete:hover {
+  background-color: #fca5a5;
+  color: #b91c1c;
+}

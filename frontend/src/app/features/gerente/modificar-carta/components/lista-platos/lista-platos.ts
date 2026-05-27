@@ -10,16 +10,21 @@ import { CardPlatoComponent } from '../card-plato/card-plato';
   templateUrl: './lista-platos.html',
 })
 export class ListaPlatosComponent {
-  // Entrada: listado de platos a mostrar
   platos = input<Plato[]>([]);
-  
-  // Salida: evento cuando se toggle la visibilidad de un plato
+  explodingId = input<number | null>(null);
   toggleVisible = output<Plato>();
+  editPlato = output<Plato>();
+  deletePlato = output<Plato>();
 
-  /**
-   * Forward del evento del hijo (card-plato)
-   */
   onToggleVisible(plato: Plato) {
     this.toggleVisible.emit(plato);
+  }
+
+  onEditPlato(plato: Plato) {
+    this.editPlato.emit(plato);
+  }
+
+  onDeletePlato(plato: Plato) {
+    this.deletePlato.emit(plato);
   }
 }

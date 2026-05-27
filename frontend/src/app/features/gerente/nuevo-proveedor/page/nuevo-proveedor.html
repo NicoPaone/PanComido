@@ -1,0 +1,105 @@
+<div class="nuevo-proveedor-page p-4">
+  <div class="panel-card">
+    <div class="panel-header">
+      <div>
+        <p class="detail-kicker mb-1">Alta de proveedor</p>
+        <h1 class="page-title mb-0">Nuevo proveedor</h1>
+        <p class="pedido-modal-helper mb-0">Carga la información principal para dejarlo listo en la grilla de proveedores.</p>
+      </div>
+    </div>
+
+    <div class="proveedor-form">
+      <div class="form-grid">
+        <label class="field-group">
+          <span>Nombre <strong class="field-required">*</strong></span>
+          <input type="text" class="form-control custom-input" placeholder="Ej. Distribuidora Central" [ngModel]="nuevoProveedor().nombre" (ngModelChange)="nuevoProveedor.update(v => ({ ...v, nombre: $event }))">
+        </label>
+
+        <label class="field-group">
+          <span>Contacto <strong class="field-required">*</strong></span>
+          <input type="text" class="form-control custom-input" placeholder="Ej. Laura Pérez" [ngModel]="nuevoProveedor().contacto" (ngModelChange)="nuevoProveedor.update(v => ({ ...v, contacto: $event }))">
+        </label>
+
+        <label class="field-group">
+          <span>Teléfono</span>
+          <input type="text" class="form-control custom-input" placeholder="Ej. +54 11 5555-1234" [ngModel]="nuevoProveedor().telefono" (ngModelChange)="nuevoProveedor.update(v => ({ ...v, telefono: $event }))">
+        </label>
+
+        <label class="field-group">
+          <span>Email</span>
+          <input type="email" class="form-control custom-input" placeholder="Ej. ventas@empresa.com" [ngModel]="nuevoProveedor().email" (ngModelChange)="nuevoProveedor.update(v => ({ ...v, email: $event }))">
+        </label>
+
+        <label class="field-group">
+          <span>Calle <strong class="field-required">*</strong></span>
+          <input type="text" class="form-control custom-input" placeholder="Ej. Av. San Martín" [ngModel]="nuevoProveedor().calle" (ngModelChange)="nuevoProveedor.update(v => ({ ...v, calle: $event }))">
+        </label>
+
+        <label class="field-group">
+          <span>Número</span>
+          <input type="text" class="form-control custom-input" placeholder="Ej. 1200" [ngModel]="nuevoProveedor().numero" (ngModelChange)="nuevoProveedor.update(v => ({ ...v, numero: $event }))">
+        </label>
+
+        <label class="field-group">
+          <span>Ciudad <strong class="field-required">*</strong></span>
+          <input type="text" class="form-control custom-input" placeholder="Ej. CABA" [ngModel]="nuevoProveedor().ciudad" (ngModelChange)="nuevoProveedor.update(v => ({ ...v, ciudad: $event }))">
+        </label>
+
+        <label class="field-group categories-group">
+          <span>Categorías <strong class="field-required">*</strong></span>
+
+          <ul class="category-list">
+            <li *ngFor="let cat of availableCategories">
+              <label class="category-checkbox">
+                <input type="checkbox" [checked]="(nuevoProveedor().categorias || []).includes(cat)" (change)="toggleCategoria(cat)">
+                <span class="checkbox-pill">{{ cat }}</span>
+              </label>
+            </li>
+          </ul>
+
+          <div class="add-category">
+            <input type="text" class="form-control custom-input" placeholder="Presiona Enter para agregar" [(ngModel)]="customCategory" (keyup.enter)="agregarCategoriaPersonalizada()">
+            <app-boton label="Agregar" variante="outline" tamanio="sm" (clicked)="agregarCategoriaPersonalizada()"></app-boton>
+          </div>
+
+          <div class="category-chips" *ngIf="(nuevoProveedor().categorias || []).length > 0">
+            <span class="chip" *ngFor="let c of nuevoProveedor().categorias">
+              <span class="chip-label">{{ c }}</span>
+              <button type="button" class="chip-remove" aria-label="Eliminar {{c}}" (click)="removerCategoria(c)">
+                <fa-icon [icon]="faTrash"></fa-icon>
+              </button>
+            </span>
+          </div>
+        </label>
+      </div>
+
+      <div class="credentials-section">
+        <p class="section-subtitle mb-1">Credenciales del gerente (validación requerida)</p>
+
+        <label class="field-group">
+          <span>Usuario gerente</span>
+          <input type="text" class="form-control custom-input" [ngModel]="gerenteUsuario()" (ngModelChange)="gerenteUsuario.set($event)">
+        </label>
+
+        <label class="field-group">
+          <span>Contraseña gerente</span>
+          <input type="password" class="form-control custom-input" [ngModel]="gerentePassword()" (ngModelChange)="gerentePassword.set($event)">
+        </label>
+
+        <div class="credentials-actions">
+          <app-boton label="Validar credenciales" variante="teal" tamanio="sm" (clicked)="validarCredencialesGerente()"></app-boton>
+          <span class="cred-status" [class.ok]="gerenteValidado()">{{ gerenteValidado() ? 'Credenciales válidas' : 'No validadas' }}</span>
+        </div>
+      </div>
+
+      <div class="panel-footer-actions pedido-actions mt-4">
+        <div class="form-hint">Los campos marcados con * son obligatorios.</div>
+
+        <div class="footer-buttons">
+          <app-boton label="Cancelar" variante="outline" tamanio="md" (clicked)="cancelar()"></app-boton>
+          <app-boton label="Crear Proveedor" variante="secondary" tamanio="md" [disabled]="!puedeGuardar()" (clicked)="guardarProveedor()"></app-boton>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
