@@ -1,0 +1,39 @@
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-trigger {
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%; 
+  right: 0;  
+  margin-top: 0.5rem;
+  background-color: #ffffff;
+  border: 1px solid var(--gray-200);
+  border-radius: 6px;
+  min-width: 200px;
+  z-index: 50;
+  overflow: hidden;
+}
+
+::ng-deep .dropdown-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+::ng-deep .dropdown-menu li {
+  padding: 10px 16px;
+  cursor: pointer;
+  color: var(--gray-700);
+  transition: background-color 0.2s ease;
+}
+
+::ng-deep .dropdown-menu li:hover {
+  background-color: var(--gray-100);
+  color: var(--primary-teal);
+}

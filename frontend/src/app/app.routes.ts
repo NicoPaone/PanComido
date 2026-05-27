@@ -17,8 +17,8 @@ export const routes: Routes = [
 
          {
             path: 'gerente',
-            loadChildren: () =>
-                import('./features/gerente/gerente.routes').then(m => m.GERENTE_ROUTES)
+            loadChildren: () => import('./features/gerente/gerente.routes').then(m => m.GERENTE_ROUTES)
+           
          },
 
          {

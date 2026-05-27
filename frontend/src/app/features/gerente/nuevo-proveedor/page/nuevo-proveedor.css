@@ -1,0 +1,114 @@
+.nuevo-proveedor-page {
+	background-color: #f9fafb;
+	min-height: 100vh;
+}
+
+.nuevo-proveedor-page .panel-card {
+	max-width: 920px;
+	margin: 0 auto;
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+	padding: 1.25rem;
+}
+
+.proveedor-form .form-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.9rem;
+}
+
+@media (max-width: 767.98px) {
+	.proveedor-form .form-grid { grid-template-columns: 1fr; }
+}
+
+.credentials-section {
+	margin-top: 1rem;
+	padding: 0.85rem;
+	border: 1px dashed #e5e7eb;
+	border-radius: 8px;
+	background: #ffffff;
+}
+
+.credentials-actions { display:flex; gap:0.6rem; align-items:center; margin-top:0.5rem }
+.footer-buttons { display:flex; gap:1rem; }
+.footer-buttons app-boton:first-child { margin-right: 0.5rem; }
+.cred-status { font-weight:800; color:#b91c1c }
+.cred-status.ok { color:#15803d }
+
+.categories-group .category-list { display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem }
+.category-list { list-style:none; padding:0; margin:0.4rem 0 0; display:flex; gap:0.5rem; flex-wrap:wrap }
+.category-list li { margin:0 }
+.category-checkbox { display:inline-flex; align-items:center }
+.category-checkbox input[type="checkbox"] { position:absolute; opacity:0; pointer-events:none }
+
+/* Pill buttons for category selection */
+.checkbox-pill {
+	background: #f8fafc;
+	border: 1px solid rgba(15,23,42,0.06);
+	padding: 0.45rem 0.9rem;
+	border-radius: 999px;
+	cursor: pointer;
+	font-size: 0.95rem;
+	color: #374151;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	transition: all 160ms ease;
+	box-shadow: 0 1px 0 rgba(2,6,23,0.04);
+}
+.checkbox-pill .pill-icon { width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; border-radius:6px; background: rgba(2,6,23,0.04); font-size:0.9rem }
+.category-checkbox input[type="checkbox"]:checked + .checkbox-pill {
+	background: linear-gradient(90deg, #2f80ed 0%, #0066d6 100%);
+	color: #fff;
+	border-color: transparent;
+	transform: none;
+	box-shadow: none;
+}
+
+.add-category { display:flex; gap:0.5rem; align-items:center; margin-top:0.6rem }
+.add-category .form-control { max-width:320px }
+.category-chips { display:flex; gap:0.5rem; margin-top:0.6rem; flex-wrap:wrap }
+
+/* Selected chips appearance (large, prominent) */
+.chip {
+	background: linear-gradient(90deg, #2f80ed 0%, #0066d6 100%);
+	color: #fff;
+	padding: 6px 12px;
+	border-radius: 999px;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 0.95rem;
+	font-weight: 600;
+	position: relative;
+	box-shadow: 0 2px 6px rgba(3,102,214,0.06);
+}
+.chip-label { display:inline-block }
+
+/* small circular remove button inside the chip */
+.chip-remove {
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	color: #ffffff; /* white icon */
+	padding: 0 6px;
+	border: none;
+	margin-left: 8px;
+	box-shadow: none;
+	line-height: 0;
+	vertical-align: middle;
+	font-size: 14px;
+}
+.chip-remove fa-icon, .chip-remove svg { width:14px; height:14px; display:block }
+.chip-remove svg { display:block; vertical-align: middle; fill: currentColor }
+.chip-remove:focus { outline:2px solid rgba(255,255,255,0.18) }
+
+/* When chips are many, keep compact alternative */
+@media (max-width: 480px) {
+	.checkbox-pill { padding: 0.35rem 0.6rem; font-size: 0.9rem }
+	.chip { padding: 6px 10px; font-size: 0.9rem }
+}

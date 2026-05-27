@@ -1,8 +1,11 @@
-<div class="row row-cols-1 row-cols-xl-2 g-4">
-  <div class="col" *ngFor="let plato of platos">
+<div class="row row-cols-1 row-cols-lg-2 g-4">
+  <div class="col mb-4" *ngFor="let plato of platos()">
     <app-card-plato 
       [plato]="plato" 
-      (toggleVisible)="onToggleVisible($event)">
+      [isExploding]="plato.id === explodingId()"
+      (toggleVisible)="onToggleVisible($event)"
+      (editPlato)="onEditPlato($event)"
+      (deletePlato)="onDeletePlato($event)">
     </app-card-plato>
   </div>
 </div>

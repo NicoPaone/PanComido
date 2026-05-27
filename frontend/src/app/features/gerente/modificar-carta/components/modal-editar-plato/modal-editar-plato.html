@@ -1,0 +1,180 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-card shadow border p-4 bg-white" (click)="$event.stopPropagation()">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="modal-title m-0">Editar plato</h3>
+      <button class="btn-close-custom" (click)="onClose()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-12 col-sm-4 text-center d-flex flex-column align-items-center gap-2">
+        <div class="image-preview-card border p-2 bg-white">
+          <ng-container *ngIf="imagen(); else noImage">
+            <img [src]="imagen()" class="dish-image-large img-fluid" alt="Vista previa">
+          </ng-container>
+          <ng-template #noImage>
+            <div class="image-placeholder d-flex flex-column align-items-center justify-content-center">
+              <span class="material-symbols-outlined placeholder-icon">add_a_photo</span>
+              <span class="placeholder-text small mt-1">Sin imagen</span>
+            </div>
+          </ng-template>
+        </div>
+
+        <div class="visibility-toggle-wrapper bg-white border p-2 rounded-3 w-100 d-flex justify-content-center">
+          <app-toggle 
+            [active]="visible()" 
+            label="Visible" 
+            (toggled)="onToggleVisible()">
+          </app-toggle>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-8">
+        <div class="mb-3">
+          <label class="form-label font-bold">Nombre</label>
+          <input 
+            type="text" 
+            class="form-control custom-input" 
+            [ngModel]="nombre()" 
+            (ngModelChange)="nombre.set($event)">
+        </div>
+
+        <div class="row g-2 mb-3">
+          <div class="col-6">
+            <label class="form-label font-bold text-muted">Costo</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted border-end-0">$</span>
+              <input 
+                type="number" 
+                class="form-control custom-input bg-light text-muted border-start-0" 
+                [ngModel]="costo()" 
+                readonly>
+            </div>
+          </div>
+          <div class="col-6">
+            <label class="form-label font-bold">Venta</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input 
+                type="number" 
+                class="form-control custom-input border-start-0" 
+                [ngModel]="precioVenta()" 
+                (ngModelChange)="precioVenta.set($event)">
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label font-bold">URL de imagen</label>
+          <input 
+            type="text" 
+            class="form-control custom-input" 
+            [ngModel]="imagen()" 
+            (ngModelChange)="imagen.set($event)">
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4 border-top pt-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h4 class="fw-bold fs-5 mb-0 text-dark">Detalle de receta</h4>
+        <div class="info-tooltip-container">
+          <div class="info-icon">
+            <span class="material-symbols-outlined fs-5">info</span>
+          </div>
+          <div class="info-tooltip-box">
+            Los ingredientes agregados o modificados recalcularán el costo en tiempo real.
+          </div>
+        </div>
+      </div>
+
+      <div class="position-relative mb-3">
+        <app-buscador
+          [placeholder]="'Buscar ingrediente para añadir...'"
+          [valor]="busqueda()"
+          (busquedaCambiada)="onSearchChanged($event)">
+        </app-buscador>
+
+        @if (sugerencias().length > 0) {
+          <div class="sugerencias-dropdown shadow border rounded-3 position-absolute w-100 bg-white">
+            @for (sug of sugerencias(); track sug.id) {
+              <div class="sugerencia-item p-2" (click)="agregarIngrediente(sug)">
+                {{ sug.nombre }}
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="table-responsive ingredient-table-container">
+        <table class="table align-middle ingredient-table mb-0">
+          <thead>
+            <tr>
+              <th>Ingrediente</th>
+              <th style="width: 100px;" class="text-center">Cantidad</th>
+              <th style="width: 110px;" class="text-center">U. Medida</th>
+              <th style="width: 60px;" class="text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (ing of receta(); track ing.id) {
+              <tr>
+                <td>
+                  <span class="ingredient-name fw-semibold text-dark">{{ ing.nombre }}</span>
+                </td>
+                <td>
+                  <input 
+                    type="number" 
+                    class="form-control form-control-sm text-center qty-input" 
+                    [(ngModel)]="ing.cantidad">
+                </td>
+                <td>
+                  <select 
+                    class="form-select form-select-sm unit-select" 
+                    [(ngModel)]="ing.unidadMedida">
+                    <option value="GR">gr</option>
+                    <option value="L">ml</option>
+                    <option value="L">l</option>
+                    <option value="KG">kg</option>
+                    <option value="UN">un</option>
+                  </select>
+                </td>
+                <td class="text-center">
+                  <button class="btn-delete-ingredient border-0 bg-transparent text-danger p-0" (click)="eliminarIngrediente(ing.id)">
+                    <span class="material-symbols-outlined fs-5">delete</span>
+                  </button>
+                </td>
+              </tr>
+            }
+            @if (receta().length === 0) {
+              <tr>
+                <td colspan="4" class="text-center text-muted py-3">
+                  No hay ingredientes cargados. Busca uno para comenzar.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-3 mt-4 border-top pt-3">
+      <app-boton 
+        label="CANCELAR" 
+        variante="outline" 
+        tamanio="md" 
+        (clicked)="onClose()"
+        class="cancel-btn">
+      </app-boton>
+      <app-boton 
+        label="GUARDAR" 
+        variante="success" 
+        tamanio="md" 
+        (clicked)="onSave()"
+        class="save-btn"
+        [disabled]="!nombre().trim() || precioVenta() === null || costo() === null">
+      </app-boton>
+    </div>
+  </div>
+</div>

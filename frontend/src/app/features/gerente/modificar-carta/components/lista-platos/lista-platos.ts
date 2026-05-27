@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Plato } from '../../../../../core/models/plato';
 import { CardPlatoComponent } from '../card-plato/card-plato';
@@ -10,10 +10,21 @@ import { CardPlatoComponent } from '../card-plato/card-plato';
   templateUrl: './lista-platos.html',
 })
 export class ListaPlatosComponent {
-  @Input() platos: Plato[] = [];
-  @Output() toggleVisible = new EventEmitter<Plato>();
+  platos = input<Plato[]>([]);
+  explodingId = input<number | null>(null);
+  toggleVisible = output<Plato>();
+  editPlato = output<Plato>();
+  deletePlato = output<Plato>();
 
   onToggleVisible(plato: Plato) {
     this.toggleVisible.emit(plato);
+  }
+
+  onEditPlato(plato: Plato) {
+    this.editPlato.emit(plato);
+  }
+
+  onDeletePlato(plato: Plato) {
+    this.deletePlato.emit(plato);
   }
 }

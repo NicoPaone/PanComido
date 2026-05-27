@@ -1,0 +1,367 @@
+<div class="ver-proveedores-page p-4">
+  <app-page-toolbar>
+    <app-buscador
+      buscador
+      placeholder="Buscar proveedor"
+      (busquedaCambiada)="termino.set($event)">
+    </app-buscador>
+
+    <app-boton
+      acciones
+      label="Nuevo proveedor"
+      variante="secondary"
+      tamanio="md"
+      (clicked)="abrirNuevoProveedorRoute()">
+    </app-boton>
+  </app-page-toolbar>
+
+  <div class="proveedores-layout mt-4">
+    <section class="panel-card list-panel">
+      <div class="panel-header">
+        <div>
+          <h1 class="page-title mb-1">Ver proveedores</h1>
+          <p class="page-subtitle mb-0">Gestiona pedidos y consulta el historial de cada proveedor</p>
+        </div>
+
+        <span class="counter-pill">{{ proveedoresFiltrados().length }} proveedores</span>
+      </div>
+
+      <app-proveedor-list
+        [proveedores]="proveedoresFiltrados()"
+        [proveedorSeleccionadoId]="proveedorSeleccionadoId()"
+        (seleccionar)="seleccionarProveedor($event)"
+        (crearPedido)="abrirPedido($event)"
+        (verHistorial)="abrirHistorial($event)">
+      </app-proveedor-list>
+    </section>
+
+    <aside class="panel-card detail-panel">
+      @if (proveedorSeleccionado(); as proveedor) {
+        <div class="detail-top">
+          <div>
+            <p class="detail-kicker mb-1">Proveedor seleccionado</p>
+            <h2 class="detail-title mb-1">{{ proveedor.nombre }}</h2>
+            <p class="detail-text mb-0">{{ proveedor.contacto }}</p>
+          </div>
+
+          <span class="status-pill" [class.inactivo]="!proveedor.activo">{{ proveedor.activo ? 'Activo' : 'Inactivo' }}</span>
+        </div>
+
+        <div class="info-grid">
+          <article class="info-card">
+            <span class="info-label">Último pedido</span>
+            <strong>{{ proveedor.fechaUltimoPedido ? (proveedor.fechaUltimoPedido | date:'dd/MM/yyyy') : 'Sin pedidos' }}</strong>
+          </article>
+
+          <article class="info-card">
+            <span class="info-label">Pedidos registrados</span>
+            <strong>{{ totalPedidosSeleccionado }}</strong>
+          </article>
+
+          <article class="info-card">
+            <span class="info-label">Contacto</span>
+            <strong>{{ proveedor.telefono }}</strong>
+          </article>
+
+          <article class="info-card">
+            <span class="info-label">Correo</span>
+            <strong>{{ proveedor.email }}</strong>
+          </article>
+        </div>
+
+        <div class="action-row">
+          <app-boton
+            label="Agregar pedido"
+            variante="secondary"
+            tamanio="md"
+            (clicked)="abrirPedido(proveedor)">
+          </app-boton>
+
+          <app-boton
+            label="Ver historial"
+            variante="outline"
+            tamanio="md"
+            (clicked)="abrirHistorial(proveedor)">
+          </app-boton>
+        </div>
+
+        @if (panelModo() === 'pedido') {
+          <div class="panel-section">
+            <div class="section-header">
+              <div>
+                <h3 class="section-title mb-1">Nuevo pedido</h3>
+                <p class="section-subtitle mb-0">Selecciona el proveedor, agrega productos y confirma la lista antes de enviar.</p>
+              </div>
+
+              <app-boton
+                label="Ver historial"
+                variante="outline"
+                tamanio="sm"
+                (clicked)="abrirHistorial(proveedor)">
+              </app-boton>
+            </div>
+
+            <div class="field-group field-group-wide">
+              <span>Proveedor</span>
+              <app-dropdown #proveedorDropdown>
+                <div trigger class="selector-row selector-trigger">
+                  <input
+                    type="text"
+                    class="form-control custom-input readonly-input"
+                    [value]="proveedorSeleccionadoPedido?.nombre ?? ''"
+                    readonly>
+                </div>
+
+                <div menu>
+                  <ul class="dropdown-list">
+                    @for (item of proveedores(); track item.id) {
+                      <li (click)="cambiarProveedorDesdePedido(item, proveedorDropdown)">
+                        <strong>{{ item.nombre }}</strong>
+                        <span>{{ item.contacto }}</span>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              </app-dropdown>
+            </div>
+
+            <div class="picker-grid">
+              <label class="field-group product-field">
+                <span>Producto</span>
+                <input
+                  type="text"
+                  class="form-control custom-input"
+                  placeholder="Escribe un nombre o selecciona una sugerencia"
+                  [ngModel]="productoTexto()"
+                  (ngModelChange)="onProductoTextoChange($event)">
+
+                @if (productoTexto().trim().length > 0) {
+                  <div class="predictive-list">
+                    @if (productosFiltrados().length > 0) {
+                      @for (producto of productosFiltrados(); track producto.id) {
+                        <button type="button" class="predictive-item" (click)="seleccionarProducto(producto)">
+                          <div class="predictive-item-main">
+                            <strong>{{ producto.nombre }}</strong>
+                            <span>{{ producto.categoriaIngrediente }}</span>
+                          </div>
+
+                          <div class="predictive-item-meta">
+                            <span>{{ producto.stock }} {{ producto.unidadMedida }}</span>
+                          </div>
+                        </button>
+                      }
+                    } @else {
+                      <div class="predictive-empty">No hay coincidencias</div>
+                    }
+                  </div>
+                }
+              </label>
+
+              <label class="field-group quantity-field">
+                <span>Cantidad {{ productoBaseActual()?.unidadMedida ? '(' + productoBaseActual()!.unidadMedida + ')' : '' }}</span>
+                <input
+                  type="number"
+                  class="form-control custom-input"
+                  [min]="cantidadMinimaProducto"
+                  [step]="cantidadPasoProducto"
+                  [placeholder]="cantidadPlaceholderProducto"
+                  [ngModel]="cantidadProducto()"
+                  (ngModelChange)="cantidadProducto.set($event === null || $event === '' ? null : +$event)">
+              </label>
+
+              <div class="confirm-field">
+                <span class="confirm-label">Confirmar</span>
+                <app-boton
+                  label=""
+                  variante="success"
+                  tamanio="md"
+                  (clicked)="agregarItemPedido()">
+                  <fa-icon [icon]="faCheck"></fa-icon>
+                </app-boton>
+              </div>
+            </div>
+
+            <div class="panel-section nested-section">
+              <div class="section-header compact">
+                <div>
+                  <h3 class="section-title mb-1">Ingredientes agregados</h3>
+                  <p class="section-subtitle mb-0">Edita cantidades o elimina ítems antes de enviar el pedido.</p>
+                </div>
+
+                <span class="counter-pill small">{{ pedidoItems().length }} ítems</span>
+              </div>
+
+              @if (pedidoItems().length > 0) {
+                <div class="ingredients-list">
+                  @for (item of pedidoItems(); track item.id) {
+                    <article class="ingredient-card">
+                      <div class="ingredient-card-top">
+                        <div>
+                          <strong>{{ item.nombre }}</strong>
+                          <div class="ingredient-meta">{{ item.cantidad }} {{ item.unidadMedida }}</div>
+                        </div>
+
+                        <app-boton
+                          label=""
+                          variante="danger"
+                          tamanio="sm"
+                          (clicked)="eliminarItemPedido(item.id)">
+                          <fa-icon [icon]="faXmark"></fa-icon>
+                        </app-boton>
+                      </div>
+
+                      <label class="field-group ingredient-quantity-field">
+                        <span>Cantidad</span>
+                        <input
+                          type="number"
+                          class="form-control custom-input"
+                          min="0.01"
+                          step="0.01"
+                          [ngModel]="item.cantidad"
+                          (ngModelChange)="actualizarCantidadItem(item.id, $event === null || $event === '' ? null : +$event)">
+                      </label>
+                    </article>
+                  }
+                </div>
+              } @else {
+                <div class="empty-ingredients-state">
+                  Todavía no agregaste ingredientes al pedido.
+                </div>
+              }
+            </div>
+
+            <label class="field-group field-group-wide mt-3">
+              <span>Observación</span>
+              <textarea
+                rows="3"
+                class="form-control custom-input custom-textarea"
+                [ngModel]="observacionPedido()"
+                (ngModelChange)="observacionPedido.set($event)">
+              </textarea>
+            </label>
+
+            <div class="panel-footer-actions pedido-actions">
+              <div class="estimated-pill">Monto estimado: ${{ montoEstimado | number:'1.0-0' }}</div>
+
+              <div class="footer-buttons">
+                <app-boton
+                  label="Limpiar"
+                  variante="outline"
+                  tamanio="md"
+                  (clicked)="limpiarPedido()">
+                </app-boton>
+
+                <app-boton
+                  label="Enviar pedido"
+                  variante="secondary"
+                  tamanio="md"
+                  [disabled]="pedidoItems().length === 0"
+                  (clicked)="enviarPedido()">
+                </app-boton>
+              </div>
+            </div>
+          </div>
+        } @else {
+          <div class="panel-section">
+            <div class="history-header">
+              <h3 class="section-title mb-0">Historial de pedidos</h3>
+              <span class="counter-pill small">{{ proveedor.historialPedidos.length }} movimientos</span>
+            </div>
+
+            <div class="history-list">
+              @for (pedido of proveedor.historialPedidos; track pedido.id) {
+                <article class="history-card" (click)="abrirDetallePedido(pedido)">
+                  <div class="history-card-header">
+                    <div>
+                      <strong>{{ pedido.concepto }}</strong>
+                      <div class="history-date">{{ pedido.fecha | date:'dd/MM/yyyy' }}</div>
+                    </div>
+
+                    <span class="estado-pill" [ngClass]="getEstadoClase(pedido.estado)">{{ pedido.estado }}</span>
+                  </div>
+
+                  <div class="history-meta">
+                    <span>${{ pedido.monto | number:'1.0-0' }}</span>
+                    <span>{{ pedido.observacion }}</span>
+                    <span class="history-items">{{ pedido.items.length }} ítems</span>
+                  </div>
+                </article>
+              }
+            </div>
+          </div>
+        }
+
+        @if (mensajeAccion()) {
+          <div class="success-note">{{ mensajeAccion() }}</div>
+        }
+      } @else {
+        <div class="empty-state-panel">
+          <h2 class="detail-title mb-2">Selecciona un proveedor</h2>
+          <p class="detail-text mb-0">El panel derecho mostrará sus datos, el historial y el formulario para crear pedidos.</p>
+        </div>
+      }
+    </aside>
+  </div>
+
+  @if (pedidoHistorialSeleccionado(); as pedido) {
+    <div class="pedido-modal-overlay" (click)="cerrarDetallePedido()">
+      <div class="pedido-modal-card" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="pedido-modal-title" (click)="$event.stopPropagation()" (keydown.escape)="cerrarDetallePedido()">
+        <div class="pedido-modal-header">
+          <div>
+            <p class="detail-kicker mb-1">Detalle del pedido</p>
+            <h3 id="pedido-modal-title" class="pedido-modal-title mb-0">{{ pedido.concepto }}</h3>
+          </div>
+
+          <button type="button" class="pedido-modal-close" aria-label="Cerrar detalle" (click)="cerrarDetallePedido()">
+            <fa-icon [icon]="faXmark"></fa-icon>
+          </button>
+        </div>
+
+        <div class="pedido-modal-meta">
+          <span>{{ pedido.fecha | date:'dd/MM/yyyy HH:mm' }}</span>
+          <span class="estado-pill" [ngClass]="getEstadoClase(pedido.estado)">{{ pedido.estado }}</span>
+        </div>
+
+        <div class="pedido-modal-summary-row">
+          <span>{{ pedido.items.length }} ítems</span>
+          <span class="summary-dot">•</span>
+          <strong class="summary-amount">Monto: ${{ pedido.monto | number:'1.0-0' }}</strong>
+        </div>
+
+        <div class="pedido-modal-grid">
+          <article class="pedido-modal-info">
+            <span class="info-label">Monto</span>
+            <strong>${{ pedido.monto | number:'1.0-0' }}</strong>
+          </article>
+
+          <article class="pedido-modal-info">
+            <span class="info-label">Ítems</span>
+            <strong>{{ pedido.items.length }}</strong>
+          </article>
+
+          <article class="pedido-modal-info pedido-modal-full">
+            <span class="info-label">Observación</span>
+            <strong>{{ pedido.observacion }}</strong>
+          </article>
+        </div>
+
+        <div class="pedido-modal-items">
+          <h4 class="section-title mb-2">Productos incluidos</h4>
+
+          @for (item of pedido.items; track item.id) {
+            <div class="pedido-modal-item">
+              <div>
+                <strong>{{ item.nombre }}</strong>
+                <div class="history-date">{{ item.id }}</div>
+              </div>
+
+              <span class="pedido-modal-quantity">{{ item.cantidad }} {{ item.unidadMedida }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Nuevo proveedor moved to separate page: /gerente/nuevo-proveedor -->
+</div>
