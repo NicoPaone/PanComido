@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, DestroyRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faXmark, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Router } from '@angular/router';
 import { ProveedorService } from '../../../../core/services/proveedor.service';
@@ -21,6 +22,7 @@ export class NuevoProveedorComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
 
   proveedorForm = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(3)]],
@@ -63,21 +65,23 @@ export class NuevoProveedorComponent {
     this.cargandoGerente.set(true);
     this.mensajeErrorGerente.set(null);
 
-    this.authService.validateManagerCredentials(user, pass).subscribe({
-      next: (esValido) => {
-        this.cargandoGerente.set(false);
-        this.gerenteValidado.set(esValido);
-        if (!esValido) {
-          this.mensajeErrorGerente.set('Usuario o contraseña de gerente incorrectos. (Prueba con "gerente" / "123456")');
-        } else {
-          this.gerenteForm.disable();
+    this.authService.validateManagerCredentials(user, pass)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (esValido) => {
+          this.cargandoGerente.set(false);
+          this.gerenteValidado.set(esValido);
+          if (!esValido) {
+            this.mensajeErrorGerente.set('Usuario o contraseña de gerente incorrectos. (Prueba con "gerente" / "123456")');
+          } else {
+            this.gerenteForm.disable();
+          }
+        },
+        error: () => {
+          this.cargandoGerente.set(false);
+          this.mensajeErrorGerente.set('Error de red al validar credenciales.');
         }
-      },
-      error: () => {
-        this.cargandoGerente.set(false);
-        this.mensajeErrorGerente.set('Error de red al validar credenciales.');
-      }
-    });
+      });
   }
 
   toggleCategoria(cat: string): void {
@@ -130,15 +134,17 @@ export class NuevoProveedorComponent {
     };
 
     // NOTE: El endpoint del back para registrar proveedores debe conectarse aquí
-    this.proveedorService.crearProveedor(proveedor).subscribe({
-      next: () => {
-        this.router.navigate(['/staff', 'gerente', 'ver-proveedores'], { 
-          state: { created: true, message: 'Proveedor creado correctamente' } 
-        });
-      },
-      error: () => {
-        // NOTE: El manejo de errores de comunicación debe integrarse aquí
-      }
-    });
+    this.proveedorService.crearProveedor(proveedor)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/staff', 'gerente', 'ver-proveedores'], { 
+            state: { created: true, message: 'Proveedor creado correctamente' } 
+          });
+        },
+        error: () => {
+          // NOTE: El manejo de errores de comunicación debe integrarse aquí
+        }
+      });
   }
 }

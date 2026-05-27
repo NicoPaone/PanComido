@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal, ElementRef, viewChild, DestroyRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Buscador } from '../../../../shared/ui/buscador/buscador';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Dropdown } from '../../../../shared/ui/dropdown/dropdown';
@@ -23,6 +24,9 @@ import { ProductoStockMock, UnidadMedida } from '../../../../core/model/producto
 export class VerProveedoresComponent implements OnInit {
   private readonly proveedorService = inject(ProveedorService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+
+  private readonly pedidoModalCard = viewChild<ElementRef<HTMLElement>>('pedidoModalCard');
 
   termino = signal('');
   proveedores = signal<Proveedor[]>([]);
@@ -115,18 +119,22 @@ export class VerProveedoresComponent implements OnInit {
 
   ngOnInit(): void {
     // NOTE: El endpoint del back para listar proveedores debe conectarse aquí
-    this.proveedorService.getProveedores().subscribe(proveedores => {
-      this.proveedores.set(proveedores);
+    this.proveedorService.getProveedores()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(proveedores => {
+        this.proveedores.set(proveedores);
 
-      if (proveedores.length > 0 && this.proveedorSeleccionadoId() === null) {
-        this.proveedorSeleccionadoId.set(proveedores[0].id);
-      }
-    });
+        if (proveedores.length > 0 && this.proveedorSeleccionadoId() === null) {
+          this.proveedorSeleccionadoId.set(proveedores[0].id);
+        }
+      });
 
     // NOTE: El endpoint del back para listar productos disponibles debe conectarse aquí
-    this.proveedorService.getProductosDisponibles().subscribe(productos => {
-      this.productos.set(productos);
-    });
+    this.proveedorService.getProductosDisponibles()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(productos => {
+        this.productos.set(productos);
+      });
 
     const navState = history.state as { created?: boolean; message?: string } | undefined;
     if (navState?.created) {
@@ -158,16 +166,16 @@ export class VerProveedoresComponent implements OnInit {
 
   abrirDetallePedido(pedido: PedidoProveedor): void {
     this.pedidoHistorialSeleccionado.set(pedido);
-    setTimeout(() => this.focusModal('.pedido-modal-card'), 0);
+    setTimeout(() => this.focusModal(), 50);
   }
 
   cerrarDetallePedido(): void {
     this.pedidoHistorialSeleccionado.set(null);
   }
 
-  private focusModal(selector: string): void {
+  private focusModal(): void {
     try {
-      const el = document.querySelector(selector) as HTMLElement | null;
+      const el = this.pedidoModalCard()?.nativeElement;
       if (el) {
         el.focus({ preventScroll: true });
       }
@@ -299,19 +307,21 @@ export class VerProveedoresComponent implements OnInit {
     };
 
     // NOTE: El endpoint del back para registrar y enviar pedidos de proveedores debe conectarse aquí
-    this.proveedorService.crearPedidoProveedor(proveedor.id, pedido).subscribe({
-      next: (actualizado) => {
-        this.proveedores.update(lista => lista.map(item => item.id === actualizado.id ? actualizado : item));
-        this.proveedorSeleccionadoId.set(actualizado.id);
-        this.panelModo.set('historial');
-        this.limpiarPedido();
-        this.cerrarDetallePedido();
-        this.mensajeAccion.set('Pedido agregado correctamente');
-      },
-      error: () => {
-        // NOTE: El manejo de errores de comunicación debe integrarse aquí
-      }
-    });
+    this.proveedorService.crearPedidoProveedor(proveedor.id, pedido)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (actualizado) => {
+          this.proveedores.update(lista => lista.map(item => item.id === actualizado.id ? actualizado : item));
+          this.proveedorSeleccionadoId.set(actualizado.id);
+          this.panelModo.set('historial');
+          this.limpiarPedido();
+          this.cerrarDetallePedido();
+          this.mensajeAccion.set('Pedido agregado correctamente');
+        },
+        error: () => {
+          // NOTE: El manejo de errores de comunicación debe integrarse aquí
+        }
+      });
   }
 
   getEstadoClase(estado: EstadoPedidoProveedor): string {

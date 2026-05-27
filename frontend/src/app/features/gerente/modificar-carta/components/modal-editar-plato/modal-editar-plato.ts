@@ -1,5 +1,4 @@
 import { Component, effect, input, output, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Plato, RecetaIngrediente } from '../../../../../core/models/plato';
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
@@ -11,7 +10,7 @@ import { calcularCostoReceta } from '../../../../../core/services/plato.service'
 @Component({
   selector: 'app-modal-editar-plato',
   standalone: true,
-  imports: [CommonModule, FormsModule, Boton, ToggleComponent, Buscador],
+  imports: [FormsModule, Boton, ToggleComponent, Buscador],
   templateUrl: './modal-editar-plato.html',
   styleUrls: ['./modal-editar-plato.css']
 })

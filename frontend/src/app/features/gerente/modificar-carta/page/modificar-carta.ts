@@ -1,6 +1,6 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, signal, computed, DestroyRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Buscador } from '../../../../shared/ui/buscador/buscador';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Plato } from '../../../../core/models/plato';
@@ -15,7 +15,6 @@ import { ModalEliminarPlatoComponent } from '../components/modal-eliminar-plato/
   selector: 'app-modificar-carta',
   standalone: true,
   imports: [
-    CommonModule, 
     Buscador, 
     Boton, 
     ListaPlatosComponent, 
@@ -30,6 +29,7 @@ import { ModalEliminarPlatoComponent } from '../components/modal-eliminar-plato/
 export class ModificarCartaComponent implements OnInit {
   private router = inject(Router);
   private platoService = inject(PlatoService);
+  private destroyRef = inject(DestroyRef);
 
   searchTerm = signal<string>('');
   platos = signal<Plato[]>([]);
@@ -55,9 +55,11 @@ export class ModificarCartaComponent implements OnInit {
   explodingPlatoId = signal<number | null>(null);
 
   ngOnInit() {
-    this.platoService.getPlatos().subscribe(platos => {
-      this.platos.set(platos);
-    });
+    this.platoService.getPlatos()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(platos => {
+        this.platos.set(platos);
+      });
   }
 
   onSearch(term: string) {
@@ -73,27 +75,31 @@ export class ModificarCartaComponent implements OnInit {
         this.platos.update(platos => platos.map(p => p.id === plato.id ? { ...p, visible: targetState } : p));
         this.explodingPlatoId.set(null);
 
-        this.platoService.updatePlato(plato.id, { visible: targetState }).subscribe({
-          next: updated => {
-            this.platos.update(platos => platos.map(p => p.id === plato.id ? updated : p));
-          },
-          error: () => {
-            this.platos.update(platos => platos.map(p => p.id === plato.id ? { ...p, visible: true } : p));
-          }
-        });
+        this.platoService.updatePlato(plato.id, { visible: targetState })
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: updated => {
+              this.platos.update(platos => platos.map(p => p.id === plato.id ? updated : p));
+            },
+            error: () => {
+              this.platos.update(platos => platos.map(p => p.id === plato.id ? { ...p, visible: true } : p));
+            }
+          });
       }, 450);
     } else {
       const targetState = true;
       this.platos.update(platos => platos.map(p => p.id === plato.id ? { ...p, visible: targetState } : p));
 
-      this.platoService.updatePlato(plato.id, { visible: targetState }).subscribe({
-        next: updated => {
-          this.platos.update(platos => platos.map(p => p.id === plato.id ? updated : p));
-        },
-        error: () => {
-          this.platos.update(platos => platos.map(p => p.id === plato.id ? { ...p, visible: false } : p));
-        }
-      });
+      this.platoService.updatePlato(plato.id, { visible: targetState })
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: updated => {
+            this.platos.update(platos => platos.map(p => p.id === plato.id ? updated : p));
+          },
+          error: () => {
+            this.platos.update(platos => platos.map(p => p.id === plato.id ? { ...p, visible: false } : p));
+          }
+        });
     }
   }
 
@@ -109,20 +115,24 @@ export class ModificarCartaComponent implements OnInit {
     const target = this.platoAEditar();
     if (!target) return;
 
-    this.platoService.updatePlato(target.id, updatedFields).subscribe(updated => {
-      this.platos.update(platos => platos.map(p => p.id === target.id ? updated : p));
-      this.platoAEditar.set(null);
-    });
+    this.platoService.updatePlato(target.id, updatedFields)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(updated => {
+        this.platos.update(platos => platos.map(p => p.id === target.id ? updated : p));
+        this.platoAEditar.set(null);
+      });
   }
 
   onConfirmDelete() {
     const target = this.platoAEliminar();
     if (!target) return;
 
-    this.platoService.deletePlato(target.id).subscribe(() => {
-      this.platos.update(platos => platos.filter(p => p.id !== target.id));
-      this.platoAEliminar.set(null);
-    });
+    this.platoService.deletePlato(target.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.platos.update(platos => platos.filter(p => p.id !== target.id));
+        this.platoAEliminar.set(null);
+      });
   }
 
   onCloseModals() {
