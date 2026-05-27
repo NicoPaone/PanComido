@@ -32,6 +32,12 @@ export class ModalEditarPlatoComponent {
     return calcularCostoReceta(this.receta());
   });
 
+  precioEsMenorQueCosto = computed(() => {
+    const venta = this.precioVenta() ?? 0;
+    const costoVal = this.costo() ?? 0;
+    return venta > 0 && costoVal > 0 && venta <= costoVal;
+  });
+
   sugerencias = computed(() => {
     const query = this.busqueda().toLowerCase().trim();
     if (!query) return [];
@@ -79,14 +85,17 @@ export class ModalEditarPlatoComponent {
     this.receta.update(items => items.filter(item => item.id !== id));
   }
 
-  onCantidadCambiada() {
+  onCantidadCambiada(ing: RecetaIngrediente) {
+    if (ing.cantidad === null || ing.cantidad === undefined || ing.cantidad < 0.01) {
+      ing.cantidad = 0.01;
+    }
   }
 
   onUnidadCambiada() {
   }
 
   onSave() {
-    if (!this.nombre().trim() || this.precioVenta() === null || this.costo() === null) {
+    if (!this.nombre().trim() || this.precioVenta() === null || this.precioVenta()! <= 0 || this.costo() === null || this.costo()! <= 0) {
       return;
     }
     this.save.emit({

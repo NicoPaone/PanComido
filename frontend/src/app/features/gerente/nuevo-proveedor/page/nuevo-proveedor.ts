@@ -1,77 +1,116 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faXmark, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Router } from '@angular/router';
 import { ProveedorService } from '../../../../core/services/proveedor.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { NuevoProveedor } from '../../../../core/models/proveedor';
 
 @Component({
   selector: 'app-nuevo-proveedor',
   standalone: true,
-  imports: [CommonModule, FormsModule, FontAwesomeModule, Boton],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, FontAwesomeModule, Boton],
   templateUrl: './nuevo-proveedor.html',
   styleUrls: ['./nuevo-proveedor.css']
 })
 export class NuevoProveedorComponent {
   private readonly proveedorService = inject(ProveedorService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly fb = inject(FormBuilder);
 
-  nuevoProveedor = signal<NuevoProveedor>({ nombre: '', contacto: '', telefono: '', email: '', calle: '', numero: '', ciudad: '', categorias: [] });
-  gerenteUsuario = signal('');
-  gerentePassword = signal('');
+  // Form for provider data
+  proveedorForm = this.fb.group({
+    nombre: ['', [Validators.required, Validators.minLength(3)]],
+    contacto: ['', [Validators.required, Validators.minLength(3)]],
+    telefono: ['', [Validators.pattern(/^\+?[0-9\s-]{7,15}$/)]],
+    email: ['', [Validators.email]],
+    calle: ['', [Validators.required]],
+    numero: [''],
+    ciudad: ['', [Validators.required]],
+    customCategory: ['']
+  });
+
+  // Form for manager validation
+  gerenteForm = this.fb.group({
+    usuario: ['', [Validators.required, Validators.minLength(3)]],
+    contrasena: ['', [Validators.required, Validators.minLength(6)]]
+  });
+
+  categorias = signal<string[]>([]);
   gerenteValidado = signal(false);
+  mensajeErrorGerente = signal<string | null>(null);
+  cargandoGerente = signal(false);
+
   faCheck = faCheck;
   faXmark = faXmark;
   faTrash = faTrash;
   availableCategories = ['Distribuidora', 'Mayorista', 'Minorista', 'Insumos'];
-  customCategory = '';
 
   puedeGuardar = computed(() => {
-    const prov = this.nuevoProveedor();
-    return prov.nombre.trim().length > 2 && prov.contacto.trim().length > 2 && (prov.categorias ?? []).length > 0 && (prov.calle?.trim().length ?? 0) > 0 && (prov.ciudad?.trim().length ?? 0) > 0 && this.gerenteValidado();
+    return this.proveedorForm.valid && this.categorias().length > 0 && this.gerenteValidado();
   });
 
   validarCredencialesGerente(): void {
-    const user = this.gerenteUsuario().trim();
-    const pass = this.gerentePassword();
-    if (user.length > 2 && pass.length >= 6) {
-      this.gerenteValidado.set(true);
-    } else {
-      this.gerenteValidado.set(false);
+    const user = this.gerenteForm.get('usuario')?.value?.trim();
+    const pass = this.gerenteForm.get('contrasena')?.value;
+    if (!user || !pass || this.gerenteForm.invalid) {
+      this.mensajeErrorGerente.set('Por favor, ingresa credenciales válidas (Usuario >= 3 car., Contraseña >= 6 car.).');
+      return;
     }
+
+    this.cargandoGerente.set(true);
+    this.mensajeErrorGerente.set(null);
+
+    // MOCK: Llamada al servicio de autenticación para simular validación en el backend.
+    this.authService.validateManagerCredentials(user, pass).subscribe({
+      next: (esValido) => {
+        this.cargandoGerente.set(false);
+        this.gerenteValidado.set(esValido);
+        if (!esValido) {
+          this.mensajeErrorGerente.set('Usuario o contraseña de gerente incorrectos. (Prueba con "gerente" / "123456")');
+        } else {
+          this.gerenteForm.disable();
+        }
+      },
+      error: () => {
+        this.cargandoGerente.set(false);
+        this.mensajeErrorGerente.set('Error de red al validar credenciales.');
+      }
+    });
   }
 
   toggleCategoria(cat: string): void {
-    const actuales = [...(this.nuevoProveedor().categorias ?? [])];
+    const actuales = [...this.categorias()];
     const idx = actuales.indexOf(cat);
     if (idx >= 0) {
       actuales.splice(idx, 1);
     } else {
       actuales.push(cat);
     }
-    this.nuevoProveedor.update(v => ({ ...v, categorias: actuales }));
+    this.categorias.set(actuales);
   }
 
   agregarCategoriaPersonalizada(): void {
-    const text = (this.customCategory || '').trim();
+    const text = (this.proveedorForm.get('customCategory')?.value || '').trim();
     if (!text) return;
-    const actuales = [...(this.nuevoProveedor().categorias ?? [])];
+    const actuales = [...this.categorias()];
     if (!actuales.includes(text)) {
       actuales.push(text);
-      this.nuevoProveedor.update(v => ({ ...v, categorias: actuales }));
+      this.categorias.set(actuales);
     }
     if (!this.availableCategories.includes(text)) {
       this.availableCategories = [...this.availableCategories, text];
     }
-    this.customCategory = '';
+    this.proveedorForm.get('customCategory')?.reset();
   }
 
   removerCategoria(cat: string): void {
-    const actuales = (this.nuevoProveedor().categorias ?? []).filter(c => c !== cat);
-    this.nuevoProveedor.update(v => ({ ...v, categorias: actuales }));
+    const actuales = this.categorias().filter(c => c !== cat);
+    this.categorias.set(actuales);
   }
 
   cancelar(): void {
@@ -79,12 +118,30 @@ export class NuevoProveedorComponent {
   }
 
   guardarProveedor(): void {
-    const proveedor = this.nuevoProveedor();
     if (!this.puedeGuardar()) return;
+    
+    const formVal = this.proveedorForm.value;
+    const proveedor: NuevoProveedor = {
+      nombre: formVal.nombre!,
+      contacto: formVal.contacto!,
+      telefono: formVal.telefono ?? '',
+      email: formVal.email ?? '',
+      calle: formVal.calle ?? '',
+      numero: formVal.numero ?? '',
+      ciudad: formVal.ciudad ?? '',
+      categorias: this.categorias()
+    };
 
-    this.proveedorService.crearProveedor(proveedor).subscribe(() => {
-      // al guardar volvemos a la lista y notificamos con state
-      this.router.navigate(['/staff', 'gerente', 'ver-proveedores'], { state: { created: true, message: 'Proveedor creado correctamente' } });
+    // NOTE: El endpoint del back para registrar proveedores debe conectarse aquí
+    this.proveedorService.crearProveedor(proveedor).subscribe({
+      next: () => {
+        this.router.navigate(['/staff', 'gerente', 'ver-proveedores'], { 
+          state: { created: true, message: 'Proveedor creado correctamente' } 
+        });
+      },
+      error: () => {
+        // En un futuro se manejaría el error del backend mostrando una alerta visual
+      }
     });
   }
 }

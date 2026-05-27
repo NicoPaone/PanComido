@@ -60,10 +60,16 @@
                 type="number" 
                 class="form-control custom-input border-start-0" 
                 [ngModel]="precioVenta()" 
-                (ngModelChange)="precioVenta.set($event)">
+                (ngModelChange)="precioVenta.set($event === null || $event === '' ? null : +$event)">
             </div>
           </div>
         </div>
+
+        @if (precioEsMenorQueCosto()) {
+          <div class="alert alert-warning py-2 px-3 small mb-3">
+            <strong>Advertencia comercial:</strong> El precio de venta es menor o igual al costo.
+          </div>
+        }
 
         <div class="mb-3">
           <label class="form-label font-bold">URL de imagen</label>
@@ -127,7 +133,10 @@
                   <input 
                     type="number" 
                     class="form-control form-control-sm text-center qty-input" 
-                    [(ngModel)]="ing.cantidad">
+                    min="0.01"
+                    step="0.01"
+                    [(ngModel)]="ing.cantidad"
+                    (ngModelChange)="onCantidadCambiada(ing)">
                 </td>
                 <td>
                   <select 
@@ -173,7 +182,7 @@
         tamanio="md" 
         (clicked)="onSave()"
         class="save-btn"
-        [disabled]="!nombre().trim() || precioVenta() === null || costo() === null">
+        [disabled]="!nombre().trim() || precioVenta() === null || precioVenta()! <= 0 || costo() === null || costo()! <= 0">
       </app-boton>
     </div>
   </div>

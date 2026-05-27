@@ -1,8 +1,9 @@
-import { Component, signal, computed, HostListener } from '@angular/core';
+import { Component, signal, computed, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { MenuItem, UserProfile } from '../../../core/model/menu-item.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { AuthService } from '../../../core/services/auth.service';
 import { 
   faUsers, 
   faCog, 
@@ -31,6 +32,8 @@ import {
   styleUrls: ['./sidebar.css']
 })
 export class SidebarComponent {
+  private readonly authService = inject(AuthService);
+
   // Íconos de FontAwesome
   readonly faUsers = faUsers;
   readonly faCog = faCog;
@@ -54,7 +57,7 @@ export class SidebarComponent {
   isCollapsed = signal(true); // Colapsado por defecto como Gmail
   isHovered = signal(false);
   expandedMenus = signal<string[]>([]);
-  currentRole = signal<string>('Gerente'); // MVP: Rol hardcodeado
+  currentRole = computed(() => this.authService.currentRole());
 
   // Perfil de usuario
   userProfile = signal<UserProfile>({

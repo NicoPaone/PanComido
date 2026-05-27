@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { StockList } from './stock-list';
 
 describe('StockList', () => {
@@ -13,6 +12,8 @@ describe('StockList', () => {
 
     fixture = TestBed.createComponent(StockList);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('productos', []);
+    fixture.detectChanges();
     await fixture.whenStable();
   });
 

@@ -22,6 +22,7 @@ import { ProductoStockMock, UnidadMedida } from '../../../../core/model/producto
 })
 export class VerProveedoresComponent implements OnInit {
   private readonly proveedorService = inject(ProveedorService);
+  private readonly router = inject(Router);
 
   termino = signal('');
   proveedores = signal<Proveedor[]>([]);
@@ -30,15 +31,32 @@ export class VerProveedoresComponent implements OnInit {
   panelModo = signal<'pedido' | 'historial'>('historial');
   observacionPedido = signal('');
   mensajeAccion = signal<string | null>(null);
+  
+  // Product search and selection in order form
   productoTexto = signal('');
   productoSeleccionadoId = signal<string | null>(null);
   cantidadProducto = signal<number | null>(1);
+  precioProductoManual = signal<number | null>(null);
+  
   pedidoItems = signal<PedidoProveedorItem[]>([]);
   pedidoHistorialSeleccionado = signal<PedidoProveedor | null>(null);
-  // Router for navigation to nuevo proveedor page
-  private readonly router = inject(Router);
+  
   faCheck = faCheck;
   faXmark = faXmark;
+
+  private readonly preciosMock: Record<string, number> = {
+    '1': 1200,
+    '2': 900,
+    '3': 1500,
+    '4': 600,
+    '5': 1100,
+    '6': 7500,
+    '7': 120,
+    '8': 300,
+    '9': 800,
+    '10': 700,
+    '11': 4500
+  };
 
   proveedoresFiltrados = computed(() => {
     const texto = this.termino().toLowerCase().trim();
@@ -97,6 +115,7 @@ export class VerProveedoresComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    // NOTE: El endpoint del back para listar proveedores debe conectarse aquí
     this.proveedorService.getProveedores().subscribe(proveedores => {
       this.proveedores.set(proveedores);
 
@@ -105,11 +124,11 @@ export class VerProveedoresComponent implements OnInit {
       }
     });
 
+    // NOTE: El endpoint del back para listar productos/ingredientes disponibles debe conectarse aquí
     this.proveedorService.getProductosDisponibles().subscribe(productos => {
       this.productos.set(productos);
     });
 
-    // show success message when navigated back from nuevo-proveedor
     const navState = history.state as { created?: boolean; message?: string } | undefined;
     if (navState?.created) {
       this.mensajeAccion.set(navState.message ?? 'Proveedor creado correctamente');
@@ -154,7 +173,7 @@ export class VerProveedoresComponent implements OnInit {
         el.focus({ preventScroll: true });
       }
     } catch (e) {
-      // ignore focus errors in some browsers/environments
+      // ignore focus errors
     }
   }
 
@@ -171,6 +190,7 @@ export class VerProveedoresComponent implements OnInit {
     this.productoSeleccionadoId.set(producto.id);
     this.productoTexto.set(producto.nombre);
     this.cantidadProducto.set(this.getCantidadInicial(producto.unidadMedida));
+    this.precioProductoManual.set(this.preciosMock[producto.id] ?? 500);
   }
 
   onProductoTextoChange(valor: string): void {
@@ -181,8 +201,10 @@ export class VerProveedoresComponent implements OnInit {
     if (encontrado) {
       this.productoSeleccionadoId.set(encontrado.id);
       this.cantidadProducto.set(this.getCantidadInicial(encontrado.unidadMedida));
+      this.precioProductoManual.set(this.preciosMock[encontrado.id] ?? 500);
     } else {
       this.productoSeleccionadoId.set(null);
+      this.precioProductoManual.set(null);
     }
   }
 
@@ -190,8 +212,9 @@ export class VerProveedoresComponent implements OnInit {
     const producto = this.productoBaseActual();
     const nombre = producto?.nombre ?? this.productoTexto().trim();
     const cantidad = this.cantidadProducto();
+    const precio = producto ? (this.preciosMock[producto.id] ?? 500) : this.precioProductoManual();
 
-    if (!nombre || cantidad === null || cantidad <= 0) {
+    if (!nombre || cantidad === null || cantidad <= 0 || precio === null || precio <= 0) {
       return;
     }
 
@@ -205,12 +228,13 @@ export class VerProveedoresComponent implements OnInit {
         return items.map(item => item.id === itemId ? { ...item, cantidad: item.cantidad + cantidad } : item);
       }
 
-      return [...items, { id: itemId, nombre, cantidad, unidadMedida }];
+      return [...items, { id: itemId, nombre, cantidad, unidadMedida, precioUnitario: precio }];
     });
 
     this.productoTexto.set('');
     this.productoSeleccionadoId.set(null);
     this.cantidadProducto.set(1);
+    this.precioProductoManual.set(null);
   }
 
   actualizarCantidadItem(itemId: string, cantidad: number | null): void {
@@ -232,6 +256,7 @@ export class VerProveedoresComponent implements OnInit {
     this.productoTexto.set('');
     this.productoSeleccionadoId.set(null);
     this.cantidadProducto.set(1);
+    this.precioProductoManual.set(null);
     this.observacionPedido.set('');
     this.mensajeAccion.set(null);
   }
@@ -274,13 +299,19 @@ export class VerProveedoresComponent implements OnInit {
       items: nuevoPedido.items
     };
 
-    this.proveedorService.crearPedidoProveedor(proveedor.id, pedido).subscribe(actualizado => {
-      this.proveedores.update(lista => lista.map(item => item.id === actualizado.id ? actualizado : item));
-      this.proveedorSeleccionadoId.set(actualizado.id);
-      this.panelModo.set('historial');
-      this.limpiarPedido();
-      this.cerrarDetallePedido();
-      this.mensajeAccion.set('Pedido agregado correctamente');
+    // NOTE: El endpoint del back para registrar y enviar pedidos de proveedores debe conectarse aquí
+    this.proveedorService.crearPedidoProveedor(proveedor.id, pedido).subscribe({
+      next: (actualizado) => {
+        this.proveedores.update(lista => lista.map(item => item.id === actualizado.id ? actualizado : item));
+        this.proveedorSeleccionadoId.set(actualizado.id);
+        this.panelModo.set('historial');
+        this.limpiarPedido();
+        this.cerrarDetallePedido();
+        this.mensajeAccion.set('Pedido agregado correctamente');
+      },
+      error: () => {
+        this.mensajeAccion.set('Ocurrió un error al registrar el pedido en el servidor. Por favor reintente.');
+      }
     });
   }
 
@@ -343,22 +374,8 @@ export class VerProveedoresComponent implements OnInit {
   }
 
   private calcularMontoEstimado(): number {
-    const precios: Record<string, number> = {
-      '1': 1200,
-      '2': 900,
-      '3': 1500,
-      '4': 600,
-      '5': 1100,
-      '6': 7500,
-      '7': 120,
-      '8': 300,
-      '9': 800,
-      '10': 700,
-      '11': 4500
-    };
-
     return this.pedidoItems().reduce((total, item) => {
-      const base = precios[item.id] ?? 500;
+      const base = item.precioUnitario ?? this.preciosMock[item.id] ?? 500;
       return total + base * item.cantidad;
     }, 0);
   }

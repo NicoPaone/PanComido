@@ -112,3 +112,21 @@
 	.checkbox-pill { padding: 0.35rem 0.6rem; font-size: 0.9rem }
 	.chip { padding: 6px 10px; font-size: 0.9rem }
 }
+
+.error-text {
+	color: #dc2626;
+	font-size: 0.78rem;
+	font-weight: 600;
+	margin-top: 0.2rem;
+	display: block;
+}
+
+.custom-input.is-invalid {
+	border-color: #f87171 !important;
+	background-color: #fef2f2 !important;
+}
+
+.custom-input.is-invalid:focus {
+	border-color: #ef4444 !important;
+	box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}

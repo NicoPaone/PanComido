@@ -126,12 +126,13 @@
             </div>
 
             <div class="picker-grid">
+              <!-- Producto -->
               <label class="field-group product-field">
                 <span>Producto</span>
                 <input
                   type="text"
                   class="form-control custom-input"
-                  placeholder="Escribe un nombre o selecciona una sugerencia"
+                  placeholder="Nombre de producto"
                   [ngModel]="productoTexto()"
                   (ngModelChange)="onProductoTextoChange($event)">
 
@@ -157,8 +158,21 @@
                 }
               </label>
 
+              <!-- Precio Unitario -->
+              <label class="field-group price-field">
+                <span>Precio ($)</span>
+                <input
+                  type="number"
+                  class="form-control custom-input"
+                  min="1"
+                  placeholder="Ej. 150"
+                  [ngModel]="precioProductoManual()"
+                  (ngModelChange)="precioProductoManual.set($event === null || $event === '' ? null : +$event)">
+              </label>
+
+              <!-- Cantidad -->
               <label class="field-group quantity-field">
-                <span>Cantidad {{ productoBaseActual()?.unidadMedida ? '(' + productoBaseActual()!.unidadMedida + ')' : '' }}</span>
+                <span>Cant. {{ productoBaseActual()?.unidadMedida ? '(' + productoBaseActual()!.unidadMedida + ')' : '' }}</span>
                 <input
                   type="number"
                   class="form-control custom-input"
@@ -169,12 +183,14 @@
                   (ngModelChange)="cantidadProducto.set($event === null || $event === '' ? null : +$event)">
               </label>
 
+              <!-- Confirmar -->
               <div class="confirm-field">
                 <span class="confirm-label">Confirmar</span>
                 <app-boton
                   label=""
                   variante="success"
                   tamanio="md"
+                  [disabled]="!productoTexto().trim() || !cantidadProducto() || cantidadProducto()! <= 0 || !precioProductoManual() || precioProductoManual()! <= 0"
                   (clicked)="agregarItemPedido()">
                   <fa-icon [icon]="faCheck"></fa-icon>
                 </app-boton>
@@ -198,7 +214,12 @@
                       <div class="ingredient-card-top">
                         <div>
                           <strong>{{ item.nombre }}</strong>
-                          <div class="ingredient-meta">{{ item.cantidad }} {{ item.unidadMedida }}</div>
+                          <div class="ingredient-meta">
+                            {{ item.cantidad }} {{ item.unidadMedida }} 
+                            @if (item.precioUnitario) {
+                              <span> • Est: ${{ item.precioUnitario | number:'1.0-0' }} c/u</span>
+                            }
+                          </div>
                         </div>
 
                         <app-boton
@@ -352,7 +373,12 @@
             <div class="pedido-modal-item">
               <div>
                 <strong>{{ item.nombre }}</strong>
-                <div class="history-date">{{ item.id }}</div>
+                <div class="history-date">
+                  ID: {{ item.id }}
+                  @if (item.precioUnitario) {
+                    <span> • Precio: ${{ item.precioUnitario | number:'1.0-0' }} c/u</span>
+                  }
+                </div>
               </div>
 
               <span class="pedido-modal-quantity">{{ item.cantidad }} {{ item.unidadMedida }}</span>
@@ -362,6 +388,4 @@
       </div>
     </div>
   }
-
-  <!-- Nuevo proveedor moved to separate page: /gerente/nuevo-proveedor -->
 </div>

@@ -51,7 +51,10 @@ export class DetalleRecetaComponent {
     this.notificarCambio();
   }
 
-  onCantidadCambiada() {
+  onCantidadCambiada(item: RecetaIngrediente) {
+    if (item.cantidad === null || item.cantidad === undefined || item.cantidad < 0.01) {
+      item.cantidad = 0.01;
+    }
     this.notificarCambio();
   }
 
