@@ -1,8 +1,7 @@
 import { Component, inject, signal, computed, effect, DestroyRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { ToggleComponent } from '../../../../shared/ui/toggle/toggle';
 import { DetalleRecetaComponent } from '../components/detalle-receta/detalle-receta';
@@ -12,7 +11,7 @@ import { PlatoService, calcularCostoReceta } from '../../../../core/services/pla
 @Component({
   selector: 'app-crear-plato',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, Boton, ToggleComponent, DetalleRecetaComponent],
+  imports: [ReactiveFormsModule, FormsModule, Boton, ToggleComponent, DetalleRecetaComponent],
   templateUrl: './crear-plato.html',
   styleUrl: './crear-plato.css'
 })
@@ -51,18 +50,28 @@ export class CrearPlatoComponent {
     { url: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=200&h=150', label: 'Hamburguesa' }
   ];
 
+  // Convertimos los observables de valor y estado del formulario a Signals
+  private readonly formValue = toSignal(this.platoForm.valueChanges, {
+    initialValue: this.platoForm.value
+  });
+
+  private readonly formStatus = toSignal(this.platoForm.statusChanges, {
+    initialValue: this.platoForm.status
+  });
+
   costoSugerido = computed(() => {
     return calcularCostoReceta(this.receta());
   });
 
   precioEsMenorQueCosto = computed(() => {
-    const pVenta = this.platoForm.get('precioVenta')?.value ?? 0;
-    const pCosto = this.platoForm.get('costo')?.value ?? 0;
+    const currentVal = this.formValue();
+    const pVenta = currentVal?.precioVenta ?? 0;
+    const pCosto = currentVal?.costo ?? 0;
     return pVenta > 0 && pCosto > 0 && pVenta <= pCosto;
   });
 
   puedeGuardar = computed(() => {
-    return this.platoForm.valid;
+    return this.formStatus() === 'VALID';
   });
 
   constructor() {

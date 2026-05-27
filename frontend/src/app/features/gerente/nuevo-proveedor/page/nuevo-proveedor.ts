@@ -1,9 +1,8 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal, DestroyRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faXmark, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Router } from '@angular/router';
 import { ProveedorService } from '../../../../core/services/proveedor.service';
@@ -13,7 +12,7 @@ import { NuevoProveedor } from '../../../../core/models/proveedor';
 @Component({
   selector: 'app-nuevo-proveedor',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, FontAwesomeModule, Boton],
+  imports: [ReactiveFormsModule, FormsModule, FontAwesomeModule, Boton],
   templateUrl: './nuevo-proveedor.html',
   styleUrls: ['./nuevo-proveedor.css']
 })
@@ -50,8 +49,13 @@ export class NuevoProveedorComponent {
   faTrash = faTrash;
   availableCategories = ['Distribuidora', 'Mayorista', 'Minorista', 'Insumos'];
 
+  // Convertimos el observable del estado del formulario a Signal
+  private readonly formStatus = toSignal(this.proveedorForm.statusChanges, {
+    initialValue: this.proveedorForm.status
+  });
+
   puedeGuardar = computed(() => {
-    return this.proveedorForm.valid && this.categorias().length > 0 && this.gerenteValidado();
+    return this.formStatus() === 'VALID' && this.categorias().length > 0 && this.gerenteValidado();
   });
 
   validarCredencialesGerente(): void {

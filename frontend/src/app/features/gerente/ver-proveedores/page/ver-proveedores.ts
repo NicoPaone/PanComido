@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal, ElementRef, viewChild, DestroyRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -17,7 +17,7 @@ import { ProductoStockMock, UnidadMedida } from '../../../../core/model/producto
 @Component({
   selector: 'app-ver-proveedores',
   standalone: true,
-  imports: [CommonModule, FormsModule, FontAwesomeModule, Buscador, Boton, Dropdown, PageToolbar, ProveedorListComponent, RouterModule],
+  imports: [DatePipe, DecimalPipe, FormsModule, FontAwesomeModule, Buscador, Boton, Dropdown, PageToolbar, ProveedorListComponent, RouterModule],
   templateUrl: './ver-proveedores.html',
   styleUrls: ['./ver-proveedores.css']
 })
