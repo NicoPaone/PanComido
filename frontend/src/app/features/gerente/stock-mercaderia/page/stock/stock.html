@@ -10,7 +10,7 @@
 
     <app-boton 
       trigger
-      [label]="categoria() ?  categoria() : 'Categorías'" 
+      [label]="categoria() || 'Categorías'"
       variante="teal" 
       tamanio="md">
     </app-boton>
@@ -52,5 +52,5 @@
 </div>
 
  <!-- ?ESTO ES NECESARIO PARA RENDERIZAR EL MODAL EN LA VISTA -->
-<app-modal #modalFormulario [titulo]="tituloModal()" (cerrado)="productoEditandoId.set(null)">
+<app-modal #modalFormulario [titulo]="tituloModal()" (cerrado)="cerrarYLimpiar(modalFormulario)">
    </app-modal>
