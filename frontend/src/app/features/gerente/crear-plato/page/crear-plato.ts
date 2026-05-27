@@ -1,7 +1,8 @@
-import { Component, inject, signal, computed, effect } from '@angular/core';
+import { Component, inject, signal, computed, effect, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { ToggleComponent } from '../../../../shared/ui/toggle/toggle';
 import { DetalleRecetaComponent } from '../components/detalle-receta/detalle-receta';
@@ -19,6 +20,7 @@ export class CrearPlatoComponent {
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
   private readonly platoService = inject(PlatoService);
+  private readonly destroyRef = inject(DestroyRef);
 
   platoForm = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(3)]],
@@ -120,14 +122,16 @@ export class CrearPlatoComponent {
     };
 
     // NOTE: El endpoint del back para registrar un nuevo plato debe conectarse aquí
-    this.platoService.crearPlato(nuevoPlato).subscribe({
-      next: () => {
-        this.mostrarExito.set(true);
-      },
-      error: () => {
-        // NOTE: El manejo de errores de comunicación debe integrarse aquí
-      }
-    });
+    this.platoService.crearPlato(nuevoPlato)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.mostrarExito.set(true);
+        },
+        error: () => {
+          // NOTE: El manejo de errores de comunicación debe integrarse aquí
+        }
+      });
   }
 
   cerrarExito() {

@@ -298,7 +298,7 @@
                       <div class="history-date">{{ pedido.fecha | date:'dd/MM/yyyy' }}</div>
                     </div>
 
-                    <span class="estado-pill" [ngClass]="getEstadoClase(pedido.estado)">{{ pedido.estado }}</span>
+                    <span class="estado-pill" [class]="getEstadoClase(pedido.estado)">{{ pedido.estado }}</span>
                   </div>
 
                   <div class="history-meta">
@@ -325,67 +325,69 @@
   </div>
 
   @if (pedidoHistorialSeleccionado(); as pedido) {
-    <div class="pedido-modal-overlay" (click)="cerrarDetallePedido()">
-      <div class="pedido-modal-card" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="pedido-modal-title" (click)="$event.stopPropagation()" (keydown.escape)="cerrarDetallePedido()">
-        <div class="pedido-modal-header">
-          <div>
-            <p class="detail-kicker mb-1">Detalle del pedido</p>
-            <h3 id="pedido-modal-title" class="pedido-modal-title mb-0">{{ pedido.concepto }}</h3>
+    @defer (on idle) {
+      <div class="pedido-modal-overlay" (click)="cerrarDetallePedido()">
+        <div #pedidoModalCard class="pedido-modal-card" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="pedido-modal-title" (click)="$event.stopPropagation()" (keydown.escape)="cerrarDetallePedido()">
+          <div class="pedido-modal-header">
+            <div>
+              <p class="detail-kicker mb-1">Detalle del pedido</p>
+              <h3 id="pedido-modal-title" class="pedido-modal-title mb-0">{{ pedido.concepto }}</h3>
+            </div>
+
+            <button type="button" class="pedido-modal-close" aria-label="Cerrar detalle" (click)="cerrarDetallePedido()">
+              <fa-icon [icon]="faXmark"></fa-icon>
+            </button>
           </div>
 
-          <button type="button" class="pedido-modal-close" aria-label="Cerrar detalle" (click)="cerrarDetallePedido()">
-            <fa-icon [icon]="faXmark"></fa-icon>
-          </button>
-        </div>
+          <div class="pedido-modal-meta">
+            <span>{{ pedido.fecha | date:'dd/MM/yyyy HH:mm' }}</span>
+            <span class="estado-pill" [class]="getEstadoClase(pedido.estado)">{{ pedido.estado }}</span>
+          </div>
 
-        <div class="pedido-modal-meta">
-          <span>{{ pedido.fecha | date:'dd/MM/yyyy HH:mm' }}</span>
-          <span class="estado-pill" [ngClass]="getEstadoClase(pedido.estado)">{{ pedido.estado }}</span>
-        </div>
+          <div class="pedido-modal-summary-row">
+            <span>{{ pedido.items.length }} ítems</span>
+            <span class="summary-dot">•</span>
+            <strong class="summary-amount">Monto: ${{ pedido.monto | number:'1.0-0' }}</strong>
+          </div>
 
-        <div class="pedido-modal-summary-row">
-          <span>{{ pedido.items.length }} ítems</span>
-          <span class="summary-dot">•</span>
-          <strong class="summary-amount">Monto: ${{ pedido.monto | number:'1.0-0' }}</strong>
-        </div>
+          <div class="pedido-modal-grid">
+            <article class="pedido-modal-info">
+              <span class="info-label">Monto</span>
+              <strong>${{ pedido.monto | number:'1.0-0' }}</strong>
+            </article>
 
-        <div class="pedido-modal-grid">
-          <article class="pedido-modal-info">
-            <span class="info-label">Monto</span>
-            <strong>${{ pedido.monto | number:'1.0-0' }}</strong>
-          </article>
+            <article class="pedido-modal-info">
+              <span class="info-label">Ítems</span>
+              <strong>{{ pedido.items.length }}</strong>
+            </article>
 
-          <article class="pedido-modal-info">
-            <span class="info-label">Ítems</span>
-            <strong>{{ pedido.items.length }}</strong>
-          </article>
+            <article class="pedido-modal-info pedido-modal-full">
+              <span class="info-label">Observación</span>
+              <strong>{{ pedido.observacion }}</strong>
+            </article>
+          </div>
 
-          <article class="pedido-modal-info pedido-modal-full">
-            <span class="info-label">Observación</span>
-            <strong>{{ pedido.observacion }}</strong>
-          </article>
-        </div>
+          <div class="pedido-modal-items">
+            <h4 class="section-title mb-2">Productos incluidos</h4>
 
-        <div class="pedido-modal-items">
-          <h4 class="section-title mb-2">Productos incluidos</h4>
-
-          @for (item of pedido.items; track item.id) {
-            <div class="pedido-modal-item">
-              <div>
-                <strong>{{ item.nombre }}</strong>
-                <div class="history-date">
-                  ID: {{ item.id }}
-                  @if (item.precioUnitario) {
-                    <span> • Precio: ${{ item.precioUnitario | number:'1.0-0' }} c/u</span>
-                  }
+            @for (item of pedido.items; track item.id) {
+              <div class="pedido-modal-item">
+                <div>
+                  <strong>{{ item.nombre }}</strong>
+                  <div class="history-date">
+                    ID: {{ item.id }}
+                    @if (item.precioUnitario) {
+                      <span> • Precio: ${{ item.precioUnitario | number:'1.0-0' }} c/u</span>
+                    }
+                  </div>
                 </div>
-              </div>
 
-              <span class="pedido-modal-quantity">{{ item.cantidad }} {{ item.unidadMedida }}</span>
-            </div>
-          }
+                <span class="pedido-modal-quantity">{{ item.cantidad }} {{ item.unidadMedida }}</span>
+              </div>
+            }
+          </div>
         </div>
       </div>
-    </div>
+    }
   }
 </div>

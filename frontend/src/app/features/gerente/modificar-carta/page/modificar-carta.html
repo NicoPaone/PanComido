@@ -45,17 +45,23 @@
     (deletePlato)="onDeletePlato($event)">
   </app-lista-platos>
 
-  <app-modal-editar-plato
-    *ngIf="platoAEditar()"
-    [plato]="platoAEditar()!"
-    (save)="onSavePlato($event)"
-    (close)="onCloseModals()">
-  </app-modal-editar-plato>
+  @if (platoAEditar()) {
+    @defer (on idle) {
+      <app-modal-editar-plato
+        [plato]="platoAEditar()!"
+        (save)="onSavePlato($event)"
+        (close)="onCloseModals()">
+      </app-modal-editar-plato>
+    }
+  }
 
-  <app-modal-eliminar-plato
-    *ngIf="platoAEliminar()"
-    [plato]="platoAEliminar()!"
-    (confirm)="onConfirmDelete()"
-    (close)="onCloseModals()">
-  </app-modal-eliminar-plato>
+  @if (platoAEliminar()) {
+    @defer (on idle) {
+      <app-modal-eliminar-plato
+        [plato]="platoAEliminar()!"
+        (confirm)="onConfirmDelete()"
+        (close)="onCloseModals()">
+      </app-modal-eliminar-plato>
+    }
+  }
 </div>
