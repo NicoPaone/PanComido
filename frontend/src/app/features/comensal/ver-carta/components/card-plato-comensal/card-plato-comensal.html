@@ -4,11 +4,7 @@
 
     <!-- Imagen -->
     <div class="col-4">
-      <img 
-        [src]="plato.imagen"
-        class="img-fluid rounded-4 object-fit-cover dish-img"
-        [alt]="plato.nombre"
-      >
+      <img [src]="plato.imagen" class="img-fluid rounded-4 object-fit-cover dish-img" [alt]="plato.nombre">
     </div>
 
     <!-- Info -->
@@ -18,11 +14,19 @@
 
         <h5 class="fw-bold mb-1 text-dark">
           {{ plato.nombre }}
+          
         </h5>
+        @if (plato.platoDelDia) {
+
+        <span class="badge bg-success mb-2">
+          Plato del día
+        </span>
+
+        }
 
         <p class="mb-1 text-muted small">
-          ⏱ {{ plato.tiempo }} min 
-           
+          ⏱ {{ plato.tiempo }} min
+
         </p>
 
         <p class="mb-2 fw-bold text-dark fs-5">
@@ -30,20 +34,7 @@
         </p>
 
       </div>
-
-      <app-boton
-        variant="add"
-        class="w-100"
-        label="Agregar"
-         (click)="agregar()"
-      >
-
-        <span class="material-symbols-outlined">
-          add
-        </span>
-        <span>
-          Agregar
-        </span>        
+      <app-boton variante="success" class="w-100" label="Agregar" (click)="agregar()">
 
       </app-boton>
 

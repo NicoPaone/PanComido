@@ -48,6 +48,7 @@ export class VerCartaComponent {
       id: 1,
       nombre: 'Milanesa napolitana',
       descripcion: 'Milanesa de carne con salsa de tomate, jamón y mozzarella gratinada.',
+      platoDelDia: true,
       precioVenta: 16200,
       costo: 13160,
       tiempo: 25,
@@ -61,6 +62,7 @@ export class VerCartaComponent {
       id: 2,
       nombre: 'Porción de papas',
       descripcion: 'Papas fritas crocantes acompañadas con salsa especial de la casa.',
+      platoDelDia: false,
       precioVenta: 10000,
       costo: 7000,
       tiempo: 15,
@@ -74,6 +76,7 @@ export class VerCartaComponent {
       id: 3,
       nombre: 'Pasta al pesto',
       descripcion: 'Pasta artesanal con salsa pesto de albahaca fresca y queso parmesano.',
+      platoDelDia: false,
       precioVenta: 12600,
       costo: 8700,
       tiempo: 20,
@@ -87,12 +90,13 @@ export class VerCartaComponent {
       id: 4,
       nombre: 'Pizza de muzarella',
       descripcion: 'Pizza clásica con abundante mozzarella y salsa de tomate casera.',
+      platoDelDia: false,
       precioVenta: 12600,
       costo: 8700,
       tiempo: 25,
       tipo: 'principal',
       bebida: '',
-      restriccion: '',
+      restriccion: 'vegetariano',
       visible: true,
       imagen: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=200&h=150'
     },
@@ -100,6 +104,7 @@ export class VerCartaComponent {
       id: 5,
       nombre: 'Pastel de papa',
       descripcion: 'Pastel casero de carne condimentada y puré de papas gratinado.',
+      platoDelDia: false,
       precioVenta: 14800,
       costo: 9320,
       tiempo: 30,
@@ -113,6 +118,7 @@ export class VerCartaComponent {
       id: 6,
       nombre: 'Pollo al curry',
       descripcion: 'Pollo cocinado en salsa curry suave acompañado con arroz especiado.',
+      platoDelDia: false,
       precioVenta: 19500,
       costo: 8600,
       tiempo: 25,
@@ -126,6 +132,7 @@ export class VerCartaComponent {
       id: 7,
       nombre: 'Solomillo de cerdo con salsa',
       descripcion: 'Solomillo de cerdo tierno servido con salsa cremosa y vegetales.',
+      platoDelDia: false,
       precioVenta: 19460,
       costo: 10120,
       tiempo: 45,
@@ -139,12 +146,13 @@ export class VerCartaComponent {
       id: 8,
       nombre: 'Risotto a la crema',
       descripcion: 'Risotto cremoso preparado con queso parmesano y hierbas frescas.',
+      platoDelDia: false,
       precioVenta: 29460,
       costo: 20120,
       tiempo: 30,
       tipo: 'principal',
       bebida: '',
-      restriccion: '',
+      restriccion: 'vegetariano',
       visible: false,
       imagen: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&q=80&w=200&h=150'
     }
@@ -172,93 +180,123 @@ export class VerCartaComponent {
 
   }
 
-  ordenar(tipo: string) {
+ordenActual = 'default';
 
-    this.tipoOrden = tipo;
+ordenar(tipo: string) {
 
-    switch (tipo) {
+  this.tipoOrden = tipo;
 
-      case 'default':
+  this.aplicarFiltros();
 
-        this.filteredPlatos = [...this.platos];
-
-        break;
-
-      case 'precio-menor':
-
-        this.filteredPlatos.sort(
-          (a, b) => a.precioVenta - b.precioVenta
-        );
-
-        break;
-
-      case 'precio-mayor':
-
-        this.filteredPlatos.sort(
-          (a, b) => b.precioVenta - a.precioVenta
-        );
-
-        break;
-
-      case 'tiempo':
-
-        this.filteredPlatos.sort(
-          (a, b) => a.tiempo - b.tiempo
-        );
-
-        break;
-
-      case 'nombre':
-
-        this.filteredPlatos.sort(
-          (a, b) => a.nombre.localeCompare(b.nombre)
-        );
-
-        break;
-
-    }
-
-  }
+}
 
 
+aplicarFiltros() {
 
-  aplicarFiltros() {
+  console.log(this.tiposSeleccionados);
+  console.log(this.bebidasSeleccionadas);
+  console.log(this.restriccionesSeleccionadas);
 
-    console.log(this.tiposSeleccionados);
-    console.log(this.bebidasSeleccionadas);
-    console.log(this.restriccionesSeleccionadas);
+  this.filteredPlatos = this.platos.filter(plato => {
 
-    this.filteredPlatos = this.platos.filter(plato => {
-
-      const cumpleTipo =
-
-        this.tiposSeleccionados.length === 0 ||
-
-        this.tiposSeleccionados.includes(plato.tipo);
-
-      const cumpleBebida =
-
-        this.bebidasSeleccionadas.length === 0 ||
-
-        this.bebidasSeleccionadas.includes(plato.bebida);
-
-      const cumpleRestriccion =
-
-        this.restriccionesSeleccionadas.length === 0 ||
-
-        this.restriccionesSeleccionadas.includes(plato.restriccion);
-
-      return (
-        cumpleTipo &&
-        cumpleBebida &&
-        cumpleRestriccion
+    const filtroPlatoDelDia =
+      this.tiposSeleccionados.includes(
+        'plato-del-dia'
       );
 
-    });
+    const tiposNormales =
+      this.tiposSeleccionados.filter(
+        tipo => tipo !== 'plato-del-dia'
+      );
 
-    this.mostrarFiltros = false;
+    const cumpleTipo =
+
+      tiposNormales.length === 0 ||
+
+      tiposNormales.includes(plato.tipo);
+
+    const cumplePlatoDelDia =
+
+      !filtroPlatoDelDia ||
+
+      plato.platoDelDia;
+
+    const cumpleBebida =
+
+      this.bebidasSeleccionadas.length === 0 ||
+
+      this.bebidasSeleccionadas.includes(
+        plato.bebida
+      );
+
+    const cumpleRestriccion =
+
+      this.restriccionesSeleccionadas.length === 0 ||
+
+      this.restriccionesSeleccionadas.includes(
+        plato.restriccion
+      );
+
+    return (
+      cumpleTipo &&
+      cumplePlatoDelDia &&
+      cumpleBebida &&
+      cumpleRestriccion
+    );
+
+  });
+
+  // ORDENAR DESPUÉS DE FILTRAR
+
+  switch (this.tipoOrden) {
+
+    case 'precio-menor':
+
+      this.filteredPlatos.sort(
+        (a, b) => a.precioVenta - b.precioVenta
+      );
+
+      break;
+
+    case 'precio-mayor':
+
+      this.filteredPlatos.sort(
+        (a, b) => b.precioVenta - a.precioVenta
+      );
+
+      break;
+
+    case 'tiempo':
+
+      this.filteredPlatos.sort(
+        (a, b) => a.tiempo - b.tiempo
+      );
+
+      break;
+
+    case 'nombre':
+
+      this.filteredPlatos.sort(
+        (a, b) => a.nombre.localeCompare(b.nombre)
+      );
+
+      break;
+
+    case 'default':
+
+    default:
+
+      this.filteredPlatos = [
+        ...this.filteredPlatos
+      ];
+
+      break;
 
   }
+
+  this.mostrarFiltros = false;
+
+}
   toggleFiltro(
     event: Event,
     lista: string[]
@@ -288,4 +326,23 @@ export class VerCartaComponent {
 
   }
 
+ mostrarTodos(event: any) {
+
+  if (event.target.checked) {
+
+    this.tiposSeleccionados = [];
+
+    this.bebidasSeleccionadas = [];
+
+    this.restriccionesSeleccionadas = [];
+
+    this.tipoOrden = 'default';
+
+    this.filteredPlatos = [
+      ...this.platos
+    ];
+
+  }
+
+}
 }

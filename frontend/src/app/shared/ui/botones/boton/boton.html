@@ -1,9 +1,14 @@
-<button class="btn {{ customClass }}" [ngClass]="{
+<!-- <button 
+  class="btn {{ customClass }}" 
+  [ngClass]="{
     'btn-teal': variant === 'teal',
     'btn-orange': variant === 'orange',
     'btn-action btn-edit': variant === 'edit',
     'btn-action btn-delete': variant === 'delete',
    'btn-add': variant === 'add'
-  }">
+  }"
+  </button> -->
+<button [type]="type()" [disabled]="disabled()" [class]="clasesCalculadas()" (click)="manejarClick($event)">
+  {{ label() }}
   <ng-content></ng-content>
 </button>
