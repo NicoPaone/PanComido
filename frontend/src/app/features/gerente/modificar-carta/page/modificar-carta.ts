@@ -1,17 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, input, OnInit, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Buscador } from '../../../../shared/ui/buscador/buscador';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Plato } from '../../../../core/models/plato';
 import { ListaPlatosComponent } from '../components/lista-platos/lista-platos';
-import { BotonCategoriasComponent } from '../../../../shared/ui/botones/boton-categorias/boton-categorias';
 import { PageToolbar } from '../../../../shared/ui/page-toolbar/page-toolbar';
 import { Dropdown } from '../../../../shared/ui/dropdown/dropdown';
+import { Modal } from '../../../../shared/ui/modal/modal';
+import { FormPlatoEditar } from "../components/form-plato-editar/form-plato-editar";
 
 @Component({
   selector: 'app-modificar-carta',
   standalone: true,
-  imports: [CommonModule, Buscador, Boton, ListaPlatosComponent, BotonCategoriasComponent,Dropdown, PageToolbar],
+  imports: [CommonModule, Buscador, Boton, ListaPlatosComponent, Dropdown, PageToolbar, Modal, FormPlatoEditar],
   templateUrl: './modificar-carta.html',
   styleUrls: ['./modificar-carta.css']
 })
@@ -82,12 +83,38 @@ export class ModificarCartaComponent implements OnInit {
       imagen: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&q=80&w=200&h=150'
     }
   ];
-
-  filteredPlatos: Plato[] = [];
-
+  
+  
   ngOnInit() {
     this.filteredPlatos = [...this.platos];
   }
+  
+  filteredPlatos: Plato[] = [];
+  tamanioMaximo = 500;
+  tituloModal = "Editar plato"
+  categorias = ['Principales', 'Entradas', 'Bebidas', 'Postres'];
+  
+  platoEditandoId = signal<number | null>(null);
+  
+  
+  platoSeleccionado = computed(() => {
+    const id = this.platoEditandoId();
+    if (id === null || id === undefined) return null; 
+    return this.platos.find(p => p.id === id) || null;
+  });
+  
+  abrirModalEditar(modal:Modal, id: number){
+    this.platoEditandoId.set(id);
+    modal.abrir();
+  }
+
+  cerrarYLimpiar(modal: Modal){
+    modal.cerrar();
+    this.platoEditandoId.set(null);
+  }
+
+
+    
 
   onSearch(term: string) {
     const lowerTerm = term.toLowerCase().trim();
@@ -104,12 +131,22 @@ export class ModificarCartaComponent implements OnInit {
     plato.visible = !plato.visible;
   }
 
-  /**
-   * Maneja la selección de una categoría del dropdown
-   * Aquí puedes agregar lógica para filtrar por categoría
-   */
+  
   onCategoriaSeleccionada(categoria: string) {
     console.log('Categoría seleccionada:', categoria);
     // TODO: Agregar lógica de filtro por categoría si el modelo de Plato tiene esa propiedad
+  }
+  
+  guardarPlato(datosEditados: Partial<Plato>, modal: Modal) {
+    const idEdicion = this.platoEditandoId();
+    if (idEdicion) {
+      // Actualizar plato existente
+      const index = this.platos.findIndex(p => p.id === idEdicion);
+      if (index !== -1) {
+        this.platos[index] = { ...this.platos[index], ...datosEditados };
+        console.log('Plato actualizado:', this.platos[index]);
+      }
+    }
+    this.cerrarYLimpiar(modal);
   }
 }

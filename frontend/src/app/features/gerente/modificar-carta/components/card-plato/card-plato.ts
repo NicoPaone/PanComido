@@ -15,6 +15,7 @@ export class CardPlatoComponent {
   
   plato = input.required<Plato>();
   toggleVisible = output<Plato>();
+  editar = output<number>();
   
   onToggle() {
     this.toggleVisible.emit(this.plato());

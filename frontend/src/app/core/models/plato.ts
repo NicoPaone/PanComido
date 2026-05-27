@@ -5,4 +5,6 @@ export interface Plato {
   costo: number;
   visible: boolean;
   imagen: string;
+  tiempoPreparacion?: number; // en minutos
+  categoria?: string;
 }

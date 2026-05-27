@@ -20,7 +20,7 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
     stock: 5, 
     unidadMedida: 'KG',
     fechaVencimiento: '2026-05-17',
-    stockMinimo: 2,
+    stockMinimo: 5,
     categoriaIngrediente: 'Verdura'
   },
   {
@@ -35,7 +35,7 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
   {
     id: 3, 
     nombre: 'Aceite de Girasol',
-    stock: 15, 
+    stock: 3, 
     unidadMedida: 'L',
     fechaVencimiento: '2027-01-20',
     stockMinimo: 5,
@@ -44,7 +44,7 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
   {
     id: 4, 
     nombre: 'Harina 0000',
-    stock: 50, 
+    stock: 1, 
     unidadMedida: 'KG',
     fechaVencimiento: '2026-12-05',
     stockMinimo: 15,
@@ -62,7 +62,7 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
   {
     id: 6, 
     nombre: 'Bife de Chorizo',
-    stock: 30, 
+    stock: 3, 
     unidadMedida: 'KG',
     fechaVencimiento: '2026-05-28',
     stockMinimo: 10,

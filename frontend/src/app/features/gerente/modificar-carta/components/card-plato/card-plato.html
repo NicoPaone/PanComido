@@ -18,7 +18,8 @@
     </div>
     <!-- Actions -->
     <div class="col-12 col-sm-2 d-flex flex-row flex-sm-column justify-content-end justify-content-sm-center align-items-end gap-3 pe-2 mt-3 mt-sm-0">
-      <app-boton [label]="'Editar'" variant="edit">
+      <app-boton [label]="'Editar'" variant="edit"
+       (clicked)="editar.emit(plato().id)">
         <span class="material-symbols-outlined">edit</span>
       </app-boton>
       <app-boton [label]="'Eliminar'" variant="delete">

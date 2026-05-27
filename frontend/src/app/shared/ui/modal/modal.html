@@ -1,4 +1,8 @@
-<dialog #modalRef class="modal-dialog" (close)="onClose()" (click)="onBackdropClick($event)">
+<dialog #modalRef 
+   class="modal-dialog" 
+   [style.maxWidth.px]="maxWidth()"
+   (close)="onClose()"
+   (click)="onBackdropClick($event)">
    <div class="modal-header">
    <h3>{{ titulo() }}</h3>
    <button class="btn-close" (click)="cerrar()">X</button>

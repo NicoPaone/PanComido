@@ -1,14 +1,19 @@
+
 /* La caja blanca del popup */
 .modal-dialog {
   padding: 0;
   border: none;
   border-radius: 8px;
   width: 100%;
-  max-width: 500px; /* Tamaño máximo */
+  max-width: 800px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  background-color: var(--color-cream);
+  /* PARA CENTRADO */
+  position: fixed;
+  inset: 0; /* Es un shorthand moderno para top:0, right:0, bottom:0, left:0 */
+  margin: auto;
 }
 
-/* El fondo oscuro que bloquea la pantalla (Magia nativa de HTML5) */
 .modal-dialog::backdrop {
   background-color: rgba(15, 23, 42, 0.6); /* Un gris azulado oscuro */
   backdrop-filter: blur(2px); /* Efecto difuminado moderno */
@@ -20,8 +25,7 @@
   align-items: center;
   padding: 16px 24px;
   border-bottom: 1px solid var(--gray-200);
-  background-color: #ffffff;
-}
+ background-color: var(--color-cream);}
 
 .modal-header h3 {
   margin: 0;
@@ -39,5 +43,5 @@
 
 .modal-body {
   padding: 24px;
-  background-color: #ffffff;
+  background-color: var(--color-cream);
 }

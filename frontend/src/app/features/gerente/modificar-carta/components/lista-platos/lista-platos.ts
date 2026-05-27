@@ -15,6 +15,7 @@ export class ListaPlatosComponent {
   
   // Salida: evento cuando se toggle la visibilidad de un plato
   toggleVisible = output<Plato>();
+  editar = output<number>();
 
   /**
    * Forward del evento del hijo (card-plato)

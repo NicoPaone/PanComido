@@ -8,11 +8,10 @@ import { Component, ElementRef, input, output, signal, viewChild } from '@angula
 })
 export class Modal {
 
-  ngOnInit(){
-    console.log("Modal inicializado");
-  }
+  
   
   titulo = input<string>();
+  maxWidth = input<number>(500);
 
   cerrado = output<void>();
   modalRef= viewChild.required<ElementRef<HTMLDialogElement>>('modalRef');
