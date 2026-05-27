@@ -21,4 +21,7 @@ export class PedidoService {
   this.pedidos.splice(index, 1);
 
 }
+
+
+
 }
