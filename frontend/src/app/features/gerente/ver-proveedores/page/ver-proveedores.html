@@ -93,12 +93,20 @@
                 <p class="section-subtitle mb-0">Selecciona el proveedor, agrega productos y confirma la lista antes de enviar.</p>
               </div>
 
-              <app-boton
-                label="Ver historial"
-                variante="outline"
-                tamanio="sm"
-                (clicked)="abrirHistorial(proveedor)">
-              </app-boton>
+              <div class="d-flex gap-2 align-items-center">
+                <app-boton
+                  label="Pedido sugerido por IA ✨"
+                  variante="teal"
+                  tamanio="sm"
+                  (clicked)="irAPedidoSugeridoIA(proveedor)">
+                </app-boton>
+                <app-boton
+                  label="Ver historial"
+                  variante="outline"
+                  tamanio="sm"
+                  (clicked)="abrirHistorial(proveedor)">
+                </app-boton>
+              </div>
             </div>
 
             <div class="field-group field-group-wide">

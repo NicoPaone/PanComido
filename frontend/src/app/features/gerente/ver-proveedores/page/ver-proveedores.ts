@@ -147,6 +147,10 @@ export class VerProveedoresComponent implements OnInit {
     this.router.navigate(['/staff', 'gerente', 'nuevo-proveedor']);
   }
 
+  irAPedidoSugeridoIA(proveedor: Proveedor): void {
+    this.router.navigate(['/staff', 'gerente', 'pedido-sugerido-ia', proveedor.id]);
+  }
+
   seleccionarProveedor(proveedor: Proveedor): void {
     this.proveedorSeleccionadoId.set(proveedor.id);
     this.mensajeAccion.set(null);

@@ -23,6 +23,9 @@ export const GERENTE_ROUTES: Routes = [
   {
     path: 'crear-plato',
     loadComponent: () => import('./crear-plato/page/crear-plato').then(m => m.CrearPlatoComponent)
+  },
+  {
+    path: 'pedido-sugerido-ia/:id',
+    loadComponent: () => import('./pedido-sugerido-ia/page/pedido-sugerido-ia').then(m => m.PedidoSugeridoIAComponent)
   }
-
 ];
