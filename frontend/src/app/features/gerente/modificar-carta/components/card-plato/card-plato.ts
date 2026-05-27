@@ -1,5 +1,5 @@
 import { Component, output, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { Plato } from '../../../../../core/models/plato';
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
 import { ToggleComponent } from '../../../../../shared/ui/toggle/toggle';
@@ -7,7 +7,7 @@ import { ToggleComponent } from '../../../../../shared/ui/toggle/toggle';
 @Component({
   selector: 'app-card-plato',
   standalone: true,
-  imports: [CommonModule, Boton, ToggleComponent],
+  imports: [DecimalPipe, Boton, ToggleComponent],
   templateUrl: './card-plato.html',
   styleUrls: ['./card-plato.css'],
 })
