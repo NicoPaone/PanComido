@@ -6,7 +6,7 @@ import { Buscador } from '../../../../../app/shared/ui/buscador/buscador';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 
 import { ListaPlatosComensalComponent } from '../components/lista-platos-comensal/lista-platos-comensal';
-import { BotonCategoriasComponent } from '../../../../shared/ui/botones/boton-categorias/boton-categorias';
+
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 
@@ -22,7 +22,6 @@ import { FormsModule } from '@angular/forms';
     ListaPlatosComensalComponent,
     Buscador,
     Boton,
-    BotonCategoriasComponent,
     FontAwesomeModule,
     FormsModule
   ],
@@ -56,7 +55,7 @@ export class VerCartaComponent {
       bebida: '',
       restriccion: '',
       visible: true,
-      imagen: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&q=80&w=200&h=150'
+      imagen: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKEGXoEhw1noD0K7RBypJC7RrtSX8V42ps2wJ8YgLjagQW_Rn9hnRMM4LFO1cUp0UWLnirJ_JWFHd07pehskFg0VSKOYcQ-ArTILAfLQ&s=10&w=200&h=150'
     },
     {
       id: 2,
@@ -121,7 +120,7 @@ export class VerCartaComponent {
       bebida: '',
       restriccion: '',
       visible: true,
-      imagen: 'https://images.unsplash.com/photo-1565557612662-811c7504ee42?auto=format&fit=crop&q=80&w=200&h=150'
+    imagen: 'https://i.blogs.es/8c3360/pollo_curry/840_560.jpg?w=200&h=150'
     },
     {
       id: 7,
