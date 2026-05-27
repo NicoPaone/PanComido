@@ -19,5 +19,6 @@ export interface Plato {
   visible: boolean;
   imagen: string;
   descripcion: string;
+  platoDelDia: boolean;
   receta?: RecetaIngrediente[];
 }

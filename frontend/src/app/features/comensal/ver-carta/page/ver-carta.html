@@ -5,9 +5,7 @@
 
     <div class="d-flex align-items-center gap-2">
 
-      <img 
-        
-      >
+      <img>
 
     </div>
 
@@ -32,95 +30,81 @@
   </div>
 
   <!-- BUSCADOR -->
-<div class="d-flex gap-2 mb-4">
+  <div class="d-flex gap-2 mb-4">
 
-  <!-- BUSCADOR -->
-  <div class="flex-grow-1">
+    <!-- BUSCADOR -->
+    <div class="flex-grow-1">
 
-    <app-buscador
-      placeholder="Buscar plato"
-      (busquedaCambiada)="onSearch($event)">
-    </app-buscador>
+      <app-buscador placeholder="Buscar plato" (busquedaCambiada)="onSearch($event)">
+      </app-buscador>
+
+    </div>
+
+    <!-- FILTRO -->
+    <button class="btn filtro-btn shadow-sm rounded-3 px-3" (click)="mostrarFiltros = true">
+
+      <fa-icon [icon]="faFilter"></fa-icon>
+
+    </button>
+
+
 
   </div>
-
-  <!-- FILTRO -->
-<button
-  class="btn filtro-btn shadow-sm rounded-3 px-3"
-  (click)="mostrarFiltros = true"
->
-
-  <fa-icon [icon]="faFilter"></fa-icon>
-
-</button>
-
-</div>
 
   <!-- BOTONES -->
-<div class="d-flex mb-4 justify-content-between gap-3">
+  <div class="d-flex mb-4 justify-content-between gap-3">
 
-  <div>
+    <div>
 
-    <app-boton
-      variant="teal"
-      (click)="irAPedido()"
-      label="Pedido">
+      <app-boton variante="teal" (click)="irAPedido()" label="Pedido">
 
-      Pedido
 
-    </app-boton>
 
-  </div>
+      </app-boton>
 
-  <div>
+    </div>
 
-   <select
-    class="custom-select"
-  (change)="ordenar($any($event.target).value)"
->
+    <div>
 
-  <option value="">
-    Ordenar por
-  </option>
+      <select class="custom-select" (change)="ordenar($any($event.target).value)">
 
- <option value="default">
-    Predeterminado
-  </option>
+        <option value="">
+          Ordenar por
+        </option>
 
-  <option value="precio-menor">
-    Menor precio
-  </option>
+        <option value="default">
+          Predeterminado
+        </option>
 
-  <option value="precio-mayor">
-    Mayor precio
-  </option>
+        <option value="precio-menor">
+          Menor precio
+        </option>
 
-  <option value="tiempo">
-    Más rápidos
-  </option>
+        <option value="precio-mayor">
+          Mayor precio
+        </option>
 
-  <option value="nombre">
-    A-Z
-  </option>
+        <option value="tiempo">
+          Más rápidos
+        </option>
 
-</select>
+        <option value="nombre">
+          A-Z
+        </option>
+
+      </select>
+
+    </div>
 
   </div>
-
-</div>
   <!-- LISTA -->
-  <app-lista-platos-comensal
-    [platos]="filteredPlatos"
-    (agregarPedido)="agregarAlPedido($event)">
+  <app-lista-platos-comensal [platos]="filteredPlatos" (agregarPedido)="agregarAlPedido($event)">
   </app-lista-platos-comensal>
 
 </div>
 
 <!-- MODAL FILTROS -->
-<div
-  *ngIf="mostrarFiltros"
-  class="filtros-overlay"
->
+<div *ngIf="mostrarFiltros" class="filtros-overlay">
 
   <!-- HEADER -->
   <div class="d-flex justify-content-between align-items-center mb-4">
@@ -129,55 +113,57 @@
       Filtros
     </h3>
 
-    <span
-      class="material-symbols-outlined"
-      style="cursor:pointer;"
-      (click)="mostrarFiltros = false"
-    >
+    <span class="material-symbols-outlined" style="cursor:pointer;" (click)="mostrarFiltros = false">
       close
     </span>
 
+
+
   </div>
+
+
 
   <!-- TIPO -->
   <div class="mb-4">
+<div class="d-flex flex-column gap-2 mb-4">
+    <label>
 
+      <input type="checkbox" (change)="mostrarTodos($event)">
+
+      Mostrar todo
+
+    </label>
+</div>
     <h5 class="fw-semibold mb-3">
       Tipo de plato
     </h5>
-
+ 
     <div class="d-flex flex-column gap-2">
 
-     <label>
 
-<input
-  type="checkbox"
-  value="entrada"
-  (change)="toggleFiltro($event, tiposSeleccionados)"
->
-
-  Entrada
-
-</label>
-<label>
-
-<input
-  type="checkbox"
-  value="principal"
-  (change)="toggleFiltro($event, tiposSeleccionados)"
->
-
-  Principal
-
-</label>
 
       <label>
-        <input
-  type="checkbox"
-  value="postre"
-  (change)="toggleFiltro($event, tiposSeleccionados)"
->
+
+        <input type="checkbox" value="entrada" (change)="toggleFiltro($event, tiposSeleccionados)">
+
+        Entrada
+
+      </label>
+      <label>
+
+        <input type="checkbox" value="principal" (change)="toggleFiltro($event, tiposSeleccionados)">
+
+        Principal
+
+      </label>
+
+      <label>
+        <input type="checkbox" value="postre" (change)="toggleFiltro($event, tiposSeleccionados)">
         Postre
+      </label>
+      <label>
+        <input type="checkbox" value="plato-del-dia" (change)="toggleFiltro($event, tiposSeleccionados)">
+        Plato del día
       </label>
 
     </div>
@@ -194,20 +180,12 @@
     <div class="d-flex flex-column gap-2">
 
       <label>
-        <input
-  type="checkbox"
-  value="sin-alcohol"
-  (change)="toggleFiltro($event, bebidasSeleccionadas)"
->
+        <input type="checkbox" value="sin-alcohol" (change)="toggleFiltro($event, bebidasSeleccionadas)">
         Sin alcohol
       </label>
 
       <label>
-        <input
-  type="checkbox"
-  value="con-alcohol"
-  (change)="toggleFiltro($event, bebidasSeleccionadas)"
->
+        <input type="checkbox" value="con-alcohol" (change)="toggleFiltro($event, bebidasSeleccionadas)">
         Con alcohol
       </label>
 
@@ -225,28 +203,16 @@
     <div class="d-flex flex-column gap-2">
 
       <label>
-   <input
-  type="checkbox"
-  value="vegano"
-  (change)="toggleFiltro($event, restriccionesSeleccionadas)"
->Vegano
+        <input type="checkbox" value="vegano" (change)="toggleFiltro($event, restriccionesSeleccionadas)">Vegano
       </label>
 
       <label>
-       <input
-  type="checkbox"
-  value="vegetariano"
-  (change)="toggleFiltro($event, restriccionesSeleccionadas)"
->
+        <input type="checkbox" value="vegetariano" (change)="toggleFiltro($event, restriccionesSeleccionadas)">
         Vegetariano
       </label>
 
       <label>
-       <input
-  type="checkbox"
-  value="celiaco"
-  (change)="toggleFiltro($event, restriccionesSeleccionadas)"
->
+        <input type="checkbox" value="celiaco" (change)="toggleFiltro($event, restriccionesSeleccionadas)">
         Celíaco
       </label>
 
@@ -255,11 +221,7 @@
   </div>
 
   <!-- BOTON -->
-  <app-boton
-    variant="add"
-    customClass="w-100"
-      (click)="aplicarFiltros()"
-  >
+  <app-boton variante="success" customClass="w-100" (click)="aplicarFiltros()">
 
     Aplicar filtros
 
