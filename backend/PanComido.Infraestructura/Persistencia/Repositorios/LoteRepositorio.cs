@@ -16,15 +16,6 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             _ctx = ctx;
         }
-        public Task<List<Lote>> ObtenerLoteDeInsumoOrdenadoPorVencimientoAscendenteAsync(int insumoId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<Lote>> ObtenerLoteDeInsumoOrdenadoPorVencimientoDescendenteAsync(int insumoId)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<decimal> ObtenerStockTotalDeInsumo(int insumoId)
         {

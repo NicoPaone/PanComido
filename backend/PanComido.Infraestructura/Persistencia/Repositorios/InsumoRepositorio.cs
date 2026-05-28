@@ -24,7 +24,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             _mapper = mapper;
         }
 
-        // query base: articulos que tienen fila en insumo
+        // Consulta base donde obtenemos articulos que son insumos, con toda su info relacionada
+        // (ingrediente, categoria ingrediente, unidad medida, bebida y categoria bebida)
         private IQueryable<EF.Articulo> BaseQuery(int restauranteId) => _ctx.Articulos
         // 1. Filtramos usando a.Insumo
         .Where(a => a.RestauranteId == restauranteId
@@ -44,25 +45,11 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         .Include(a => a.Insumo)
             .ThenInclude(i => i.Bebidum)
                 .ThenInclude(b => b.CategoriaBebida);
-        public Task<DOM.Insumo> ObtenerInsumoPorIdAsync(int restauranteId, int idInsumo)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<List<DOM.Insumo>> ObtenerInsumosAsync(int restauranteId)
         {
             var efLista = await BaseQuery(restauranteId).ToListAsync();
             return efLista.Select(a => _mapper.paraDominio(a)).ToList();
-        }
-
-        public Task<List<DOM.Insumo>> ObtenerInsumosPorBusquedaAsync(int restauranteId, string busqueda)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<DOM.Insumo>> ObtenerInsumosPorCategoriaAsync(int restauranteId, string categoria)
-        {
-            throw new NotImplementedException();
         }
     }
 }
