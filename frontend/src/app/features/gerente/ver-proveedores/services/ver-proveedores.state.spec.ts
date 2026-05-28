@@ -3,7 +3,7 @@ import { of } from 'rxjs';
 import { VerProveedoresStateService } from './ver-proveedores.state';
 import { VerProveedoresApiService } from './ver-proveedores.api';
 import { Proveedor, PedidoProveedor } from '../../../../core/models/proveedor';
-import { ProductoStockMock } from '../../../../core/model/producto-stock-mock';
+import { Insumo as ProductoStockMock } from '../../../../core/models/producto-stock';
 import { vi } from 'vitest';
 
 describe('VerProveedoresStateService', () => {
@@ -38,8 +38,8 @@ describe('VerProveedoresStateService', () => {
   ];
 
   const mockProductos: ProductoStockMock[] = [
-    { id: '1', nombre: 'Ajo', stock: 10, stockMinimo: 5, unidadMedida: 'KG', categoriaIngrediente: 'Verdura', fechaVencimiento: '2026-06-30' },
-    { id: '2', nombre: 'Cebolla', stock: 2, stockMinimo: 8, unidadMedida: 'KG', categoriaIngrediente: 'Verdura', fechaVencimiento: '2026-06-30' }
+    { id: 1, nombre: 'Ajo', stock: 10, stockMinimo: 5, unidadMedida: 'KG', categoriaIngrediente: 'Verdura', fechaVencimiento: '2026-06-30' },
+    { id: 2, nombre: 'Cebolla', stock: 2, stockMinimo: 8, unidadMedida: 'KG', categoriaIngrediente: 'Verdura', fechaVencimiento: '2026-06-30' }
   ];
 
   beforeEach(() => {
@@ -147,7 +147,7 @@ describe('VerProveedoresStateService', () => {
     const prod = mockProductos[0]; // Ajo (unidadMedida: KG)
     service.seleccionarProducto(prod);
 
-    expect(service.productoSeleccionadoId()).toBe('1');
+    expect(service.productoSeleccionadoId()).toBe(1);
     expect(service.productoTexto()).toBe('Ajo');
     expect(service.cantidadProducto()).toBe(0.1); // min de KG es 0.1
     expect(service.precioProductoManual()).toBe(1200); // de preciosMock['1']
@@ -156,7 +156,7 @@ describe('VerProveedoresStateService', () => {
   it('debería autocompletar el producto al cambiar el texto de búsqueda por coincidencia exacta', () => {
     service.cargarDatos();
     service.onProductoTextoChange('Cebolla');
-    expect(service.productoSeleccionadoId()).toBe('2');
+    expect(service.productoSeleccionadoId()).toBe(2);
     expect(service.precioProductoManual()).toBe(900); // de preciosMock['2']
   });
 
@@ -175,7 +175,7 @@ describe('VerProveedoresStateService', () => {
 
     expect(service.pedidoItems()).toHaveLength(1);
     expect(service.pedidoItems()[0]).toEqual({
-      id: '1',
+      id: 1,
       nombre: 'Ajo',
       cantidad: 2,
       unidadMedida: 'KG',
@@ -221,11 +221,11 @@ describe('VerProveedoresStateService', () => {
     service.seleccionarProducto(mockProductos[0]);
     service.agregarItemPedido(); // cantidad 0.1, precio 1200
 
-    service.actualizarCantidadItem('1', 5);
+    service.actualizarCantidadItem(1, 5);
     expect(service.pedidoItems()[0].cantidad).toBe(5);
     expect(service.montoEstimado()).toBe(6000);
 
-    service.eliminarItemPedido('1');
+    service.eliminarItemPedido(1);
     expect(service.pedidoItems()).toHaveLength(0);
     expect(service.montoEstimado()).toBe(0);
   });
@@ -242,7 +242,9 @@ describe('VerProveedoresStateService', () => {
     expect(service.productoTexto()).toBe('');
   });
 
-  it('debería enviar el pedido correctamente, actualizar la lista de proveedores y resetear el pedido', () => {
+  it('debería enviar el pedido correctamente, actualizar la lista de proveedores, resetear el pedido y abrir whatsapp', () => {
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+
     service.cargarDatos(); // Selecciona proveedor 1
     service.seleccionarProducto(mockProductos[0]);
     service.cantidadProducto.set(10);
@@ -257,13 +259,20 @@ describe('VerProveedoresStateService', () => {
       monto: 12000,
       observacion: 'Entregar por la tarde',
       items: [
-        { id: '1', nombre: 'Ajo', cantidad: 10, unidadMedida: 'KG', precioUnitario: 1200 }
+        { id: 1, nombre: 'Ajo', cantidad: 10, unidadMedida: 'KG', precioUnitario: 1200 }
       ]
     });
+
+    expect(openSpy).toHaveBeenCalled();
+    const urlOpened = openSpy.mock.calls[0][0] as string;
+    expect(urlOpened).toContain('https://wa.me/541155551200'); // Teléfono limpio de Mariela Gómez
+    expect(urlOpened).toContain(encodeURIComponent('Ajo'));
 
     expect(service.pedidoItems()).toHaveLength(0);
     expect(service.panelModo()).toBe('historial');
     expect(service.mensajeAccion()).toBe('Pedido agregado correctamente');
     expect(service.proveedores().find(p => p.id === 1)?.historialPedidos).toHaveLength(1);
+
+    openSpy.mockRestore();
   });
 });

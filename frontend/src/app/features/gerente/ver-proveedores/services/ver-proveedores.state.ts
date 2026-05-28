@@ -126,19 +126,19 @@ export class VerProveedoresStateService {
       });
   }
 
-  seleccionarProveedor(proveedorId: number): void {
+  seleccionarProveedor(proveedorId: number | string): void {
     this.proveedorSeleccionadoId.set(proveedorId);
     this.mensajeAccion.set(null);
     this.pedidoHistorialSeleccionado.set(null);
   }
 
-  abrirPedido(proveedorId: number): void {
+  abrirPedido(proveedorId: number | string): void {
     this.seleccionarProveedor(proveedorId);
     this.panelModo.set('pedido');
     this.mensajeAccion.set(null);
   }
 
-  abrirHistorial(proveedorId: number): void {
+  abrirHistorial(proveedorId: number | string): void {
     this.seleccionarProveedor(proveedorId);
     this.panelModo.set('historial');
   }
@@ -225,15 +225,20 @@ export class VerProveedoresStateService {
     const proveedor = this.proveedorSeleccionado();
     if (!proveedor || this.pedidoItems().length === 0) return;
 
+    const observacion = this.observacionPedido().trim() || 'Pedido generado desde la vista de gerente';
+    const concepto = 'Pedido de insumos';
+    const items = [...this.pedidoItems()];
+    const monto = this.montoEstimado();
+
     const fechaPedido = new Date().toISOString();
     const nuevoPedido: PedidoProveedor = {
       id: Date.now(),
       fecha: fechaPedido,
-      concepto: 'Pedido de insumos',
-      monto: this.montoEstimado(),
+      concepto,
+      monto,
       estado: 'Pendiente',
-      observacion: this.observacionPedido().trim() || 'Pedido generado desde la vista de gerente',
-      items: this.pedidoItems()
+      observacion,
+      items
     };
 
     const pedido = {
@@ -248,14 +253,38 @@ export class VerProveedoresStateService {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (actualizado) => {
+          // NOTA: Cuando el backend esté listo para retornar la URL generada, la respuesta ('actualizado') 
+          // contendrá una propiedad como 'whatsappUrl' (ej. actualizado.whatsappUrl). En ese momento, 
+          // se deberá utilizar directamente: window.open(actualizado.whatsappUrl, '_blank');
+          
           this.proveedores.update(lista => lista.map(item => item.id === actualizado.id ? actualizado : item));
           this.proveedorSeleccionadoId.set(actualizado.id);
           this.panelModo.set('historial');
+          
+          // Generar y abrir WhatsApp temporalmente desde el frontend
+          this.abrirWhatsapp(proveedor, items, concepto, observacion);
+
           this.limpiarPedido();
           this.pedidoHistorialSeleccionado.set(null);
           this.mensajeAccion.set('Pedido agregado correctamente');
         }
       });
+  }
+
+  private abrirWhatsapp(proveedor: Proveedor, items: PedidoProveedorItem[], concepto: string, observacion: string): void {
+    const telefonoLimpio = proveedor.telefono.replace(/[^0-9]/g, '');
+    let mensaje = `Hola *${proveedor.nombre}*,\n\nTe realizo el siguiente pedido:\n`;
+    mensaje += `*Concepto:* ${concepto}\n`;
+    if (observacion && observacion !== 'Pedido generado desde la vista de gerente') {
+      mensaje += `*Observaciones:* ${observacion}\n`;
+    }
+    mensaje += `\n*Detalle del pedido:*\n`;
+    items.forEach(item => {
+      mensaje += `- ${item.cantidad} ${item.unidadMedida} de *${item.nombre}*\n`;
+    });
+
+    const url = `https://wa.me/${telefonoLimpio}?text=${encodeURIComponent(mensaje)}`;
+    window.open(url, '_blank');
   }
 
   private getCantidadConfiguracion(unidadMedida: UnidadMedida): { step: number; min: number; placeholder: string } {

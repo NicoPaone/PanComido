@@ -5,7 +5,7 @@ import { vi } from 'vitest';
 import { PedidoSugeridoIAComponent } from './pedido-sugerido-ia';
 import { ProveedorService } from '../../../../core/services/proveedor.service';
 import { Proveedor, SugerenciaPedidoItem } from '../../../../core/models/proveedor';
-import { ProductoStockMock } from '../../../../core/model/producto-stock-mock';
+import { Insumo as ProductoStockMock } from '../../../../core/models/producto-stock';
 
 describe('PedidoSugeridoIAComponent', () => {
   let component: PedidoSugeridoIAComponent;
@@ -43,7 +43,7 @@ describe('PedidoSugeridoIAComponent', () => {
 
   const mockProductos: ProductoStockMock[] = [
     {
-      id: '1',
+      id: 1,
       nombre: 'Ajo',
       stock: 5,
       unidadMedida: 'KG',
@@ -52,7 +52,7 @@ describe('PedidoSugeridoIAComponent', () => {
       categoriaIngrediente: 'Verdura'
     },
     {
-      id: '4',
+      id: 4,
       nombre: 'Harina 0000',
       stock: 50,
       unidadMedida: 'KG',
@@ -61,7 +61,7 @@ describe('PedidoSugeridoIAComponent', () => {
       categoriaIngrediente: 'Almacen'
     },
     {
-      id: '5',
+      id: 5,
       nombre: 'Tomate Perita',
       stock: 12,
       unidadMedida: 'KG',
@@ -70,7 +70,7 @@ describe('PedidoSugeridoIAComponent', () => {
       categoriaIngrediente: 'Verdura'
     },
     {
-      id: '6',
+      id: 6,
       nombre: 'Bife de Chorizo',
       stock: 30,
       unidadMedida: 'KG',
@@ -181,7 +181,7 @@ describe('PedidoSugeridoIAComponent', () => {
     // No está en pedidoItems (que solo tiene Tomate Perita, id: '5')
     component.onSearchChanged('Ajo');
     expect(component.sugerenciasExtras()).toEqual([
-      expect.objectContaining({ id: '1', nombre: 'Ajo' })
+      expect.objectContaining({ id: 1, nombre: 'Ajo' })
     ]);
 
     // Buscar "Harina" (Almacen, NO coincide con las categorías de proveedor)

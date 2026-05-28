@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Buscador } from '../../../../shared/ui/buscador/buscador';
 import { Proveedor, SugerenciaPedidoItem } from '../../../../core/models/proveedor';
-import { ProductoStockMock } from '../../../../core/model/producto-stock-mock';
+import { Insumo as ProductoStockMock } from '../../../../core/models/producto-stock';
 import { PedidoSugeridoIAStateService } from '../services/pedido-sugerido-ia.state';
 
 @Component({

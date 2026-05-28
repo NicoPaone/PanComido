@@ -10,7 +10,7 @@ import { PageToolbar } from '../../../../shared/ui/page-toolbar/page-toolbar';
 import { PedidoProveedor, EstadoPedidoProveedor, Proveedor } from '../../../../core/models/proveedor';
 import { Router, RouterModule } from '@angular/router';
 import { ProveedorListComponent } from '../components/proveedor-list/proveedor-list';
-import { ProductoStockMock } from '../../../../core/model/producto-stock-mock';
+import { Insumo as ProductoStockMock } from '../../../../core/models/producto-stock';
 import { VerProveedoresStateService } from '../services/ver-proveedores.state';
 
 @Component({
@@ -121,11 +121,11 @@ export class VerProveedoresComponent implements OnInit {
     this.state.agregarItemPedido();
   }
 
-  actualizarCantidadItem(itemId: string, cantidad: number | null): void {
+  actualizarCantidadItem(itemId: string | number, cantidad: number | null): void {
     this.state.actualizarCantidadItem(itemId, cantidad);
   }
 
-  eliminarItemPedido(itemId: string): void {
+  eliminarItemPedido(itemId: string | number): void {
     this.state.eliminarItemPedido(itemId);
   }
 

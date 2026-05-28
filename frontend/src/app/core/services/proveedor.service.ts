@@ -259,7 +259,7 @@ export class ProveedorService {
         const precioUnitario = costosMock[prod.id.toString()] ?? 500;
 
         return {
-          productoId: prod.id,
+          productoId: prod.id.toString(),
           nombre: prod.nombre,
           unidadMedida: prod.unidadMedida,
           stockActual: prod.stock,

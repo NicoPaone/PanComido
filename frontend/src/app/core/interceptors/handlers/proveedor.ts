@@ -1,7 +1,7 @@
 import { HttpRequest, HttpResponse, HttpHandlerFn } from "@angular/common/http";
 import { delay, Observable, of } from "rxjs";
 import { Proveedor, NuevoPedidoProveedor, NuevoProveedor, PedidoProveedor } from "../../models/proveedor";
-import { PRODUCTOS_STOCK_MOCK } from "../../model/producto-stock";
+import { PRODUCTOS_STOCK_MOCK, Insumo } from "../../models/producto-stock";
 
 let dbProveedores: Proveedor[] = [
   {
@@ -85,9 +85,9 @@ export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandler
 
       const providerCats = prov.categorias ?? [];
       const sugeridos = PRODUCTOS_STOCK_MOCK
-        .filter(prod => providerCats.includes(prod.categoriaIngrediente))
-        .filter(prod => prod.stock < prod.stockMinimo * 1.5)
-        .map(prod => {
+        .filter((prod: Insumo) => providerCats.includes(prod.categoriaIngrediente))
+        .filter((prod: Insumo) => prod.stock < prod.stockMinimo * 1.5)
+        .map((prod: Insumo) => {
           const costosMock: Record<string, number> = {
             '1': 1200, '2': 900, '3': 1500, '4': 600, '5': 1100,
             '6': 7500, '7': 120, '8': 300, '9': 800, '10': 700, '11': 4500
@@ -99,8 +99,9 @@ export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandler
             stockActual: prod.stock,
             stockMinimo: prod.stockMinimo,
             consumoEstimado30Dias: prod.stockMinimo * 3,
+            kind: 'sugerencia',
             cantidadSugerida: Math.max(1, Math.round(prod.stockMinimo * 2 - prod.stock)),
-            precioUnitario: costosMock[prod.id] ?? 500
+            precioUnitario: costosMock[prod.id.toString()] ?? 500
           };
         });
       return of(new HttpResponse({ status: 200, body: sugeridos })).pipe(delay(200));
