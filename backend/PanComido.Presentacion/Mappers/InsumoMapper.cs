@@ -15,7 +15,7 @@ namespace PanComido.Presentacion.Mappers
                 UnidadMedida = insumo.UnidadMedida ?? "-",
                 Vencimiento = insumo.Vencimiento?.ToString("dd/MM/yyyy"),
                 StockMinimo = insumo.StockMinimo,
-                EstadoStock = insumo.EstadoStock.ToString(),
+                EstadoStock = insumo.EstadoStock?.ToString(),
                 Tipo = insumo.Tipo.ToString(),
                 Categoria = insumo.Categoria,
             };

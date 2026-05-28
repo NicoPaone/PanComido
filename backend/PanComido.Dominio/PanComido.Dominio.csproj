@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <Folder Include="Excepciones\" />
-    <Folder Include="Servicios\" />
     <Folder Include="ObjetosDeValor\" />
   </ItemGroup>
 

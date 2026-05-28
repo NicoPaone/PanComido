@@ -13,12 +13,10 @@ namespace PanComido.Dominio.Interfaces.Repositorios
 
         public Task<DateOnly> ObtenerFechaDeVencimientoMasProximaDeInsumo(int insumoId);
 
-        // Pendientes
-
-        // public Task<List<Lote>> ObtenerLoteDeInsumoOrdenadoPorVencimientoAscendenteAsync(int insumoId);
-        // public Task<List<Lote>> ObtenerLoteDeInsumoOrdenadoPorVencimientoDescendenteAsync(int insumoId);
-        //public Task<List<Lote>> ObtenerLotesAsync();
-        //public Task<Lote> ObtenerLotePorIdAsync(int id);
+        // Devuelve diccionarios para poder obtener toda la informacion en 1 consulta
+        // y no pegarle a la base de datos por cada insumo que tenga las bodegas
+        Task<Dictionary<(int insumoId, int bodegaId), decimal>> ObtenerStocksPorBodega(int restauranteId);
+        Task<Dictionary<(int insumoId, int bodegaId), DateOnly?>> ObtenerVencimientosPorBodega(int restauranteId);
 
     }
 }

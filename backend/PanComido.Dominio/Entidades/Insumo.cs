@@ -20,7 +20,7 @@ namespace PanComido.Dominio.Entidades
         public decimal StockActual { get; set; }
         public DateOnly? Vencimiento { get; set; }
         // calculado por el Use Case(no está en la BD)
-        public EstadoStock EstadoStock { get; set; }
+        public EstadoStock? EstadoStock { get; set; }
         // subtipo: Ingrediente o Bebida
         public TipoInsumo Tipo { get; set; }
         // datos del subtipo

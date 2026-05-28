@@ -25,10 +25,40 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .FirstOrDefaultAsync() ?? DateOnly.MaxValue;
         }
 
+        public Task<Dictionary<(int insumoId, int bodegaId), DateOnly?>> ObtenerVencimientosPorBodega(int restauranteId)
+        {
+            return _ctx.Lotes
+                .Where(l => l.Bodega.RestauranteId == restauranteId)
+                .GroupBy(l => new { l.InsumoId, l.BodegaId })
+                .Select(g => new
+                {
+                    InsumoId = g.Key.InsumoId,
+                    BodegaId = g.Key.BodegaId,
+                    FechaVencimientoMasProxima = g.Min(l => (DateOnly?)l.FechaVencimiento)
+                })
+                .ToDictionaryAsync(x => (x.InsumoId, x.BodegaId), x => x.FechaVencimientoMasProxima);
+        }
+
+        public Task<Dictionary<(int insumoId, int bodegaId), decimal>> ObtenerStocksPorBodega(int restauranteId)
+        {
+            return _ctx.Lotes
+                .Where(l => l.Bodega.RestauranteId == restauranteId)
+                .GroupBy(l => new { l.InsumoId, l.BodegaId })
+                .Select(g => new
+                {
+                    InsumoId = g.Key.InsumoId,
+                    BodegaId = g.Key.BodegaId,
+                    StockTotal = g.Sum(l => (decimal?)l.Cantidad) ?? 0m
+                })
+                .ToDictionaryAsync(x => (x.InsumoId, x.BodegaId), x => x.StockTotal);
+        }
+
         public async Task<decimal> ObtenerStockTotalDeInsumo(int insumoId)
         {
             return await _ctx.Lotes.Where(l => l.InsumoId == insumoId)
                 .SumAsync(l => (decimal?)l.Cantidad) ?? 0m;
         }
+
+        
     }
 }
