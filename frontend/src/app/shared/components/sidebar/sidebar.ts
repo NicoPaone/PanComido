@@ -1,7 +1,7 @@
 import { Component, signal, computed, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { MenuItem, UserProfile } from '../../../core/model/menu-item.model';
+import { MenuItem, UserProfile } from '../../../core/models/menu-item.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AuthService } from '../../../core/services/auth.service';
 import { 

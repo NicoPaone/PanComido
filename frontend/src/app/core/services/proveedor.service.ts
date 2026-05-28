@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { delay, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { PRODUCTOS_STOCK_MOCK, ProductoStockMock } from '../model/producto-stock-mock';
+import { INSUMOS_MOCK, Insumo } from '../models/producto-stock';
 import { NuevoPedidoProveedor, NuevoProveedor, PedidoProveedor, Proveedor, SugerenciaPedidoItem } from '../models/proveedor';
 
 export const PROVEEDOR_ENDPOINTS = {
@@ -154,7 +154,7 @@ const PROVEEDORES_MOCK: Proveedor[] = [
 })
 export class ProveedorService {
   private readonly proveedoresSignal = signal<Proveedor[]>(PROVEEDORES_MOCK);
-  private readonly productosSignal = signal<ProductoStockMock[]>(PRODUCTOS_STOCK_MOCK);
+  private readonly productosSignal = signal<Insumo[]>(INSUMOS_MOCK);
 
   getProveedores(): Observable<Proveedor[]> {
     return of(this.proveedoresSignal()).pipe(delay(180));
@@ -169,11 +169,11 @@ export class ProveedorService {
     return of(proveedor?.historialPedidos ?? []).pipe(delay(120));
   }
 
-  getProductosDisponibles(): Observable<ProductoStockMock[]> {
+  getProductosDisponibles(): Observable<Insumo[]> {
     return of(this.productosSignal()).pipe(delay(120));
   }
 
-  crearPedidoProveedor(id: number, pedido: NuevoPedidoProveedor): Observable<Proveedor> {
+  crearPedidoProveedor(id: number | string, pedido: NuevoPedidoProveedor): Observable<Proveedor> {
     const fechaPedido = new Date().toISOString();
     const nuevoPedido: PedidoProveedor = {
       id: Date.now(),
@@ -250,13 +250,13 @@ export class ProveedorService {
       '11': 4500
     };
 
-    const sugeridos: SugerenciaPedidoItem[] = PRODUCTOS_STOCK_MOCK
+    const sugeridos: SugerenciaPedidoItem[] = INSUMOS_MOCK
       .filter(prod => providerCats.includes(prod.categoriaIngrediente))
       .filter(prod => prod.stock < prod.stockMinimo * 1.5)
       .map(prod => {
         const cantidadSugerida = Math.max(1, Math.round(prod.stockMinimo * 2 - prod.stock));
         const consumoEstimado30Dias = prod.stockMinimo * 3;
-        const precioUnitario = costosMock[prod.id] ?? 500;
+        const precioUnitario = costosMock[prod.id.toString()] ?? 500;
 
         return {
           productoId: prod.id,

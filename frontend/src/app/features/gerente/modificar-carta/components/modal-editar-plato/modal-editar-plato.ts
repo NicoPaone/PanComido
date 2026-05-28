@@ -4,8 +4,8 @@ import { Plato, RecetaIngrediente } from '../../../../../core/models/plato';
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
 import { ToggleComponent } from '../../../../../shared/ui/toggle/toggle';
 import { Buscador } from '../../../../../shared/ui/buscador/buscador';
-import { PRODUCTOS_STOCK_MOCK, ProductoStockMock } from '../../../../../core/model/producto-stock-mock';
 import { calcularCostoReceta } from '../../../../../core/services/plato.service';
+import { Insumo, INSUMOS_MOCK } from '../../../../../core/models/producto-stock';
 
 @Component({
   selector: 'app-modal-editar-plato',
@@ -42,7 +42,7 @@ export class ModalEditarPlatoComponent {
     const query = this.busqueda().toLowerCase().trim();
     if (!query) return [];
     
-    return PRODUCTOS_STOCK_MOCK.filter(prod => 
+    return INSUMOS_MOCK.filter(prod => 
       prod.nombre.toLowerCase().includes(query) &&
       !this.receta().some(selected => selected.id === prod.id)
     );
@@ -69,7 +69,7 @@ export class ModalEditarPlatoComponent {
     this.busqueda.set(value);
   }
 
-  agregarIngrediente(producto: ProductoStockMock) {
+  agregarIngrediente(producto: Insumo) {
     const nuevo: RecetaIngrediente = {
       id: producto.id,
       nombre: producto.nombre,
@@ -81,7 +81,7 @@ export class ModalEditarPlatoComponent {
     this.busqueda.set('');
   }
 
-  eliminarIngrediente(id: string) {
+  eliminarIngrediente(id: string | number) {
     this.receta.update(items => items.filter(item => item.id !== id));
   }
 

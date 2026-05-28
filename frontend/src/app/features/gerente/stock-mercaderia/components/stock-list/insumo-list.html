@@ -22,8 +22,10 @@
             <td class="text-center gray-text">{{ item.fechaVencimiento | date:'dd/MM/yyyy' }}</td>
             <td class="text-center gray-text">{{ item.stockMinimo }}</td>
             <td class="text-end">
-              <button class="btn-icon" (click)="onAction.emit(item.id)">
-                <fa-icon [icon]="faCog"></fa-icon>
+              <button class="btn-icon" (click)="editar.emit(item.id)">
+                <fa-icon [icon]="faCog">
+
+                </fa-icon>
               </button>
             </td>
           </tr>

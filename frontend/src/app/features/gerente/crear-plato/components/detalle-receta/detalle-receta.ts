@@ -1,7 +1,7 @@
 import { Component, output, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Buscador } from '../../../../../shared/ui/buscador/buscador';
-import { PRODUCTOS_STOCK_MOCK, ProductoStockMock, UnidadMedida } from '../../../../../core/model/producto-stock-mock';
+import { INSUMOS_MOCK, Insumo, UnidadMedida } from '../../../../../core/models/producto-stock';
 import { RecetaIngrediente } from '../../../../../core/models/plato';
 
 @Component({
@@ -22,7 +22,7 @@ export class DetalleRecetaComponent {
     const query = this.busqueda().toLowerCase().trim();
     if (!query) return [];
     
-    return PRODUCTOS_STOCK_MOCK.filter(prod => 
+    return INSUMOS_MOCK.filter(prod => 
       prod.nombre.toLowerCase().includes(query) &&
       !this.ingredientesSeleccionados().some(selected => selected.id === prod.id)
     );
@@ -32,7 +32,7 @@ export class DetalleRecetaComponent {
     this.busqueda.set(value);
   }
 
-  agregarIngrediente(producto: ProductoStockMock) {
+  agregarIngrediente(producto: Insumo) {
     const nuevo: RecetaIngrediente = {
       id: producto.id,
       nombre: producto.nombre,
@@ -45,7 +45,7 @@ export class DetalleRecetaComponent {
     this.notificarCambio();
   }
 
-  eliminarIngrediente(id: string) {
+  eliminarIngrediente(id: string|number) {
     this.ingredientesSeleccionados.update(items => items.filter(item => item.id !== id));
     this.notificarCambio();
   }

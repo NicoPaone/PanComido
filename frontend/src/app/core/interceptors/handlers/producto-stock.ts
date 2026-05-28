@@ -1,9 +1,9 @@
 import { HttpRequest, HttpResponse, HttpHandlerFn } from "@angular/common/http";
 import { delay, Observable, of } from "rxjs";
-import { PRODUCTOS_STOCK_MOCK, ProductoStock } from '../../model/producto-stock';
+import { Insumo, INSUMOS_MOCK } from '../../models/producto-stock';
 
 // El estado de memoria queda encapsulado solo para este dominio
-let dbMemoria: ProductoStock[] = [...PRODUCTOS_STOCK_MOCK];
+let dbMemoria: Insumo[] = [...INSUMOS_MOCK];
 
 export const handleStockMock = (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<any> => {
   const method = req.method;
@@ -14,10 +14,10 @@ export const handleStockMock = (req: HttpRequest<unknown>, next: HttpHandlerFn):
   }
 
   if (method === 'POST') {
-    const nuevoProducto = req.body as ProductoStock;
-    nuevoProducto.id = dbMemoria.length > 0 ? Math.max(...dbMemoria.map(p => p.id)) + 1 : 1;
-    dbMemoria.push(nuevoProducto);
-    return of(new HttpResponse({ status: 201, body: nuevoProducto })).pipe(delay(600));
+    const nuevoInsumo = req.body as Insumo;
+    nuevoInsumo.id = dbMemoria.length > 0 ? Math.max(...dbMemoria.map(p => p.id)) + 1 : 1;
+    dbMemoria.push(nuevoInsumo);
+    return of(new HttpResponse({ status: 201, body: nuevoInsumo })).pipe(delay(600));
   }
 
   if (method === 'PUT') {
@@ -35,6 +35,6 @@ export const handleStockMock = (req: HttpRequest<unknown>, next: HttpHandlerFn):
     return of(new HttpResponse({ status: 204 })).pipe(delay(600));
   }
 
-  // Fallback de seguridad
+  // Fallback de seguridad (no debería llegar aquí, pero TS lo exige)
   return next(req);
 };

@@ -2,7 +2,7 @@ import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { VerProveedoresApiService } from './ver-proveedores.api';
 import { Proveedor, PedidoProveedor, PedidoProveedorItem, EstadoPedidoProveedor } from '../../../../core/models/proveedor';
-import { ProductoStockMock, UnidadMedida } from '../../../../core/model/producto-stock-mock';
+import { Insumo, UnidadMedida } from '../../../../core/models/producto-stock';
 
 @Injectable({ providedIn: 'root' })
 export class VerProveedoresStateService {
@@ -18,13 +18,13 @@ export class VerProveedoresStateService {
   // 1. Estado PRIVADO y writeables
   termino = signal('');
   proveedores = signal<Proveedor[]>([]);
-  productos = signal<ProductoStockMock[]>([]);
-  proveedorSeleccionadoId = signal<number | null>(null);
+  productos = signal<Insumo[]>([]);
+  proveedorSeleccionadoId = signal<number | string | null>(null);
   panelModo = signal<'pedido' | 'historial'>('historial');
   observacionPedido = signal('');
   mensajeAccion = signal<string | null>(null);
   productoTexto = signal('');
-  productoSeleccionadoId = signal<string | null>(null);
+  productoSeleccionadoId = signal<string |number|  null>(null);
   cantidadProducto = signal<number | null>(1);
   precioProductoManual = signal<number | null>(null);
   pedidoItems = signal<PedidoProveedorItem[]>([]);
@@ -151,7 +151,7 @@ export class VerProveedoresStateService {
     this.pedidoHistorialSeleccionado.set(null);
   }
 
-  seleccionarProducto(producto: ProductoStockMock): void {
+  seleccionarProducto(producto: Insumo): void {
     this.productoSeleccionadoId.set(producto.id);
     this.productoTexto.set(producto.nombre);
     this.cantidadProducto.set(this.getCantidadInicial(producto.unidadMedida));
@@ -200,14 +200,14 @@ export class VerProveedoresStateService {
     this.precioProductoManual.set(null);
   }
 
-  actualizarCantidadItem(itemId: string, cantidad: number | null): void {
+  actualizarCantidadItem(itemId: string | number, cantidad: number | null): void {
     if (cantidad === null || cantidad <= 0) return;
     this.pedidoItems.update(items =>
       items.map(item => item.id === itemId ? { ...item, cantidad } : item)
     );
   }
 
-  eliminarItemPedido(itemId: string): void {
+  eliminarItemPedido(itemId: string | number): void {
     this.pedidoItems.update(items => items.filter(item => item.id !== itemId));
   }
 
@@ -270,6 +270,7 @@ export class VerProveedoresStateService {
         return { step: 0.1, min: 0.1, placeholder: '0.5' };
     }
   }
+
 
   private getCantidadInicial(unidadMedida: UnidadMedida): number {
     return this.getCantidadConfiguracion(unidadMedida).min;

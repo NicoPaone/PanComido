@@ -1,9 +1,9 @@
 
 export type UnidadMedida= 'KG'| 'L' |'GR' | 'UN';
-export type CategoriaIngrediente = 'Verdura' | 'Almacen' | 'Carne';
+export type CategoriaIngrediente = 'Verdura' | 'Almacen' | 'Carne' | 'Lacteos'| 'Bebidas';
 
-export interface ProductoStockMock{
-    id: string;
+export interface Insumo{
+    id: number;
     nombre: string;
     stock: number;
     fechaVencimiento: string;
@@ -13,18 +13,18 @@ export interface ProductoStockMock{
 
 }
 
-export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
+export const INSUMOS_MOCK: Insumo[] = [
   {
-    id: '1', 
+    id: 1, 
     nombre: 'Ajo',
     stock: 5, 
     unidadMedida: 'KG',
     fechaVencimiento: '2026-05-17',
-    stockMinimo: 2,
+    stockMinimo: 5,
     categoriaIngrediente: 'Verdura'
   },
   {
-    id: '2', 
+    id: 2, 
     nombre: 'Cebolla',
     stock: 25, 
     unidadMedida: 'KG',
@@ -33,25 +33,25 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
     categoriaIngrediente: 'Verdura'
   },
   {
-    id: '3', 
+    id: 3, 
     nombre: 'Aceite de Girasol',
-    stock: 15, 
+    stock: 3, 
     unidadMedida: 'L',
     fechaVencimiento: '2027-01-20',
     stockMinimo: 5,
     categoriaIngrediente: 'Almacen'
   },
   {
-    id: '4', 
+    id: 4, 
     nombre: 'Harina 0000',
-    stock: 50, 
+    stock: 1, 
     unidadMedida: 'KG',
     fechaVencimiento: '2026-12-05',
     stockMinimo: 15,
     categoriaIngrediente: 'Almacen'
   },
   {
-    id: '5', 
+    id: 5, 
     nombre: 'Tomate Perita',
     stock: 12, 
     unidadMedida: 'KG',
@@ -60,16 +60,16 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
     categoriaIngrediente: 'Verdura'
   },
   {
-    id: '6', 
+    id: 6, 
     nombre: 'Bife de Chorizo',
-    stock: 30, 
+    stock: 3, 
     unidadMedida: 'KG',
     fechaVencimiento: '2026-05-28',
     stockMinimo: 10,
     categoriaIngrediente: 'Carne'
   },
   {
-    id: '7', 
+    id: 7, 
     nombre: 'Huevos Blancos',
     stock: 120, 
     unidadMedida: 'UN',
@@ -78,7 +78,7 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
     categoriaIngrediente: 'Almacen'
   },
   {
-    id: '8', 
+    id: 8, 
     nombre: 'Sal Fina',
     stock: 10, 
     unidadMedida: 'KG',
@@ -87,7 +87,7 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
     categoriaIngrediente: 'Almacen'
   },
   {
-    id: '9', 
+    id: 9, 
     nombre: 'Papa Negra',
     stock: 45, 
     unidadMedida: 'KG',
@@ -96,7 +96,7 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
     categoriaIngrediente: 'Verdura'
   },
   {
-    id: '10', 
+    id: 10, 
     nombre: 'Vinagre de Alcohol',
     stock: 8, 
     unidadMedida: 'L',
@@ -105,7 +105,7 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
     categoriaIngrediente: 'Almacen'
   },
   {
-    id: '11', 
+    id: 11, 
     nombre: 'Pimienta Negra en Grano',
     stock: 2, 
     unidadMedida: 'KG',
@@ -114,3 +114,7 @@ export const PRODUCTOS_STOCK_MOCK: ProductoStockMock[] = [
     categoriaIngrediente: 'Almacen'
   }
 ];
+
+export type ProductoStock = Insumo;
+export const PRODUCTOS_STOCK_MOCK = INSUMOS_MOCK;
+

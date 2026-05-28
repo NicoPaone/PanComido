@@ -1,1 +1,15 @@
-<p>modal works!</p>
+<dialog #modalRef 
+   class="modal-dialog" 
+   [style.maxWidth.px]="maxWidth()"
+   (close)="onClose()"
+   (click)="onBackdropClick($event)">
+   <div class="modal-header">
+   <h3>{{ titulo() }}</h3>
+   <button class="btn-close" (click)="cerrar()">X</button>
+   </div>
+   <div class="modal-body">
+      @if(abierto()){
+         <ng-content></ng-content>
+      }
+   </div>
+</dialog>
