@@ -17,6 +17,7 @@ export interface PedidoProveedorItem {
   nombre: string;
   cantidad: number;
   unidadMedida: UnidadMedida;
+  precioUnitario?: number;
 }
 
 export interface Proveedor {

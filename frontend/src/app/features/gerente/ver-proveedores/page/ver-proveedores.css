@@ -174,8 +174,8 @@
 
 .picker-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 180px 92px;
-  gap: 0.85rem;
+  grid-template-columns: minmax(0, 1.2fr) 96px 88px 80px;
+  gap: 0.65rem;
   margin-top: 1rem;
 }
 

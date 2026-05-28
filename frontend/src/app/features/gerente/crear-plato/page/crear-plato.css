@@ -207,3 +207,32 @@
     opacity: 1;
   }
 }
+
+.error-text {
+  color: #dc2626;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.small-hint {
+  font-size: 0.75rem;
+  margin-top: 0.2rem;
+  display: block;
+}
+
+.custom-input.is-invalid {
+  border-color: #f87171 !important;
+  background-color: #fef2f2 !important;
+}
+
+.image-option {
+  transition: all 0.2s ease;
+}
+
+.image-option:hover {
+  border-color: #3cd000 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}

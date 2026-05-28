@@ -6,12 +6,12 @@
     </div>
   </div>
 
-  <div class="row g-4 main-content-row">
+  <div class="row g-4 main-content-row" [formGroup]="platoForm">
     <!-- Left Column: Image & Visibility -->
     <div class="col-12 col-lg-2 text-center d-flex flex-column align-items-center gap-3">
       <div class="image-preview-card shadow-sm border p-2 bg-white w-100">
-        @if (imagen()) {
-          <img [src]="imagen()" class="dish-image-large img-fluid" alt="Vista previa del plato">
+        @if (imagenSelected()) {
+          <img [src]="imagenSelected()" class="dish-image-large img-fluid" alt="Vista previa del plato">
         } @else {
           <div class="image-placeholder d-flex flex-column align-items-center justify-content-center w-100">
             <span class="material-symbols-outlined placeholder-icon">add_a_photo</span>
@@ -24,6 +24,7 @@
         label="Editar foto" 
         variante="warning" 
         tamanio="md" 
+        (clicked)="abrirSelectorImagen()"
         class="w-100 edit-photo-btn">
         <span class="material-symbols-outlined me-2 fs-5">edit</span>
       </app-boton>
@@ -42,43 +43,65 @@
       <div class="form-card shadow-sm border p-4 bg-white rounded-3 h-100">
         <!-- Nombre -->
         <div class="mb-3">
-          <label class="form-label font-bold">Nombre</label>
+          <label class="form-label font-bold">Nombre <strong class="field-required">*</strong></label>
           <input 
             type="text" 
             class="form-control custom-input" 
-            [ngModel]="nombre()" 
-            (ngModelChange)="nombre.set($event)">
+            [class.is-invalid]="platoForm.get('nombre')?.touched && platoForm.get('nombre')?.invalid"
+            placeholder="Ej. Suprema Maryland"
+            formControlName="nombre">
+          @if (platoForm.get('nombre')?.touched && platoForm.get('nombre')?.hasError('required')) {
+            <span class="error-text">El nombre es requerido.</span>
+          }
+          @if (platoForm.get('nombre')?.touched && platoForm.get('nombre')?.hasError('minlength')) {
+            <span class="error-text">Debe tener al menos 3 caracteres.</span>
+          }
         </div>
 
         <!-- Costo & Venta side-by-side -->
         <div class="row g-3 mb-3">
           <div class="col-6">
-            <label class="form-label font-bold">Costo</label>
+            <label class="form-label font-bold">Costo <strong class="field-required">*</strong></label>
             <div class="input-group">
               <span class="input-group-text">$</span>
               <input 
                 type="number" 
                 class="form-control custom-input border-start-0" 
-                [ngModel]="costo()" 
-                (ngModelChange)="costo.set($event)">
+                [class.is-invalid]="platoForm.get('costo')?.touched && platoForm.get('costo')?.invalid"
+                formControlName="costo">
             </div>
+            @if (costoSugerido() > 0) {
+              <span class="text-success small-hint">Autocalculado: ${{ costoSugerido() }}</span>
+            }
+            @if (platoForm.get('costo')?.touched && platoForm.get('costo')?.hasError('min')) {
+              <span class="error-text">Debe ser mayor a 0.</span>
+            }
           </div>
           <div class="col-6">
-            <label class="form-label font-bold">Venta</label>
+            <label class="form-label font-bold">Venta <strong class="field-required">*</strong></label>
             <div class="input-group">
               <span class="input-group-text">$</span>
               <input 
                 type="number" 
                 class="form-control custom-input border-start-0" 
-                [ngModel]="precioVenta()" 
-                (ngModelChange)="precioVenta.set($event)">
+                [class.is-invalid]="platoForm.get('precioVenta')?.touched && platoForm.get('precioVenta')?.invalid"
+                formControlName="precioVenta">
             </div>
+            @if (platoForm.get('precioVenta')?.touched && platoForm.get('precioVenta')?.hasError('min')) {
+              <span class="error-text">Debe ser mayor a 0.</span>
+            }
           </div>
         </div>
 
+        @if (precioEsMenorQueCosto()) {
+          <div class="alert alert-warning py-2 px-3 small mb-3">
+            <strong>Advertencia comercial:</strong> El precio de venta es menor o igual al costo de preparación del plato.
+          </div>
+        }
+
         <!-- Tiempo de preparación -->
         <div class="mb-3">
-          <label class="form-label font-bold">Tiempo de preparación</label>
+          <label class="form-label font-bold">Tiempo de preparación <strong class="field-required">*</strong></label>
           <div class="input-group">
             <span class="input-group-text">
               <span class="material-symbols-outlined text-muted">schedule</span>
@@ -86,20 +109,23 @@
             <input 
               type="number" 
               class="form-control custom-input border-start-0" 
-              [ngModel]="tiempoPreparacion()" 
-              (ngModelChange)="tiempoPreparacion.set($event)">
+              [class.is-invalid]="platoForm.get('tiempoPreparacion')?.touched && platoForm.get('tiempoPreparacion')?.invalid"
+              formControlName="tiempoPreparacion">
             <span class="input-group-text bg-white border-start-0 text-muted">minutos</span>
           </div>
+          @if (platoForm.get('tiempoPreparacion')?.touched && platoForm.get('tiempoPreparacion')?.hasError('min')) {
+            <span class="error-text">Debe ser al menos 1 minuto.</span>
+          }
         </div>
 
         <!-- Tipo de plato -->
         <div class="mb-3">
-          <label class="form-label font-bold">Tipo de plato</label>
+          <label class="form-label font-bold">Tipo de plato <strong class="field-required">*</strong></label>
           <div class="select-wrapper">
             <select 
               class="form-select custom-input" 
-              [ngModel]="tipoPlato()" 
-              (ngModelChange)="tipoPlato.set($event)">
+              [class.is-invalid]="platoForm.get('tipoPlato')?.touched && platoForm.get('tipoPlato')?.invalid"
+              formControlName="tipoPlato">
               <option value="" disabled selected>Seleccione tipo...</option>
               <option value="Entrada">Entrada</option>
               <option value="Plato Principal">Plato Principal</option>
@@ -107,17 +133,23 @@
               <option value="Bebida">Bebida</option>
             </select>
           </div>
+          @if (platoForm.get('tipoPlato')?.touched && platoForm.get('tipoPlato')?.hasError('required')) {
+            <span class="error-text">Debe seleccionar una categoría de plato.</span>
+          }
         </div>
 
         <!-- Descripción -->
         <div class="mb-4">
-          <label class="form-label font-bold">Descripción</label>
+          <label class="form-label font-bold">Descripción <strong class="field-required">*</strong></label>
           <textarea 
             class="form-control custom-input custom-textarea" 
-            rows="4" 
-            [ngModel]="descripcion()" 
-            (ngModelChange)="descripcion.set($event)">
+            [class.is-invalid]="platoForm.get('descripcion')?.touched && platoForm.get('descripcion')?.invalid"
+            rows="3" 
+            formControlName="descripcion">
           </textarea>
+          @if (platoForm.get('descripcion')?.touched && platoForm.get('descripcion')?.hasError('minlength')) {
+            <span class="error-text">La descripción debe tener al menos 8 caracteres.</span>
+          }
         </div>
 
         <!-- Diet Tags -->
@@ -162,6 +194,7 @@
         label="GUARDAR" 
         variante="success" 
         tamanio="lg" 
+        [disabled]="!puedeGuardar()"
         (clicked)="guardar()"
         class="save-btn">
       </app-boton>
@@ -176,6 +209,7 @@
   </div>
 </div>
 
+<!-- Modal para éxito de guardado -->
 @if (mostrarExito()) {
   <div class="modal-overlay">
     <div class="modal-card shadow border p-4 text-center bg-white">
@@ -191,6 +225,34 @@
           tamanio="md" 
           (clicked)="cerrarExito()"
           class="w-100 save-btn">
+        </app-boton>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal para seleccionar imagen -->
+@if (mostrarSelectorImagen()) {
+  <div class="modal-overlay" (click)="cerrarSelectorImagen()">
+    <div class="modal-card shadow border p-4 text-center bg-white" (click)="$event.stopPropagation()" style="max-width: 520px;">
+      <h3 class="modal-title mb-3">Selecciona una imagen</h3>
+      <p class="text-muted small mb-3">Elige una foto representativa para la carta física y digital.</p>
+      <div class="row row-cols-3 g-2 mb-4">
+        @for (img of mockImages; track img.url) {
+          <div class="col">
+            <div class="image-option border rounded p-1" (click)="seleccionarImagen(img.url)" style="cursor: pointer; background-color: #f9fafb;">
+              <img [src]="img.url" class="img-fluid rounded" style="height: 64px; width: 100%; object-fit: cover;" [alt]="img.label">
+              <div class="small text-truncate mt-1" style="font-size: 0.75rem; font-weight: 600;">{{ img.label }}</div>
+            </div>
+          </div>
+        }
+      </div>
+      <div class="d-flex justify-content-end">
+        <app-boton 
+          label="Cancelar" 
+          variante="outline" 
+          tamanio="md" 
+          (clicked)="cerrarSelectorImagen()">
         </app-boton>
       </div>
     </div>

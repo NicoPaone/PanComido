@@ -31,14 +31,14 @@ describe('CrearPlatoComponent', () => {
   });
 
   it('debería inicializar con los valores por defecto', () => {
-    expect(component.nombre()).toBe('');
-    expect(component.costo()).toBeNull();
-    expect(component.precioVenta()).toBeNull();
-    expect(component.tiempoPreparacion()).toBeNull();
-    expect(component.tipoPlato()).toBe('');
-    expect(component.descripcion()).toBe('');
+    expect(component.platoForm.get('nombre')?.value).toBe('');
+    expect(component.platoForm.get('costo')?.value).toBe(0);
+    expect(component.platoForm.get('precioVenta')?.value).toBe(0);
+    expect(component.platoForm.get('tiempoPreparacion')?.value).toBe(15);
+    expect(component.platoForm.get('tipoPlato')?.value).toBe('');
+    expect(component.platoForm.get('descripcion')?.value).toBe('');
     expect(component.visible()).toBe(true);
-    expect(component.imagen()).toBe('');
+    expect(component.imagenSelected()).toContain('photo');
     expect(component.vegano()).toBe(false);
     expect(component.vegetariano()).toBe(false);
     expect(component.celiaco()).toBe(false);
@@ -82,16 +82,17 @@ describe('CrearPlatoComponent', () => {
     expect(component.receta()).toEqual(ingredientes);
   });
 
-  it('debería imprimir el plato y mostrar éxito al guardar', () => {
-    const consoleSpy = vi.spyOn(console, 'log');
-    component.nombre.set('Pasta');
-    component.costo.set(50);
-    component.precioVenta.set(120);
-    component.tiempoPreparacion.set(15);
-    component.tipoPlato.set('Plato Principal');
-    component.descripcion.set('Pasta casera');
+  it('debería guardar el plato y mostrar éxito al completar datos válidos', async () => {
+    component.platoForm.patchValue({
+      nombre: 'Pasta',
+      costo: 50,
+      precioVenta: 120,
+      tiempoPreparacion: 15,
+      tipoPlato: 'Plato Principal',
+      descripcion: 'Pasta casera artesanal'
+    });
     component.visible.set(true);
-    component.imagen.set('url-imagen');
+    component.imagenSelected.set('url-imagen');
     component.vegano.set(true);
     component.vegetariano.set(true);
     component.celiaco.set(false);
@@ -101,23 +102,10 @@ describe('CrearPlatoComponent', () => {
     component.receta.set(ingredientes);
 
     component.guardar();
+    
+    // Espera para resolver la llamada diferida del mock en PlatoService
+    await new Promise(resolve => setTimeout(resolve, 250));
 
-    expect(consoleSpy).toHaveBeenCalledWith('Guardando plato:', {
-      nombre: 'Pasta',
-      costo: 50,
-      precioVenta: 120,
-      tiempoPreparacion: 15,
-      tipoPlato: 'Plato Principal',
-      descripcion: 'Pasta casera',
-      visible: true,
-      imagen: 'url-imagen',
-      tags: {
-        vegano: true,
-        vegetariano: true,
-        celiaco: false
-      },
-      receta: ingredientes
-    });
     expect(component.mostrarExito()).toBe(true);
   });
 

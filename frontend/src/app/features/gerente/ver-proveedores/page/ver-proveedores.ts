@@ -1,8 +1,9 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { Component, OnInit, computed, inject, signal, ElementRef, viewChild, DestroyRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Buscador } from '../../../../shared/ui/buscador/buscador';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Dropdown } from '../../../../shared/ui/dropdown/dropdown';
@@ -16,12 +17,16 @@ import { ProductoStockMock, UnidadMedida } from '../../../../core/model/producto
 @Component({
   selector: 'app-ver-proveedores',
   standalone: true,
-  imports: [CommonModule, FormsModule, FontAwesomeModule, Buscador, Boton, Dropdown, PageToolbar, ProveedorListComponent, RouterModule],
+  imports: [DatePipe, DecimalPipe, FormsModule, FontAwesomeModule, Buscador, Boton, Dropdown, PageToolbar, ProveedorListComponent, RouterModule],
   templateUrl: './ver-proveedores.html',
   styleUrls: ['./ver-proveedores.css']
 })
 export class VerProveedoresComponent implements OnInit {
   private readonly proveedorService = inject(ProveedorService);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+
+  private readonly pedidoModalCard = viewChild<ElementRef<HTMLElement>>('pedidoModalCard');
 
   termino = signal('');
   proveedores = signal<Proveedor[]>([]);
@@ -30,15 +35,31 @@ export class VerProveedoresComponent implements OnInit {
   panelModo = signal<'pedido' | 'historial'>('historial');
   observacionPedido = signal('');
   mensajeAccion = signal<string | null>(null);
+  
   productoTexto = signal('');
   productoSeleccionadoId = signal<string | null>(null);
   cantidadProducto = signal<number | null>(1);
+  precioProductoManual = signal<number | null>(null);
+  
   pedidoItems = signal<PedidoProveedorItem[]>([]);
   pedidoHistorialSeleccionado = signal<PedidoProveedor | null>(null);
-  // Router for navigation to nuevo proveedor page
-  private readonly router = inject(Router);
+  
   faCheck = faCheck;
   faXmark = faXmark;
+
+  private readonly preciosMock: Record<string, number> = {
+    '1': 1200,
+    '2': 900,
+    '3': 1500,
+    '4': 600,
+    '5': 1100,
+    '6': 7500,
+    '7': 120,
+    '8': 300,
+    '9': 800,
+    '10': 700,
+    '11': 4500
+  };
 
   proveedoresFiltrados = computed(() => {
     const texto = this.termino().toLowerCase().trim();
@@ -97,19 +118,24 @@ export class VerProveedoresComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.proveedorService.getProveedores().subscribe(proveedores => {
-      this.proveedores.set(proveedores);
+    // NOTE: El endpoint del back para listar proveedores debe conectarse aquí
+    this.proveedorService.getProveedores()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(proveedores => {
+        this.proveedores.set(proveedores);
 
-      if (proveedores.length > 0 && this.proveedorSeleccionadoId() === null) {
-        this.proveedorSeleccionadoId.set(proveedores[0].id);
-      }
-    });
+        if (proveedores.length > 0 && this.proveedorSeleccionadoId() === null) {
+          this.proveedorSeleccionadoId.set(proveedores[0].id);
+        }
+      });
 
-    this.proveedorService.getProductosDisponibles().subscribe(productos => {
-      this.productos.set(productos);
-    });
+    // NOTE: El endpoint del back para listar productos disponibles debe conectarse aquí
+    this.proveedorService.getProductosDisponibles()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(productos => {
+        this.productos.set(productos);
+      });
 
-    // show success message when navigated back from nuevo-proveedor
     const navState = history.state as { created?: boolean; message?: string } | undefined;
     if (navState?.created) {
       this.mensajeAccion.set(navState.message ?? 'Proveedor creado correctamente');
@@ -140,21 +166,21 @@ export class VerProveedoresComponent implements OnInit {
 
   abrirDetallePedido(pedido: PedidoProveedor): void {
     this.pedidoHistorialSeleccionado.set(pedido);
-    setTimeout(() => this.focusModal('.pedido-modal-card'), 0);
+    setTimeout(() => this.focusModal(), 50);
   }
 
   cerrarDetallePedido(): void {
     this.pedidoHistorialSeleccionado.set(null);
   }
 
-  private focusModal(selector: string): void {
+  private focusModal(): void {
     try {
-      const el = document.querySelector(selector) as HTMLElement | null;
+      const el = this.pedidoModalCard()?.nativeElement;
       if (el) {
         el.focus({ preventScroll: true });
       }
     } catch (e) {
-      // ignore focus errors in some browsers/environments
+      // Ignorar errores de foco
     }
   }
 
@@ -171,6 +197,7 @@ export class VerProveedoresComponent implements OnInit {
     this.productoSeleccionadoId.set(producto.id);
     this.productoTexto.set(producto.nombre);
     this.cantidadProducto.set(this.getCantidadInicial(producto.unidadMedida));
+    this.precioProductoManual.set(this.preciosMock[producto.id] ?? 500);
   }
 
   onProductoTextoChange(valor: string): void {
@@ -181,8 +208,10 @@ export class VerProveedoresComponent implements OnInit {
     if (encontrado) {
       this.productoSeleccionadoId.set(encontrado.id);
       this.cantidadProducto.set(this.getCantidadInicial(encontrado.unidadMedida));
+      this.precioProductoManual.set(this.preciosMock[encontrado.id] ?? 500);
     } else {
       this.productoSeleccionadoId.set(null);
+      this.precioProductoManual.set(null);
     }
   }
 
@@ -190,8 +219,9 @@ export class VerProveedoresComponent implements OnInit {
     const producto = this.productoBaseActual();
     const nombre = producto?.nombre ?? this.productoTexto().trim();
     const cantidad = this.cantidadProducto();
+    const precio = producto ? (this.preciosMock[producto.id] ?? 500) : this.precioProductoManual();
 
-    if (!nombre || cantidad === null || cantidad <= 0) {
+    if (!nombre || cantidad === null || cantidad <= 0 || precio === null || precio <= 0) {
       return;
     }
 
@@ -205,12 +235,13 @@ export class VerProveedoresComponent implements OnInit {
         return items.map(item => item.id === itemId ? { ...item, cantidad: item.cantidad + cantidad } : item);
       }
 
-      return [...items, { id: itemId, nombre, cantidad, unidadMedida }];
+      return [...items, { id: itemId, nombre, cantidad, unidadMedida, precioUnitario: precio }];
     });
 
     this.productoTexto.set('');
     this.productoSeleccionadoId.set(null);
     this.cantidadProducto.set(1);
+    this.precioProductoManual.set(null);
   }
 
   actualizarCantidadItem(itemId: string, cantidad: number | null): void {
@@ -232,6 +263,7 @@ export class VerProveedoresComponent implements OnInit {
     this.productoTexto.set('');
     this.productoSeleccionadoId.set(null);
     this.cantidadProducto.set(1);
+    this.precioProductoManual.set(null);
     this.observacionPedido.set('');
     this.mensajeAccion.set(null);
   }
@@ -274,14 +306,22 @@ export class VerProveedoresComponent implements OnInit {
       items: nuevoPedido.items
     };
 
-    this.proveedorService.crearPedidoProveedor(proveedor.id, pedido).subscribe(actualizado => {
-      this.proveedores.update(lista => lista.map(item => item.id === actualizado.id ? actualizado : item));
-      this.proveedorSeleccionadoId.set(actualizado.id);
-      this.panelModo.set('historial');
-      this.limpiarPedido();
-      this.cerrarDetallePedido();
-      this.mensajeAccion.set('Pedido agregado correctamente');
-    });
+    // NOTE: El endpoint del back para registrar y enviar pedidos de proveedores debe conectarse aquí
+    this.proveedorService.crearPedidoProveedor(proveedor.id, pedido)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (actualizado) => {
+          this.proveedores.update(lista => lista.map(item => item.id === actualizado.id ? actualizado : item));
+          this.proveedorSeleccionadoId.set(actualizado.id);
+          this.panelModo.set('historial');
+          this.limpiarPedido();
+          this.cerrarDetallePedido();
+          this.mensajeAccion.set('Pedido agregado correctamente');
+        },
+        error: () => {
+          // NOTE: El manejo de errores de comunicación debe integrarse aquí
+        }
+      });
   }
 
   getEstadoClase(estado: EstadoPedidoProveedor): string {
@@ -343,22 +383,8 @@ export class VerProveedoresComponent implements OnInit {
   }
 
   private calcularMontoEstimado(): number {
-    const precios: Record<string, number> = {
-      '1': 1200,
-      '2': 900,
-      '3': 1500,
-      '4': 600,
-      '5': 1100,
-      '6': 7500,
-      '7': 120,
-      '8': 300,
-      '9': 800,
-      '10': 700,
-      '11': 4500
-    };
-
     return this.pedidoItems().reduce((total, item) => {
-      const base = precios[item.id] ?? 500;
+      const base = item.precioUnitario ?? this.preciosMock[item.id] ?? 500;
       return total + base * item.cantidad;
     }, 0);
   }

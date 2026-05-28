@@ -1,5 +1,4 @@
 import { Component, output, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Buscador } from '../../../../../shared/ui/buscador/buscador';
 import { PRODUCTOS_STOCK_MOCK, ProductoStockMock, UnidadMedida } from '../../../../../core/model/producto-stock-mock';
@@ -8,7 +7,7 @@ import { RecetaIngrediente } from '../../../../../core/models/plato';
 @Component({
   selector: 'app-detalle-receta',
   standalone: true,
-  imports: [CommonModule, FormsModule, Buscador],
+  imports: [FormsModule, Buscador],
   templateUrl: './detalle-receta.html',
   styleUrl: './detalle-receta.css'
 })
@@ -51,7 +50,10 @@ export class DetalleRecetaComponent {
     this.notificarCambio();
   }
 
-  onCantidadCambiada() {
+  onCantidadCambiada(item: RecetaIngrediente) {
+    if (item.cantidad === null || item.cantidad === undefined || item.cantidad < 0.01) {
+      item.cantidad = 0.01;
+    }
     this.notificarCambio();
   }
 

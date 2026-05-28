@@ -1,5 +1,4 @@
 import { Component, effect, input, output, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Plato, RecetaIngrediente } from '../../../../../core/models/plato';
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
@@ -11,7 +10,7 @@ import { calcularCostoReceta } from '../../../../../core/services/plato.service'
 @Component({
   selector: 'app-modal-editar-plato',
   standalone: true,
-  imports: [CommonModule, FormsModule, Boton, ToggleComponent, Buscador],
+  imports: [FormsModule, Boton, ToggleComponent, Buscador],
   templateUrl: './modal-editar-plato.html',
   styleUrls: ['./modal-editar-plato.css']
 })
@@ -30,6 +29,12 @@ export class ModalEditarPlatoComponent {
 
   costo = computed(() => {
     return calcularCostoReceta(this.receta());
+  });
+
+  precioEsMenorQueCosto = computed(() => {
+    const venta = this.precioVenta() ?? 0;
+    const costoVal = this.costo() ?? 0;
+    return venta > 0 && costoVal > 0 && venta <= costoVal;
   });
 
   sugerencias = computed(() => {
@@ -79,14 +84,17 @@ export class ModalEditarPlatoComponent {
     this.receta.update(items => items.filter(item => item.id !== id));
   }
 
-  onCantidadCambiada() {
+  onCantidadCambiada(ing: RecetaIngrediente) {
+    if (ing.cantidad === null || ing.cantidad === undefined || ing.cantidad < 0.01) {
+      ing.cantidad = 0.01;
+    }
   }
 
   onUnidadCambiada() {
   }
 
   onSave() {
-    if (!this.nombre().trim() || this.precioVenta() === null || this.costo() === null) {
+    if (!this.nombre().trim() || this.precioVenta() === null || this.precioVenta()! <= 0 || this.costo() === null || this.costo()! <= 0) {
       return;
     }
     this.save.emit({
