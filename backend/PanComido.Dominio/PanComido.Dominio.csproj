@@ -8,10 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Entidades\" />
     <Folder Include="Excepciones\" />
-    <Folder Include="Interfaces\" />
     <Folder Include="CasosDeUso\" />
+    <Folder Include="Interfaces\Repositorios\" />
     <Folder Include="Servicios\" />
     <Folder Include="ObjetosDeValor\" />
   </ItemGroup>
