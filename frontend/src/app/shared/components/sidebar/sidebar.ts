@@ -97,6 +97,8 @@ export class SidebarComponent {
       },
       { label: 'Plato del día', icon: 'faTag', route: 'gerente/plato-dia', roles: ['Gerente'] },
       { label: 'Mapa de mesas', icon: 'faTableCells', route: 'gerente/mesas', roles: ['Gerente'] }
+      ,
+      { label: 'Sistema de avisos', icon: 'faBell', route: 'gerente/avisos', roles: ['Gerente'] }
     ],
     Mozo: [
       { label: 'Mesas', icon: 'faTableCells', route: 'mozo/mesas', roles: ['Mozo'] },

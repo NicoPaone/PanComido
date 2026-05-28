@@ -1,0 +1,189 @@
+<div class="container-fluid p-2 p-sm-3 p-lg-4 bg-light min-vh-100">
+  
+  <app-page-toolbar>
+    <app-buscador buscador placeholder="Buscar avisos..." (busquedaCambiada)="onBuscar($event)"></app-buscador>
+
+    <div acciones class="d-flex gap-2">
+      <app-boton variante="outline" tamanio="md" (clicked)="state.marcarTodoRevisado()">
+        <div class="d-flex align-items-center gap-1">
+          <span class="material-symbols-outlined" style="font-size: 1.2rem;">done_all</span>
+          <span>Marcar todo</span>
+        </div>
+      </app-boton>
+      <app-boton variante="secondary" tamanio="md">
+        <div class="d-flex align-items-center gap-1">
+          <span class="material-symbols-outlined" style="font-size: 1.2rem;">add_shopping_cart</span>
+          <span>Crear pedidos</span>
+        </div>
+      </app-boton>
+    </div>
+  </app-page-toolbar>
+
+  <div class="mb-4 mt-4 d-flex align-items-center justify-content-between">
+    <div>
+      <h3 class="fw-bold mb-1 text-dark">Sistema de avisos</h3>
+      <p class="text-muted small mb-0">Agrupados por tipo: vencimiento próximo, stock bajo y sugerencias de cocina.</p>
+    </div>
+  </div>
+
+  <div class="row row-cols-1 row-cols-lg-3 g-4">
+    <!-- Vencimientos -->
+    <div class="col">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <h5 class="fw-bold mb-0 text-dark">Vencimiento próximo</h5>
+      </div>
+      <div class="d-flex flex-column gap-3">
+        @for (a of state.vencimientos(); track a.id) {
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white d-flex flex-column" style="min-height: 250px;">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center border" style="width: 44px; height: 44px; background-color: #fafafa;">
+                <span class="material-symbols-outlined text-danger" style="font-size: 1.4rem;">event_busy</span>
+              </div>
+              <div class="badge bg-light text-muted border px-2 py-1 rounded-2 d-flex align-items-center gap-1 shadow-sm">
+                <span class="material-symbols-outlined" style="font-size: 0.9rem;">bookmark</span>
+                <span class="fw-medium">Prioridad</span>
+              </div>
+            </div>
+            
+            <div class="mb-1 d-flex justify-content-between align-items-baseline">
+              <span class="fw-bold text-dark fs-6">Inventario</span>
+              <span class="text-muted small">Alerta del sistema</span>
+            </div>
+            <h4 class="fw-bold text-dark mb-3" style="letter-spacing: -0.02em;">{{ a.titulo }}</h4>
+            
+            <div class="d-flex flex-wrap gap-2 mb-4">
+              <div class="badge bg-light text-dark border px-2 py-1 rounded-3">
+                {{ a.subtitulo }}
+              </div>
+              <div class="badge bg-light text-dark border px-2 py-1 rounded-3">
+                {{ a.info }}
+              </div>
+            </div>
+            
+            <div class="mt-auto pt-2 border-top d-flex align-items-center justify-content-between">
+              <div>
+                <div class="text-dark fw-bold" style="font-size: 0.95rem;">Revisión</div>
+                <div class="text-muted" style="font-size: 0.8rem;">Descartar alerta</div>
+              </div>
+              <app-boton variante="danger" tamanio="md" (clicked)="state.marcarRevisado(a.tipo, a.id)">
+                <div class="d-flex align-items-center gap-1 text-white">
+                  <span class="material-symbols-outlined" style="font-size: 1.2rem; line-height: 1;">visibility</span>
+                  <span class="fw-bold">Visto</span>
+                </div>
+              </app-boton>
+            </div>
+          </div>
+        }
+        @if (state.vencimientos().length === 0) {
+          <div class="text-muted small p-3 bg-white rounded shadow-sm text-center">No hay items</div>
+        }
+      </div>
+    </div>
+
+    <!-- Stock bajo -->
+    <div class="col">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <h5 class="fw-bold mb-0 text-dark">Stock bajo</h5>
+      </div>
+      <div class="d-flex flex-column gap-3">
+        @for (a of state.stockBajo(); track a.id) {
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white d-flex flex-column" style="min-height: 250px;">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center border" style="width: 44px; height: 44px; background-color: #fafafa;">
+                <span class="material-symbols-outlined text-warning" style="font-size: 1.4rem;">inventory_2</span>
+              </div>
+              <div class="badge bg-light text-muted border px-2 py-1 rounded-2 d-flex align-items-center gap-1 shadow-sm">
+                <span class="material-symbols-outlined" style="font-size: 0.9rem;">bookmark</span>
+                <span class="fw-medium">Atención</span>
+              </div>
+            </div>
+            
+            <div class="mb-1 d-flex justify-content-between align-items-baseline">
+              <span class="fw-bold text-dark fs-6">Proveedores</span>
+              <span class="text-muted small">Alerta del sistema</span>
+            </div>
+            <h4 class="fw-bold text-dark mb-3" style="letter-spacing: -0.02em;">{{ a.titulo }}</h4>
+            
+            <div class="d-flex flex-wrap gap-2 mb-4">
+              <div class="badge bg-light text-dark border px-2 py-1 rounded-3">
+                {{ a.subtitulo }}
+              </div>
+              <div class="badge bg-light text-dark border px-2 py-1 rounded-3">
+                {{ a.info }}
+              </div>
+            </div>
+            
+            <div class="mt-auto pt-2 border-top d-flex align-items-center justify-content-between">
+              <div>
+                <div class="text-dark fw-bold" style="font-size: 0.95rem;">Reponer</div>
+                <div class="text-muted" style="font-size: 0.8rem;">Generar orden</div>
+              </div>
+              <app-boton variante="warning" tamanio="md" (clicked)="state.crearPedido(a.id)">
+                <div class="d-flex align-items-center gap-1 text-dark">
+                  <span class="material-symbols-outlined" style="font-size: 1.2rem; line-height: 1;">shopping_cart</span>
+                  <span class="fw-bold">Pedir</span>
+                </div>
+              </app-boton>
+            </div>
+          </div>
+        }
+        @if (state.stockBajo().length === 0) {
+          <div class="text-muted small p-3 bg-white rounded shadow-sm text-center">No hay items</div>
+        }
+      </div>
+    </div>
+
+    <!-- Sugerencias de cocina -->
+    <div class="col">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <h5 class="fw-bold mb-0 text-dark">Sugerencias de cocina</h5>
+      </div>
+      <div class="d-flex flex-column gap-3">
+        @for (a of state.sugerencias(); track a.id) {
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white d-flex flex-column" style="min-height: 250px;">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center border" style="width: 44px; height: 44px; background-color: #fafafa;">
+                <span class="material-symbols-outlined text-success" style="font-size: 1.4rem;">restaurant_menu</span>
+              </div>
+              <div class="badge bg-light text-muted border px-2 py-1 rounded-2 d-flex align-items-center gap-1 shadow-sm">
+                <span class="material-symbols-outlined" style="font-size: 0.9rem;">bookmark</span>
+                <span class="fw-medium">IA</span>
+              </div>
+            </div>
+            
+            <div class="mb-1 d-flex justify-content-between align-items-baseline">
+              <span class="fw-bold text-dark fs-6">Producción</span>
+              <span class="text-muted small">Cálculo de demanda</span>
+            </div>
+            <h4 class="fw-bold text-dark mb-3" style="letter-spacing: -0.02em;">{{ a.titulo }}</h4>
+            
+            <div class="d-flex flex-wrap gap-2 mb-4">
+              <div class="badge bg-light text-dark border px-2 py-1 rounded-3">
+                {{ a.subtitulo }}
+              </div>
+              <div class="badge bg-light text-dark border px-2 py-1 rounded-3">
+                {{ a.info }}
+              </div>
+            </div>
+            
+            <div class="mt-auto pt-2 border-top d-flex align-items-center justify-content-between">
+              <div>
+                <div class="text-dark fw-bold" style="font-size: 0.95rem;">Avisar</div>
+                <div class="text-muted" style="font-size: 0.8rem;">Iniciar rutina</div>
+              </div>
+              <app-boton variante="success" tamanio="md" (clicked)="state.enviarACocina(a.id)">
+                <div class="d-flex align-items-center gap-1 text-dark">
+                  <span class="material-symbols-outlined" style="font-size: 1.2rem; line-height: 1;">send</span>
+                  <span class="fw-bold">Enviar</span>
+                </div>
+              </app-boton>
+            </div>
+          </div>
+        }
+        @if (state.sugerencias().length === 0) {
+          <div class="text-muted small p-3 bg-white rounded shadow-sm text-center">No hay items</div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
