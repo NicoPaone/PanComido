@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Buscador } from '../../../../shared/ui/buscador/buscador';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
@@ -30,6 +30,8 @@ export class ModificarCartaComponent implements OnInit {
   private router = inject(Router);
   private state = inject(ModificarCartaStateService);
 
+  layoutMode = signal<'grid' | 'list'>('grid');
+
   // Exponer señales del State Service para que la plantilla HTML y los tests sigan funcionando sin cambios
   platos = this.state.platos;
   filteredPlatos = this.state.filteredPlatos;
@@ -39,6 +41,7 @@ export class ModificarCartaComponent implements OnInit {
   platoAEditar = this.state.platoAEditar;
   platoAEliminar = this.state.platoAEliminar;
   selectedCategoria = this.state.selectedCategoria;
+  loading = this.state.loading;
 
   ngOnInit() {
     this.state.cargarPlatos();
@@ -83,5 +86,9 @@ export class ModificarCartaComponent implements OnInit {
 
   irACrearPlato() {
     this.router.navigate(['/staff/gerente/crear-plato']);
+  }
+
+  setLayoutMode(mode: 'grid' | 'list') {
+    this.layoutMode.set(mode);
   }
 }

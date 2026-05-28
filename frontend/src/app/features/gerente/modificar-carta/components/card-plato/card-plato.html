@@ -1,53 +1,119 @@
-<div class="card h-100 border-0 shadow-sm p-3 dish-card" 
+<div class="dish-card-wrapper h-100" 
      [class.disabled-card]="!plato().visible"
      [class.exploding-card]="isExploding()"
-     [class.recommended-card]="plato().recomendado">
-  <div class="d-flex flex-column flex-sm-row align-items-center gap-3 h-100">
-    <div class="flex-shrink-0 text-center">
-      <img [src]="plato().imagen" class="dish-img rounded-3 object-fit-cover" [alt]="plato().nombre">
-    </div>
-    
-    <div class="flex-grow-1 min-w-0 text-center text-sm-start">
-      <h5 class="fw-bold mb-2 text-dark text-truncate d-flex align-items-center justify-content-center justify-content-sm-start gap-2">
-        {{ plato().nombre }}
-        @if (plato().recomendado) {
-          <span class="badge bg-warning text-dark d-inline-flex align-items-center gap-1 py-1 px-2 border-0 align-middle shadow-sm rounded-pill" style="font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em;">
-            <span class="material-symbols-outlined text-dark" style="font-size: 0.85rem;">star</span>
-            Destacado
-          </span>
-        }
-      </h5>
-      <p class="mb-1 text-muted small">Precio de venta: <span class="fw-bold text-dark fs-6">$ {{ plato().precioVenta | number }}</span></p>
-      <p class="mb-1 text-muted small">Costo: <span class="text-dark">$ {{ plato().costo | number }}</span></p>
-      <p class="mb-2 text-muted small d-flex align-items-center gap-1 justify-content-center justify-content-sm-start">
-        <span class="material-symbols-outlined text-secondary" style="font-size: 0.95rem; vertical-align: middle;">trending_up</span>
-        Ventas: <span class="text-dark fw-semibold">{{ plato().ventas || 0 }} unidades</span>
-      </p>
+     [class.recommended-card]="plato().recomendado"
+     [class.list-layout]="layoutMode() === 'list'">
+  
+  @if (layoutMode() === 'grid') {
+    <div class="dish-grid-container h-100">
       
-      <div class="d-flex justify-content-center justify-content-sm-start">
-        <app-toggle 
-          [active]="plato().visible" 
-          label="Visible en carta" 
-          (toggled)="onToggle()">
-        </app-toggle>
+      <!-- CONTENIDO (Imagen e Información) -->
+      <div class="dish-content-box flex-grow-1">
+        <div class="dish-image-wrapper flex-shrink-0">
+          <img [src]="plato().imagen" class="dish-img rounded-3 object-fit-cover" [alt]="plato().nombre">
+          @if (plato().recomendado) {
+            <div class="dish-star-badge">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+              </svg>
+            </div>
+          }
+        </div>
+        
+        <div class="dish-info flex-grow-1 min-w-0">
+          <h5 class="dish-title fw-bold mb-2 text-dark">
+            <span class="text-truncate" [title]="plato().nombre">{{ plato().nombre }}</span>
+          </h5>
+          <p class="mb-1 text-muted small">Precio de venta: <span class="fw-bold text-dark fs-6">$ {{ plato().precioVenta | number }}</span></p>
+          <p class="mb-1 text-muted small">Costo: <span class="text-dark">$ {{ plato().costo | number }}</span></p>
+          <p class="dish-sales mb-2 text-muted small d-flex align-items-center gap-1">
+            <span class="material-symbols-outlined text-secondary" style="font-size: 0.95rem; vertical-align: middle;">trending_up</span>
+            Ventas: <span class="text-dark fw-semibold">{{ plato().ventas || 0 }} unidades</span>
+          </p>
+          
+          <div class="d-flex dish-toggle-wrapper">
+            <app-toggle 
+              [active]="plato().visible" 
+              label="Visible en carta" 
+              (toggled)="onToggle()">
+            </app-toggle>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCIONES -->
+      <div class="dish-actions-box flex-shrink-0">
+        <app-boton 
+          [variante]="plato().recomendado ? 'warning' : 'outline'" 
+          tamanio="md" 
+          class="btn-icon" 
+          [class.star-active]="plato().recomendado"
+          (clicked)="onToggleRecomendado()">
+          <span class="material-symbols-outlined fs-5">{{ plato().recomendado ? 'star' : 'star_border' }}</span>
+        </app-boton>
+        <app-boton variante="warning" tamanio="md" class="btn-icon" (clicked)="onEdit()">
+          <span class="material-symbols-outlined fs-5">edit</span>
+        </app-boton>
+        <app-boton variante="danger" tamanio="md" class="btn-icon" (clicked)="onDelete()">
+          <span class="material-symbols-outlined fs-5">delete</span>
+        </app-boton>
+      </div>
+
+    </div>
+  } @else {
+    <!-- Compact List Layout -->
+    <div class="d-flex flex-column flex-sm-row align-items-center gap-3 w-100 justify-content-between">
+      <div class="d-flex align-items-center gap-3 w-100 flex-grow-1 min-w-0">
+        <div class="flex-shrink-0 position-relative">
+          <img [src]="plato().imagen" class="dish-img-compact rounded-2 object-fit-cover" [alt]="plato().nombre">
+          @if (plato().recomendado) {
+            <div class="dish-star-badge-compact">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+              </svg>
+            </div>
+          }
+        </div>
+        <div class="flex-grow-1 min-w-0">
+          <h6 class="fw-bold mb-1 text-dark text-truncate d-flex align-items-center gap-2">
+            {{ plato().nombre }}
+          </h6>
+          <div class="d-flex flex-wrap gap-2 text-muted small mb-1 align-items-center">
+            <span class="text-dark fw-semibold">$ {{ plato().precioVenta | number }}</span>
+            <span class="text-muted">|</span>
+            <span>Costo: $ {{ plato().costo | number }}</span>
+            <span class="text-muted">|</span>
+            <span class="d-inline-flex align-items-center gap-0.5">
+              <span class="material-symbols-outlined text-secondary" style="font-size: 0.85rem;">trending_up</span>
+              {{ plato().ventas || 0 }} v.
+            </span>
+          </div>
+          <div>
+            <app-toggle 
+              [active]="plato().visible" 
+              label="Visible" 
+              (toggled)="onToggle()">
+            </app-toggle>
+          </div>
+        </div>
+      </div>
+      
+      <div class="d-flex flex-row gap-2 mt-2 mt-sm-0 flex-shrink-0 justify-content-end align-self-stretch align-self-sm-center">
+        <app-boton 
+          [variante]="plato().recomendado ? 'warning' : 'outline'" 
+          tamanio="sm" 
+          class="btn-icon btn-icon-sm" 
+          [class.star-active]="plato().recomendado"
+          (clicked)="onToggleRecomendado()">
+          <span class="material-symbols-outlined fs-6">{{ plato().recomendado ? 'star' : 'star_border' }}</span>
+        </app-boton>
+        <app-boton variante="warning" tamanio="sm" class="btn-icon btn-icon-sm" (clicked)="onEdit()">
+          <span class="material-symbols-outlined fs-6">edit</span>
+        </app-boton>
+        <app-boton variante="danger" tamanio="sm" class="btn-icon btn-icon-sm" (clicked)="onDelete()">
+          <span class="material-symbols-outlined fs-6">delete</span>
+        </app-boton>
       </div>
     </div>
-
-    <div class="d-flex flex-row flex-sm-column gap-2 mt-2 mt-sm-0 flex-shrink-0 justify-content-center">
-      <app-boton 
-        [variante]="plato().recomendado ? 'warning' : 'outline'" 
-        tamanio="md" 
-        class="btn-icon" 
-        [class.star-active]="plato().recomendado"
-        (clicked)="onToggleRecomendado()">
-        <span class="material-symbols-outlined fs-5">{{ plato().recomendado ? 'star' : 'star_border' }}</span>
-      </app-boton>
-      <app-boton variante="warning" tamanio="md" class="btn-icon" (clicked)="onEdit()">
-        <span class="material-symbols-outlined fs-5">edit</span>
-      </app-boton>
-      <app-boton variante="danger" tamanio="md" class="btn-icon" (clicked)="onDelete()">
-        <span class="material-symbols-outlined fs-5">delete</span>
-      </app-boton>
-    </div>
-  </div>
+  }
 </div>

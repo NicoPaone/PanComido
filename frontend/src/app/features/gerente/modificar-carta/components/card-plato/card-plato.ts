@@ -15,6 +15,7 @@ import { ToggleComponent } from '../../../../../shared/ui/toggle/toggle';
 export class CardPlatoComponent {
   
   plato = input.required<Plato>();
+  layoutMode = input<'grid' | 'list'>('grid');
   isExploding = input<boolean>(false);
   toggleVisible = output<Plato>();
   editPlato = output<Plato>();

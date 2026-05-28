@@ -1,4 +1,4 @@
-<div class="container-fluid p-4 bg-light min-vh-100">
+<div class="container-fluid p-2 p-sm-3 p-lg-4 bg-light min-vh-100">
   
   <app-page-toolbar>
     
@@ -25,6 +25,25 @@
      </div>
     
   </app-dropdown>
+
+  <div filtros class="d-flex gap-1">
+    <app-boton 
+      [activo]="layoutMode() === 'grid'" 
+      variante="tab" 
+      tamanio="md"
+      style="flex: 1;"
+      (clicked)="setLayoutMode('grid')">
+      <span class="material-symbols-outlined fs-5" style="vertical-align: middle;">grid_view</span>
+    </app-boton>
+    <app-boton 
+      [activo]="layoutMode() === 'list'" 
+      variante="tab" 
+      tamanio="md"
+      style="flex: 1;"
+      (clicked)="setLayoutMode('list')">
+      <span class="material-symbols-outlined fs-5" style="vertical-align: middle;">view_list</span>
+    </app-boton>
+  </div>
    
  <app-boton 
       acciones
@@ -37,14 +56,105 @@
 
   </app-page-toolbar>
 
-  @if (platosRecomendados().length > 0) {
-    <div class="mb-5" style="margin-top: 5px;">
+  @if (loading()) {
+    <div class="mb-5">
+      @if (layoutMode() === 'grid') {
+        <div class="row row-cols-1 row-cols-lg-2 g-4">
+          @for (i of [1, 2, 3, 4]; track i) {
+            <div class="col mb-4">
+              <div class="skeleton-card-container h-100">
+                <div class="dish-card-wrapper h-100 skeleton-card">
+                  <div class="dish-grid-container h-100">
+                    
+                    <div class="dish-content-box flex-grow-1">
+                      <div class="dish-image-wrapper flex-shrink-0">
+                        <div class="skeleton-image rounded-3"></div>
+                      </div>
+                      <div class="dish-info flex-grow-1 min-w-0">
+                        <div class="skeleton-title mb-2" style="width: 60%;"></div>
+                        <div class="skeleton-text mb-1" style="width: 45%;"></div>
+                        <div class="skeleton-text mb-1" style="width: 35%;"></div>
+                        <div class="skeleton-text mb-2" style="width: 40%;"></div>
+                        <div class="skeleton-toggle"></div>
+                      </div>
+                    </div>
+
+                    <div class="dish-actions-box flex-shrink-0">
+                      <div class="skeleton-btn"></div>
+                      <div class="skeleton-btn"></div>
+                      <div class="skeleton-btn"></div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="d-flex flex-column gap-3">
+          @for (i of [1, 2, 3, 4]; track i) {
+            <div class="card border-0 shadow-sm p-3 dish-card list-layout skeleton-card">
+              <div class="d-flex flex-column flex-sm-row align-items-center gap-3 w-100 justify-content-between">
+                <div class="d-flex align-items-center gap-3 w-100 flex-grow-1">
+                  <div class="flex-shrink-0">
+                    <div class="skeleton-image-compact rounded-2"></div>
+                  </div>
+                  <div class="flex-grow-1">
+                    <div class="skeleton-title mb-1" style="width: 50%;"></div>
+                    <div class="skeleton-text mb-1" style="width: 35%;"></div>
+                    <div class="skeleton-toggle"></div>
+                  </div>
+                </div>
+                <div class="d-flex flex-row gap-2 mt-2 mt-sm-0">
+                  <div class="skeleton-btn-sm"></div>
+                  <div class="skeleton-btn-sm"></div>
+                  <div class="skeleton-btn-sm"></div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  } @else {
+    @if (platosRecomendados().length > 0) {
+      <div class="mb-5" style="margin-top: 5px;">
+        <div class="d-flex align-items-start gap-2 mb-3">
+          <div class="section-star-icon mt-1">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+            </svg>
+          </div>
+          <div>
+            <h4 class="fw-bold mb-0 text-dark" style="line-height: 1.2;">Platos Recomendados</h4>
+            <p class="text-muted small mb-0" style="font-weight: 300; font-size: 0.88rem; letter-spacing: 0.01em;">Ordenados por ventas</p>
+          </div>
+        </div>
+        <app-lista-platos 
+          [platos]="platosRecomendados()" 
+          [layoutMode]="layoutMode()"
+          [explodingId]="explodingPlatoId()"
+          (toggleVisible)="toggleVisibility($event)"
+          (editPlato)="onEditPlato($event)"
+          (deletePlato)="onDeletePlato($event)"
+          (toggleRecomendado)="toggleRecomendado($event)">
+        </app-lista-platos>
+      </div>
+    }
+
+    <div class="mb-4">
       <h4 class="fw-bold mb-3 text-dark d-flex align-items-center gap-2">
-        <span class="material-symbols-outlined text-warning" style="font-size: 1.8rem; vertical-align: middle;">star</span>
-        Platos Recomendados (Ordenados por ventas)
+        <span class="material-symbols-outlined text-secondary" style="font-size: 1.8rem; vertical-align: middle;">restaurant_menu</span>
+        @if (platosRecomendados().length > 0) {
+          Otros Platos
+        } @else {
+          Todos los Platos
+        }
       </h4>
       <app-lista-platos 
-        [platos]="platosRecomendados()" 
+        [platos]="platosNormales()" 
+        [layoutMode]="layoutMode()"
         [explodingId]="explodingPlatoId()"
         (toggleVisible)="toggleVisibility($event)"
         (editPlato)="onEditPlato($event)"
@@ -53,25 +163,6 @@
       </app-lista-platos>
     </div>
   }
-
-  <div class="mb-4">
-    <h4 class="fw-bold mb-3 text-dark d-flex align-items-center gap-2">
-      <span class="material-symbols-outlined text-secondary" style="font-size: 1.8rem; vertical-align: middle;">restaurant_menu</span>
-      @if (platosRecomendados().length > 0) {
-        Otros Platos
-      } @else {
-        Todos los Platos
-      }
-    </h4>
-    <app-lista-platos 
-      [platos]="platosNormales()" 
-      [explodingId]="explodingPlatoId()"
-      (toggleVisible)="toggleVisibility($event)"
-      (editPlato)="onEditPlato($event)"
-      (deletePlato)="onDeletePlato($event)"
-      (toggleRecomendado)="toggleRecomendado($event)">
-    </app-lista-platos>
-  </div>
 
   @if (platoAEditar()) {
     @defer (on idle) {
