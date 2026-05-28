@@ -35,7 +35,10 @@ export class VerCartaComponent {
   constructor(
     private router: Router,
     private pedidoService: PedidoService
-  ) { }
+    
+  ) { 
+    
+  }
 
   mostrarFiltros = false;
   tiposSeleccionados: string[] = [];
@@ -43,6 +46,7 @@ export class VerCartaComponent {
   restriccionesSeleccionadas: string[] = [];
   faFilter = faFilter;
   tipoOrden: string = '';
+  cantidadPersonas: number = 1;
 
   platos: Plato[] = [
     {
@@ -346,4 +350,9 @@ aplicarFiltros() {
   }
 
 }
+
+ngOnInit() {
+  this.cantidadPersonas = history.state?.cantidadPersonas ?? 1;
+}
+
 }

@@ -1,52 +1,37 @@
-
-<app-header-cantidad-personas
-  (back)="volverAtras()">
+<app-header-cantidad-personas (back)="volverAtras()">
 </app-header-cantidad-personas>
-  <div class="cantidad-card">
+<div class="cantidad-card">
 
-    <h1>
-      ¿Cuántas personas
-      son en tu grupo?
-    </h1>
+  <h1>
+    ¿Cuántas personas
+    son en tu grupo?
+  </h1>
 
-    <div class="cantidad-grid">
+  <div class="cantidad-grid">
 
-      @for (numero of [1,2,3,4,5]; track numero) {
+    @for (numero of [].constructor(maxCantidad); track $index) {
 
-        <div
-          class="cantidad-item"
-          [class.selected]="
-            cantidadSeleccionada === numero
-          "
-          (click)="seleccionarCantidad(numero)"
-        >
-          {{ numero }}
-        </div>
-
-      }
-
-      <div class="cantidad-item">
-        +
-      </div>
-
+    <div class="cantidad-item" [class.selected]="cantidadPersonas === $index + 1"
+      (click)="seleccionarCantidad($index + 1)">
+      {{ $index + 1 }}
     </div>
 
-    <div class="botones">
+    }
 
-      <app-boton
-        variante="outline"
-        label="Cancelar"
-      >
-      </app-boton>
-
-      <app-boton
-        variante="success"
-        label="Aceptar"
-        (clicked)="aceptar()"
-      >
-      </app-boton>
-
+    <div class="cantidad-item plus" (click)="expandirOpciones()">
+      +
     </div>
 
   </div>
 
+  <div class="botones">
+
+    <app-boton variante="outline" label="Cancelar">
+    </app-boton>
+
+    <app-boton variante="success" label="Aceptar" (clicked)="aceptar()">
+    </app-boton>
+
+  </div>
+
+</div>
