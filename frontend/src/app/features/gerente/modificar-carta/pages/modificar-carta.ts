@@ -33,12 +33,19 @@ export class ModificarCartaComponent implements OnInit {
   // Exponer señales del State Service para que la plantilla HTML y los tests sigan funcionando sin cambios
   platos = this.state.platos;
   filteredPlatos = this.state.filteredPlatos;
+  platosRecomendados = this.state.platosRecomendados;
+  platosNormales = this.state.platosNormales;
   explodingPlatoId = this.state.explodingPlatoId;
   platoAEditar = this.state.platoAEditar;
   platoAEliminar = this.state.platoAEliminar;
+  selectedCategoria = this.state.selectedCategoria;
 
   ngOnInit() {
     this.state.cargarPlatos();
+  }
+
+  toggleRecomendado(plato: Plato) {
+    this.state.toggleRecomendado(plato);
   }
 
   onSearch(term: string) {
@@ -69,8 +76,9 @@ export class ModificarCartaComponent implements OnInit {
     this.state.closeModals();
   }
 
-  onCategoriaSeleccionada(categoria: string) {
+  onCategoriaSeleccionada(categoria: string | null) {
     console.log('Categoría seleccionada:', categoria);
+    this.state.setCategoria(categoria);
   }
 
   irACrearPlato() {

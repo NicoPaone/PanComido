@@ -15,6 +15,7 @@ export class ListaPlatosComponent {
   toggleVisible = output<Plato>();
   editPlato = output<Plato>();
   deletePlato = output<Plato>();
+  toggleRecomendado = output<Plato>();
 
   onToggleVisible(plato: Plato) {
     this.toggleVisible.emit(plato);
@@ -26,5 +27,9 @@ export class ListaPlatosComponent {
 
   onDeletePlato(plato: Plato) {
     this.deletePlato.emit(plato);
+  }
+
+  onToggleRecomendado(plato: Plato) {
+    this.toggleRecomendado.emit(plato);
   }
 }

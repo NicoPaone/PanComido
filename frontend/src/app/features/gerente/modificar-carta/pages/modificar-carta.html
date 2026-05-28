@@ -7,22 +7,22 @@
       placeholder="Buscar plato" 
       (busquedaCambiada)="onSearch($event)">
     </app-buscador>
-   <app-dropdown filtros>
+   <app-dropdown filtros #filtroDropdown>
 
-     <app-boton 
-     trigger
-     acciones
-     label="Categorías" 
-     variante="teal" 
-     tamanio="md">
-    </app-boton>
-    <div menu>
-      <ul>
-        <li (click)="onCategoriaSeleccionada('Entradas')">Entradas</li>
-      <li (click)="onCategoriaSeleccionada('Principales')">Principales</li>
-      <li (click)="onCategoriaSeleccionada('Bebidas')">Bebidas</li>
-      </ul>
-    </div>
+      <app-boton 
+      trigger
+      [label]="selectedCategoria() ? 'Categoría: ' + selectedCategoria() : 'Categorías'" 
+      variante="teal" 
+      tamanio="md">
+     </app-boton>
+     <div menu>
+       <ul>
+         <li (click)="onCategoriaSeleccionada(null); filtroDropdown.cerrar()">Todas</li>
+         <li (click)="onCategoriaSeleccionada('Entradas'); filtroDropdown.cerrar()">Entradas</li>
+         <li (click)="onCategoriaSeleccionada('Principales'); filtroDropdown.cerrar()">Principales</li>
+         <li (click)="onCategoriaSeleccionada('Bebidas'); filtroDropdown.cerrar()">Bebidas</li>
+       </ul>
+     </div>
     
   </app-dropdown>
    
@@ -37,13 +37,41 @@
 
   </app-page-toolbar>
 
-  <app-lista-platos 
-    [platos]="filteredPlatos()" 
-    [explodingId]="explodingPlatoId()"
-    (toggleVisible)="toggleVisibility($event)"
-    (editPlato)="onEditPlato($event)"
-    (deletePlato)="onDeletePlato($event)">
-  </app-lista-platos>
+  @if (platosRecomendados().length > 0) {
+    <div class="mb-5" style="margin-top: 5px;">
+      <h4 class="fw-bold mb-3 text-dark d-flex align-items-center gap-2">
+        <span class="material-symbols-outlined text-warning" style="font-size: 1.8rem; vertical-align: middle;">star</span>
+        Platos Recomendados (Ordenados por ventas)
+      </h4>
+      <app-lista-platos 
+        [platos]="platosRecomendados()" 
+        [explodingId]="explodingPlatoId()"
+        (toggleVisible)="toggleVisibility($event)"
+        (editPlato)="onEditPlato($event)"
+        (deletePlato)="onDeletePlato($event)"
+        (toggleRecomendado)="toggleRecomendado($event)">
+      </app-lista-platos>
+    </div>
+  }
+
+  <div class="mb-4">
+    <h4 class="fw-bold mb-3 text-dark d-flex align-items-center gap-2">
+      <span class="material-symbols-outlined text-secondary" style="font-size: 1.8rem; vertical-align: middle;">restaurant_menu</span>
+      @if (platosRecomendados().length > 0) {
+        Otros Platos
+      } @else {
+        Todos los Platos
+      }
+    </h4>
+    <app-lista-platos 
+      [platos]="platosNormales()" 
+      [explodingId]="explodingPlatoId()"
+      (toggleVisible)="toggleVisibility($event)"
+      (editPlato)="onEditPlato($event)"
+      (deletePlato)="onDeletePlato($event)"
+      (toggleRecomendado)="toggleRecomendado($event)">
+    </app-lista-platos>
+  </div>
 
   @if (platoAEditar()) {
     @defer (on idle) {

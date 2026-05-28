@@ -112,3 +112,15 @@
     opacity: 0;
   }
 }
+
+.dish-card.recommended-card {
+  border-left: 5px solid #ffc107 !important;
+  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.08) !important;
+}
+
+::ng-deep .star-active .btn {
+  color: #fff !important;
+  background-color: #ffc107 !important;
+  border-color: #ffc107 !important;
+}
+

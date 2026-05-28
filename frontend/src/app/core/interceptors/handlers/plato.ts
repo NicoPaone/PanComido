@@ -10,6 +10,9 @@ let dbPlatos: Plato[] = [
     precioVenta: 16200,
     costo: 13160,
     visible: true,
+    recomendado: true,
+    ventas: 150,
+    categoria: 'Principales',
     imagen: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&q=80&w=200&h=150',
     receta: [
       { id: '6', nombre: 'Bife de Chorizo', cantidad: 1.5, unidadMedida: 'KG' },
@@ -26,6 +29,9 @@ let dbPlatos: Plato[] = [
     precioVenta: 10000,
     costo: 7000,
     visible: true,
+    recomendado: false,
+    ventas: 300,
+    categoria: 'Entradas',
     imagen: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&q=80&w=200&h=150',
     receta: [
       { id: '9', nombre: 'Papa Negra', cantidad: 8, unidadMedida: 'KG' },
@@ -38,6 +44,9 @@ let dbPlatos: Plato[] = [
     precioVenta: 12600,
     costo: 8700,
     visible: true,
+    recomendado: true,
+    ventas: 80,
+    categoria: 'Principales',
     imagen: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&q=80&w=200&h=150',
     receta: [
       { id: '4', nombre: 'Harina 0000', cantidad: 2, unidadMedida: 'KG' },
@@ -52,6 +61,9 @@ let dbPlatos: Plato[] = [
     precioVenta: 12600,
     costo: 8700,
     visible: true,
+    recomendado: false,
+    ventas: 200,
+    categoria: 'Principales',
     imagen: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=200&h=150',
     receta: [
       { id: '4', nombre: 'Harina 0000', cantidad: 2.5, unidadMedida: 'KG' },
@@ -66,6 +78,9 @@ let dbPlatos: Plato[] = [
     precioVenta: 14800,
     costo: 9320,
     visible: true,
+    recomendado: true,
+    ventas: 120,
+    categoria: 'Principales',
     imagen: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=200&h=150',
     receta: [
       { id: '9', nombre: 'Papa Negra', cantidad: 5, unidadMedida: 'KG' },
@@ -80,7 +95,10 @@ let dbPlatos: Plato[] = [
     precioVenta: 19500,
     costo: 8600,
     visible: true,
-    imagen: 'https://images.unsplash.com/photo-1565557612662-811c7504ee42?auto=format&fit=crop&q=80&w=200&h=150',
+    recomendado: false,
+    ventas: 50,
+    categoria: 'Principales',
+    imagen: 'assets/pollo-al-curry.png',
     receta: [
       { id: '6', nombre: 'Bife de Chorizo', cantidad: 1, unidadMedida: 'KG' },
       { id: '3', nombre: 'Aceite de Girasol', cantidad: 0.5, unidadMedida: 'L' },
@@ -93,6 +111,9 @@ let dbPlatos: Plato[] = [
     precioVenta: 19460,
     costo: 10120,
     visible: false,
+    recomendado: false,
+    ventas: 10,
+    categoria: 'Principales',
     imagen: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=200&h=150',
     receta: [
       { id: '6', nombre: 'Bife de Chorizo', cantidad: 1.2, unidadMedida: 'KG' },
@@ -106,6 +127,9 @@ let dbPlatos: Plato[] = [
     precioVenta: 29460,
     costo: 20120,
     visible: false,
+    recomendado: false,
+    ventas: 5,
+    categoria: 'Principales',
     imagen: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&q=80&w=200&h=150',
     receta: [
       { id: '4', nombre: 'Harina 0000', cantidad: 5, unidadMedida: 'KG' },
@@ -113,6 +137,18 @@ let dbPlatos: Plato[] = [
       { id: '3', nombre: 'Aceite de Girasol', cantidad: 0.4, unidadMedida: 'L' },
       { id: '2', nombre: 'Cebolla', cantidad: 0.022, unidadMedida: 'KG' }
     ]
+  },
+  {
+    id: 9,
+    nombre: 'Gaseosa Cola',
+    precioVenta: 2000,
+    costo: 800,
+    visible: true,
+    recomendado: false,
+    ventas: 500,
+    categoria: 'Bebidas',
+    imagen: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=200&h=150',
+    receta: []
   }
 ];
 

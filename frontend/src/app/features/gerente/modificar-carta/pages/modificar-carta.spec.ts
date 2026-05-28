@@ -162,4 +162,11 @@ describe('ModificarCartaComponent', () => {
     component.irACrearPlato();
     expect(routerMock.navigate).toHaveBeenCalledWith(['/staff/gerente/crear-plato']);
   });
+
+  it('debería alternar recomendado al llamar a toggleRecomendado', () => {
+    const updateSpy = vi.spyOn(component['state'], 'toggleRecomendado');
+    const plato = mockPlatos[0];
+    component.toggleRecomendado(plato);
+    expect(updateSpy).toHaveBeenCalledWith(plato);
+  });
 });

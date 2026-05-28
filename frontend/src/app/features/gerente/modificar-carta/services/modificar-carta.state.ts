@@ -10,6 +10,7 @@ export class ModificarCartaStateService {
 
   // 1. Estado PRIVADO
   private _searchTerm = signal<string>('');
+  private _selectedCategoria = signal<string | null>(null);
   private _platos = signal<Plato[]>([]);
   private _platoAEditar = signal<Plato | null>(null);
   private _platoAEliminar = signal<Plato | null>(null);
@@ -18,6 +19,7 @@ export class ModificarCartaStateService {
 
   // 2. Estado PÚBLICO
   searchTerm = this._searchTerm.asReadonly();
+  selectedCategoria = this._selectedCategoria.asReadonly();
   platos = this._platos.asReadonly();
   platoAEditar = this._platoAEditar.asReadonly();
   platoAEliminar = this._platoAEliminar.asReadonly();
@@ -32,12 +34,44 @@ export class ModificarCartaStateService {
     });
 
     const lowerTerm = this._searchTerm().toLowerCase().trim();
-    if (!lowerTerm) {
-      return sorted;
+    const selectedCat = this._selectedCategoria();
+
+    let result = sorted;
+    if (lowerTerm) {
+      result = result.filter(plato => 
+        plato.nombre.toLowerCase().includes(lowerTerm)
+      );
     }
-    return sorted.filter(plato => 
-      plato.nombre.toLowerCase().includes(lowerTerm)
-    );
+    if (selectedCat) {
+      result = result.filter(plato => 
+        plato.categoria === selectedCat
+      );
+    }
+    return result;
+  });
+
+  platosRecomendados = computed(() => {
+    return this.filteredPlatos()
+      .filter(plato => plato.recomendado && plato.visible)
+      .sort((a, b) => (b.ventas ?? 0) - (a.ventas ?? 0));
+  });
+
+  platosNormales = computed(() => {
+    const normal = this.filteredPlatos().filter(plato => !(plato.recomendado && plato.visible));
+    return [...normal].sort((a, b) => {
+      const aVisible = a.visible ?? true;
+      const bVisible = b.visible ?? true;
+      if (aVisible !== bVisible) {
+        return aVisible ? -1 : 1;
+      }
+      if (!aVisible) {
+        const aRec = !!a.recomendado;
+        const bRec = !!b.recomendado;
+        if (aRec && !bRec) return 1;
+        if (!aRec && bRec) return -1;
+      }
+      return 0;
+    });
   });
 
   // 4. Métodos de Negocio (UseCases)
@@ -56,6 +90,10 @@ export class ModificarCartaStateService {
 
   setSearchTerm(term: string): void {
     this._searchTerm.set(term);
+  }
+
+  setCategoria(categoria: string | null): void {
+    this._selectedCategoria.set(categoria);
   }
 
   toggleVisibility(plato: Plato): void {
@@ -130,5 +168,29 @@ export class ModificarCartaStateService {
   closeModals(): void {
     this._platoAEditar.set(null);
     this._platoAEliminar.set(null);
+  }
+
+  toggleRecomendado(plato: Plato): void {
+    const targetState = !plato.recomendado;
+    // Optimistic update
+    this._platos.update(platos =>
+      platos.map(p => p.id === plato.id ? { ...p, recomendado: targetState } : p)
+    );
+
+    this.api.updatePlato(plato.id, { recomendado: targetState })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: updated => {
+          this._platos.update(platos =>
+            platos.map(p => p.id === plato.id ? updated : p)
+          );
+        },
+        error: () => {
+          // Revert on error
+          this._platos.update(platos =>
+            platos.map(p => p.id === plato.id ? { ...p, recomendado: plato.recomendado } : p)
+          );
+        }
+      });
   }
 }

@@ -6,7 +6,8 @@
         [isExploding]="plato.id === explodingId()"
         (toggleVisible)="onToggleVisible($event)"
         (editPlato)="onEditPlato($event)"
-        (deletePlato)="onDeletePlato($event)">
+        (deletePlato)="onDeletePlato($event)"
+        (toggleRecomendado)="onToggleRecomendado($event)">
       </app-card-plato>
     </div>
   } @empty {

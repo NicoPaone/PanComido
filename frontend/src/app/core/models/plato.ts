@@ -17,4 +17,6 @@ export interface Plato {
   receta?: RecetaIngrediente[];
   tiempoPreparacion?: number;
   categoria?: string;
+  recomendado?: boolean;
+  ventas?: number;
 }

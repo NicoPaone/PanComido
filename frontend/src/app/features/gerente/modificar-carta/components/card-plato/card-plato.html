@@ -1,15 +1,28 @@
 <div class="card h-100 border-0 shadow-sm p-3 dish-card" 
      [class.disabled-card]="!plato().visible"
-     [class.exploding-card]="isExploding()">
+     [class.exploding-card]="isExploding()"
+     [class.recommended-card]="plato().recomendado">
   <div class="d-flex flex-column flex-sm-row align-items-center gap-3 h-100">
     <div class="flex-shrink-0 text-center">
       <img [src]="plato().imagen" class="dish-img rounded-3 object-fit-cover" [alt]="plato().nombre">
     </div>
     
     <div class="flex-grow-1 min-w-0 text-center text-sm-start">
-      <h5 class="fw-bold mb-2 text-dark text-truncate">{{ plato().nombre }}</h5>
+      <h5 class="fw-bold mb-2 text-dark text-truncate d-flex align-items-center justify-content-center justify-content-sm-start gap-2">
+        {{ plato().nombre }}
+        @if (plato().recomendado) {
+          <span class="badge bg-warning text-dark d-inline-flex align-items-center gap-1 py-1 px-2 border-0 align-middle shadow-sm rounded-pill" style="font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em;">
+            <span class="material-symbols-outlined text-dark" style="font-size: 0.85rem;">star</span>
+            Destacado
+          </span>
+        }
+      </h5>
       <p class="mb-1 text-muted small">Precio de venta: <span class="fw-bold text-dark fs-6">$ {{ plato().precioVenta | number }}</span></p>
-      <p class="mb-2 text-muted small">Costo: <span class="text-dark">$ {{ plato().costo | number }}</span></p>
+      <p class="mb-1 text-muted small">Costo: <span class="text-dark">$ {{ plato().costo | number }}</span></p>
+      <p class="mb-2 text-muted small d-flex align-items-center gap-1 justify-content-center justify-content-sm-start">
+        <span class="material-symbols-outlined text-secondary" style="font-size: 0.95rem; vertical-align: middle;">trending_up</span>
+        Ventas: <span class="text-dark fw-semibold">{{ plato().ventas || 0 }} unidades</span>
+      </p>
       
       <div class="d-flex justify-content-center justify-content-sm-start">
         <app-toggle 
@@ -21,6 +34,14 @@
     </div>
 
     <div class="d-flex flex-row flex-sm-column gap-2 mt-2 mt-sm-0 flex-shrink-0 justify-content-center">
+      <app-boton 
+        [variante]="plato().recomendado ? 'warning' : 'outline'" 
+        tamanio="md" 
+        class="btn-icon" 
+        [class.star-active]="plato().recomendado"
+        (clicked)="onToggleRecomendado()">
+        <span class="material-symbols-outlined fs-5">{{ plato().recomendado ? 'star' : 'star_border' }}</span>
+      </app-boton>
       <app-boton variante="warning" tamanio="md" class="btn-icon" (clicked)="onEdit()">
         <span class="material-symbols-outlined fs-5">edit</span>
       </app-boton>
