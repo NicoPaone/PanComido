@@ -14,10 +14,6 @@
   margin: auto;
 }
 
-.modal-dialog::backdrop {
-  background-color: rgba(15, 23, 42, 0.6); /* Un gris azulado oscuro */
-  backdrop-filter: blur(2px); /* Efecto difuminado moderno */
-}
 
 .modal-header {
   display: flex;

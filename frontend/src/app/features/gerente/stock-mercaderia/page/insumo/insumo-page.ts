@@ -27,7 +27,7 @@ export class InsumoPage {
   productoEditandoId = signal<number | null>(null);
   
   tituloModal= computed(() => {
-    return this.productoEditandoId() ? 'Editar Producto' : 'Nuevo Producto'
+    return this.productoEditandoId() ? 'Editar Producto' : 'Nuevo Insumo'
   })
   productoSeleccionado = computed(() => {
     const id = this.productoEditandoId();
@@ -62,13 +62,13 @@ export class InsumoPage {
       console.log("Abrir modal para editar producto con id:", id);
       modal.abrir();
     }
-    cerrarYLimpiar(modal:Modal){
-      modal.cerrar();
+    limpiarEstadoModal() { 
       this.productoEditandoId.set(null);
     }
     guardarCambios(datosProducto: any, modal:Modal){
       this.state.guardarProducto(datosProducto);
-      this.cerrarYLimpiar(modal);
+      modal.cerrar();
+      this.limpiarEstadoModal();
     }
   
 }

@@ -30,32 +30,38 @@
       acciones
       label="Nuevo plato" 
       variante="secondary" 
-      tamanio="md">
+      tamanio="md"
+      (clicked)="irACrearPlato()">
     </app-boton>
 
 
   </app-page-toolbar>
 
   <app-lista-platos 
-    [platos]="filteredPlatos" 
+    [platos]="filteredPlatos()" 
+    [explodingId]="explodingPlatoId()"
     (toggleVisible)="toggleVisibility($event)"
-    (editar)="abrirModalEditar(modalFormulario,$event)">
+    (editPlato)="onEditPlato($event)"
+    (deletePlato)="onDeletePlato($event)">
   </app-lista-platos>
-  
-</div>
-<app-modal 
-  #modalFormulario 
-  [titulo]="tituloModal" 
-  [maxWidth]="tamanioMaximo" 
-  (cerrado)="cerrarYLimpiar(modalFormulario)">
-  
-  @if (platoEditandoId() !== null && platoEditandoId() !== undefined) {
-    <app-form-plato-editar 
-      [plato]="platoSeleccionado()" 
-      [categorias]="categorias"
-      (cancelar)="cerrarYLimpiar(modalFormulario)"
-      (guardar)="guardarPlato($event, modalFormulario)">
-    </app-form-plato-editar>
+
+  @if (platoAEditar()) {
+    @defer (on idle) {
+      <app-modal-editar-plato
+        [plato]="platoAEditar()!"
+        (save)="onSavePlato($event)"
+        (close)="onCloseModals()">
+      </app-modal-editar-plato>
+    }
   }
 
-</app-modal>
+  @if (platoAEliminar()) {
+    @defer (on idle) {
+      <app-modal-eliminar-plato
+        [plato]="platoAEliminar()!"
+        (confirm)="onConfirmDelete()"
+        (close)="onCloseModals()">
+      </app-modal-eliminar-plato>
+    }
+  }
+</div>

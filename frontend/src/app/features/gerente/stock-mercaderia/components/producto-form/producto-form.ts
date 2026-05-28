@@ -1,6 +1,6 @@
 import { Component, inject, input, output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Insumo } from '../../../../../core/model/producto-stock';
+import { Insumo } from '../../../../../core/models/producto-stock';
 
 @Component({
   selector: 'app-producto-form',

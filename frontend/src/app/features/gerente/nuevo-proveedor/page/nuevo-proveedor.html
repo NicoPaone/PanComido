@@ -1,0 +1,246 @@
+<div class="nuevo-proveedor-page p-4">
+  <div class="panel-card">
+    <div class="panel-header">
+      <div>
+        <p class="detail-kicker mb-1">Alta de proveedor</p>
+        <h1 class="page-title mb-0">Nuevo proveedor</h1>
+        <p class="pedido-modal-helper mb-0">Carga la información principal para dejarlo listo en la grilla de proveedores.</p>
+      </div>
+    </div>
+
+    <div class="proveedor-form" [formGroup]="proveedorForm">
+      <div class="form-grid">
+        <!-- Nombre -->
+        <label class="field-group">
+          <span>Nombre <strong class="field-required">*</strong></span>
+          <input 
+            type="text" 
+            class="form-control custom-input" 
+            [class.is-invalid]="proveedorForm.get('nombre')?.touched && proveedorForm.get('nombre')?.invalid"
+            placeholder="Ej. Distribuidora Central" 
+            formControlName="nombre">
+          @if (proveedorForm.get('nombre')?.touched && proveedorForm.get('nombre')?.hasError('required')) {
+            <span class="error-text">El nombre es obligatorio.</span>
+          }
+          @if (proveedorForm.get('nombre')?.touched && proveedorForm.get('nombre')?.hasError('minlength')) {
+            <span class="error-text">El nombre debe tener al menos 3 caracteres.</span>
+          }
+        </label>
+
+        <!-- Contacto -->
+        <label class="field-group">
+          <span>Contacto <strong class="field-required">*</strong></span>
+          <input 
+            type="text" 
+            class="form-control custom-input" 
+            [class.is-invalid]="proveedorForm.get('contacto')?.touched && proveedorForm.get('contacto')?.invalid"
+            placeholder="Ej. Laura Pérez" 
+            formControlName="contacto">
+          @if (proveedorForm.get('contacto')?.touched && proveedorForm.get('contacto')?.hasError('required')) {
+            <span class="error-text">El nombre del contacto es obligatorio.</span>
+          }
+          @if (proveedorForm.get('contacto')?.touched && proveedorForm.get('contacto')?.hasError('minlength')) {
+            <span class="error-text">El contacto debe tener al menos 3 caracteres.</span>
+          }
+        </label>
+
+        <!-- Teléfono -->
+        <label class="field-group">
+          <span>Teléfono</span>
+          <input 
+            type="text" 
+            class="form-control custom-input" 
+            [class.is-invalid]="proveedorForm.get('telefono')?.touched && proveedorForm.get('telefono')?.invalid"
+            placeholder="Ej. +54 11 5555-1234" 
+            formControlName="telefono">
+          @if (proveedorForm.get('telefono')?.touched && proveedorForm.get('telefono')?.hasError('pattern')) {
+            <span class="error-text">Formato de teléfono inválido.</span>
+          }
+        </label>
+
+        <!-- Email -->
+        <label class="field-group">
+          <span>Email</span>
+          <input 
+            type="email" 
+            class="form-control custom-input" 
+            [class.is-invalid]="proveedorForm.get('email')?.touched && proveedorForm.get('email')?.invalid"
+            placeholder="Ej. ventas@empresa.com" 
+            formControlName="email">
+          @if (proveedorForm.get('email')?.touched && proveedorForm.get('email')?.hasError('email')) {
+            <span class="error-text">Dirección de correo electrónico inválida.</span>
+          }
+        </label>
+
+        <!-- Calle -->
+        <label class="field-group">
+          <span>Calle <strong class="field-required">*</strong></span>
+          <input 
+            type="text" 
+            class="form-control custom-input" 
+            [class.is-invalid]="proveedorForm.get('calle')?.touched && proveedorForm.get('calle')?.invalid"
+            placeholder="Ej. Av. San Martín" 
+            formControlName="calle">
+          @if (proveedorForm.get('calle')?.touched && proveedorForm.get('calle')?.hasError('required')) {
+            <span class="error-text">La calle es obligatoria.</span>
+          }
+        </label>
+
+        <!-- Número -->
+        <label class="field-group">
+          <span>Número</span>
+          <input 
+            type="text" 
+            class="form-control custom-input" 
+            placeholder="Ej. 1200" 
+            formControlName="numero">
+        </label>
+
+        <!-- Ciudad -->
+        <label class="field-group">
+          <span>Ciudad <strong class="field-required">*</strong></span>
+          <input 
+            type="text" 
+            class="form-control custom-input" 
+            [class.is-invalid]="proveedorForm.get('ciudad')?.touched && proveedorForm.get('ciudad')?.invalid"
+            placeholder="Ej. CABA" 
+            formControlName="ciudad">
+          @if (proveedorForm.get('ciudad')?.touched && proveedorForm.get('ciudad')?.hasError('required')) {
+            <span class="error-text">La ciudad es obligatoria.</span>
+          }
+        </label>
+
+        <!-- Categorías -->
+        <label class="field-group categories-group">
+          <span>Categorías <strong class="field-required">*</strong></span>
+
+          <ul class="category-list">
+            @for (cat of availableCategories; track cat) {
+              <li>
+                <label class="category-checkbox">
+                  <input 
+                    type="checkbox" 
+                    [checked]="categorias().includes(cat)" 
+                    (change)="toggleCategoria(cat)">
+                  <span class="checkbox-pill">{{ cat }}</span>
+                </label>
+              </li>
+            }
+          </ul>
+
+          <div class="add-category">
+            <input 
+              type="text" 
+              class="form-control custom-input" 
+              placeholder="Presiona Enter para agregar" 
+              formControlName="customCategory" 
+              (keyup.enter)="agregarCategoriaPersonalizada()">
+            <app-boton 
+              label="Agregar" 
+              variante="outline" 
+              tamanio="sm" 
+              (clicked)="agregarCategoriaPersonalizada()">
+            </app-boton>
+          </div>
+
+          @if (categorias().length === 0) {
+            <span class="error-text">Debes seleccionar al menos una categoría.</span>
+          }
+
+          @if (categorias().length > 0) {
+            <div class="category-chips">
+              @for (c of categorias(); track c) {
+                <span class="chip">
+                  <span class="chip-label">{{ c }}</span>
+                  <button 
+                    type="button" 
+                    class="chip-remove" 
+                    [attr.aria-label]="'Eliminar ' + c" 
+                    (click)="removerCategoria(c)">
+                    <fa-icon [icon]="faTrash"></fa-icon>
+                  </button>
+                </span>
+              }
+            </div>
+          }
+        </label>
+      </div>
+
+      <!-- Credenciales del gerente -->
+      <div class="credentials-section" [formGroup]="gerenteForm">
+        <p class="section-subtitle mb-1">Credenciales del gerente (validación requerida)</p>
+
+        <div class="form-grid">
+          <label class="field-group">
+            <span>Usuario gerente <strong class="field-required">*</strong></span>
+            <input 
+              type="text" 
+              class="form-control custom-input" 
+              [class.is-invalid]="gerenteForm.get('usuario')?.touched && gerenteForm.get('usuario')?.invalid"
+              formControlName="usuario">
+            @if (gerenteForm.get('usuario')?.touched && gerenteForm.get('usuario')?.hasError('required')) {
+              <span class="error-text">El usuario es requerido.</span>
+            }
+          </label>
+
+          <label class="field-group">
+            <span>Contraseña gerente <strong class="field-required">*</strong></span>
+            <input 
+              type="password" 
+              class="form-control custom-input" 
+              [class.is-invalid]="gerenteForm.get('contrasena')?.touched && gerenteForm.get('contrasena')?.invalid"
+              formControlName="contrasena">
+            @if (gerenteForm.get('contrasena')?.touched && gerenteForm.get('contrasena')?.hasError('required')) {
+              <span class="error-text">La contraseña es requerida.</span>
+            }
+            @if (gerenteForm.get('contrasena')?.touched && gerenteForm.get('contrasena')?.hasError('minlength')) {
+              <span class="error-text">Debe tener al menos 6 caracteres.</span>
+            }
+          </label>
+        </div>
+
+        <div class="credentials-actions">
+          <app-boton 
+            label="Validar credenciales" 
+            variante="teal" 
+            tamanio="sm" 
+            [disabled]="gerenteForm.invalid || gerenteValidado() || cargandoGerente()"
+            (clicked)="validarCredencialesGerente()">
+          </app-boton>
+          
+          @if (cargandoGerente()) {
+            <span class="text-muted">Validando...</span>
+          } @else {
+            <span class="cred-status" [class.ok]="gerenteValidado()">
+              {{ gerenteValidado() ? 'Credenciales válidas' : 'No validadas' }}
+            </span>
+          }
+        </div>
+        
+        @if (mensajeErrorGerente()) {
+          <div class="error-text mt-2">{{ mensajeErrorGerente() }}</div>
+        }
+      </div>
+
+      <div class="panel-footer-actions pedido-actions mt-4">
+        <div class="form-hint">Los campos marcados con * son obligatorios.</div>
+
+        <div class="footer-buttons">
+          <app-boton 
+            label="Cancelar" 
+            variante="outline" 
+            tamanio="md" 
+            (clicked)="cancelar()">
+          </app-boton>
+          <app-boton 
+            label="Crear Proveedor" 
+            variante="secondary" 
+            tamanio="md" 
+            [disabled]="!puedeGuardar()" 
+            (clicked)="guardarProveedor()">
+          </app-boton>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
