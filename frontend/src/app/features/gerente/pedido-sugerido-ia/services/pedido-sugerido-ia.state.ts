@@ -1,36 +1,27 @@
-import { Component, OnInit, signal, computed, inject, DestroyRef } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { DecimalPipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Boton } from '../../../../shared/ui/botones/boton/boton';
-import { Buscador } from '../../../../shared/ui/buscador/buscador';
-import { ProveedorService } from '../../../../core/services/proveedor.service';
+import { PedidoSugeridoIAApiService } from './pedido-sugerido-ia.api';
 import { Proveedor, SugerenciaPedidoItem } from '../../../../core/models/proveedor';
 import { ProductoStockMock } from '../../../../core/model/producto-stock-mock';
 
-@Component({
-  selector: 'app-pedido-sugerido-ia',
-  standalone: true,
-  imports: [DecimalPipe, FormsModule, Boton, Buscador],
-  templateUrl: './pedido-sugerido-ia.html',
-  styleUrls: ['./pedido-sugerido-ia.css']
-})
-export class PedidoSugeridoIAComponent implements OnInit {
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
-  private readonly proveedorService = inject(ProveedorService);
-  private readonly destroyRef = inject(DestroyRef);
+@Injectable({ providedIn: 'root' })
+export class PedidoSugeridoIAStateService {
+  private api = inject(PedidoSugeridoIAApiService);
+  private destroyRef = inject(DestroyRef);
 
+  // Estado centralizado expuesto como writeable signals
   proveedorId = signal<number>(0);
   proveedor = signal<Proveedor | null>(null);
   sugerencias = signal<SugerenciaPedidoItem[]>([]);
   pedidoItems = signal<SugerenciaPedidoItem[]>([]);
-  
   observaciones = signal<string>('');
   busqueda = signal<string>('');
   productosDisponibles = signal<ProductoStockMock[]>([]);
+  
+  private _loading = signal(false);
+  loading = this._loading.asReadonly();
 
+  // Variables Derivadas (Computed)
   montoEstimado = computed(() => {
     return this.pedidoItems().reduce((total, item) => total + (item.precioUnitario * item.cantidadSugerida), 0);
   });
@@ -49,45 +40,41 @@ export class PedidoSugeridoIAComponent implements OnInit {
     );
   });
 
-  constructor() {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    if (idParam) {
-      this.proveedorId.set(+idParam);
-    }
-  }
-
-  ngOnInit(): void {
-    const id = this.proveedorId();
+  // Métodos de Negocio
+  cargarDatos(id: number, onBack: () => void): void {
     if (isNaN(id) || id <= 0) {
-      this.volver();
+      onBack();
       return;
     }
 
-    this.proveedorService.getProveedorById(id)
+    this._loading.set(true);
+
+    this.api.getProveedorById(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(p => {
         if (p) {
           this.proveedor.set(p);
         } else {
-          this.volver();
+          onBack();
         }
       });
 
-    this.proveedorService.getPedidoSugeridoIA(id)
+    this.api.getPedidoSugeridoIA(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(items => {
         this.sugerencias.set(items);
         this.pedidoItems.set(JSON.parse(JSON.stringify(items)));
+        this._loading.set(false);
       });
 
-    this.proveedorService.getProductosDisponibles()
+    this.api.getProductosDisponibles()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(prods => {
         this.productosDisponibles.set(prods);
       });
   }
 
-  onSearchChanged(query: string): void {
+  setSearchTerm(query: string): void {
     this.busqueda.set(query);
   }
 
@@ -127,11 +114,7 @@ export class PedidoSugeridoIAComponent implements OnInit {
     );
   }
 
-  volver(): void {
-    this.router.navigate(['/staff', 'gerente', 'ver-proveedores']);
-  }
-
-  enviarPedido(): void {
+  enviarPedido(onSuccess: () => void): void {
     const prov = this.proveedor();
     if (!prov || this.pedidoItems().length === 0) return;
 
@@ -151,16 +134,11 @@ export class PedidoSugeridoIAComponent implements OnInit {
       items: items
     };
 
-    this.proveedorService.crearPedidoProveedor(prov.id, nuevoPedido)
+    this.api.crearPedidoProveedor(prov.id, nuevoPedido)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.router.navigate(['/staff', 'gerente', 'ver-proveedores'], {
-            state: { created: true, message: 'Pedido sugerido por IA enviado correctamente' }
-          });
-        },
-        error: () => {
-          // Manejo de errores
+          onSuccess();
         }
       });
   }

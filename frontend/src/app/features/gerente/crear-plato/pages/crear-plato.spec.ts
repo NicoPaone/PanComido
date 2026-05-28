@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { CrearPlatoComponent } from './crear-plato';
 import { RecetaIngrediente } from '../../../../core/models/plato';
 import { vi } from 'vitest';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { mockInterceptor } from '../../../../core/interceptors/mock.interceptor';
 
 describe('CrearPlatoComponent', () => {
   let component: CrearPlatoComponent;
@@ -17,7 +19,8 @@ describe('CrearPlatoComponent', () => {
     await TestBed.configureTestingModule({
       imports: [CrearPlatoComponent],
       providers: [
-        { provide: Router, useValue: routerMock }
+        { provide: Router, useValue: routerMock },
+        provideHttpClient(withInterceptors([mockInterceptor]))
       ]
     }).compileComponents();
 
