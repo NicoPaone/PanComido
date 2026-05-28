@@ -16,9 +16,6 @@ public partial class Insumo
     [Column("stock_minimo")]
     public decimal StockMinimo { get; set; }
 
-    [Column("vencimiento")]
-    public DateOnly? Vencimiento { get; set; }
-
     [InverseProperty("IdInsumoNavigation")]
     public virtual Bebidum? Bebidum { get; set; }
 

@@ -11,6 +11,8 @@ namespace PanComido.Dominio.Interfaces.Repositorios
     {
         public Task<decimal> ObtenerStockTotalDeInsumo(int insumoId);
 
+        public Task<DateOnly> ObtenerFechaDeVencimientoMasProximaDeInsumo(int insumoId);
+
         // Pendientes
 
         // public Task<List<Lote>> ObtenerLoteDeInsumoOrdenadoPorVencimientoAscendenteAsync(int insumoId);
