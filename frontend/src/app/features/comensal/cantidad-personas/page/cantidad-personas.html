@@ -1,0 +1,52 @@
+
+<app-header-cantidad-personas
+  (back)="volverAtras()">
+</app-header-cantidad-personas>
+  <div class="cantidad-card">
+
+    <h1>
+      ¿Cuántas personas
+      son en tu grupo?
+    </h1>
+
+    <div class="cantidad-grid">
+
+      @for (numero of [1,2,3,4,5]; track numero) {
+
+        <div
+          class="cantidad-item"
+          [class.selected]="
+            cantidadSeleccionada === numero
+          "
+          (click)="seleccionarCantidad(numero)"
+        >
+          {{ numero }}
+        </div>
+
+      }
+
+      <div class="cantidad-item">
+        +
+      </div>
+
+    </div>
+
+    <div class="botones">
+
+      <app-boton
+        variante="outline"
+        label="Cancelar"
+      >
+      </app-boton>
+
+      <app-boton
+        variante="success"
+        label="Aceptar"
+        (clicked)="aceptar()"
+      >
+      </app-boton>
+
+    </div>
+
+  </div>
+

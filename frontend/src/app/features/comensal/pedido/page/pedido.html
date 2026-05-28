@@ -24,73 +24,95 @@
 
   <!-- CARD PLATOS -->
   <div
-    *ngFor="let plato of pedidos; let i = index"
+    *ngFor="let item of pedidos; let i = index"
     class="card border-0 shadow-sm rounded-4 p-3 mb-4"
   >
 
-  <div class="d-flex justify-content-end">
+    <!-- BOTON ELIMINAR -->
+    <div class="d-flex justify-content-end">
 
-  <span
-    class="material-symbols-outlined text-dark"
-    style="cursor: pointer;"
-   (click)="eliminarPedido(i)"
-  >
-    close
-  </span>
+      <span
+        class="material-symbols-outlined text-dark"
+        style="cursor: pointer;"
+        (click)="eliminarPedido(i)"
+      >
+        close
+      </span>
 
-</div>
+    </div>
 
     <!-- TITULO Y PRECIO -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div
+      class="d-flex justify-content-between align-items-center mb-3"
+    >
 
-      <h4 class="fw-bold mb-0">
-        {{plato.nombre}}
-      </h4>
+      <div>
+
+        <h4 class="fw-bold mb-1">
+          {{ item.plato.nombre }}
+        </h4>
+
+        <span class="badge bg-dark">
+          x{{ item.cantidad }}
+        </span>
+
+      </div>
 
       <span class="fw-bold fs-5">
-        $ {{plato.precioVenta}}
+
+        $ {{
+          item.plato.precioVenta *
+          item.cantidad
+        }}
+
       </span>
 
     </div>
 
     <!-- IMAGEN -->
     <img
-      [src]="plato.imagen"
+      [src]="item.plato.imagen"
       class="img-fluid rounded-4 mb-3"
       style="height: 220px; object-fit: cover;"
     >
 
     <!-- DESCRIPCION -->
-  <p class="text-muted mb-4">
+    <p class="text-muted mb-4">
 
-  {{plato.descripcion}}
+      {{ item.plato.descripcion }}
 
-</p>
+    </p>
 
     <!-- BOTONES -->
     <div class="d-flex flex-column gap-2">
 
       <app-boton
         variante="success"
-       customClass="w-100"
+        class="w-100"
       >
 
         <span class="material-symbols-outlined">
-    add
-  </span>
+          add
+        </span>
 
-  <span>
-    Agregar al pedido
-  </span>
+        <span>
+          Agregar al pedido
+        </span>
 
       </app-boton>
 
       <app-boton
         variante="warning"
-        customClass="w-100"
+        class="w-100"
       >
 
-        Personalizar
+        <span class="material-symbols-outlined">
+          edit
+        </span>
+
+        <span>
+          Personalizar
+        </span>
 
       </app-boton>
 

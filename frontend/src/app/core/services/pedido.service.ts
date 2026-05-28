@@ -1,27 +1,31 @@
 import { Injectable } from '@angular/core';
-import { Plato } from '../models/plato';
+
+import { ItemPedido }
+from '../models/item-pedido';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PedidoService {
 
-  pedidos: Plato[] = [];
+  pedidos: ItemPedido[] = [];
 
-  agregarPedido(plato: Plato) {
-    this.pedidos.push(plato);
+  agregarPedido(item: ItemPedido) {
+
+    this.pedidos.push(item);
+
   }
 
   obtenerPedidos() {
+
     return this.pedidos;
+
   }
 
   eliminarPedido(index: number) {
 
-  this.pedidos.splice(index, 1);
+    this.pedidos.splice(index, 1);
 
-}
-
-
+  }
 
 }

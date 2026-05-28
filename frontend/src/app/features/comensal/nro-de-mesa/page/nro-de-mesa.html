@@ -1,0 +1,38 @@
+
+<app-header-nro-de-mesa
+  (back)="volverAtras()">
+</app-header-nro-de-mesa>
+  <div class="mesa-card">
+
+    <h1 class="mesa-title">
+      Confirmar mesa
+    </h1>
+
+    <p class="mesa-text">
+      Usted va a ocupar la mesa número:
+    </p>
+
+  <div class="mesa-number">
+  {{ numeroMesa }}
+</div>
+    <div class="mesa-buttons">
+
+  <app-boton
+    variante="outline"
+    label="Cancelar"
+    class="flex-fill"
+  >
+  </app-boton>
+
+  <app-boton
+    variante="success"
+    label="Aceptar"
+    class="flex-fill"
+     (clicked)="irACantidadPersonas()"
+  >
+  </app-boton>
+
+</div>
+
+
+</div>

@@ -94,12 +94,15 @@ describe('ListaPlatosComensalComponent', () => {
       'emit'
     );
 
-    const plato = component.platos[0];
+    const item = {
+      plato: component.platos[0],
+      cantidad: 1
+    };
 
-    component.onAgregarPedido(plato);
+    component.onAgregarPedido(item);
 
     expect(spy).toHaveBeenCalledWith(
-      plato
+      item
     );
 
   });

@@ -165,15 +165,18 @@ describe('VerCartaComponent', () => {
 
   });
 
-  it('debería agregar un plato al pedido', () => {
+  it('debería agregar un item al pedido', () => {
 
-    const plato = component.platos[0];
+    const item = {
+      plato: component.platos[0],
+      cantidad: 1
+    };
 
-    component.agregarAlPedido(plato);
+    component.agregarAlPedido(item);
 
     expect(
       pedidoServiceMock.agregarPedido
-    ).toHaveBeenCalledWith(plato);
+    ).toHaveBeenCalledWith(item);
 
   });
 

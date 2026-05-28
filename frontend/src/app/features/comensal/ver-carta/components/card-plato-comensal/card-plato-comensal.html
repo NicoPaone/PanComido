@@ -4,7 +4,9 @@
 
     <!-- Imagen -->
     <div class="col-4">
+
       <img [src]="plato.imagen" class="img-fluid rounded-4 object-fit-cover dish-img" [alt]="plato.nombre">
+
     </div>
 
     <!-- Info -->
@@ -12,10 +14,14 @@
 
       <div>
 
+        <!-- NOMBRE -->
         <h5 class="fw-bold mb-1 text-dark">
+
           {{ plato.nombre }}
-          
+
         </h5>
+
+        <!-- PLATO DEL DIA -->
         @if (plato.platoDelDia) {
 
         <span class="badge bg-success mb-2">
@@ -24,22 +30,75 @@
 
         }
 
+        <!-- TIEMPO -->
         <p class="mb-1 text-muted small">
+
           ⏱ {{ plato.tiempo }} min
 
         </p>
 
-        <p class="mb-2 fw-bold text-dark fs-5">
+        <!-- PRECIO-->
+
+
+        <!-- PRECIO -->
+        <p class="mb-0 fw-bold text-dark fs-5">
+
           $ {{ plato.precioVenta | number }}
+
         </p>
 
+
+
+
+
       </div>
-      <app-boton variante="success" class="w-100" label="Agregar" (click)="agregar()">
+      <div class="d-flex
+          justify-content-between
+          align-items-end
+          ">
+        <!-- BOTON -->
+        <app-boton variante="success" class="w-100 " (clicked)="agregar()">
+          <span class="material-symbols-outlined">
+            add
+          </span>
 
-      </app-boton>
+          <span>
+            Agregar
+          </span>
+        </app-boton>
 
+
+        <!-- CONTADOR -->
+        <div class="d-flex flex-column align-items-center">
+
+          <p class="small text-muted mb-1">
+
+            Porciones:
+
+          </p>
+
+          <div class="d-flex align-items-center
+              border rounded-pill px-2 py-1">
+
+            <button class="btn btn-sm p-0" (click)="decrementar()">
+              -
+            </button>
+
+            <span class="mx-2 fw-bold">
+
+              {{ cantidad }}
+
+            </span>
+
+            <button class="btn btn-sm p-0" (click)="incrementar()">
+              +
+            </button>
+
+          </div>
+
+        </div>
+      </div>
     </div>
-
   </div>
 
 </div>
