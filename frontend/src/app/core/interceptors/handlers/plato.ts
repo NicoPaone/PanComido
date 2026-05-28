@@ -13,7 +13,7 @@ let dbPlatos: Plato[] = [
     recomendado: true,
     ventas: 150,
     categoria: 'Principales',
-    imagen: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&q=80&w=200&h=150',
+    imagen: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&q=80&w=800&h=600',
     receta: [
       { id: '6', nombre: 'Bife de Chorizo', cantidad: 1.5, unidadMedida: 'KG' },
       { id: '7', nombre: 'Huevos Blancos', cantidad: 6, unidadMedida: 'UN' },
@@ -32,7 +32,7 @@ let dbPlatos: Plato[] = [
     recomendado: false,
     ventas: 300,
     categoria: 'Entradas',
-    imagen: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&q=80&w=200&h=150',
+    imagen: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&q=80&w=800&h=600',
     receta: [
       { id: '9', nombre: 'Papa Negra', cantidad: 8, unidadMedida: 'KG' },
       { id: '3', nombre: 'Aceite de Girasol', cantidad: 0.4, unidadMedida: 'L' }
@@ -47,7 +47,7 @@ let dbPlatos: Plato[] = [
     recomendado: true,
     ventas: 80,
     categoria: 'Principales',
-    imagen: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&q=80&w=200&h=150',
+    imagen: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&q=80&w=800&h=600',
     receta: [
       { id: '4', nombre: 'Harina 0000', cantidad: 2, unidadMedida: 'KG' },
       { id: '7', nombre: 'Huevos Blancos', cantidad: 10, unidadMedida: 'UN' },
@@ -64,7 +64,7 @@ let dbPlatos: Plato[] = [
     recomendado: false,
     ventas: 200,
     categoria: 'Principales',
-    imagen: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=200&h=150',
+    imagen: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=800&h=600',
     receta: [
       { id: '4', nombre: 'Harina 0000', cantidad: 2.5, unidadMedida: 'KG' },
       { id: '5', nombre: 'Tomate Perita', cantidad: 2, unidadMedida: 'KG' },
@@ -81,7 +81,7 @@ let dbPlatos: Plato[] = [
     recomendado: true,
     ventas: 120,
     categoria: 'Principales',
-    imagen: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=200&h=150',
+    imagen: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=800&h=600',
     receta: [
       { id: '9', nombre: 'Papa Negra', cantidad: 5, unidadMedida: 'KG' },
       { id: '6', nombre: 'Bife de Chorizo', cantidad: 0.7, unidadMedida: 'KG' },
@@ -114,7 +114,7 @@ let dbPlatos: Plato[] = [
     recomendado: false,
     ventas: 10,
     categoria: 'Principales',
-    imagen: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=200&h=150',
+    imagen: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=800&h=600',
     receta: [
       { id: '6', nombre: 'Bife de Chorizo', cantidad: 1.2, unidadMedida: 'KG' },
       { id: '2', nombre: 'Cebolla', cantidad: 1.1, unidadMedida: 'KG' },
@@ -130,7 +130,7 @@ let dbPlatos: Plato[] = [
     recomendado: false,
     ventas: 5,
     categoria: 'Principales',
-    imagen: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&q=80&w=200&h=150',
+    imagen: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&q=80&w=800&h=600',
     receta: [
       { id: '4', nombre: 'Harina 0000', cantidad: 5, unidadMedida: 'KG' },
       { id: '6', nombre: 'Bife de Chorizo', cantidad: 2.2, unidadMedida: 'KG' },
@@ -147,7 +147,7 @@ let dbPlatos: Plato[] = [
     recomendado: false,
     ventas: 500,
     categoria: 'Bebidas',
-    imagen: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=200&h=150',
+    imagen: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=800&h=600',
     receta: []
   }
 ];

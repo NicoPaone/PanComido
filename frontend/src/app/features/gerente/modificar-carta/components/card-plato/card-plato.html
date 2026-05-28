@@ -10,7 +10,7 @@
       <!-- CONTENIDO (Imagen e Información) -->
       <div class="dish-content-box flex-grow-1">
         <div class="dish-image-wrapper flex-shrink-0">
-          <img [src]="plato().imagen" class="dish-img rounded-3 object-fit-cover" [alt]="plato().nombre">
+          <img [src]="plato().imagen" class="dish-img rounded-3" [alt]="plato().nombre">
           @if (plato().recomendado) {
             <div class="dish-star-badge">
               <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -21,22 +21,53 @@
         </div>
         
         <div class="dish-info flex-grow-1 min-w-0">
-          <h5 class="dish-title fw-bold mb-2 text-dark">
-            <span class="text-truncate" [title]="plato().nombre">{{ plato().nombre }}</span>
-          </h5>
-          <p class="mb-1 text-muted small">Precio de venta: <span class="fw-bold text-dark fs-6">$ {{ plato().precioVenta | number }}</span></p>
-          <p class="mb-1 text-muted small">Costo: <span class="text-dark">$ {{ plato().costo | number }}</span></p>
-          <p class="dish-sales mb-2 text-muted small d-flex align-items-center gap-1">
-            <span class="material-symbols-outlined text-secondary" style="font-size: 0.95rem; vertical-align: middle;">trending_up</span>
-            Ventas: <span class="text-dark fw-semibold">{{ plato().ventas || 0 }} unidades</span>
-          </p>
-          
-          <div class="d-flex dish-toggle-wrapper">
-            <app-toggle 
-              [active]="plato().visible" 
-              label="Visible en carta" 
-              (toggled)="onToggle()">
-            </app-toggle>
+          <!-- CONTENEDOR VERTICAL (< 510px) - Inspirado en el diseño Premium -->
+          <div class="vertical-layout-info w-100">
+            <!-- Fila de Precio y Ventas -->
+            <div class="dish-price-row d-flex justify-content-between align-items-center w-100 mb-2">
+              <span class="dish-price">$ {{ plato().precioVenta | number }}</span>
+              <span class="dish-sales-badge d-flex align-items-center gap-1">
+                <span class="material-symbols-outlined text-secondary" style="font-size: 0.9rem; vertical-align: middle;">trending_up</span>
+                <span>{{ plato().ventas || 0 }} vtas</span>
+              </span>
+            </div>
+            
+            <!-- Título -->
+            <h5 class="dish-title-vertical fw-bold mb-2 text-dark" [title]="plato().nombre">
+              {{ plato().nombre }}
+            </h5>
+            
+            <!-- Costo y Toggle -->
+            <div class="dish-meta-row d-flex align-items-center justify-content-between w-100 mb-1">
+              <span class="text-muted small">Costo: <strong class="text-dark">$ {{ plato().costo | number }}</strong></span>
+              <div class="d-flex dish-toggle-wrapper">
+                <app-toggle 
+                  [active]="plato().visible" 
+                  label="Visible" 
+                  (toggled)="onToggle()">
+                </app-toggle>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONTENEDOR HORIZONTAL (>= 510px) - Clásico -->
+          <div class="horizontal-layout-info w-100">
+            <h5 class="dish-title fw-bold mb-2 text-dark">
+              <span class="text-truncate" [title]="plato().nombre">{{ plato().nombre }}</span>
+            </h5>
+            <p class="mb-1 text-muted small">Precio de venta: <span class="fw-bold text-dark fs-6">$ {{ plato().precioVenta | number }}</span></p>
+            <p class="mb-1 text-muted small">Costo: <span class="text-dark">$ {{ plato().costo | number }}</span></p>
+            <p class="dish-sales mb-2 text-muted small d-flex align-items-center gap-1">
+              <span class="material-symbols-outlined text-secondary" style="font-size: 0.95rem; vertical-align: middle;">trending_up</span>
+              Ventas: <span class="text-dark fw-semibold">{{ plato().ventas || 0 }} unidades</span>
+            </p>
+            <div class="d-flex dish-toggle-wrapper">
+              <app-toggle 
+                [active]="plato().visible" 
+                label="Visible en carta" 
+                (toggled)="onToggle()">
+              </app-toggle>
+            </div>
           </div>
         </div>
       </div>
@@ -65,7 +96,7 @@
     <div class="d-flex flex-column flex-sm-row align-items-center gap-3 w-100 justify-content-between">
       <div class="d-flex align-items-center gap-3 w-100 flex-grow-1 min-w-0">
         <div class="flex-shrink-0 position-relative">
-          <img [src]="plato().imagen" class="dish-img-compact rounded-2 object-fit-cover" [alt]="plato().nombre">
+          <img [src]="plato().imagen" class="dish-img-compact rounded-2" [alt]="plato().nombre">
           @if (plato().recomendado) {
             <div class="dish-star-badge-compact">
               <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
