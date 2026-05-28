@@ -290,34 +290,6 @@
               </div>
             </div>
           </div>
-        } @else {
-          <div class="panel-section">
-            <div class="history-header">
-              <h3 class="section-title mb-0">Historial de pedidos</h3>
-              <span class="counter-pill small">{{ proveedor.historialPedidos.length }} movimientos</span>
-            </div>
-
-            <div class="history-list">
-              @for (pedido of proveedor.historialPedidos; track pedido.id) {
-                <article class="history-card" (click)="abrirDetallePedido(pedido)">
-                  <div class="history-card-header">
-                    <div>
-                      <strong>{{ pedido.concepto }}</strong>
-                      <div class="history-date">{{ pedido.fecha | date:'dd/MM/yyyy' }}</div>
-                    </div>
-
-                    <span class="estado-pill" [class]="getEstadoClase(pedido.estado)">{{ pedido.estado }}</span>
-                  </div>
-
-                  <div class="history-meta">
-                    <span>${{ pedido.monto | number:'1.0-0' }}</span>
-                    <span>{{ pedido.observacion }}</span>
-                    <span class="history-items">{{ pedido.items.length }} ítems</span>
-                  </div>
-                </article>
-              }
-            </div>
-          </div>
         }
 
         @if (mensajeAccion()) {

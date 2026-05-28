@@ -29,7 +29,7 @@ export interface Proveedor {
   direccion: string;
   activo: boolean;
   fechaUltimoPedido: string | null;
-  historialPedidos: PedidoProveedor[];
+  historialPedidos?: PedidoProveedor[];
   categorias?: string[];
 }
 

@@ -62,7 +62,7 @@ describe('VerProveedoresStateService', () => {
               observacion: pedido.observacion,
               items: pedido.items
             },
-            ...prov.historialPedidos
+            ...(prov.historialPedidos ?? [])
           ]
         };
         return of(updatedProv);

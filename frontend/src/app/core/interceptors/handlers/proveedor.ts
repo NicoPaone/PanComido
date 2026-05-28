@@ -78,7 +78,7 @@ export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandler
     
     if (url.includes('/pedido-sugerido-ia')) {
       const parts = url.split('/');
-      const idx = parts.indexOf('proveedores');
+      const idx = parts.findIndex(p => p.toLowerCase() === 'proveedores' || p === 'Proveedor');
       const id = parseInt(parts[idx + 1], 10);
       const prov = dbProveedores.find(p => p.id === id);
       if (!prov) return of(new HttpResponse({ status: 404 }));
@@ -107,17 +107,34 @@ export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandler
       return of(new HttpResponse({ status: 200, body: sugeridos })).pipe(delay(200));
     }
 
-    // GET /proveedores/:id
+    // GET /Proveedor/{id}/historial-pedidos — contrato real del backend
+    if (url.includes('/historial-pedidos')) {
+      const parts = url.split('/');
+      const idx = parts.findIndex(p => p.toLowerCase() === 'proveedor' || p.toLowerCase() === 'proveedores');
+      const id = parseInt(parts[idx + 1], 10);
+      const prov = dbProveedores.find(p => p.id === id);
+      if (!prov) return of(new HttpResponse({ status: 404 }));
+      // Retorna solo el array de pedidos, sin el proveedor completo
+      return of(new HttpResponse({ status: 200, body: prov.historialPedidos ?? [] })).pipe(delay(200));
+    }
+
+    // GET /Proveedor/:id o /proveedores/:id
     const parts = url.split('/');
     const lastPart = parts.pop() || '';
     const id = parseInt(lastPart, 10);
     if (!isNaN(id)) {
       const prov = dbProveedores.find(p => p.id === id);
-      return of(new HttpResponse({ status: prov ? 200 : 404, body: prov })).pipe(delay(200));
+      // En el mock devolvemos el proveedor sin historialPedidos para simular el contrato real
+      if (prov) {
+        const { historialPedidos: _omit, ...proveedorSinHistorial } = prov;
+        return of(new HttpResponse({ status: 200, body: proveedorSinHistorial })).pipe(delay(200));
+      }
+      return of(new HttpResponse({ status: 404 })).pipe(delay(200));
     }
 
-    // GET /proveedores
-    return of(new HttpResponse({ status: 200, body: [...dbProveedores] })).pipe(delay(200));
+    // GET /Proveedor — lista sin historial embebido (contrato real del backend)
+    const sinHistorial = dbProveedores.map(({ historialPedidos: _omit, ...prov }) => prov);
+    return of(new HttpResponse({ status: 200, body: sinHistorial })).pipe(delay(200));
   }
 
   if (method === 'POST') {
@@ -141,7 +158,7 @@ export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandler
         dbProveedores[index] = {
           ...dbProveedores[index],
           fechaUltimoPedido: fechaPedido,
-          historialPedidos: [nuevoPedido, ...dbProveedores[index].historialPedidos]
+          historialPedidos: [nuevoPedido, ...(dbProveedores[index].historialPedidos ?? [])]
         };
         return of(new HttpResponse({ status: 200, body: dbProveedores[index] })).pipe(delay(200));
       }

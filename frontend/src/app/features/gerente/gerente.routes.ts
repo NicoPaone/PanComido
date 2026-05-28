@@ -17,6 +17,10 @@ export const GERENTE_ROUTES: Routes = [
     loadComponent: () => import('./ver-proveedores/pages/ver-proveedores').then(m => m.VerProveedoresComponent)
   },
   {
+    path: 'ver-proveedores/:id/historial',
+    loadComponent: () => import('./ver-proveedores/pages/historial-proveedor/historial-proveedor').then(m => m.HistorialProveedorComponent)
+  },
+  {
     path: 'nuevo-proveedor',
     loadComponent: () => import('./nuevo-proveedor/pages/nuevo-proveedor').then(m => m.NuevoProveedorComponent)
   },

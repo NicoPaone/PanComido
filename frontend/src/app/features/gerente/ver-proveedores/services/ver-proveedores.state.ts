@@ -33,6 +33,13 @@ export class VerProveedoresStateService {
   private _loading = signal(false);
   loading = this._loading.asReadonly();
 
+  // Historial del proveedor seleccionado (cargado bajo demanda desde el endpoint separado)
+  private _historialProveedor = signal<PedidoProveedor[]>([]);
+  historialProveedor = this._historialProveedor.asReadonly();
+
+  private _loadingHistorial = signal(false);
+  loadingHistorial = this._loadingHistorial.asReadonly();
+
   // 2. Variables Derivadas (Computed)
   proveedoresFiltrados = computed(() => {
     const texto = this.termino().toLowerCase().trim();
@@ -77,7 +84,8 @@ export class VerProveedoresStateService {
   });
 
   totalPedidosSeleccionado = computed(() => {
-    return this.proveedorSeleccionado()?.historialPedidos.length ?? 0;
+    // Usa el historial cargado bajo demanda desde el endpoint separado
+    return this._historialProveedor().length;
   });
 
   montoEstimado = computed(() => {
@@ -130,6 +138,28 @@ export class VerProveedoresStateService {
     this.proveedorSeleccionadoId.set(proveedorId);
     this.mensajeAccion.set(null);
     this.pedidoHistorialSeleccionado.set(null);
+    // Limpiar historial anterior al cambiar de proveedor
+    this._historialProveedor.set([]);
+  }
+
+  /**
+   * Carga el historial de pedidos de un proveedor desde el endpoint real.
+   * GET /api/Proveedor/{id}/historial-pedidos
+   */
+  cargarHistorial(id: number | string): void {
+    this._loadingHistorial.set(true);
+    this.api.getHistorialPedidos(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (pedidos) => {
+          this._historialProveedor.set(pedidos);
+          this._loadingHistorial.set(false);
+        },
+        error: () => {
+          this._historialProveedor.set([]);
+          this._loadingHistorial.set(false);
+        }
+      });
   }
 
   abrirPedido(proveedorId: number | string): void {

@@ -79,7 +79,7 @@ export class VerProveedoresComponent implements OnInit {
   }
 
   abrirHistorial(proveedor: Proveedor): void {
-    this.state.abrirHistorial(proveedor.id);
+    this.router.navigate(['/staff', 'gerente', 'ver-proveedores', proveedor.id, 'historial']);
   }
 
   abrirDetallePedido(pedido: PedidoProveedor): void {
