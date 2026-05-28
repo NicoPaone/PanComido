@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PanComido.Dominio.CasosDeUso
+namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
 {
     public class ListarInsumoCasoDeUso
     {
@@ -35,7 +35,7 @@ namespace PanComido.Dominio.CasosDeUso
                 
                 if (stockTotal < insumo.StockMinimo)
                     insumo.EstadoStock = Entidades.Enums.EstadoStock.Critico;
-                else if (stockTotal < (insumo.StockMinimo * 2))
+                else if (stockTotal < insumo.StockMinimo * 2)
                     insumo.EstadoStock = Entidades.Enums.EstadoStock.Bajo;
                 else
                     insumo.EstadoStock = Entidades.Enums.EstadoStock.Normal;

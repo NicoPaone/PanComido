@@ -1,4 +1,6 @@
-﻿namespace PanComido.Presentacion.DTOs
+﻿using PanComido.Infraestructura.Persistencia.Entidades;
+
+namespace PanComido.Presentacion.DTOs
 {
     public class InsumoResponseDto
     {
@@ -8,7 +10,7 @@
         public string UnidadMedida { get; set; }   // "KG", "L", etc.
         public string? Vencimiento { get; set; }   // "dd/MM/yyyy" o null
         public decimal StockMinimo { get; set; }
-        public string EstadoStock { get; set; }   // "Critico" | "Bajo" | "Normal"
+        public string EstadoStock { get; set; }   // "Critico" | "Bajo" | "Normal" 
         public string Tipo { get; set; }   // "Ingrediente" | "Bebida"
         public string? Categoria { get; set; }
     }

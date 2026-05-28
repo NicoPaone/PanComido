@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using PanComido.Dominio.CasosDeUso;
+using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.Mappers;
 

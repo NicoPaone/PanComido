@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PanComido.Dominio.CasosDeUso;
+using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Infraestructura.Persistencia;
 using PanComido.Infraestructura.Persistencia.Mappers;
