@@ -1,5 +1,5 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, OnInit, inject, ElementRef, viewChild } from '@angular/core';
+import { Component, OnInit, inject, ElementRef, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -18,7 +18,8 @@ import { VerProveedoresStateService } from '../services/ver-proveedores.state';
   standalone: true,
   imports: [DatePipe, DecimalPipe, FormsModule, FontAwesomeModule, Buscador, Boton, Dropdown, PageToolbar, ProveedorListComponent, RouterModule],
   templateUrl: './ver-proveedores.html',
-  styleUrls: ['./ver-proveedores.css']
+  styleUrls: ['./ver-proveedores.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VerProveedoresComponent implements OnInit {
   private readonly router = inject(Router);

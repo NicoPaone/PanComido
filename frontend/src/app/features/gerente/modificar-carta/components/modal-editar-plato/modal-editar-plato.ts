@@ -1,4 +1,4 @@
-import { Component, effect, input, output, signal, computed } from '@angular/core';
+import { Component, effect, input, output, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Plato, RecetaIngrediente } from '../../../../../core/models/plato';
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
@@ -12,7 +12,8 @@ import { calcularCostoReceta } from '../../../../../core/services/plato.service'
   standalone: true,
   imports: [FormsModule, Boton, ToggleComponent, Buscador],
   templateUrl: './modal-editar-plato.html',
-  styleUrls: ['./modal-editar-plato.css']
+  styleUrls: ['./modal-editar-plato.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ModalEditarPlatoComponent {
   plato = input.required<Plato>();

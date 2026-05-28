@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Buscador } from '../../../../shared/ui/buscador/buscador';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
@@ -23,7 +23,8 @@ import { ModificarCartaStateService } from '../services/modificar-carta.state';
     ModalEliminarPlatoComponent
   ],
   templateUrl: './modificar-carta.html',
-  styleUrls: ['./modificar-carta.css']
+  styleUrls: ['./modificar-carta.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ModificarCartaComponent implements OnInit {
   private router = inject(Router);

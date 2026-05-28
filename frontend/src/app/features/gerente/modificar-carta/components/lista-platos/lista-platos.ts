@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { Plato } from '../../../../../core/models/plato';
 import { CardPlatoComponent } from '../card-plato/card-plato';
 
@@ -7,6 +7,7 @@ import { CardPlatoComponent } from '../card-plato/card-plato';
   standalone: true,
   imports: [CardPlatoComponent],
   templateUrl: './lista-platos.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListaPlatosComponent {
   platos = input<Plato[]>([]);

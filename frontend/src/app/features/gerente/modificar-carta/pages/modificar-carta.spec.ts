@@ -2,14 +2,14 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { ModificarCartaComponent } from './modificar-carta';
-import { PlatoService } from '../../../../core/services/plato.service';
+import { ModificarCartaApiService } from '../services/modificar-carta.api';
 import { Plato } from '../../../../core/models/plato';
 import { vi } from 'vitest';
 
 describe('ModificarCartaComponent', () => {
   let component: ModificarCartaComponent;
   let fixture: ComponentFixture<ModificarCartaComponent>;
-  let platoServiceMock: any;
+  let apiServiceMock: any;
   let routerMock: any;
 
   const mockPlatos: Plato[] = [
@@ -19,7 +19,7 @@ describe('ModificarCartaComponent', () => {
   ];
 
   beforeEach(async () => {
-    platoServiceMock = {
+    apiServiceMock = {
       getPlatos: vi.fn().mockReturnValue(of([...mockPlatos])),
       updatePlato: vi.fn().mockImplementation((id, data) => {
         const found = mockPlatos.find(p => p.id === id);
@@ -35,7 +35,7 @@ describe('ModificarCartaComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ModificarCartaComponent],
       providers: [
-        { provide: PlatoService, useValue: platoServiceMock },
+        { provide: ModificarCartaApiService, useValue: apiServiceMock },
         { provide: Router, useValue: routerMock }
       ]
     }).compileComponents();
@@ -50,7 +50,7 @@ describe('ModificarCartaComponent', () => {
   });
 
   it('debería cargar los platos al inicializar', () => {
-    expect(platoServiceMock.getPlatos).toHaveBeenCalled();
+    expect(apiServiceMock.getPlatos).toHaveBeenCalled();
     expect(component.platos()).toEqual(mockPlatos);
   });
 
@@ -74,7 +74,7 @@ describe('ModificarCartaComponent', () => {
     component.toggleVisibility(plato);
     expect(component.explodingPlatoId()).toBe(plato.id);
     vi.advanceTimersByTime(450);
-    expect(platoServiceMock.updatePlato).toHaveBeenCalledWith(plato.id, { visible: false });
+    expect(apiServiceMock.updatePlato).toHaveBeenCalledWith(plato.id, { visible: false });
     expect(component.platos().find(p => p.id === plato.id)?.visible).toBe(false);
     expect(component.explodingPlatoId()).toBeNull();
     vi.useRealTimers();
@@ -82,7 +82,7 @@ describe('ModificarCartaComponent', () => {
 
   it('debería restaurar la visibilidad si falla la actualización de un plato visible tras el tiempo de espera', () => {
     vi.useFakeTimers();
-    platoServiceMock.updatePlato.mockReturnValueOnce(throwError(() => new Error('Error')));
+    apiServiceMock.updatePlato.mockReturnValueOnce(throwError(() => new Error('Error')));
     const plato = mockPlatos[0];
     component.toggleVisibility(plato);
     vi.advanceTimersByTime(450);
@@ -93,12 +93,12 @@ describe('ModificarCartaComponent', () => {
   it('debería manejar toggleVisibility para un plato invisible inmediatamente con éxito', () => {
     const plato = mockPlatos[1];
     component.toggleVisibility(plato);
-    expect(platoServiceMock.updatePlato).toHaveBeenCalledWith(plato.id, { visible: true });
+    expect(apiServiceMock.updatePlato).toHaveBeenCalledWith(plato.id, { visible: true });
     expect(component.platos().find(p => p.id === plato.id)?.visible).toBe(true);
   });
 
   it('debería restaurar la visibilidad si falla la actualización de un plato invisible', () => {
-    platoServiceMock.updatePlato.mockReturnValueOnce(throwError(() => new Error('Error')));
+    apiServiceMock.updatePlato.mockReturnValueOnce(throwError(() => new Error('Error')));
     const plato = mockPlatos[1];
     component.toggleVisibility(plato);
     expect(component.platos().find(p => p.id === plato.id)?.visible).toBe(false);
@@ -120,28 +120,28 @@ describe('ModificarCartaComponent', () => {
     const plato = mockPlatos[0];
     component.onEditPlato(plato);
     component.onSavePlato({ nombre: 'Milanesa Editada' });
-    expect(platoServiceMock.updatePlato).toHaveBeenCalledWith(plato.id, { nombre: 'Milanesa Editada' });
+    expect(apiServiceMock.updatePlato).toHaveBeenCalledWith(plato.id, { nombre: 'Milanesa Editada' });
     expect(component.platos().find(p => p.id === plato.id)?.nombre).toBe('Milanesa Editada');
     expect(component.platoAEditar()).toBeNull();
   });
 
   it('debería no hacer nada en onSavePlato si no hay ningún plato editándose', () => {
     component.onSavePlato({ nombre: 'Milanesa Editada' });
-    expect(platoServiceMock.updatePlato).not.toHaveBeenCalled();
+    expect(apiServiceMock.updatePlato).not.toHaveBeenCalled();
   });
 
   it('debería eliminar el plato al llamar a onConfirmDelete', () => {
     const plato = mockPlatos[0];
     component.onDeletePlato(plato);
     component.onConfirmDelete();
-    expect(platoServiceMock.deletePlato).toHaveBeenCalledWith(plato.id);
+    expect(apiServiceMock.deletePlato).toHaveBeenCalledWith(plato.id);
     expect(component.platos().find(p => p.id === plato.id)).toBeUndefined();
     expect(component.platoAEliminar()).toBeNull();
   });
 
   it('debería no hacer nada en onConfirmDelete si no hay ningún plato seleccionado para eliminar', () => {
     component.onConfirmDelete();
-    expect(platoServiceMock.deletePlato).not.toHaveBeenCalled();
+    expect(apiServiceMock.deletePlato).not.toHaveBeenCalled();
   });
 
   it('debería cerrar los modales al llamar a onCloseModals', () => {

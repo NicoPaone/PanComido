@@ -1,4 +1,4 @@
-import { Component, output, input } from '@angular/core';
+import { Component, output, input, ChangeDetectionStrategy } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { Plato } from '../../../../../core/models/plato';
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
@@ -10,6 +10,7 @@ import { ToggleComponent } from '../../../../../shared/ui/toggle/toggle';
   imports: [DecimalPipe, Boton, ToggleComponent],
   templateUrl: './card-plato.html',
   styleUrls: ['./card-plato.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CardPlatoComponent {
   
