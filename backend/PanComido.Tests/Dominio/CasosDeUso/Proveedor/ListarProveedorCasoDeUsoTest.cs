@@ -9,8 +9,6 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
     {
         private readonly Mock<IProveedorRepositorio> _proveedorRepoMock;
         private readonly Mock<IPedidoRepositorio> _pedidoRepoMock;
-        private object proveedorRepoMock;
-
         public ListarProveedorCasoDeUsoTests()
         {
             _proveedorRepoMock = new Mock<IProveedorRepositorio>();
