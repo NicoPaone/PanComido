@@ -10,6 +10,7 @@ import { StockMercaderiaState } from '../../services/stock-mercaderia-state';
 
 @Component({
   selector: 'app-insumo',
+  standalone: true,
   imports: [InsumoList, CommonModule, Boton, PageToolbar, Buscador, Dropdown, Modal],
   templateUrl: './insumo-page.html',
   styleUrl: './insumo-page.css',

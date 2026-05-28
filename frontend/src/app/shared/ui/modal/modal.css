@@ -1,16 +1,16 @@
 
 /* La caja blanca del popup */
-.modal-dialog {
+.modal-dialogo {
   padding: 0;
   border: none;
   border-radius: 8px;
-  width: 100%;
+   width: 100%; 
   max-width: 800px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   background-color: var(--color-cream);
   /* PARA CENTRADO */
-  position: fixed;
-  inset: 0; /* Es un shorthand moderno para top:0, right:0, bottom:0, left:0 */
+   position: fixed; 
+   inset: 0; 
   margin: auto;
 }
 
