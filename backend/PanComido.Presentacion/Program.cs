@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
+using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Infraestructura.Persistencia;
 using PanComido.Infraestructura.Persistencia.Mappers;
@@ -21,16 +22,21 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Mappers de Infraestructura (Dominio <-> EF)
 builder.Services.AddScoped<InsumoEntityMapper>();
+builder.Services.AddScoped<ProveedorEntityMapper>();
 
 // Mappers de Presentacion (Dominio <-> DTOs)   
 builder.Services.AddScoped<InsumoMapper>();
+builder.Services.AddScoped<ProveedorMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
 builder.Services.AddScoped<ILoteRepositorio, LoteRepositorio>();
+builder.Services.AddScoped<IProveedorRepositorio, ProveedorRespositorio>();
+builder.Services.AddScoped<IPedidoRepositorio, PedidoRepositorio>();
 
 // Casos de uso
 builder.Services.AddScoped<ListarInsumoCasoDeUso>();
+builder.Services.AddScoped<ListarProveedorCasoDeUso>();
 
 
 var allowedOrigins = builder.Configuration.GetSection("CorsSettings:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
