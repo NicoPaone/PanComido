@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Stock } from './stock';
+import { Stock } from './insumo-page';
 
 describe('Stock', () => {
   let component: Stock;

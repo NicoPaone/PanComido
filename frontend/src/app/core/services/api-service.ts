@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class ApiClient {
+export class ApiService {
 
   private http = inject(HttpClient);
 

@@ -1,15 +1,15 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { ProductoStock } from '../../../../core/model/producto-stock';
-import { StockMercaderiaClient } from './stock-mercaderia-client';
+import { Insumo } from '../../../../core/model/producto-stock';
+import { StockMercaderiaService } from './stock-mercaderia-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StockMercaderiaState {
 
-  private api = inject(StockMercaderiaClient);
+  private api = inject(StockMercaderiaService);
  
-  private _productos = signal<ProductoStock[]>([]);
+  private _productos = signal<Insumo[]>([]);
   private _cargando = signal<boolean>(false);
 
   productos = this._productos.asReadonly();
@@ -36,7 +36,7 @@ export class StockMercaderiaState {
       }
     })
   }
-  guardarProducto(producto: ProductoStock): void {
+  guardarProducto(producto: Insumo): void {
     this._cargando.set(true);
     
     if (producto.id) {

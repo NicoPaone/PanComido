@@ -9,11 +9,14 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
    if(!environment.useMock){
       return next(req);
    }
+
    const url = req.url;
 
    //vamos a usarlo para enrutar los mocks
    if(url.includes('/stock-mercaderia')){
       return handleStockMock(req, next);
    }
+  
+
    return next(req);
 }

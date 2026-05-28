@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { StockList } from '../../components/stock-list/stock-list';
+import { InsumoList } from '../../components/stock-list/insumo-list';
 import { CommonModule } from '@angular/common';
 import { Boton } from "../../../../../shared/ui/botones/boton/boton";
 import { PageToolbar } from "../../../../../shared/ui/page-toolbar/page-toolbar";
@@ -9,13 +9,13 @@ import { Modal } from "../../../../../shared/ui/modal/modal";
 import { StockMercaderiaState } from '../../services/stock-mercaderia-state';
 
 @Component({
-  selector: 'app-stock',
-  imports: [StockList, CommonModule, Boton, PageToolbar, Buscador, Dropdown, Modal],
-  templateUrl: './stock.html',
-  styleUrl: './stock.css',
+  selector: 'app-insumo',
+  imports: [InsumoList, CommonModule, Boton, PageToolbar, Buscador, Dropdown, Modal],
+  templateUrl: './insumo-page.html',
+  styleUrl: './insumo-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Stock {
+export class InsumoPage {
 
   protected state = inject(StockMercaderiaState);
 

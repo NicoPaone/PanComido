@@ -45,10 +45,10 @@
     <app-boton label="Lotes" variante="tab" [activo]="tabSeleccionada() === 'lotes'" (clicked)="tabSeleccionada.set('lotes')"></app-boton>
   </div>
 
-  <app-stock-list 
+  <app-insumo-list 
     [productos]="productosFiltrados()"
     (editar)="abrirModalEditar(modalFormulario, $event)">
-  </app-stock-list>
+  </app-insumo-list>
 </div>
 
  <!-- ?ESTO ES NECESARIO PARA RENDERIZAR EL MODAL EN LA VISTA -->
