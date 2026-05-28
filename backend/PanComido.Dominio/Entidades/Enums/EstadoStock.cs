@@ -9,7 +9,7 @@ namespace PanComido.Dominio.Entidades.Enums
     public enum EstadoStock
     {
         Critico,   // stock_actual < stock_minimo
-        Bajo,      // stock_actual < stock_minimo * 1.5
+        Bajo,      // stock_actual < stock_minimo * 2
         Normal     // todo bien
     }
 }

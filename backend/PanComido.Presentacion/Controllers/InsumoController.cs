@@ -20,15 +20,12 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<InsumoResponseDto>>> obtener(
-            [FromQuery] string? categoria = null,
-            [FromQuery] string? busqueda = null) {
+        public async Task<ActionResult<List<InsumoResponseDto>>> obtener() {
 
             var restauranteId = ObtenerRestauranteId();
 
             // 1. Ejecutar Use Case → lista de entidades de Dominio con EstadoStock calculado
-            var insumos = await _listarInsumoCasoDeUso.EjecutarAsync(
-                restauranteId, categoria, busqueda);
+            var insumos = await _listarInsumoCasoDeUso.EjecutarAsync(restauranteId);
 
             // 2. Dominio → DTOs
             var dtos = _mapper.aListaDto(insumos);

@@ -1,4 +1,5 @@
 ﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Interfaces;
 using PanComido.Dominio.Interfaces.Repositorios;
 using System;
 using System.Collections.Generic;
@@ -13,16 +14,16 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
         private readonly IInsumoRepositorio _insumoRepositorio;
         private readonly ILoteRepositorio _loteRepositorio;
 
-        public ListarInsumoCasoDeUso(IInsumoRepositorio insumoRepositorio, ILoteRepositorio loteRepositorio)
+        private readonly IEstadoStockInsumoServicio _estadoStockInsumoServicio;
+
+        public ListarInsumoCasoDeUso(IInsumoRepositorio insumoRepositorio, ILoteRepositorio loteRepositorio, IEstadoStockInsumoServicio estadoStockInsumoServicio)
         {
             _insumoRepositorio = insumoRepositorio;
             _loteRepositorio = loteRepositorio;
+            _estadoStockInsumoServicio = estadoStockInsumoServicio;
         }
 
-        public async Task<List<Insumo>> EjecutarAsync(
-            int restauranteId,
-            string? filtroCategoria = null,
-            string? busqueda = null)
+        public async Task<List<Insumo>> EjecutarAsync(int restauranteId)
         {
             List<Insumo> insumos;
 
@@ -33,13 +34,8 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
                 insumo.Vencimiento = await _loteRepositorio.ObtenerFechaDeVencimientoMasProximaDeInsumo(insumo.Id);
 
 
-                if (insumo.StockActual < insumo.StockMinimo)
-                    insumo.EstadoStock = Entidades.Enums.EstadoStock.Critico;
-                else if (insumo.StockActual < insumo.StockMinimo * 2)
-                    insumo.EstadoStock = Entidades.Enums.EstadoStock.Bajo;
-                else
-                    insumo.EstadoStock = Entidades.Enums.EstadoStock.Normal;
-
+                insumo.EstadoStock = _estadoStockInsumoServicio
+                    .CalcularEstadoStock(insumo.StockActual, insumo.StockMinimo);
             }
 
             return insumos;
