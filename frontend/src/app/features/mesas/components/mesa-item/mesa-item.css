@@ -1,0 +1,27 @@
+.mesa-container {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: filter 0.2s;
+    }
+    .mesa-container:hover {
+      filter: brightness(1.1);
+    }
+
+    /* Estados basados en los colores de tu mockup */
+    .estado-disponible { background-color: #68B342; } /* Verde */
+    .estado-ocupada { background-color: #C11818; } /* Rojo */
+    .estado-reservada { background-color: #F1C40F; color: black; } /* Amarillo */
+    .estado-deshabilitada { background-color: #000000; } /* Negro */
+
+    /* Formas geométricas */
+    .forma-redonda { border-radius: 50%; }
+    .forma-cuadrada { border-radius: 8px; }
+    .forma-horizontal_larga { border-radius: 8px; }
+    .forma-horizontal_alta { border-radius: 8px; }

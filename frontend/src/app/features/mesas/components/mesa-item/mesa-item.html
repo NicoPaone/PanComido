@@ -1,0 +1,10 @@
+
+<div class="mesa-container"
+         [ngClass]="[claseEstado(), claseForma()]"
+         [style.width.px]="ancho()"
+         [style.height.px]="alto()"
+         [style.left.px]="mesa().posicionXInicio"
+         [style.top.px]="mesa().posicionYinicio"
+         (click)="clickMesa.emit(mesa().id)">
+      <span class="numero">{{ mesa().numeroMesa }}</span>
+    </div>

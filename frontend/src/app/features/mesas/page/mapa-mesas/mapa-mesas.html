@@ -1,0 +1,21 @@
+<div class="mapa-wrapper">
+      <div class="header-controles">
+        <button class="btn-editor" (click)="state.toggleEditorMode()">
+          {{ state.isEditorMode() ? 'Desactivar Edición' : 'Activar Edición' }}
+        </button>
+        <span class="info">Mesas: {{ state.mesas().length }}</span>
+      </div>
+
+      <div class="plano-fondo">
+        @for (mesa of state.mesas(); track mesa.id) {
+          <app-mesa-item
+            [mesa]="mesa"
+            cdkDrag
+            cdkDragBoundary=".plano-fondo"
+            [cdkDragDisabled]="!state.isEditorMode()"
+            (cdkDragEnded)="onDragEnded(mesa.id, $event)"
+            (clickMesa)="onMesaClick($event)">
+          </app-mesa-item>
+        }
+      </div>
+    </div>

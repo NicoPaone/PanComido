@@ -4,16 +4,16 @@ import { RouterModule, Router } from '@angular/router';
 import { MenuItem, UserProfile } from '../../../core/model/menu-item.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AuthService } from '../../../core/services/auth.service';
-import { 
-  faUsers, 
-  faCog, 
-  faChartBar, 
-  faBox, 
-  faTruck, 
-  faReceipt, 
-  faUtensils, 
-  faClipboardList, 
-  faTag, 
+import {
+  faUsers,
+  faCog,
+  faChartBar,
+  faBox,
+  faTruck,
+  faReceipt,
+  faUtensils,
+  faClipboardList,
+  faTag,
   faTableCells,
   faRightFromBracket,
   faChevronDown,
@@ -52,7 +52,7 @@ export class SidebarComponent {
   readonly faFireBurner = faFireBurner;
   readonly faCarrot = faCarrot;
   readonly faListCheck = faListCheck;
-  
+
 
   isCollapsed = signal(true); // Colapsado por defecto como Gmail
   isHovered = signal(false);
@@ -73,7 +73,7 @@ export class SidebarComponent {
       { label: 'Usuarios', icon: 'faUsers', route: 'gerente/usuarios', roles: ['Gerente'] },
       { label: 'Configuración', icon: 'faCog', route: 'gerente/configuracion', roles: ['Gerente'] },
       { label: 'Dashboard', icon: 'faChartBar', route: 'gerente/dashboard', roles: ['Gerente'] },
-      { label: 'Stock/Mercadería', icon: 'faBox', route: 'gerente/stock-mercaderia', roles: ['Gerente'] }, 
+      { label: 'Stock/Mercadería', icon: 'faBox', route: 'gerente/stock-mercaderia', roles: ['Gerente'] },
       {
         label: 'Pedidos y Proveedor',
         icon: 'faTruck',
@@ -96,7 +96,7 @@ export class SidebarComponent {
         ]
       },
       { label: 'Plato del día', icon: 'faTag', route: 'gerente/plato-dia', roles: ['Gerente'] },
-      { label: 'Mapa de mesas', icon: 'faTableCells', route: 'gerente/mesas', roles: ['Gerente'] }
+     { label: 'Mapa de mesas', icon: 'faTableCells', route: 'gerente/mapa-de-mesas', roles: ['Gerente'] }
     ],
     Mozo: [
       { label: 'Mesas', icon: 'faTableCells', route: 'mozo/mesas', roles: ['Mozo'] },
@@ -123,7 +123,7 @@ export class SidebarComponent {
 
   constructor(private router: Router) {}
 
- 
+
 
   onMouseEnter(): void {
     if (this.isCollapsed()) {
