@@ -17,32 +17,34 @@ import { HeaderCantidadPersonas } from '../components/header-cantidad-personas/h
 })
 export class CantidadPersonasComponent {
 
-  cantidadSeleccionada = 1;
+  cantidadPersonas = 1;
+  maxCantidad = 5;
 
   constructor(
     private router: Router
-  ) {}
+  ) { }
 
-  seleccionarCantidad(
-    cantidad: number
-  ) {
-
-    this.cantidadSeleccionada =
-      cantidad;
-
+  expandirOpciones() {
+    if (this.maxCantidad < 10) {
+      this.maxCantidad = 10;
+    }
   }
 
+  seleccionarCantidad(numero: number) {
+    this.cantidadPersonas = numero;
+  }
   aceptar() {
 
-    this.router.navigate([
-      '/comensal/ver-carta'
-    ]);
+    this.router.navigate(
+      ['/comensal/ver-carta'],
+      { state: { cantidadPersonas: this.cantidadPersonas } }
+    );
 
   }
 
   volverAtras() {
-  window.history.back();
-}
+    window.history.back();
+  }
 
 
 }
