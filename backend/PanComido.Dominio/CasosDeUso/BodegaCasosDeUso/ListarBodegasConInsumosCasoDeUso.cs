@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace PanComido.Dominio.CasosDeUso.BodegaCasosDeUso
 {
-    public class ListarBodegasConInsumos
+    public class ListarBodegasConInsumosCasoDeUso
     {
+        
     }
 }

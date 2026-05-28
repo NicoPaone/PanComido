@@ -31,9 +31,6 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 Nombre = efArticulo.Nombre,
                 Descripcion = efArticulo.Descripcion,
                 StockMinimo = efInsumo.StockMinimo,
-                Vencimiento = efInsumo.Vencimiento.HasValue
-                                    ? efInsumo.Vencimiento.Value
-                                    : null,
                 Tipo = esIngrediente ? TipoInsumo.Ingrediente
                                               : TipoInsumo.Bebida,
                 Categoria = esIngrediente

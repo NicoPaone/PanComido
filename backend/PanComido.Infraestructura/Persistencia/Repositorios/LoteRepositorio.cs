@@ -17,6 +17,14 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             _ctx = ctx;
         }
 
+        public async Task<DateOnly> ObtenerFechaDeVencimientoMasProximaDeInsumo(int insumoId)
+        {
+            return await _ctx.Lotes.Where(l => l.InsumoId == insumoId)
+                .OrderBy(l => l.FechaVencimiento)
+                .Select(l => (DateOnly?)l.FechaVencimiento)
+                .FirstOrDefaultAsync() ?? DateOnly.MaxValue;
+        }
+
         public async Task<decimal> ObtenerStockTotalDeInsumo(int insumoId)
         {
             return await _ctx.Lotes.Where(l => l.InsumoId == insumoId)

@@ -29,13 +29,13 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
             insumos = await _insumoRepositorio.ObtenerInsumosAsync(restauranteId);
             foreach (var insumo in insumos)
             {
-                decimal stockTotal = await _loteRepositorio.ObtenerStockTotalDeInsumo(insumo.Id);
-                insumo.StockActual = stockTotal;
+                insumo.StockActual = await _loteRepositorio.ObtenerStockTotalDeInsumo(insumo.Id);
+                insumo.Vencimiento = await _loteRepositorio.ObtenerFechaDeVencimientoMasProximaDeInsumo(insumo.Id);
 
-                
-                if (stockTotal < insumo.StockMinimo)
+
+                if (insumo.StockActual < insumo.StockMinimo)
                     insumo.EstadoStock = Entidades.Enums.EstadoStock.Critico;
-                else if (stockTotal < insumo.StockMinimo * 2)
+                else if (insumo.StockActual < insumo.StockMinimo * 2)
                     insumo.EstadoStock = Entidades.Enums.EstadoStock.Bajo;
                 else
                     insumo.EstadoStock = Entidades.Enums.EstadoStock.Normal;
