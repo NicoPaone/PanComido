@@ -66,8 +66,6 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Lote> Lotes { get; set; }
 
-    public virtual DbSet<LoteBodega> LoteBodegas { get; set; }
-
     public virtual DbSet<Mesa> Mesas { get; set; }
 
     public virtual DbSet<MetodoDePago> MetodoDePagos { get; set; }
@@ -446,22 +444,13 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("lote_pkey");
 
+            entity.HasOne(d => d.Bodega).WithMany(p => p.Lotes)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("lote_bodega_id_fkey");
+
             entity.HasOne(d => d.Insumo).WithMany(p => p.Lotes)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("lote_insumo_id_fkey");
-        });
-
-        modelBuilder.Entity<LoteBodega>(entity =>
-        {
-            entity.HasKey(e => new { e.LoteId, e.BodegaId }).HasName("lote_bodega_pkey");
-
-            entity.HasOne(d => d.Bodega).WithMany(p => p.LoteBodegas)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("lote_bodega_bodega_id_fkey");
-
-            entity.HasOne(d => d.Lote).WithMany(p => p.LoteBodegas)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("lote_bodega_lote_id_fkey");
         });
 
         modelBuilder.Entity<Mesa>(entity =>
