@@ -39,6 +39,24 @@ export const routes: Routes = [
       children: [
 
          {
+            path: 'escanear-mesa',
+            loadComponent: () =>
+               import('./features/comensal/escanear-mesa/page/escanear-mesa')
+                  .then(m => m.ScanQrComponent)
+         },
+         {
+            path: 'nro-de-mesa',
+            loadComponent: () =>
+               import('./features/comensal/nro-de-mesa/page/nro-de-mesa')
+                  .then(m => m.NroDeMesaComponent)
+         },
+         {
+            path: 'cantidad-personas',
+            loadComponent: () =>
+               import('./features/comensal/cantidad-personas/page/cantidad-personas')
+                  .then(m => m.CantidadPersonasComponent)
+         },
+         {
             path: 'ver-carta',
             loadComponent: () =>
                import('./features/comensal/ver-carta/page/ver-carta')

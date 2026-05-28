@@ -23,6 +23,8 @@
     "@fortawesome/angular-fontawesome": "^4.0.0",
     "@fortawesome/fontawesome-svg-core": "^7.2.0",
     "@fortawesome/free-solid-svg-icons": "^7.2.0",
+    "@zxing/browser": "^0.2.0",
+    "@zxing/library": "^0.22.0",
     "bootstrap": "^5.3.8",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"

@@ -13,6 +13,7 @@ import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { Router } from '@angular/router';
 import { PedidoService } from '../../../../../app/core/services/pedido.service';
 import { FormsModule } from '@angular/forms';
+import { ItemPedido } from '../../../../core/models/item-pedido';
 
 @Component({
   selector: 'app-ver-carta',
@@ -172,11 +173,11 @@ export class VerCartaComponent {
     this.router.navigate(['/comensal/pedido']);
   }
 
-  agregarAlPedido(plato: Plato) {
+  agregarAlPedido(item: ItemPedido) {
 
-    this.pedidoService.agregarPedido(plato);
+    this.pedidoService.agregarPedido(item);
 
-    console.log('Pedido agregado:', plato);
+    console.log('Pedido agregado:', item.plato);
 
   }
 
