@@ -23,10 +23,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Mappers de Infraestructura (Dominio <-> EF)
 builder.Services.AddScoped<InsumoEntityMapper>();
 builder.Services.AddScoped<ProveedorEntityMapper>();
+builder.Services.AddScoped<PedidoEntityMapper>();
 
 // Mappers de Presentacion (Dominio <-> DTOs)   
 builder.Services.AddScoped<InsumoMapper>();
 builder.Services.AddScoped<ProveedorMapper>();
+builder.Services.AddScoped<PedidoMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -37,6 +39,7 @@ builder.Services.AddScoped<IPedidoRepositorio, PedidoRepositorio>();
 // Casos de uso
 builder.Services.AddScoped<ListarInsumoCasoDeUso>();
 builder.Services.AddScoped<ListarProveedorCasoDeUso>();
+builder.Services.AddScoped<ObtenerHistorialPedidosCasoDeUso>();
 
 
 var allowedOrigins = builder.Configuration.GetSection("CorsSettings:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();

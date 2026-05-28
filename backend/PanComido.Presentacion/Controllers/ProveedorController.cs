@@ -10,12 +10,23 @@ namespace PanComido.Presentacion.Controllers
     public class ProveedorController : Controller
     {
         private readonly ListarProveedorCasoDeUso _listarProveedorCasoDeUso;
-        private readonly ProveedorMapper _mapper;
+        private readonly ObtenerHistorialPedidosCasoDeUso _obtenerHistorialCasoDeUso;
 
-        public ProveedorController(ListarProveedorCasoDeUso listarProveedorCasoDeUso, ProveedorMapper mapper)
+        private readonly ProveedorMapper _proveedorMapper;
+        private readonly PedidoMapper _pedidoMapper;
+
+
+        public ProveedorController(
+            ListarProveedorCasoDeUso listarProveedorCasoDeUso,
+            ObtenerHistorialPedidosCasoDeUso obtenerHistorialCasoDeUso,
+            ProveedorMapper proveedorMapper,
+            PedidoMapper pedidoMapper
+            )
         {
             _listarProveedorCasoDeUso = listarProveedorCasoDeUso;
-            _mapper = mapper;
+            _obtenerHistorialCasoDeUso = obtenerHistorialCasoDeUso;
+            _proveedorMapper = proveedorMapper;
+            _pedidoMapper = pedidoMapper;
         }
 
         [HttpGet]
@@ -25,7 +36,17 @@ namespace PanComido.Presentacion.Controllers
 
             var proveedores = await _listarProveedorCasoDeUso.EjecutarAsync(restauranteId);
 
-            var dtos = _mapper.aListaDto(proveedores);
+            var dtos = _proveedorMapper.aListaDto(proveedores);
+            return Ok(dtos);
+        }
+
+        [HttpGet("{idProveedor}/historial-pedidos")]
+        public async Task<ActionResult<List<PedidoResponseDto>>> obtenerHistorialPedidos(int idProveedor)
+        {
+            var pedidos = await _obtenerHistorialCasoDeUso.EjecutarAsync(idProveedor);
+            if (pedidos == null) return NotFound();
+
+            var dtos = _pedidoMapper.aListaDto(pedidos);
             return Ok(dtos);
         }
 

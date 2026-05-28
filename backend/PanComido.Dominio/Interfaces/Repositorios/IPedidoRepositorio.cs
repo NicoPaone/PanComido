@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PanComido.Dominio.Entidades;
+
 
 namespace PanComido.Dominio.Interfaces.Repositorios
 {
     public interface IPedidoRepositorio
     {
         Task<DateOnly?> ObtenerFechaUltimoPedidoDeProveedorAsync(int proveedorId);
+        Task<List<Pedido>> ObtenerPedidosPorProveedorAsync(int proveedorId);
     }
 }
