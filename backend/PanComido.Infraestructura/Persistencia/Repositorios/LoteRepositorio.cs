@@ -17,12 +17,18 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             _ctx = ctx;
         }
 
-        public async Task<DateOnly> ObtenerFechaDeVencimientoMasProximaDeInsumo(int insumoId)
+        public async Task<DateOnly?> ObtenerFechaDeVencimientoMasProximaDeInsumo(int insumoId)
         {
             return await _ctx.Lotes.Where(l => l.InsumoId == insumoId)
                 .OrderBy(l => l.FechaVencimiento)
                 .Select(l => (DateOnly?)l.FechaVencimiento)
-                .FirstOrDefaultAsync() ?? DateOnly.MaxValue;
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<decimal> ObtenerStockTotalDeInsumo(int insumoId)
+        {
+            return await _ctx.Lotes.Where(l => l.InsumoId == insumoId)
+                .SumAsync(l => (decimal?)l.Cantidad) ?? 0m;
         }
 
         public Task<Dictionary<(int insumoId, int bodegaId), DateOnly?>> ObtenerVencimientosPorBodega(int restauranteId)
@@ -53,11 +59,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .ToDictionaryAsync(x => (x.InsumoId, x.BodegaId), x => x.StockTotal);
         }
 
-        public async Task<decimal> ObtenerStockTotalDeInsumo(int insumoId)
-        {
-            return await _ctx.Lotes.Where(l => l.InsumoId == insumoId)
-                .SumAsync(l => (decimal?)l.Cantidad) ?? 0m;
-        }
+        
 
         
     }
