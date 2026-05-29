@@ -19,7 +19,6 @@ export class StockMercaderiaState {
     const list = this._productos();
     const unicas = new Set(list.map( p => p.categoria).filter(c=> Boolean(c)));
 
-    console.log('Categorías únicas:', Array.from(unicas)); // Debug: Ver categorías únicas en consola
     return Array.from(unicas).sort();
   })
 
