@@ -1,53 +1,37 @@
 .mapa-wrapper { display: flex; flex-direction: column; gap: 1rem; padding: 1rem; }
-    .header-controles { display: flex; justify-content: space-between; align-items: center; }
-    .btn-editor { padding: 0.5rem 1rem; background: #c0392b; color: white; border: none; border-radius: 4px; cursor: pointer; }
+.header-controles { display: flex; justify-content: space-between; align-items: center; }
+.btn-editor { padding: 0.5rem 1rem; background: #c0392b; color: white; border: none; border-radius: 4px; cursor: pointer; }
 
-    .plano-fondo {
-      position: relative;
-      width: 100%;
-      height: 600px;
-      background-color: #f5f5f5;
-      border: 2px dashed #ccc;
-      border-radius: 8px;
-      overflow: hidden;
-      transition: background-color 0.3s;
-    }
+.plano-fondo {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  background-color: #f5f5f5;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: background-color 0.3s;
+}
 
-    /* MAGIA VISUAL: Dibuja la cuadrícula */
-    .modo-grilla {
-      background-color: #ffffff; /* Aclaramos un poco el fondo al editar */
-      /* El tamaño de la celda de la grilla (debe coincidir con tu cdkDragSnapGrid) */
-      background-size: 15px 15px;
-      /* Dibuja líneas grises muy suaves (opacidad 0.1) de 1px de grosor */
-      background-image:
-        linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
-    }
+.modo-grilla {
+  background-color: #ffffff;
+  background-size: 15px 15px;
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+}
 
-    .cdk-drag-preview { box-shadow: 0 5px 15px rgba(0,0,0,0.3); opacity: 0.8; }
-    .cdk-drag-animating { transition: transform 250ms cubic-bezier(0, 0, 0.2, 1); }
-    .cdk-drag-placeholder {
+/* Clases nativas de Angular CDK (Limpias) */
+.cdk-drag-placeholder {
   opacity: 0 !important;
 }
 
-/* Le da sombra y cursor de "agarrando" a la mesa que se está moviendo con el mouse */
 .cdk-drag-preview {
-  box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-  opacity: 1 !important;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.4) !important;
   cursor: grabbing !important;
+  opacity: 1 !important;
 }
 
-/* Oculta la mesa original que se queda fija en el mapa */
-    ::ng-deep .cdk-drag-placeholder {
-      opacity: 0 !important;
-    }
-
-    /* Magia Negra: Resetea el desfase del clon y le da estilo de "agarrado" */
-    ::ng-deep .cdk-drag-preview .mesa-container {
-      top: 0 !important;
-      left: 0 !important;
-      margin: 0 !important;
-      box-shadow: 0 15px 30px rgba(0,0,0,0.4) !important; /* Sombra más grande para efecto 3D */
-      cursor: grabbing !important;
-      z-index: 9999 !important; /* Fuerza a que viaje por encima de las otras mesas */
-    }
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}

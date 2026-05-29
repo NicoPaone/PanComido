@@ -7,15 +7,18 @@
       </div>
 
       <div class="plano-fondo" [class.modo-grilla]="state.isEditorMode()">
-        @for (mesa of state.mesas(); track mesa.id) {
-          <app-mesa-item
-  [mesa]="mesa"
-  cdkDrag
-  cdkDragBoundary=".plano-fondo"
-  [cdkDragDisabled]="!state.isEditorMode()"
-  (cdkDragEnded)="onDragEnded(mesa.id, $event)"
-  (clickMesa)="onMesaClick($event)">
-</app-mesa-item>
-        }
-      </div>
+  @for (mesa of state.mesas(); track mesa.id) {
+    <app-mesa-item
+      [mesa]="mesa"
+      cdkDrag
+      cdkDragBoundary=".plano-fondo"
+      [cdkDragDisabled]="!state.isEditorMode()"
+      (cdkDragEnded)="onDragEnded(mesa.id, $event)"
+      (clickMesa)="onMesaClick($event)"
+      style="position: absolute; display: block;"
+      [style.left.px]="mesa.posicionXInicio"
+      [style.top.px]="mesa.posicionYinicio">
+    </app-mesa-item>
+  }
+</div>
     </div>

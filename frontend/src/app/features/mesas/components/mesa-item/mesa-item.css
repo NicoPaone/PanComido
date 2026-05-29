@@ -1,5 +1,5 @@
 .mesa-container {
-  position: absolute;
+  /* position: absolute; <-- ELIMINAR ESTA LÍNEA */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -8,11 +8,9 @@
   font-size: 1.2rem;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   transition: filter 0.2s;
-
-  /* Lógica de agarre */
   cursor: grab;
-  user-select: none; /* Evita que el texto se seleccione al arrastrar */
-  -webkit-user-select: none; /* Soporte para Safari/Chrome viejos */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 /* Cuando el usuario mantiene presionado el click */
