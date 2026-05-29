@@ -194,7 +194,7 @@ export class ProveedorService {
         return {
           ...proveedor,
           fechaUltimoPedido: fechaPedido,
-          historialPedidos: [nuevoPedido, ...proveedor.historialPedidos]
+          historialPedidos: [nuevoPedido, ...(proveedor.historialPedidos ?? [])]
         };
       })
     );
