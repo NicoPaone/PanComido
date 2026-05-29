@@ -1,3 +1,4 @@
+
 .dropdown-container {
   position: relative;
   display: inline-block;
@@ -7,7 +8,7 @@
   cursor: pointer;
 }
 
-.dropdown-menu {
+.dropdown-menu-container {
   position: absolute;
   top: 100%; 
   right: 0;  
@@ -20,20 +21,20 @@
   overflow: hidden;
 }
 
-::ng-deep .dropdown-menu ul {
+::ng-deep .dropdown-menu-container ul {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-::ng-deep .dropdown-menu li {
+::ng-deep .dropdown-menu-container li {
   padding: 10px 16px;
   cursor: pointer;
   color: var(--gray-700);
   transition: background-color 0.2s ease;
 }
 
-::ng-deep .dropdown-menu li:hover {
+::ng-deep .dropdown-menu-container li:hover {
   background-color: var(--gray-100);
   color: var(--primary-teal);
 }

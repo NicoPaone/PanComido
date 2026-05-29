@@ -225,7 +225,7 @@ export class VerProveedoresComponent implements OnInit {
       return;
     }
 
-    const unidadMedida = producto?.unidadMedida ?? 'UN';
+    const unidadMedida = (producto?.unidadMedida as UnidadMedida) || 'UN';
     const itemId = producto?.id ?? `manual-${nombre.toLowerCase().replace(/\s+/g, '-')}`;
 
     this.pedidoItems.update(items => {
@@ -349,7 +349,7 @@ export class VerProveedoresComponent implements OnInit {
     return this.calcularMontoEstimado();
   }
 
-  getCantidadConfiguracion(unidadMedida: UnidadMedida): { step: number; min: number; placeholder: string } {
+  getCantidadConfiguracion(unidadMedida: string): { step: number; min: number; placeholder: string } {
     switch (unidadMedida) {
       case 'UN':
         return { step: 1, min: 1, placeholder: '1' };
@@ -378,7 +378,7 @@ export class VerProveedoresComponent implements OnInit {
     return this.getCantidadConfiguracion(this.productoBaseActual()?.unidadMedida ?? 'KG').placeholder;
   }
 
-  private getCantidadInicial(unidadMedida: UnidadMedida): number {
+  private getCantidadInicial(unidadMedida: UnidadMedida | string): number {
     return this.getCantidadConfiguracion(unidadMedida).min;
   }
 

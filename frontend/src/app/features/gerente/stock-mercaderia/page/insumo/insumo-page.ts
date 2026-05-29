@@ -7,6 +7,7 @@ import { Buscador } from "../../../../../shared/ui/buscador/buscador";
 import { Dropdown } from '../../../../../shared/ui/dropdown/dropdown';
 import { Modal } from "../../../../../shared/ui/modal/modal";
 import { StockMercaderiaState } from '../../services/stock-mercaderia-state';
+import { CategoriaIngrediente } from '../../../../../core/models/producto-stock';
 
 @Component({
   selector: 'app-insumo',
@@ -34,6 +35,8 @@ export class InsumoPage {
     const id = this.productoEditandoId();
     return this.state.productos().find(p => p.id === id) || null;
   })
+
+  
   
   productosFiltrados = computed(() => {
     let lista = this.state.productos();
@@ -45,7 +48,7 @@ export class InsumoPage {
     }
     if(cat && cat !== 'Categorías'){
       
-      lista = lista.filter(p => p.categoriaIngrediente === cat);
+      lista = lista.filter(p => p.categoria === cat);
       
     }
     return lista;

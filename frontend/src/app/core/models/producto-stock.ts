@@ -1,116 +1,152 @@
 
-export type UnidadMedida= 'KG'| 'L' |'GR' | 'UN';
+export type UnidadMedida= 'KG'| 'L' |'GR' | 'UN' | '-';
 export type CategoriaIngrediente = 'Verdura' | 'Almacen' | 'Carne' | 'Lacteos'| 'Bebidas';
 
-export interface Insumo{
+
+// [
+//   {
+//     "id": 12,
+//     "nombre": "Coca-Cola 500ml",
+//     "stockActual": 24,
+//     "unidadMedida": "-",
+//     "vencimiento": null,
+//     "stockMinimo": 5,
+//     "estadoStock": "Normal",
+//     "tipo": "Bebida",
+//     "categoria": "Sin alcohol"
+//   },
+export interface Insumo {
     id: number;
     nombre: string;
-    stock: number;
-    fechaVencimiento: string;
-    unidadMedida: UnidadMedida;
-    categoriaIngrediente: CategoriaIngrediente;
+    stockActual: number;        
+    unidadMedida: UnidadMedida | string;
+    vencimiento: string | null;  
     stockMinimo: number;
-
+    estadoStock: string;        
+    tipo: string;             
+    categoria: string;          
 }
 
 export const INSUMOS_MOCK: Insumo[] = [
   {
     id: 1, 
     nombre: 'Ajo',
-    stock: 5, 
+    stockActual: 5, 
     unidadMedida: 'KG',
-    fechaVencimiento: '2026-05-17',
+    vencimiento: '2026-05-17',
     stockMinimo: 5,
-    categoriaIngrediente: 'Verdura'
+    estadoStock: 'Normal',
+    tipo: 'Verdura',
+    categoria: 'Sin alcohol'
   },
   {
     id: 2, 
     nombre: 'Cebolla',
-    stock: 25, 
+    stockActual: 25, 
     unidadMedida: 'KG',
-    fechaVencimiento: '2026-06-10',
+    vencimiento: '2026-06-10',
     stockMinimo: 10,
-    categoriaIngrediente: 'Verdura'
+    estadoStock: 'Normal',
+    tipo: 'Verdura',
+    categoria: 'Sin alcohol'
   },
   {
     id: 3, 
     nombre: 'Aceite de Girasol',
-    stock: 3, 
+    stockActual: 3, 
     unidadMedida: 'L',
-    fechaVencimiento: '2027-01-20',
+    vencimiento: '2027-01-20',
     stockMinimo: 5,
-    categoriaIngrediente: 'Almacen'
+    estadoStock: 'Normal',
+    tipo: 'Almacen',
+    categoria: 'Sin alcohol'
   },
   {
     id: 4, 
     nombre: 'Harina 0000',
-    stock: 1, 
+    stockActual: 1, 
     unidadMedida: 'KG',
-    fechaVencimiento: '2026-12-05',
+    vencimiento: '2026-12-05',
     stockMinimo: 15,
-    categoriaIngrediente: 'Almacen'
+    estadoStock: 'Normal',
+    tipo: 'Almacen',
+    categoria: 'Sin alcohol'
   },
   {
     id: 5, 
     nombre: 'Tomate Perita',
-    stock: 12, 
+    stockActual: 12, 
     unidadMedida: 'KG',
-    fechaVencimiento: '2026-05-25',
+    vencimiento: '2026-05-25',
     stockMinimo: 5,
-    categoriaIngrediente: 'Verdura'
+    estadoStock: 'Normal',
+    tipo: 'Verdura',
+    categoria: 'Sin alcohol'
   },
   {
     id: 6, 
     nombre: 'Bife de Chorizo',
-    stock: 3, 
+    stockActual: 3, 
     unidadMedida: 'KG',
-    fechaVencimiento: '2026-05-28',
+    vencimiento: '2026-05-28',
     stockMinimo: 10,
-    categoriaIngrediente: 'Carne'
+    estadoStock: 'Normal',
+    tipo: 'Carne',
+    categoria: 'Sin alcohol'
   },
   {
     id: 7, 
     nombre: 'Huevos Blancos',
-    stock: 120, 
+    stockActual: 120, 
     unidadMedida: 'UN',
-    fechaVencimiento: '2026-06-15',
+    vencimiento: '2026-06-15',
     stockMinimo: 60,
-    categoriaIngrediente: 'Almacen'
+    estadoStock: 'Normal',
+    tipo: 'Almacen',
+    categoria: 'Sin alcohol'
   },
   {
     id: 8, 
     nombre: 'Sal Fina',
-    stock: 10, 
+    stockActual: 10, 
     unidadMedida: 'KG',
-    fechaVencimiento: '2028-10-10',
+    vencimiento: '2028-10-10',
     stockMinimo: 3,
-    categoriaIngrediente: 'Almacen'
+    estadoStock: 'Normal',
+    tipo: 'Almacen',
+    categoria: 'Sin alcohol'
   },
   {
     id: 9, 
     nombre: 'Papa Negra',
-    stock: 45, 
+    stockActual: 45, 
     unidadMedida: 'KG',
-    fechaVencimiento: '2026-06-20',
+    vencimiento: '2026-06-20',
     stockMinimo: 20,
-    categoriaIngrediente: 'Verdura'
+    estadoStock: 'Normal',
+    tipo: 'Verdura',
+    categoria: 'Sin alcohol'
   },
   {
     id: 10, 
     nombre: 'Vinagre de Alcohol',
-    stock: 8, 
+    stockActual: 8, 
     unidadMedida: 'L',
-    fechaVencimiento: '2027-03-12',
+    vencimiento: '2027-03-12',
     stockMinimo: 2,
-    categoriaIngrediente: 'Almacen'
+    estadoStock: 'Normal',
+    tipo: 'Almacen',
+    categoria: 'Sin alcohol'
   },
   {
     id: 11, 
     nombre: 'Pimienta Negra en Grano',
-    stock: 2, 
+    stockActual: 2, 
     unidadMedida: 'KG',
-    fechaVencimiento: '2028-01-15',
+    vencimiento: '2028-01-15',
     stockMinimo: 0.5,
-    categoriaIngrediente: 'Almacen'
+    estadoStock: 'Normal',
+    tipo: 'Almacen',
+    categoria: 'Sin alcohol'
   }
 ];

@@ -15,8 +15,16 @@ export class StockMercaderiaState {
   productos = this._productos.asReadonly();
   cargando = this._cargando.asReadonly();
 
+  categoriasUnicas = computed(() =>{
+    const list = this._productos();
+    const unicas = new Set(list.map( p => p.categoria).filter(c=> Boolean(c)));
+
+    console.log('Categorías únicas:', Array.from(unicas)); // Debug: Ver categorías únicas en consola
+    return Array.from(unicas).sort();
+  })
+
   productosCriticos = computed(() =>
-    this._productos().filter(p => p.stock <= p.stockMinimo)
+    this._productos().filter(p => p.stockActual <= p.stockMinimo)
   );
 
   cantidadProductosCriticos = computed(() =>

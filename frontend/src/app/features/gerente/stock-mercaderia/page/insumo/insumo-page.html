@@ -17,13 +17,11 @@
     
     <div menu>
       <ul>
-        <li (click)="categoria.set(''); filtroDropdown.cerrar()">Todos</li>
-        <li (click)="categoria.set('Verdura'); filtroDropdown.cerrar()">Verduras</li>
-        <li (click)="categoria.set('Carne'); filtroDropdown.cerrar()">Carnes</li>
-        <li (click)="categoria.set('Lacteo'); filtroDropdown.cerrar()">Lácteos</li>
-        <li (click)="categoria.set('Bebida'); filtroDropdown.cerrar()">Bebidas</li>
-        <li (click)="categoria.set('Almacen'); filtroDropdown.cerrar()">Almacén</li>
-
+        <li (click)="categoria.set('Categorías'); filtroDropdown.cerrar()">Todos</li>
+        @for(cat of state.categoriasUnicas(); track cat){
+          <li (click)="categoria.set(cat); filtroDropdown.cerrar()">{{cat}}</li>
+        }
+        
       </ul>
     </div>
   </app-dropdown>

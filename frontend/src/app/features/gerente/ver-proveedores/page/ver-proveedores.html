@@ -143,11 +143,11 @@
                         <button type="button" class="predictive-item" (click)="seleccionarProducto(producto)">
                           <div class="predictive-item-main">
                             <strong>{{ producto.nombre }}</strong>
-                            <span>{{ producto.categoriaIngrediente }}</span>
+                            <span>{{ producto.categoria }}</span>
                           </div>
 
                           <div class="predictive-item-meta">
-                            <span>{{ producto.stock }} {{ producto.unidadMedida }}</span>
+                            <span>{{ producto.stockActual }} {{ producto.unidadMedida }}</span>
                           </div>
                         </button>
                       }
