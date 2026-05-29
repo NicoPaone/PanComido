@@ -1,44 +1,66 @@
-import { Injectable } from '@angular/core';
-import { Observable, of, delay } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { Observable, map, switchMap, of } from 'rxjs';
+import { ApiClient } from '../../../../core/services/api-client';
 import { IngredienteVencimiento, VencimientoProveedor, VencimientoPedidoActivo } from '../../../../core/models/vencimientos.model';
+import { Insumo } from '../../../../core/models/producto-stock';
+import { NuevoPedidoProveedor, PedidoProveedor, Proveedor } from '../../../../core/models/proveedor';
 
 @Injectable({ providedIn: 'root' })
 export class VencimientosApiService {
-
-  // Mock data
-  private ingredientesMock: IngredienteVencimiento[] = [
-    { id: '1', nombre: 'Leche Entera', fechaVencimiento: '2026-06-02', stockDisponible: 5, unidadMedida: 'L' },
-    { id: '2', nombre: 'Aceite de Girasol', fechaVencimiento: '2026-06-05', stockDisponible: 12, unidadMedida: 'L' },
-    { id: '3', nombre: 'Harina 0000', fechaVencimiento: '2026-06-10', stockDisponible: 50, unidadMedida: 'Kg' }
-  ];
-
-  private proveedoresMock: Record<string, VencimientoProveedor[]> = {
-    '1': [{ id: 'p1', nombre: 'Lácteos Sur' }, { id: 'p2', nombre: 'Distribuidora Central' }],
-    '2': [{ id: 'p2', nombre: 'Distribuidora Central' }, { id: 'p3', nombre: 'Aceites y Cia' }],
-    '3': [{ id: 'p4', nombre: 'Molinos del Sol' }]
-  };
-
-  private pedidosMock: Record<string, VencimientoPedidoActivo[]> = {
-    'p1': [{ id: 'ped1', numeroEnvio: 'ENV-001', fechaCreacion: '2026-05-25' }],
-    'p2': [{ id: 'ped2', numeroEnvio: 'ENV-099', fechaCreacion: '2026-05-27' }, { id: 'ped3', numeroEnvio: 'ENV-104', fechaCreacion: '2026-05-28' }],
-    'p3': [],
-    'p4': [{ id: 'ped4', numeroEnvio: 'ENV-202', fechaCreacion: '2026-05-26' }]
-  };
+  private api = inject(ApiClient);
 
   getIngredientesProximosVencer(): Observable<IngredienteVencimiento[]> {
-    return of(this.ingredientesMock).pipe(delay(500));
+    return this.api.get<Insumo[]>('proveedores/productos-disponibles').pipe(
+      map(insumos => insumos
+        .filter(insumo => this.estaProximoAVencer(insumo.fechaVencimiento))
+        .map(insumo => ({
+          id: insumo.id,
+          nombre: insumo.nombre,
+          fechaVencimiento: insumo.fechaVencimiento,
+          stockDisponible: insumo.stock,
+          unidadMedida: insumo.unidadMedida
+        }))
+      )
+    );
   }
 
-  getProveedoresPorIngrediente(ingredienteId: string): Observable<VencimientoProveedor[]> {
-    return of(this.proveedoresMock[ingredienteId] || []).pipe(delay(400));
+  getProveedoresPorIngrediente(ingredienteId: string | number): Observable<VencimientoProveedor[]> {
+    return this.api.get<Insumo[]>('proveedores/productos-disponibles').pipe(
+      map(insumos => insumos.find(insumo => insumo.id.toString() === ingredienteId.toString())),
+      switchMap(ingrediente => ingrediente ? this.getProveedoresPorCategoria(ingrediente.categoriaIngrediente) : of([]))
+    );
   }
 
-  getPedidosActivosPorProveedor(proveedorId: string): Observable<VencimientoPedidoActivo[]> {
-    return of(this.pedidosMock[proveedorId] || []).pipe(delay(400));
+  getProveedoresPorCategoria(categoria: string): Observable<VencimientoProveedor[]> {
+    return this.api.get<Proveedor[]>('Proveedor').pipe(
+      map(proveedores => proveedores
+        .filter(proveedor => proveedor.activo && (proveedor.categorias ?? []).includes(categoria))
+        .map(proveedor => ({ id: proveedor.id, nombre: proveedor.nombre }))
+      )
+    );
   }
 
-  agregarAPedidoExistente(pedidoId: string, ingredienteId: string, cantidad: number): Observable<boolean> {
-    console.log(`Mock request: Agregar ${cantidad} del ing ${ingredienteId} al pedido ${pedidoId}`);
-    return of(true).pipe(delay(600));
+  getPedidosActivosPorProveedor(proveedorId: string | number): Observable<VencimientoPedidoActivo[]> {
+    return this.api.get<PedidoProveedor[]>(`Proveedor/${proveedorId}/historial-pedidos`).pipe(
+      map(pedidos => pedidos
+        .filter(pedido => pedido.estado === 'Pendiente')
+        .map(pedido => ({
+          id: pedido.id.toString(),
+          numeroEnvio: `PED-${pedido.id}`,
+          fechaCreacion: pedido.fecha
+        }))
+      )
+    );
+  }
+
+  crearPedidoProveedor(proveedorId: string | number, pedido: NuevoPedidoProveedor): Observable<Proveedor> {
+    return this.api.post<Proveedor>(`Proveedor/${proveedorId}/pedidos`, pedido);
+  }
+
+  private estaProximoAVencer(fecha: string): boolean {
+    const hoy = new Date();
+    const vencimiento = new Date(`${fecha}T00:00:00`);
+    const dias = Math.ceil((vencimiento.getTime() - hoy.getTime()) / 86400000);
+    return dias <= 30;
   }
 }

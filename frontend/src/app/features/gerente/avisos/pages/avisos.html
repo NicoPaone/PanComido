@@ -126,7 +126,7 @@
                 <div class="text-dark fw-bold" style="font-size: 0.95rem;">Reponer</div>
                 <div class="text-muted" style="font-size: 0.8rem;">Generar orden</div>
               </div>
-              <app-boton variante="warning" tamanio="md" (clicked)="state.crearPedido(a.id)">
+              <app-boton variante="warning" tamanio="md" (clicked)="abrirPedidoStock(a)">
                 <div class="d-flex align-items-center gap-1 text-dark">
                   <span class="material-symbols-outlined" style="font-size: 1.2rem; line-height: 1;">shopping_cart</span>
                   <span class="fw-bold">Pedir</span>
@@ -194,4 +194,58 @@
       </div>
     </div>
   </div>
+
+  @if (isPedidoOffcanvasOpen) {
+    <div class="offcanvas-backdrop fade show" (click)="cerrarPedidoStock()"></div>
+    
+    <div class="offcanvas offcanvas-end show shadow" tabindex="-1" style="width: 400px; z-index: 1050;">
+      <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title fw-bold">Crear pedido por stock bajo</h5>
+        <button type="button" class="btn-close" (click)="cerrarPedidoStock()"></button>
+      </div>
+      <div class="offcanvas-body">
+        @if (pedidoState.ingredienteSeleccionado(); as ingrediente) {
+          <div class="alert alert-warning border-0 rounded-3 mb-4">
+            <div class="fw-bold">{{ ingrediente.nombre }}</div>
+            <div class="small">Stock actual: {{ ingrediente.stockDisponible }} {{ ingrediente.unidadMedida }}</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-medium small text-muted">Proveedor de este ingrediente</label>
+            <select class="form-select" (change)="seleccionarProveedor($event)">
+              <option value="" selected disabled>-- Seleccione proveedor --</option>
+              @for (prov of pedidoState.proveedoresDisponibles(); track prov.id) {
+                <option [value]="prov.id">{{ prov.nombre }}</option>
+              }
+            </select>
+          </div>
+
+          @if (pedidoState.proveedorSeleccionado(); as prov) {
+            <div class="mb-3">
+              <label class="form-label fw-medium small text-muted">Pedido inicial para {{ prov.nombre }}</label>
+              
+              @if (pedidoState.pedidosActivos().length > 0) {
+                <div class="text-muted small bg-light p-2 rounded-2 mb-3">
+                  {{ prov.nombre }} ya tiene {{ pedidoState.pedidosActivos().length }} pedido(s) pendiente(s). Se creará uno nuevo para esta reposición.
+                </div>
+              } @else {
+                <div class="text-muted small bg-light p-2 rounded-2 mb-3">
+                  Se creará un pedido nuevo en estado pendiente.
+                </div>
+              }
+
+              <div class="mb-4 mt-3">
+                <label class="form-label fw-medium small text-muted">Cantidad ({{ ingrediente.unidadMedida }})</label>
+                <input type="number" class="form-control" [value]="cantidadAgregar" (input)="updateCantidad($event)" min="1">
+              </div>
+
+              <app-boton variante="success" tamanio="md" (clicked)="confirmarPedidoStock()">
+                <div class="w-100 text-center fw-bold text-dark">Crear pedido pendiente</div>
+              </app-boton>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  }
 </div>

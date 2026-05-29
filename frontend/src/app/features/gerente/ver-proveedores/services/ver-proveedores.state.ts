@@ -9,13 +9,11 @@ export class VerProveedoresStateService {
   private api = inject(VerProveedoresApiService);
   private destroyRef = inject(DestroyRef);
 
-  // Precios mock locales
   private readonly preciosMock: Record<string, number> = {
     '1': 1200, '2': 900, '3': 1500, '4': 600, '5': 1100,
     '6': 7500, '7': 120, '8': 300, '9': 800, '10': 700, '11': 4500
   };
 
-  // 1. Estado PRIVADO y writeables
   termino = signal('');
   proveedores = signal<Proveedor[]>([]);
   productos = signal<Insumo[]>([]);
@@ -33,14 +31,12 @@ export class VerProveedoresStateService {
   private _loading = signal(false);
   loading = this._loading.asReadonly();
 
-  // Historial del proveedor seleccionado (cargado bajo demanda desde el endpoint separado)
   private _historialProveedor = signal<PedidoProveedor[]>([]);
   historialProveedor = this._historialProveedor.asReadonly();
 
   private _loadingHistorial = signal(false);
   loadingHistorial = this._loadingHistorial.asReadonly();
 
-  // 2. Variables Derivadas (Computed)
   proveedoresFiltrados = computed(() => {
     const texto = this.termino().toLowerCase().trim();
     const lista = [...this.proveedores()].sort((a, b) => {
@@ -84,7 +80,6 @@ export class VerProveedoresStateService {
   });
 
   totalPedidosSeleccionado = computed(() => {
-    // Usa el historial cargado bajo demanda desde el endpoint separado
     return this._historialProveedor().length;
   });
 
@@ -111,7 +106,6 @@ export class VerProveedoresStateService {
     return this.getCantidadConfiguracion(this.productoBaseActual()?.unidadMedida ?? 'KG').placeholder;
   });
 
-  // 3. Métodos de Negocio
   cargarDatos(): void {
     this._loading.set(true);
     this.api.getProveedores()
@@ -138,14 +132,9 @@ export class VerProveedoresStateService {
     this.proveedorSeleccionadoId.set(proveedorId);
     this.mensajeAccion.set(null);
     this.pedidoHistorialSeleccionado.set(null);
-    // Limpiar historial anterior al cambiar de proveedor
     this._historialProveedor.set([]);
   }
 
-  /**
-   * Carga el historial de pedidos de un proveedor desde el endpoint real.
-   * GET /api/Proveedor/{id}/historial-pedidos
-   */
   cargarHistorial(id: number | string): void {
     this._loadingHistorial.set(true);
     this.api.getHistorialPedidos(id)
@@ -179,6 +168,60 @@ export class VerProveedoresStateService {
 
   cerrarDetallePedido(): void {
     this.pedidoHistorialSeleccionado.set(null);
+  }
+
+  productosParaAgregar(busqueda: string): Insumo[] {
+    const texto = busqueda.toLowerCase().trim();
+    const productos = [...this.productos()].sort((a, b) => {
+      const sugeridoA = this.esProductoSugerido(a) ? 0 : 1;
+      const sugeridoB = this.esProductoSugerido(b) ? 0 : 1;
+      return sugeridoA - sugeridoB || a.nombre.localeCompare(b.nombre);
+    });
+
+    if (!texto) return productos;
+    return productos.filter(producto => producto.nombre.toLowerCase().includes(texto));
+  }
+
+  confirmarPedido(pedido: PedidoProveedor): void {
+    const proveedor = this.proveedorSeleccionado();
+    if (!proveedor || pedido.estado !== 'Pendiente') return;
+
+    this.api.confirmarPedidoProveedor(proveedor.id, pedido.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (pedidos) => {
+          this._historialProveedor.set(pedidos);
+          this.pedidoHistorialSeleccionado.update(seleccionado =>
+            seleccionado?.id === pedido.id ? { ...seleccionado, estado: 'Confirmado' } : seleccionado
+          );
+          this.mensajeAccion.set('Pedido confirmado');
+        }
+      });
+  }
+
+  agregarIngredienteAPedido(pedido: PedidoProveedor, productoId: number | string, cantidad: number): void {
+    const proveedor = this.proveedorSeleccionado();
+    const producto = this.productos().find(item => item.id.toString() === productoId.toString());
+    if (!proveedor || !producto || pedido.estado !== 'Pendiente' || cantidad <= 0) return;
+
+    const item: PedidoProveedorItem = {
+      id: producto.id,
+      nombre: producto.nombre,
+      cantidad,
+      unidadMedida: producto.unidadMedida,
+      precioUnitario: this.preciosMock[producto.id] ?? 500
+    };
+
+    this.api.agregarItemPedidoProveedor(proveedor.id, pedido.id, item)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (pedidos) => {
+          this._historialProveedor.set(pedidos);
+          const actualizado = pedidos.find(itemPedido => itemPedido.id.toString() === pedido.id.toString()) ?? null;
+          this.pedidoHistorialSeleccionado.set(actualizado);
+          this.mensajeAccion.set('Ingrediente agregado');
+        }
+      });
   }
 
   seleccionarProducto(producto: Insumo): void {
@@ -283,15 +326,10 @@ export class VerProveedoresStateService {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (actualizado) => {
-          // NOTA: Cuando el backend esté listo para retornar la URL generada, la respuesta ('actualizado') 
-          // contendrá una propiedad como 'whatsappUrl' (ej. actualizado.whatsappUrl). En ese momento, 
-          // se deberá utilizar directamente: window.open(actualizado.whatsappUrl, '_blank');
-          
           this.proveedores.update(lista => lista.map(item => item.id === actualizado.id ? actualizado : item));
           this.proveedorSeleccionadoId.set(actualizado.id);
           this.panelModo.set('historial');
           
-          // Generar y abrir WhatsApp temporalmente desde el frontend
           this.abrirWhatsapp(proveedor, items, concepto, observacion);
 
           this.limpiarPedido();
@@ -333,5 +371,12 @@ export class VerProveedoresStateService {
 
   private getCantidadInicial(unidadMedida: UnidadMedida): number {
     return this.getCantidadConfiguracion(unidadMedida).min;
+  }
+
+  private esProductoSugerido(producto: Insumo): boolean {
+    const hoy = new Date();
+    const vencimiento = new Date(`${producto.fechaVencimiento}T00:00:00`);
+    const dias = Math.ceil((vencimiento.getTime() - hoy.getTime()) / 86400000);
+    return producto.stock < producto.stockMinimo * 1.5 || dias <= 30;
   }
 }

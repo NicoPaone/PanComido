@@ -12,8 +12,8 @@ export class AvisosStateService {
   ]);
 
   private _stockBajo = signal<Aviso[]>([
-    { id: 's1', tipo: 'stock', titulo: 'Harina 000', subtitulo: 'Stock: 3 kg', info: 'Punto mínimo: 10 kg' },
-    { id: 's2', tipo: 'stock', titulo: 'Azúcar', subtitulo: 'Stock: 2 kg', info: 'Punto mínimo: 8 kg' }
+    { id: '4', tipo: 'stock', titulo: 'Harina 0000', subtitulo: 'Stock: 1 KG', info: 'Punto mínimo: 15 KG' },
+    { id: '3', tipo: 'stock', titulo: 'Aceite de Girasol', subtitulo: 'Stock: 3 L', info: 'Punto mínimo: 5 L' }
   ]);
 
   private _sugerencias = signal<Aviso[]>([

@@ -1,14 +1,29 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { VencimientosApiService } from './vencimientos.service';
 import { IngredienteVencimiento, VencimientoProveedor, VencimientoPedidoActivo } from '../../../../core/models/vencimientos.model';
+import { NuevoPedidoProveedor, Proveedor } from '../../../../core/models/proveedor';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class VencimientosStateService {
   private api = inject(VencimientosApiService);
+  private readonly preciosIngredientes: Record<string, number> = {
+    '1': 1200,
+    '2': 900,
+    '3': 1500,
+    '4': 600,
+    '5': 1100,
+    '6': 7500,
+    '7': 120,
+    '8': 300,
+    '9': 800,
+    '10': 700,
+    '11': 4500
+  };
 
-  // Signals
   private _ingredientes = signal<IngredienteVencimiento[]>([]);
   private _loadingIngredientes = signal<boolean>(false);
+  private _mensaje = signal<string | null>(null);
 
   private _proveedoresDisponibles = signal<VencimientoProveedor[]>([]);
   private _pedidosActivos = signal<VencimientoPedidoActivo[]>([]);
@@ -16,9 +31,9 @@ export class VencimientosStateService {
   private _ingredienteSeleccionado = signal<IngredienteVencimiento | null>(null);
   private _proveedorSeleccionado = signal<VencimientoProveedor | null>(null);
 
-  // Readonly
   ingredientes = this._ingredientes.asReadonly();
   loadingIngredientes = this._loadingIngredientes.asReadonly();
+  mensaje = this._mensaje.asReadonly();
   proveedoresDisponibles = this._proveedoresDisponibles.asReadonly();
   pedidosActivos = this._pedidosActivos.asReadonly();
   ingredienteSeleccionado = this._ingredienteSeleccionado.asReadonly();
@@ -36,8 +51,6 @@ export class VencimientosStateService {
     this._ingredienteSeleccionado.set(ingrediente);
     this._proveedorSeleccionado.set(null);
     this._pedidosActivos.set([]);
-    
-    // Cargar proveedores que venden este ingrediente
     this.api.getProveedoresPorIngrediente(ingrediente.id).subscribe(provs => {
       this._proveedoresDisponibles.set(provs);
     });
@@ -45,7 +58,6 @@ export class VencimientosStateService {
 
   seleccionarProveedor(proveedor: VencimientoProveedor) {
     this._proveedorSeleccionado.set(proveedor);
-    // Cargar pedidos activos de este proveedor
     this.api.getPedidosActivosPorProveedor(proveedor.id).subscribe(pedidos => {
       this._pedidosActivos.set(pedidos);
     });
@@ -58,14 +70,47 @@ export class VencimientosStateService {
     this._pedidosActivos.set([]);
   }
 
-  agregarAlPedido(pedidoId: string, cantidad: number) {
-    const ingrediente = this._ingredienteSeleccionado();
-    if (!ingrediente) return;
+  marcarRevisado(ingredienteId: string | number) {
+    this._ingredientes.update(items => items.filter(item => item.id !== ingredienteId));
+    this.mostrarMensaje('Vencimiento revisado');
+  }
 
-    this.api.agregarAPedidoExistente(pedidoId, ingrediente.id, cantidad).subscribe(() => {
-      // Mock confirmación
-      alert(`¡Agregado al pedido ${pedidoId} con éxito!`);
-      this.limpiarSeleccion();
-    });
+  sugerirUso(ingredienteId: string | number) {
+    this._ingredientes.update(items => items.filter(item => item.id !== ingredienteId));
+    this.mostrarMensaje('Sugerencia de uso enviada');
+  }
+
+  avisarCocina(ingredienteId: string | number) {
+    this._ingredientes.update(items => items.filter(item => item.id !== ingredienteId));
+    this.mostrarMensaje('Cocina notificada');
+  }
+
+  crearPedidoPendiente(cantidad: number): Observable<Proveedor> | null {
+    const ingrediente = this._ingredienteSeleccionado();
+    const proveedor = this._proveedorSeleccionado();
+    if (!ingrediente || !proveedor) return null;
+
+    const precioUnitario = this.preciosIngredientes[ingrediente.id.toString()] ?? 500;
+
+    const pedido: NuevoPedidoProveedor = {
+      proveedorId: proveedor.id,
+      concepto: `Pedido por vencimiento: ${ingrediente.nombre}`,
+      monto: precioUnitario * cantidad,
+      observacion: 'Pedido inicial generado desde vencimientos',
+      items: [{
+        id: ingrediente.id,
+        nombre: ingrediente.nombre,
+        cantidad,
+        unidadMedida: ingrediente.unidadMedida,
+        precioUnitario
+      }]
+    };
+
+    return this.api.crearPedidoProveedor(proveedor.id, pedido);
+  }
+
+  private mostrarMensaje(mensaje: string) {
+    this._mensaje.set(mensaje);
+    setTimeout(() => this._mensaje.set(null), 2500);
   }
 }

@@ -3,6 +3,11 @@ import { delay, Observable, of } from "rxjs";
 import { Proveedor, NuevoPedidoProveedor, NuevoProveedor, PedidoProveedor } from "../../models/proveedor";
 import { PRODUCTOS_STOCK_MOCK, Insumo } from "../../models/producto-stock";
 
+const preciosMock: Record<string, number> = {
+  '1': 1200, '2': 900, '3': 1500, '4': 600, '5': 1100,
+  '6': 7500, '7': 120, '8': 300, '9': 800, '10': 700, '11': 4500
+};
+
 let dbProveedores: Proveedor[] = [
   {
     id: 1,
@@ -88,10 +93,6 @@ export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandler
         .filter((prod: Insumo) => providerCats.includes(prod.categoriaIngrediente))
         .filter((prod: Insumo) => prod.stock < prod.stockMinimo * 1.5)
         .map((prod: Insumo) => {
-          const costosMock: Record<string, number> = {
-            '1': 1200, '2': 900, '3': 1500, '4': 600, '5': 1100,
-            '6': 7500, '7': 120, '8': 300, '9': 800, '10': 700, '11': 4500
-          };
           return {
             productoId: prod.id.toString(),
             nombre: prod.nombre,
@@ -101,30 +102,26 @@ export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandler
             consumoEstimado30Dias: prod.stockMinimo * 3,
             kind: 'sugerencia',
             cantidadSugerida: Math.max(1, Math.round(prod.stockMinimo * 2 - prod.stock)),
-            precioUnitario: costosMock[prod.id.toString()] ?? 500
+            precioUnitario: preciosMock[prod.id.toString()] ?? 500
           };
         });
       return of(new HttpResponse({ status: 200, body: sugeridos })).pipe(delay(200));
     }
 
-    // GET /Proveedor/{id}/historial-pedidos — contrato real del backend
     if (url.includes('/historial-pedidos')) {
       const parts = url.split('/');
       const idx = parts.findIndex(p => p.toLowerCase() === 'proveedor' || p.toLowerCase() === 'proveedores');
       const id = parseInt(parts[idx + 1], 10);
       const prov = dbProveedores.find(p => p.id === id);
       if (!prov) return of(new HttpResponse({ status: 404 }));
-      // Retorna solo el array de pedidos, sin el proveedor completo
       return of(new HttpResponse({ status: 200, body: prov.historialPedidos ?? [] })).pipe(delay(200));
     }
 
-    // GET /Proveedor/:id o /proveedores/:id
     const parts = url.split('/');
     const lastPart = parts.pop() || '';
     const id = parseInt(lastPart, 10);
     if (!isNaN(id)) {
       const prov = dbProveedores.find(p => p.id === id);
-      // En el mock devolvemos el proveedor sin historialPedidos para simular el contrato real
       if (prov) {
         const { historialPedidos: _omit, ...proveedorSinHistorial } = prov;
         return of(new HttpResponse({ status: 200, body: proveedorSinHistorial })).pipe(delay(200));
@@ -132,25 +129,93 @@ export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandler
       return of(new HttpResponse({ status: 404 })).pipe(delay(200));
     }
 
-    // GET /Proveedor — lista sin historial embebido (contrato real del backend)
     const sinHistorial = dbProveedores.map(({ historialPedidos: _omit, ...prov }) => prov);
     return of(new HttpResponse({ status: 200, body: sinHistorial })).pipe(delay(200));
   }
 
   if (method === 'POST') {
+    if (url.includes('/confirmar')) {
+      const parts = url.split('/');
+      const idx = parts.findIndex(p => p.toLowerCase() === 'proveedor' || p.toLowerCase() === 'proveedores');
+      const proveedorId = parseInt(parts[idx + 1], 10);
+      const pedidoId = parts[idx + 3];
+      const index = dbProveedores.findIndex(p => p.id === proveedorId);
+
+      if (index !== -1) {
+        const historialPedidos = (dbProveedores[index].historialPedidos ?? []).map(pedido =>
+          pedido.id.toString() === pedidoId ? { ...pedido, estado: 'Confirmado' as const } : pedido
+        );
+
+        dbProveedores[index] = {
+          ...dbProveedores[index],
+          historialPedidos
+        };
+
+        return of(new HttpResponse({ status: 200, body: historialPedidos })).pipe(delay(200));
+      }
+
+      return of(new HttpResponse({ status: 404 }));
+    }
+
+    if (url.includes('/items')) {
+      const parts = url.split('/');
+      const idx = parts.findIndex(p => p.toLowerCase() === 'proveedor' || p.toLowerCase() === 'proveedores');
+      const proveedorId = parseInt(parts[idx + 1], 10);
+      const pedidoId = parts[idx + 3];
+      const index = dbProveedores.findIndex(p => p.id === proveedorId);
+
+      if (index !== -1) {
+        const body = req.body as any;
+        const item = {
+          ...body,
+          precioUnitario: body.precioUnitario ?? preciosMock[body.id?.toString()] ?? 500
+        };
+
+        const historialPedidos = (dbProveedores[index].historialPedidos ?? []).map(pedido => {
+          if (pedido.id.toString() !== pedidoId || pedido.estado !== 'Pendiente') {
+            return pedido;
+          }
+
+          const itemExistente = pedido.items.find(pedidoItem => pedidoItem.id.toString() === item.id.toString());
+          const items = itemExistente
+            ? pedido.items.map(pedidoItem => pedidoItem.id.toString() === item.id.toString()
+              ? { ...pedidoItem, cantidad: pedidoItem.cantidad + item.cantidad, precioUnitario: item.precioUnitario }
+              : pedidoItem)
+            : [...pedido.items, item];
+          const monto = items.reduce((total, pedidoItem) => total + ((pedidoItem.precioUnitario ?? preciosMock[pedidoItem.id.toString()] ?? 500) * pedidoItem.cantidad), 0);
+
+          return {
+            ...pedido,
+            items,
+            monto
+          };
+        });
+
+        dbProveedores[index] = {
+          ...dbProveedores[index],
+          historialPedidos
+        };
+
+        return of(new HttpResponse({ status: 200, body: historialPedidos })).pipe(delay(200));
+      }
+
+      return of(new HttpResponse({ status: 404 }));
+    }
+
     if (url.includes('/pedidos')) {
       const parts = url.split('/');
-      const idx = parts.indexOf('proveedores');
+      const idx = parts.findIndex(p => p.toLowerCase() === 'proveedor' || p.toLowerCase() === 'proveedores');
       const id = parseInt(parts[idx + 1], 10);
       const index = dbProveedores.findIndex(p => p.id === id);
       if (index !== -1) {
         const body = req.body as NuevoPedidoProveedor;
         const fechaPedido = new Date().toISOString();
+        const monto = body.items.reduce((total, item) => total + ((item.precioUnitario ?? 0) * item.cantidad), 0);
         const nuevoPedido: PedidoProveedor = {
           id: Date.now(),
           fecha: fechaPedido,
           concepto: body.concepto,
-          monto: body.monto,
+          monto: body.monto || monto,
           estado: 'Pendiente',
           observacion: body.observacion,
           items: body.items
@@ -165,7 +230,6 @@ export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandler
       return of(new HttpResponse({ status: 404 }));
     }
 
-    // POST /proveedores
     const body = req.body as NuevoProveedor;
     const direccion = [body.calle, body.numero].filter(Boolean).join(' ').trim();
     const direccionCompleta = direccion + (body.ciudad ? `, ${body.ciudad}` : '');

@@ -1,13 +1,15 @@
+import { UnidadMedida } from './producto-stock';
+
 export interface IngredienteVencimiento {
-  id: string;
+  id: string | number;
   nombre: string;
   fechaVencimiento: string;
   stockDisponible: number;
-  unidadMedida: string;
+  unidadMedida: UnidadMedida;
 }
 
 export interface VencimientoProveedor {
-  id: string;
+  id: string | number;
   nombre: string;
 }
 

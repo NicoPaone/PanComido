@@ -70,6 +70,7 @@ export class SidebarComponent {
   // Configuración de menú por rol
   private menuConfig: Record<string, MenuItem[]> = {
     Gerente: [
+      { label: 'Sistema de avisos', icon: 'faBell', route: 'gerente/avisos', roles: ['Gerente'] },
       { label: 'Usuarios', icon: 'faUsers', route: 'gerente/usuarios', roles: ['Gerente'] },
       { label: 'Configuración', icon: 'faCog', route: 'gerente/configuracion', roles: ['Gerente'] },
       { label: 'Dashboard', icon: 'faChartBar', route: 'gerente/dashboard', roles: ['Gerente'] },
@@ -97,8 +98,6 @@ export class SidebarComponent {
       },
       { label: 'Plato del día', icon: 'faTag', route: 'gerente/plato-dia', roles: ['Gerente'] },
       { label: 'Mapa de mesas', icon: 'faTableCells', route: 'gerente/mesas', roles: ['Gerente'] }
-      ,
-      { label: 'Sistema de avisos', icon: 'faBell', route: 'gerente/avisos', roles: ['Gerente'] }
     ],
     Mozo: [
       { label: 'Mesas', icon: 'faTableCells', route: 'mozo/mesas', roles: ['Mozo'] },
