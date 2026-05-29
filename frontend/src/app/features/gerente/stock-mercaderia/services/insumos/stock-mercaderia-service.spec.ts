@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { StockMercaderiaClient } from './stock-mercaderia-service';
+import { StockMercaderiaService } from './stock-mercaderia-service';
 
-describe('StockMercaderiaClient', () => {
-  let service: StockMercaderiaClient;
+describe('StockMercaderiaService', () => {
+  let service: StockMercaderiaService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(StockMercaderiaClient);
+    service = TestBed.inject(StockMercaderiaService);
   });
 
   it('should be created', () => {

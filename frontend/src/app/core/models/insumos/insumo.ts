@@ -1,6 +1,6 @@
 
 export type UnidadMedida= 'KG'| 'L' |'GR' | 'UN' | '-';
-export type CategoriaIngrediente = 'Verdura' | 'Almacen' | 'Carne' | 'Lacteos'| 'Bebidas';
+export type CategoriaIngrediente = 'Verdura' | 'Almacen' | 'Carne' | 'Lacteos'| 'Bebidas' | 'Sin alcohol';
 
 
 // [
@@ -37,7 +37,7 @@ export const INSUMOS_MOCK: Insumo[] = [
     stockMinimo: 5,
     estadoStock: 'Normal',
     tipo: 'Verdura',
-    categoria: 'Sin alcohol'
+    categoria: 'Verdura'
   },
   {
     id: 2, 
@@ -48,7 +48,7 @@ export const INSUMOS_MOCK: Insumo[] = [
     stockMinimo: 10,
     estadoStock: 'Normal',
     tipo: 'Verdura',
-    categoria: 'Sin alcohol'
+    categoria: 'Verdura'
   },
   {
     id: 3, 
@@ -59,7 +59,7 @@ export const INSUMOS_MOCK: Insumo[] = [
     stockMinimo: 5,
     estadoStock: 'Normal',
     tipo: 'Almacen',
-    categoria: 'Sin alcohol'
+    categoria: 'Almacen'
   },
   {
     id: 4, 
@@ -70,7 +70,7 @@ export const INSUMOS_MOCK: Insumo[] = [
     stockMinimo: 15,
     estadoStock: 'Normal',
     tipo: 'Almacen',
-    categoria: 'Sin alcohol'
+    categoria: 'Almacen'
   },
   {
     id: 5, 
@@ -81,7 +81,7 @@ export const INSUMOS_MOCK: Insumo[] = [
     stockMinimo: 5,
     estadoStock: 'Normal',
     tipo: 'Verdura',
-    categoria: 'Sin alcohol'
+    categoria: 'Verdura'
   },
   {
     id: 6, 
@@ -92,61 +92,6 @@ export const INSUMOS_MOCK: Insumo[] = [
     stockMinimo: 10,
     estadoStock: 'Normal',
     tipo: 'Carne',
-    categoria: 'Sin alcohol'
-  },
-  {
-    id: 7, 
-    nombre: 'Huevos Blancos',
-    stockActual: 120, 
-    unidadMedida: 'UN',
-    vencimiento: '2026-06-15',
-    stockMinimo: 60,
-    estadoStock: 'Normal',
-    tipo: 'Almacen',
-    categoria: 'Sin alcohol'
-  },
-  {
-    id: 8, 
-    nombre: 'Sal Fina',
-    stockActual: 10, 
-    unidadMedida: 'KG',
-    vencimiento: '2028-10-10',
-    stockMinimo: 3,
-    estadoStock: 'Normal',
-    tipo: 'Almacen',
-    categoria: 'Sin alcohol'
-  },
-  {
-    id: 9, 
-    nombre: 'Papa Negra',
-    stockActual: 45, 
-    unidadMedida: 'KG',
-    vencimiento: '2026-06-20',
-    stockMinimo: 20,
-    estadoStock: 'Normal',
-    tipo: 'Verdura',
-    categoria: 'Sin alcohol'
-  },
-  {
-    id: 10, 
-    nombre: 'Vinagre de Alcohol',
-    stockActual: 8, 
-    unidadMedida: 'L',
-    vencimiento: '2027-03-12',
-    stockMinimo: 2,
-    estadoStock: 'Normal',
-    tipo: 'Almacen',
-    categoria: 'Sin alcohol'
-  },
-  {
-    id: 11, 
-    nombre: 'Pimienta Negra en Grano',
-    stockActual: 2, 
-    unidadMedida: 'KG',
-    vencimiento: '2028-01-15',
-    stockMinimo: 0.5,
-    estadoStock: 'Normal',
-    tipo: 'Almacen',
-    categoria: 'Sin alcohol'
+    categoria: 'Carne'
   }
 ];

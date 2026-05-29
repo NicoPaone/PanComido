@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { StockList } from './stock-list';
+import { InsumoList } from './insumo-list';
 
-describe('StockList', () => {
-  let component: StockList;
-  let fixture: ComponentFixture<StockList>;
+describe('InsumoList', () => {
+  let component: InsumoList;
+  let fixture: ComponentFixture<InsumoList>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [StockList],
+      imports: [InsumoList],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(StockList);
+    fixture = TestBed.createComponent(InsumoList);
     component = fixture.componentInstance;
     fixture.componentRef.setInput('productos', []);
     fixture.detectChanges();
