@@ -147,4 +147,5 @@ export class ModificarCartaComponent implements OnInit {
   irACrearPlato() {
     this.router.navigate(['/staff/gerente/crear-plato']);
   }
+  
 }

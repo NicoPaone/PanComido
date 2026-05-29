@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { delay, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { PRODUCTOS_STOCK_MOCK, ProductoStockMock } from '../model/producto-stock-mock';
+import { INSUMOS_MOCK, Insumo } from '../models/producto-stock';
 import { NuevoPedidoProveedor, NuevoProveedor, PedidoProveedor, Proveedor } from '../models/proveedor';
 
 export const PROVEEDOR_ENDPOINTS = {
@@ -149,7 +149,7 @@ const PROVEEDORES_MOCK: Proveedor[] = [
 })
 export class ProveedorService {
   private readonly proveedoresSignal = signal<Proveedor[]>(PROVEEDORES_MOCK);
-  private readonly productosSignal = signal<ProductoStockMock[]>(PRODUCTOS_STOCK_MOCK);
+  private readonly productosSignal = signal<Insumo[]>(INSUMOS_MOCK);
 
   getProveedores(): Observable<Proveedor[]> {
     return of(this.proveedoresSignal()).pipe(delay(180));
@@ -164,11 +164,11 @@ export class ProveedorService {
     return of(proveedor?.historialPedidos ?? []).pipe(delay(120));
   }
 
-  getProductosDisponibles(): Observable<ProductoStockMock[]> {
+  getProductosDisponibles(): Observable<Insumo[]> {
     return of(this.productosSignal()).pipe(delay(120));
   }
 
-  crearPedidoProveedor(id: number, pedido: NuevoPedidoProveedor): Observable<Proveedor> {
+  crearPedidoProveedor(id: number | string, pedido: NuevoPedidoProveedor): Observable<Proveedor> {
     const fechaPedido = new Date().toISOString();
     const nuevoPedido: PedidoProveedor = {
       id: Date.now(),

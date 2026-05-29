@@ -23,7 +23,7 @@ public partial class Bodega
     public string Nombre { get; set; } = null!;
 
     [InverseProperty("Bodega")]
-    public virtual ICollection<LoteBodega> LoteBodegas { get; set; } = new List<LoteBodega>();
+    public virtual ICollection<Lote> Lotes { get; set; } = new List<Lote>();
 
     [ForeignKey("RestauranteId")]
     [InverseProperty("Bodegas")]

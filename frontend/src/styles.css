@@ -9,6 +9,7 @@
   --status-success: #6abf3f;
   --status-warning: #f7d627;
   --status-danger: #a8041a;
+  --color-cream: #f9f3eb;
   
   /* Colores adicionales */
   --gray-50: #f9fafb;
@@ -76,6 +77,11 @@ body {
 .info-card:hover,
 .nested-section:hover {
   background: #ffffff !important;
+}
+
+dialog::backdrop {
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(2px);
 }
 
 h1, h2, h3, h4, h5, h6 {

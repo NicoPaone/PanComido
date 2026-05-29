@@ -8,11 +8,11 @@ import { Buscador } from '../../../../shared/ui/buscador/buscador';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Dropdown } from '../../../../shared/ui/dropdown/dropdown';
 import { PageToolbar } from '../../../../shared/ui/page-toolbar/page-toolbar';
-import { NuevoProveedor, PedidoProveedor, PedidoProveedorItem, EstadoPedidoProveedor, Proveedor } from '../../../../core/models/proveedor';
+import {  PedidoProveedor, PedidoProveedorItem, EstadoPedidoProveedor, Proveedor } from '../../../../core/models/proveedor';
 import { Router, RouterModule } from '@angular/router';
 import { ProveedorService } from '../../../../core/services/proveedor.service';
 import { ProveedorListComponent } from '../components/proveedor-list/proveedor-list';
-import { ProductoStockMock, UnidadMedida } from '../../../../core/model/producto-stock-mock';
+import { Insumo, UnidadMedida } from '../../../../core/models/producto-stock';
 
 @Component({
   selector: 'app-ver-proveedores',
@@ -30,14 +30,14 @@ export class VerProveedoresComponent implements OnInit {
 
   termino = signal('');
   proveedores = signal<Proveedor[]>([]);
-  productos = signal<ProductoStockMock[]>([]);
-  proveedorSeleccionadoId = signal<number | null>(null);
+  productos = signal<Insumo[]>([]);
+  proveedorSeleccionadoId = signal<number | string | null>(null);
   panelModo = signal<'pedido' | 'historial'>('historial');
   observacionPedido = signal('');
   mensajeAccion = signal<string | null>(null);
   
   productoTexto = signal('');
-  productoSeleccionadoId = signal<string | null>(null);
+  productoSeleccionadoId = signal<string |number|  null>(null);
   cantidadProducto = signal<number | null>(1);
   precioProductoManual = signal<number | null>(null);
   
@@ -193,7 +193,7 @@ export class VerProveedoresComponent implements OnInit {
     this.pedidoHistorialSeleccionado.set(null);
   }
 
-  seleccionarProducto(producto: ProductoStockMock): void {
+  seleccionarProducto(producto: Insumo): void {
     this.productoSeleccionadoId.set(producto.id);
     this.productoTexto.set(producto.nombre);
     this.cantidadProducto.set(this.getCantidadInicial(producto.unidadMedida));
@@ -225,7 +225,7 @@ export class VerProveedoresComponent implements OnInit {
       return;
     }
 
-    const unidadMedida = producto?.unidadMedida ?? 'UN';
+    const unidadMedida = (producto?.unidadMedida as UnidadMedida) || 'UN';
     const itemId = producto?.id ?? `manual-${nombre.toLowerCase().replace(/\s+/g, '-')}`;
 
     this.pedidoItems.update(items => {
@@ -244,7 +244,7 @@ export class VerProveedoresComponent implements OnInit {
     this.precioProductoManual.set(null);
   }
 
-  actualizarCantidadItem(itemId: string, cantidad: number | null): void {
+  actualizarCantidadItem(itemId: string | number, cantidad: number | null): void {
     if (cantidad === null || cantidad <= 0) {
       return;
     }
@@ -254,7 +254,7 @@ export class VerProveedoresComponent implements OnInit {
     );
   }
 
-  eliminarItemPedido(itemId: string): void {
+  eliminarItemPedido(itemId: string | number): void {
     this.pedidoItems.update(items => items.filter(item => item.id !== itemId));
   }
 
@@ -349,7 +349,7 @@ export class VerProveedoresComponent implements OnInit {
     return this.calcularMontoEstimado();
   }
 
-  getCantidadConfiguracion(unidadMedida: UnidadMedida): { step: number; min: number; placeholder: string } {
+  getCantidadConfiguracion(unidadMedida: string): { step: number; min: number; placeholder: string } {
     switch (unidadMedida) {
       case 'UN':
         return { step: 1, min: 1, placeholder: '1' };
@@ -362,7 +362,7 @@ export class VerProveedoresComponent implements OnInit {
     }
   }
 
-  get productoSeleccionadoActual(): ProductoStockMock | null {
+  get productoSeleccionadoActual(): Insumo | null {
     return this.productos().find(producto => producto.id === this.productoSeleccionadoId()) ?? null;
   }
 
@@ -378,7 +378,7 @@ export class VerProveedoresComponent implements OnInit {
     return this.getCantidadConfiguracion(this.productoBaseActual()?.unidadMedida ?? 'KG').placeholder;
   }
 
-  private getCantidadInicial(unidadMedida: UnidadMedida): number {
+  private getCantidadInicial(unidadMedida: UnidadMedida | string): number {
     return this.getCantidadConfiguracion(unidadMedida).min;
   }
 
