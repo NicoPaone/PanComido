@@ -26,42 +26,24 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Mappers de Infraestructura (Dominio <-> EF)
 builder.Services.AddScoped<InsumoEntityMapper>();
-<<<<<<< HEAD
 builder.Services.AddScoped<BodegaEntityMapper>();
-=======
->>>>>>> develop
 builder.Services.AddScoped<ProveedorEntityMapper>();
 builder.Services.AddScoped<PedidoEntityMapper>();
-builder.Services.AddScoped<BodegaEntityMapper>();
 builder.Services.AddScoped<ComandaEntityMapper>();
 
 // Mappers de Presentacion (Dominio <-> DTOs)   
-<<<<<<< HEAD
 builder.Services.AddScoped<InsumoMapper>();
 builder.Services.AddScoped<BodegaMapper>();
 builder.Services.AddScoped<ProveedorMapper>();
 builder.Services.AddScoped<PedidoMapper>();
-=======
-builder.Services.AddScoped<ProveedorMapper>();
-builder.Services.AddScoped<PedidoMapper>();
-builder.Services.AddScoped<InsumoMapper>();
-builder.Services.AddScoped<BodegaMapper>();
 builder.Services.AddScoped<ComandaMapper>();
-
-
->>>>>>> develop
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
 builder.Services.AddScoped<ILoteRepositorio, LoteRepositorio>();
-<<<<<<< HEAD
 builder.Services.AddScoped<IBodegaRepositorio, BodegaRepositorio>();
 builder.Services.AddScoped<IProveedorRepositorio, ProveedorRespositorio>();
 builder.Services.AddScoped<IPedidoRepositorio, PedidoRepositorio>();
-=======
-builder.Services.AddScoped<IProveedorRepositorio, ProveedorRespositorio>();
-builder.Services.AddScoped<IPedidoRepositorio, PedidoRepositorio>();
-builder.Services.AddScoped<IBodegaRepositorio, BodegaRepositorio>();
 builder.Services.AddScoped<IComandaRepositorio, ComandaRepositorio>();
 
 
@@ -69,24 +51,16 @@ builder.Services.AddScoped<IComandaRepositorio, ComandaRepositorio>();
 builder.Services.AddScoped<ListarInsumoCasoDeUso>();
 builder.Services.AddScoped<ListarProveedorCasoDeUso>();
 builder.Services.AddScoped<ObtenerHistorialPedidosCasoDeUso>();
+builder.Services.AddScoped<ListarBodegasCasoDeUso>();
 builder.Services.AddScoped<ListarBodegasConInsumosCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosDelProveedorCasoDeUso>();
 builder.Services.AddScoped<CrearPedidoCasoDeUso>();
->>>>>>> develop
+builder.Services.AddScoped<ListarComandaActivaCocinaCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
 
-// Casos de uso
-builder.Services.AddScoped<ListarInsumoCasoDeUso>();
-builder.Services.AddScoped<ListarBodegasCasoDeUso>();
-builder.Services.AddScoped<ListarBodegasConInsumosCasoDeUso>();
-<<<<<<< HEAD
-builder.Services.AddScoped<ListarProveedorCasoDeUso>();
-builder.Services.AddScoped<ObtenerHistorialPedidosCasoDeUso>();
-=======
-builder.Services.AddScoped<ListarComandaActivaCocinaCasoDeUso>();
->>>>>>> develop
+
 
 
 var allowedOrigins = builder.Configuration.GetSection("CorsSettings:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
