@@ -17,6 +17,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             {
                 Id = bodegaEF.Id,
                 Nombre = bodegaEF.Nombre,
+                TipoBodega = bodegaEF.TipoBodega.Descripcion,
                 Insumos = new List<DOM.Insumo>()
             };
         }

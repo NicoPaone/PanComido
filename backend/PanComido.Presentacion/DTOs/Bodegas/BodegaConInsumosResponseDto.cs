@@ -1,9 +1,11 @@
-﻿namespace PanComido.Presentacion.DTOs
+﻿namespace PanComido.Presentacion.DTOs.Bodegas
 {
-    public class BodegaResponseDto
+    public class BodegaConInsumosResponseDto
     {
         public int Id { get; set; }
         public string Nombre { get; set; }
+
+        public string TipoBodega { get; set; }
         public List<InsumoResponseDto> Insumos { get; set; } = new List<InsumoResponseDto>();
     }
 }
