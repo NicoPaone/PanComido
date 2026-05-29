@@ -13,11 +13,18 @@ public partial class Insumo
     [Column("id_articulo")]
     public int IdArticulo { get; set; }
 
+    [Column("categoria_insumo_id")]
+    public int CategoriaInsumoId { get; set; }
+
+    [Column("unidad_medida_id")]
+    public int UnidadMedidaId { get; set; }
+
     [Column("stock_minimo")]
     public decimal StockMinimo { get; set; }
 
-    [InverseProperty("IdInsumoNavigation")]
-    public virtual Bebidum? Bebidum { get; set; }
+    [ForeignKey("CategoriaInsumoId")]
+    [InverseProperty("Insumos")]
+    public virtual CategoriaInsumo CategoriaInsumo { get; set; } = null!;
 
     [ForeignKey("IdArticulo")]
     [InverseProperty("Insumo")]
@@ -31,4 +38,8 @@ public partial class Insumo
 
     [InverseProperty("Insumo")]
     public virtual ICollection<PedidoInsumo> PedidoInsumos { get; set; } = new List<PedidoInsumo>();
+
+    [ForeignKey("UnidadMedidaId")]
+    [InverseProperty("Insumos")]
+    public virtual UnidadMedidum UnidadMedida { get; set; } = null!;
 }

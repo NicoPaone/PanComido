@@ -16,21 +16,15 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<ArticuloComandum> ArticuloComanda { get; set; }
 
-    public virtual DbSet<Bebidum> Bebida { get; set; }
-
     public virtual DbSet<Bodega> Bodegas { get; set; }
 
     public virtual DbSet<Cartum> Carta { get; set; }
 
-    public virtual DbSet<CategoriaBebidum> CategoriaBebida { get; set; }
-
-    public virtual DbSet<CategoriaIngrediente> CategoriaIngredientes { get; set; }
+    public virtual DbSet<CategoriaInsumo> CategoriaInsumos { get; set; }
 
     public virtual DbSet<CategoriaLlamado> CategoriaLlamados { get; set; }
 
     public virtual DbSet<CategoriaPlato> CategoriaPlatos { get; set; }
-
-    public virtual DbSet<CategoriaProveedor> CategoriaProveedors { get; set; }
 
     public virtual DbSet<Cierre> Cierres { get; set; }
 
@@ -145,6 +139,7 @@ public partial class AppDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("articulo_comanda_pkey");
 
             entity.Property(e => e.Cantidad).HasDefaultValue(1);
+            entity.Property(e => e.Entregado).HasDefaultValue(false);
 
             entity.HasOne(d => d.Articulo).WithMany(p => p.ArticuloComanda)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -153,21 +148,6 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.Comanda).WithMany(p => p.ArticuloComanda)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("articulo_comanda_comanda_id_fkey");
-        });
-
-        modelBuilder.Entity<Bebidum>(entity =>
-        {
-            entity.HasKey(e => e.IdInsumo).HasName("bebida_pkey");
-
-            entity.Property(e => e.IdInsumo).ValueGeneratedNever();
-
-            entity.HasOne(d => d.CategoriaBebida).WithMany(p => p.Bebida)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("bebida_categoria_bebida_id_fkey");
-
-            entity.HasOne(d => d.IdInsumoNavigation).WithOne(p => p.Bebidum)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("bebida_id_insumo_fkey");
         });
 
         modelBuilder.Entity<Bodega>(entity =>
@@ -192,14 +172,28 @@ public partial class AppDbContext : DbContext
                 .HasConstraintName("carta_restaurante_id_fkey");
         });
 
-        modelBuilder.Entity<CategoriaBebidum>(entity =>
+        modelBuilder.Entity<CategoriaInsumo>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("categoria_bebida_pkey");
-        });
+            entity.HasKey(e => e.Id).HasName("categoria_insumo_pkey");
 
-        modelBuilder.Entity<CategoriaIngrediente>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("categoria_ingrediente_pkey");
+            entity.HasMany(d => d.Proveedors).WithMany(p => p.CategoriaInsumos)
+                .UsingEntity<Dictionary<string, object>>(
+                    "CategoriaInsumoProveedor",
+                    r => r.HasOne<Proveedor>().WithMany()
+                        .HasForeignKey("ProveedorId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("categoria_insumo_proveedor_proveedor_id_fkey"),
+                    l => l.HasOne<CategoriaInsumo>().WithMany()
+                        .HasForeignKey("CategoriaInsumoId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("categoria_insumo_proveedor_categoria_insumo_id_fkey"),
+                    j =>
+                    {
+                        j.HasKey("CategoriaInsumoId", "ProveedorId").HasName("categoria_insumo_proveedor_pkey");
+                        j.ToTable("categoria_insumo_proveedor");
+                        j.IndexerProperty<int>("CategoriaInsumoId").HasColumnName("categoria_insumo_id");
+                        j.IndexerProperty<int>("ProveedorId").HasColumnName("proveedor_id");
+                    });
         });
 
         modelBuilder.Entity<CategoriaLlamado>(entity =>
@@ -210,49 +204,6 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<CategoriaPlato>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("categoria_plato_pkey");
-        });
-
-        modelBuilder.Entity<CategoriaProveedor>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("categoria_proveedor_pkey");
-
-            entity.HasMany(d => d.CategoriaIngredientes).WithMany(p => p.CategoriaProveedors)
-                .UsingEntity<Dictionary<string, object>>(
-                    "CategoriaProveedorCategoriaIngrediente",
-                    r => r.HasOne<CategoriaIngrediente>().WithMany()
-                        .HasForeignKey("CategoriaIngredienteId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("categoria_proveedor_categoria_ing_categoria_ingrediente_id_fkey"),
-                    l => l.HasOne<CategoriaProveedor>().WithMany()
-                        .HasForeignKey("CategoriaProveedorId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("categoria_proveedor_categoria_ingre_categoria_proveedor_id_fkey"),
-                    j =>
-                    {
-                        j.HasKey("CategoriaProveedorId", "CategoriaIngredienteId").HasName("categoria_proveedor_categoria_ingrediente_pkey");
-                        j.ToTable("categoria_proveedor_categoria_ingrediente");
-                        j.IndexerProperty<int>("CategoriaProveedorId").HasColumnName("categoria_proveedor_id");
-                        j.IndexerProperty<int>("CategoriaIngredienteId").HasColumnName("categoria_ingrediente_id");
-                    });
-
-            entity.HasMany(d => d.Proveedors).WithMany(p => p.CategoriaProveedors)
-                .UsingEntity<Dictionary<string, object>>(
-                    "CategoriaProveedorProveedor",
-                    r => r.HasOne<Proveedor>().WithMany()
-                        .HasForeignKey("ProveedorId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("categoria_proveedor_proveedor_proveedor_id_fkey"),
-                    l => l.HasOne<CategoriaProveedor>().WithMany()
-                        .HasForeignKey("CategoriaProveedorId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("categoria_proveedor_proveedor_categoria_proveedor_id_fkey"),
-                    j =>
-                    {
-                        j.HasKey("CategoriaProveedorId", "ProveedorId").HasName("categoria_proveedor_proveedor_pkey");
-                        j.ToTable("categoria_proveedor_proveedor");
-                        j.IndexerProperty<int>("CategoriaProveedorId").HasColumnName("categoria_proveedor_id");
-                        j.IndexerProperty<int>("ProveedorId").HasColumnName("proveedor_id");
-                    });
         });
 
         modelBuilder.Entity<Cierre>(entity =>
@@ -390,17 +341,9 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.IdInsumo).ValueGeneratedNever();
 
-            entity.HasOne(d => d.CategoriaIngrediente).WithMany(p => p.Ingredientes)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("ingrediente_categoria_ingrediente_id_fkey");
-
             entity.HasOne(d => d.IdInsumoNavigation).WithOne(p => p.Ingrediente)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("ingrediente_id_insumo_fkey");
-
-            entity.HasOne(d => d.UnidadMedida).WithMany(p => p.Ingredientes)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("ingrediente_unidad_medida_id_fkey");
 
             entity.HasMany(d => d.IngredientePreparados).WithMany(p => p.Ingredientes)
                 .UsingEntity<Dictionary<string, object>>(
@@ -439,9 +382,17 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.IdArticulo).ValueGeneratedNever();
 
+            entity.HasOne(d => d.CategoriaInsumo).WithMany(p => p.Insumos)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("insumo_categoria_insumo_id_fkey");
+
             entity.HasOne(d => d.IdArticuloNavigation).WithOne(p => p.Insumo)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("insumo_id_articulo_fkey");
+
+            entity.HasOne(d => d.UnidadMedida).WithMany(p => p.Insumos)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("insumo_unidad_medida_id_fkey");
         });
 
         modelBuilder.Entity<Llamado>(entity =>
