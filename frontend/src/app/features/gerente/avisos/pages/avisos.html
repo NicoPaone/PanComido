@@ -34,7 +34,7 @@
       </div>
       <div class="d-flex flex-column gap-3">
         @for (a of state.vencimientos(); track a.id) {
-          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white d-flex flex-column" style="min-height: 250px;">
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white d-flex flex-column" style="min-height: 250px; cursor: pointer;" (click)="abrirAviso(a)">
             <div class="d-flex justify-content-between align-items-start mb-3">
               <div class="rounded-circle d-flex align-items-center justify-content-center border" style="width: 44px; height: 44px; background-color: #fafafa;">
                 <span class="material-symbols-outlined text-danger" style="font-size: 1.4rem;">event_busy</span>
@@ -60,17 +60,25 @@
               </div>
             </div>
             
-            <div class="mt-auto pt-2 border-top d-flex align-items-center justify-content-between">
+            <div class="mt-auto pt-2 border-top d-flex align-items-center justify-content-between gap-2 flex-wrap">
               <div>
                 <div class="text-dark fw-bold" style="font-size: 0.95rem;">Revisión</div>
-                <div class="text-muted" style="font-size: 0.8rem;">Descartar alerta</div>
+                <div class="text-muted" style="font-size: 0.8rem;">Ver vencimientos</div>
               </div>
-              <app-boton variante="danger" tamanio="md" (clicked)="state.marcarRevisado(a.tipo, a.id)">
-                <div class="d-flex align-items-center gap-1 text-white">
-                  <span class="material-symbols-outlined" style="font-size: 1.2rem; line-height: 1;">visibility</span>
-                  <span class="fw-bold">Visto</span>
-                </div>
-              </app-boton>
+              <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
+                <app-boton variante="outline" tamanio="md" (clicked)="$event.stopPropagation(); abrirVencimientos(a.id)">
+                  <div class="d-flex align-items-center gap-1">
+                    <span class="material-symbols-outlined" style="font-size: 1.2rem; line-height: 1;">open_in_new</span>
+                    <span class="fw-bold">Ver detalle</span>
+                  </div>
+                </app-boton>
+                <app-boton variante="danger" tamanio="md" (clicked)="$event.stopPropagation(); state.marcarRevisado(a.tipo, a.id)">
+                  <div class="d-flex align-items-center gap-1 text-white">
+                    <span class="material-symbols-outlined" style="font-size: 1.2rem; line-height: 1;">visibility</span>
+                    <span class="fw-bold">Visto</span>
+                  </div>
+                </app-boton>
+              </div>
             </div>
           </div>
         }

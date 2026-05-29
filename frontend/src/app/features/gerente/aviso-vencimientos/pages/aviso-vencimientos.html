@@ -1,0 +1,112 @@
+<div class="container-fluid p-3 p-lg-4 bg-light min-vh-100 position-relative">
+  <app-page-toolbar>
+    <div titulo>
+      <h3 class="fw-bold mb-0 text-dark">Gestión de Vencimientos</h3>
+    </div>
+  </app-page-toolbar>
+
+  <div class="mt-4">
+    @if (state.loadingIngredientes()) {
+      <div class="text-center text-muted p-5">Cargando ingredientes...</div>
+    } @else {
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @for (ing of state.ingredientes(); track ing.id) {
+          <div class="col">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100 d-flex flex-column">
+              <div class="fw-bold fs-5 text-dark mb-1">{{ ing.nombre }}</div>
+              <div class="text-danger small mb-3 fw-medium">
+                Vence: {{ ing.fechaVencimiento }}
+              </div>
+              <div class="mb-4 text-muted">
+                Stock Disponible: <span class="fw-bold text-dark">{{ ing.stockDisponible }} {{ ing.unidadMedida }}</span>
+              </div>
+              
+              <div class="mt-auto d-flex flex-column gap-2">
+                <app-boton variante="outline" tamanio="sm" (clicked)="abrirOffcanvas(ing)">
+                  <div class="d-flex align-items-center justify-content-center gap-1 w-100">
+                    <span class="material-symbols-outlined fs-6">playlist_add</span>
+                    <span>Agregar a pedido existente</span>
+                  </div>
+                </app-boton>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Offcanvas Mock (Custom implementation based on Bootstrap classes) -->
+  @if (isOffcanvasOpen) {
+    <!-- Backdrop -->
+    <div class="offcanvas-backdrop fade show" (click)="cerrarOffcanvas()"></div>
+    
+    <!-- Panel -->
+    <div class="offcanvas offcanvas-end show shadow" tabindex="-1" style="width: 400px; z-index: 1050;">
+      <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title fw-bold">Agregar a pedido</h5>
+        <button type="button" class="btn-close" (click)="cerrarOffcanvas()"></button>
+      </div>
+      <div class="offcanvas-body">
+        
+        @if (state.ingredienteSeleccionado(); as ingrediente) {
+          <div class="alert alert-info border-0 rounded-3 mb-4">
+            <div class="fw-bold">{{ ingrediente.nombre }}</div>
+            <div class="small">Stock actual: {{ ingrediente.stockDisponible }} {{ ingrediente.unidadMedida }}</div>
+          </div>
+
+          <!-- Selección del proveedor -->
+          <div class="mb-3">
+            <label class="form-label fw-medium small text-muted">Proveedor de este ingrediente</label>
+            <select class="form-select" (change)="seleccionarProveedor($event)">
+              <option value="" selected disabled>-- Seleccione proveedor --</option>
+              @for (prov of state.proveedoresDisponibles(); track prov.id) {
+                <option [value]="prov.id">{{ prov.nombre }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Selección del pedido activo si hay proveedor seleccionado -->
+          @if (state.proveedorSeleccionado(); as prov) {
+            <div class="mb-3">
+              <label class="form-label fw-medium small text-muted">Pedidos Activos de {{ prov.nombre }}</label>
+              
+              @if (state.pedidosActivos().length > 0) {
+                <select class="form-select mb-2" (change)="setPedidoSeleccionado($event)">
+                  <option value="" selected disabled>-- Seleccione pedido activo --</option>
+                  @for (ped of state.pedidosActivos(); track ped.id) {
+                    <option [value]="ped.id">{{ ped.numeroEnvio }} (Creado: {{ ped.fechaCreacion }})</option>
+                  }
+                </select>
+                
+                <div class="mb-4 mt-3">
+                  <label class="form-label fw-medium small text-muted">Cantidad ({{ ingrediente.unidadMedida }})</label>
+                  <input type="number" class="form-control" [value]="cantidadAgregar" (input)="updateCantidad($event)" min="1">
+                </div>
+
+                <app-boton variante="success" tamanio="md" (clicked)="confirmarAgregarPedido()">
+                  <div class="w-100 text-center fw-bold text-dark">Confirmar Agregado</div>
+                </app-boton>
+              } @else {
+                <div class="text-danger small bg-danger bg-opacity-10 p-2 rounded-2 mb-3">
+                  No hay pedidos activos para este proveedor.
+                </div>
+              }
+            </div>
+          }
+
+          <hr class="my-4">
+          <div class="d-flex flex-column align-items-center">
+            <span class="text-muted small mb-2">¿Prefieres un pedido nuevo?</span>
+            <app-boton variante="primary" tamanio="md" (clicked)="nuevoPedidoRedireccion()">
+              <div class="text-center fw-bold text-white d-flex align-items-center gap-2">
+                <span class="material-symbols-outlined fs-6">add_shopping_cart</span>
+                <span>Nuevo Pedido Precargado</span>
+              </div>
+            </app-boton>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>
