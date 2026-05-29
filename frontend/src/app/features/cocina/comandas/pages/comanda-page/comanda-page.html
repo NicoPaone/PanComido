@@ -35,5 +35,22 @@
       }
     </div>
   </details>
+   <details class="kds-section" open>
+    <summary class="section-header bg-success">
+      EN ESPERA ({{ state.comandasNuevas().length }})
+      <span class="chevron">▼</span>
+    </summary>
+    
+    <div class="cards-grid">
+      @for (comanda of state.comandasEnEspera(); track comanda.id) {
+        <app-comanda-card 
+          [comanda]="comanda" 
+          (accion)="procesarAccion($event)">
+        </app-comanda-card>
+      } @empty {
+        <p class="empty-state">No hay comandas en espera</p>
+      }
+    </div>
+  </details>
 
 </div>
