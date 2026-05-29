@@ -1,10 +1,10 @@
 .mesa-container {
-  /* position: absolute; <-- ELIMINAR ESTA LÍNEA */
+  /* position: absolute; */ /* ELIMINAR ESTA LÍNEA, el absoluto va al padre */
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  color: white;
+  color: white; /* Base text color for green/red/black states */
   font-size: 1.2rem;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   transition: filter 0.2s;
@@ -18,19 +18,70 @@
   cursor: grabbing;
 }
 
-/* En CSS puro el hover va separado, no anidado */
+/* Hover separado */
 .mesa-container:hover {
   filter: brightness(1.1);
 }
 
-/* Estados */
+/* Asegurar que el texto sea visible y tenga z-index */
+span.numero {
+  position: relative;
+  z-index: 5;
+}
+
+/* --- ESTILOS DE ESTADO (Colores de fondo) --- */
 .estado-disponible { background-color: #68B342; }
 .estado-ocupada { background-color: #C11818; }
-.estado-reservada { background-color: #F1C40F; color: black; }
+.estado-reservada { background-color: #F1C40F; color: black; } /* Reservada gets BLACK text */
 .estado-deshabilitada { background-color: #000000; }
 
-/* Formas */
+/* ESTILOS DE FORMA (Bordes) */
 .forma-redonda { border-radius: 50%; }
 .forma-cuadrada { border-radius: 8px; }
 .forma-horizontal_larga { border-radius: 8px; }
 .forma-horizontal_alta { border-radius: 8px; }
+
+/* Estilos para el editor */
+.input-numero {
+  width: 35px;
+  height: 35px;
+  background: white;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  color: black;
+  font-weight: bold;
+  font-size: 1.1rem;
+  text-align: center;
+  outline: none;
+  z-index: 5;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: border 0.2s;
+}
+
+.input-numero:focus {
+  border: 2px solid #2980b9; /* Borde azul suave al hacer click para editar */
+}
+
+/* Oculta las flechas de subir/bajar número nativas del navegador */
+.input-numero::-webkit-outer-spin-button,
+.input-numero::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.input-numero { -moz-appearance: textfield; }
+
+.btn-eliminar {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #c0392b;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}

@@ -12,6 +12,7 @@ import { Mesa } from '../../../../core/models/mesa.model';
 })
 export class MesaItem {
   mesa = input.required<Mesa>();
+  isEditorMode = input<boolean>(false); // Para saber si mostramos el input o el texto
 
   // Output para avisarle al padre si hicieron click
   clickMesa = output<number>();
@@ -23,4 +24,14 @@ export class MesaItem {
   // Mapeo dinámico de clases CSS según el enum
   claseEstado = computed(() => `estado-${this.mesa().estadoMesa}`);
   claseForma = computed(() => `forma-${this.mesa().dimensionMesa.forma}`);
+
+  cambioNumero = output<{id: number, numero: number}>();
+  eliminar = output<number>();
+
+  onInputBlur(event: Event) {
+    const nuevoValor = parseInt((event.target as HTMLInputElement).value, 10);
+    if (!isNaN(nuevoValor)) {
+      this.cambioNumero.emit({ id: this.mesa().id, numero: nuevoValor });
+    }
+  }
 }

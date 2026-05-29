@@ -3,5 +3,18 @@
      [style.width.px]="ancho()"
      [style.height.px]="alto()"
      (click)="clickMesa.emit(mesa().id)">
-  <span class="numero">{{ mesa().numeroMesa }}</span>
+
+  @if (isEditorMode()) {
+    <button class="btn-eliminar" (click)="eliminar.emit(mesa().id)">×</button>
+  }
+
+  @if (isEditorMode()) {
+    <input type="number"
+           [value]="mesa().numeroMesa"
+           (blur)="onInputBlur($event)"
+           (mousedown)="$event.stopPropagation()"
+           class="input-numero">
+  } @else {
+    <span class="numero">{{ mesa().numeroMesa }}</span>
+  }
 </div>

@@ -1,20 +1,38 @@
 <div class="mapa-wrapper">
-      <div class="header-controles">
-        <button class="btn-editor" (click)="state.toggleEditorMode()">
-          {{ state.isEditorMode() ? 'Desactivar Edición' : 'Activar Edición' }}
-        </button>
-        <span class="info">Mesas: {{ state.mesas().length }}</span>
+
+     <div class="header-controles">
+        @if (!state.isEditorMode()) {
+          <button type="button" class="btn-editor" (click)="state.toggleEditorMode()">Activar Edición</button>
+        } @else {
+          <div class="acciones-edicion">
+            <button type="button" class="btn-guardar" (click)="state.guardarConfiguracion()">Guardar Mapa</button>
+            <button type="button" class="btn-cancelar" (click)="state.cancelarEdicion()">Cancelar</button>
+          </div>
+        }
+        <span class="info">Mesas Totales: {{ state.mesas().length }}</span>
       </div>
 
-      <div class="plano-fondo" [class.modo-grilla]="state.isEditorMode()">
+      @if (state.isEditorMode()) {
+        <div class="paleta-herramientas">
+          <span>Agregar Mesa:</span>
+          <button type="button" class="btn-mesa redonda" (click)="state.agregarMesa(FormaMesa.Redonda)">+</button>
+          <button type="button" class="btn-mesa cuadrada" (click)="state.agregarMesa(FormaMesa.Cuadrada)">+</button>
+          <button type="button" class="btn-mesa horizontal" (click)="state.agregarMesa(FormaMesa.HorizontalLarga)">+</button>
+        </div>
+      }
+
+     <div class="plano-fondo" [class.modo-grilla]="state.isEditorMode()">
   @for (mesa of state.mesas(); track mesa.id) {
     <app-mesa-item
       [mesa]="mesa"
+      [isEditorMode]="state.isEditorMode()"
       cdkDrag
       cdkDragBoundary=".plano-fondo"
       [cdkDragDisabled]="!state.isEditorMode()"
       (cdkDragEnded)="onDragEnded(mesa.id, $event)"
       (clickMesa)="onMesaClick($event)"
+      (cambioNumero)="state.actualizarNumero($event.id, $event.numero)"
+      (eliminar)="state.eliminarMesa($event)"
       style="position: absolute; display: block;"
       [style.left.px]="mesa.posicionXInicio"
       [style.top.px]="mesa.posicionYinicio">

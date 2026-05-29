@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { CdkDragEnd, DragDropModule, Point } from '@angular/cdk/drag-drop';
 import { MesaStateService } from '../../services/mesa.state';
 import { MesaItem } from '../../components/mesa-item/mesa-item';
+import { FormaMesa } from '../../../../core/models/mesa.model';
 
 @Component({
   selector: 'app-mapa-mesas',
@@ -14,7 +15,7 @@ import { MesaItem } from '../../components/mesa-item/mesa-item';
 })
 export class MapaMesas implements OnInit {
   state = inject(MesaStateService);
-
+  FormaMesa = FormaMesa;
   ngOnInit() {
     this.state.cargarMesas(); // Dispara la carga inicial al mock
   }
@@ -38,8 +39,7 @@ export class MapaMesas implements OnInit {
   onMesaClick(id: number) {
     if (this.state.isEditorMode()) return; // En modo editor no abrimos modales
 
-    console.log('Se hizo click en la mesa', id);
-    // Acá más adelante vamos a abrir el modal de "Asignar Mozo" o "Cobrar"
+
   }
 
 
