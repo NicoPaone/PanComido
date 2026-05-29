@@ -22,6 +22,15 @@ public partial class ArticuloComandum
     [Column("cantidad")]
     public int Cantidad { get; set; }
 
+    [Column("entregado")]
+    public bool Entregado { get; set; }
+
+    [Column("observaciones_ingrediente")]
+    public string? ObservacionesIngrediente { get; set; }
+
+    [Column("observaciones_generales")]
+    public string? ObservacionesGenerales { get; set; }
+
     [ForeignKey("ArticuloId")]
     [InverseProperty("ArticuloComanda")]
     public virtual Articulo Articulo { get; set; } = null!;

@@ -27,7 +27,8 @@ namespace PanComido.Presentacion.Mappers
                    
                     Nombre = p.Nombre,
                     Cantidad = p.Cantidad,
-                    Observaciones = p.Observaciones,
+                    ObservacionesGenerales = p.ObservacionesGenerales,
+                    ObservacionesIngredientes = p.ObservacionesIngredientes,
 
                 }).ToList()
 

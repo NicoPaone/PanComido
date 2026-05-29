@@ -3,8 +3,8 @@ using Xunit;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
-using PanComido.Dominio.Interfaces;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Interfaces.Servicios;
 
 namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
 {

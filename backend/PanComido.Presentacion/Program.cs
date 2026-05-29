@@ -3,8 +3,9 @@ using PanComido.Dominio.CasosDeUso.BodegaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.Comanda;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
-using PanComido.Dominio.Interfaces;
+using PanComido.Dominio.CasosDeUso.UnidadMedidaCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Interfaces.Servicios;
 using PanComido.Dominio.Servicios;
 using PanComido.Infraestructura.Persistencia;
 using PanComido.Infraestructura.Persistencia.Mappers;
@@ -29,7 +30,7 @@ builder.Services.AddScoped<InsumoEntityMapper>();
 builder.Services.AddScoped<BodegaEntityMapper>();
 builder.Services.AddScoped<ProveedorEntityMapper>();
 builder.Services.AddScoped<PedidoEntityMapper>();
-
+=========
 builder.Services.AddScoped<ComandaEntityMapper>();
 // Mappers de Presentacion (Dominio <-> DTOs)   
 builder.Services.AddScoped<InsumoMapper>();
@@ -47,6 +48,7 @@ builder.Services.AddScoped<IProveedorRepositorio, ProveedorRespositorio>();
 builder.Services.AddScoped<IPedidoRepositorio, PedidoRepositorio>();
 builder.Services.AddScoped<IComandaRepositorio, ComandaRepositorio>();
 
+>>>>>>>>> Temporary merge branch 2
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
@@ -55,10 +57,13 @@ builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio
 builder.Services.AddScoped<ListarInsumoCasoDeUso>();
 builder.Services.AddScoped<ListarBodegasCasoDeUso>();
 builder.Services.AddScoped<ListarBodegasConInsumosCasoDeUso>();
+<<<<<<<<< Temporary merge branch 1
 builder.Services.AddScoped<ListarProveedorCasoDeUso>();
 builder.Services.AddScoped<ObtenerHistorialPedidosCasoDeUso>();
 builder.Services.AddScoped<ListarComandaActivaCocinaCasoDeUso>();
 
+// Servicios
+builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
 
 var allowedOrigins = builder.Configuration.GetSection("CorsSettings:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
 

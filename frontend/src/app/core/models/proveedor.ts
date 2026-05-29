@@ -29,7 +29,8 @@ export interface Proveedor {
   direccion: string;
   activo: boolean;
   fechaUltimoPedido: string | null;
-  historialPedidos: PedidoProveedor[];
+  historialPedidos?: PedidoProveedor[];
+  categorias?: string[];
 }
 
 export interface NuevoPedidoProveedor {
@@ -55,4 +56,15 @@ export interface ProductoPedidoProveedor {
   id: string | number;
   nombre: string;
   unidadMedida: UnidadMedida;
+}
+
+export interface SugerenciaPedidoItem {
+  productoId: string;
+  nombre: string;
+  unidadMedida: UnidadMedida;
+  stockActual: number;
+  stockMinimo: number;
+  consumoEstimado30Dias: number;
+  cantidadSugerida: number;
+  precioUnitario: number;
 }

@@ -17,13 +17,8 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
         {
             if (efArticulo == null) return null;
 
-            // El scaffold genera: efArticulo.Insumo
             EF.Insumo efInsumo = efArticulo.Insumo
                 ?? throw new InvalidOperationException("Articulo no es un insumo");
-            
-            // Detectar subtipo
-            bool esIngrediente = efInsumo.Ingrediente != null;
-            bool esBebida = efInsumo.Bebidum != null;
 
             return new DOM.Insumo
             {
@@ -31,20 +26,11 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 Nombre = efArticulo.Nombre,
                 Descripcion = efArticulo.Descripcion,
                 StockMinimo = efInsumo.StockMinimo,
-                Tipo = esIngrediente ? TipoInsumo.Ingrediente
-                                              : TipoInsumo.Bebida,
-                Categoria = esIngrediente
-                    ? efInsumo.Ingrediente
-                              .CategoriaIngrediente?.Descripcion
-                    : efInsumo.Bebidum
-                              .CategoriaBebida?.Descripcion,
-                
-                UnidadMedida = esIngrediente
-                    ? efInsumo.Ingrediente
-                              .UnidadMedida?.Nombre
-                    : null,
+                // El tipo lo da la categoria del insumo
+                Tipo = (TipoInsumo)efInsumo.CategoriaInsumo.TipoAplica,
+                Categoria = efInsumo.CategoriaInsumo.Descripcion,
+                UnidadMedida = efInsumo.UnidadMedida?.Nombre
             };
-
         }
     }
 }

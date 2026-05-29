@@ -1,6 +1,5 @@
 ﻿using Moq;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
-using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 
 namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
@@ -9,8 +8,6 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
     {
         private readonly Mock<IProveedorRepositorio> _proveedorRepoMock;
         private readonly Mock<IPedidoRepositorio> _pedidoRepoMock;
-        private object proveedorRepoMock;
-
         public ListarProveedorCasoDeUsoTests()
         {
             _proveedorRepoMock = new Mock<IProveedorRepositorio>();
@@ -44,9 +41,11 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
             //
             var proveedores = new List<global::PanComido.Dominio.Entidades.Proveedor>
             {
-                new global::PanComido.Dominio.Entidades.Proveedor { Id = 1, Nombre = "Proveedor A" },
-                new global::PanComido.Dominio.Entidades.Proveedor { Id = 2, Nombre = "Proveedor B" }
+                new() { Id = 1, Nombre = "Verdulería Don José" },
+                new() { Id = 2, Nombre = "Carnicería El Gaucho" },
+                new() { Id = 3, Nombre = "Distribuidora Central" }
             };
+
             _proveedorRepoMock
                 .Setup(r => r.ObtenerProveedoresAsync(1))
                 .ReturnsAsync(proveedores);
@@ -54,10 +53,13 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
             //
             _pedidoRepoMock
                 .Setup(r => r.ObtenerFechaUltimoPedidoDeProveedorAsync(1))
-                .ReturnsAsync(new DateOnly(2024, 6, 1));
+                .ReturnsAsync(new DateOnly(2026, 5, 15));
             _pedidoRepoMock
                 .Setup(r => r.ObtenerFechaUltimoPedidoDeProveedorAsync(2))
-                .ReturnsAsync(new DateOnly(2024, 5, 1));
+                .ReturnsAsync(new DateOnly(2026, 5, 26));
+            _pedidoRepoMock
+                .Setup(r => r.ObtenerFechaUltimoPedidoDeProveedorAsync(3))
+                .ReturnsAsync(new DateOnly(2026, 5, 20));
 
             //
             var casoDeUso = new ListarProveedorCasoDeUso(
@@ -69,9 +71,46 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
 
             // Verificacion
             Assert.NotNull(resultado);
-            Assert.Equal(2, resultado.Count);
-            Assert.Equal("Proveedor A", resultado[0].Nombre);
-            Assert.Equal("Proveedor B", resultado[1].Nombre);
+            Assert.Equal(3, resultado.Count);
+            Assert.Equal(2, resultado[0].Id);
+            Assert.Equal(3, resultado[1].Id);
+            Assert.Equal(1, resultado[2].Id);
         }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoUnProveedorNoTienePedidos_LoColocaAlFinalConFechaNull()
+        {
+            // Proveedor sin pedidos
+            var proveedores = new List<global::PanComido.Dominio.Entidades.Proveedor>
+            {
+                new() { Id = 1, Nombre = "Verdulería Don José" },
+                new() { Id = 2, Nombre = "Lácteos del Campo" }
+            };
+
+            _proveedorRepoMock
+                .Setup(r => r.ObtenerProveedoresAsync(1))
+                .ReturnsAsync(proveedores);
+            _pedidoRepoMock
+                .Setup(r => r.ObtenerFechaUltimoPedidoDeProveedorAsync(1))
+                .ReturnsAsync(new DateOnly(2026, 5, 15));
+            _pedidoRepoMock
+                .Setup(r => r.ObtenerFechaUltimoPedidoDeProveedorAsync(2))
+                .ReturnsAsync((DateOnly?)null);
+
+            var casoDeUso = new ListarProveedorCasoDeUso(
+                _proveedorRepoMock.Object,
+                _pedidoRepoMock.Object);
+
+            var resultado = await casoDeUso.EjecutarAsync(1);
+
+            Assert.Equal(1, resultado[0].Id);
+            Assert.NotNull(resultado[0].FechaUltimoPedido);
+
+
+            // Verificacion
+            Assert.Equal(2, resultado[1].Id);
+            Assert.Null(resultado[1].FechaUltimoPedido);
+        }
+
     }
 }

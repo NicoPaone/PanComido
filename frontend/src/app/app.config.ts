@@ -9,8 +9,6 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(
-      withFetch(), withInterceptors([mockInterceptor])
-    )
+    provideHttpClient(withFetch(), withInterceptors([mockInterceptor]))
   ]
 };

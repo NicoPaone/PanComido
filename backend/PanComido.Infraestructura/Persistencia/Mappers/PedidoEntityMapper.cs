@@ -26,5 +26,21 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 }).ToList()
             };
         }
+
+        public EF.Pedido paraEf(DOM.Pedido pedido, int estadoPedidoId)
+        {
+            return new EF.Pedido
+            {
+                ProveedorId = pedido.ProveedorId,
+                Fecha = pedido.Fecha,
+                EstadoPedidoId = estadoPedidoId,
+                PedidoInsumos = pedido.ItemsInsumo.Select(item => new EF.PedidoInsumo
+                {
+                    InsumoId = item.InsumoId,
+                    Cantidad = item.Cantidad,
+                    PrecioCompra = item.PrecioCompra
+                }).ToList()
+            };
+        }
     }
 }
