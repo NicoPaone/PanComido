@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { Insumo } from '../../../../core/models/producto-stock';
+import { Insumo } from '../../../../../core/models/insumos/insumo';
 import { StockMercaderiaService } from './stock-mercaderia-service';
 
 @Injectable({

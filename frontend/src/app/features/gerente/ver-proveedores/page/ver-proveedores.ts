@@ -12,7 +12,7 @@ import {  PedidoProveedor, PedidoProveedorItem, EstadoPedidoProveedor, Proveedor
 import { Router, RouterModule } from '@angular/router';
 import { ProveedorService } from '../../../../core/services/proveedor.service';
 import { ProveedorListComponent } from '../components/proveedor-list/proveedor-list';
-import { Insumo, UnidadMedida } from '../../../../core/models/producto-stock';
+import { Insumo, UnidadMedida } from '../../../../core/models/insumos/insumo';
 
 @Component({
   selector: 'app-ver-proveedores',

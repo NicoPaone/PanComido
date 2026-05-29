@@ -2,7 +2,7 @@ import { Component, input, output } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
 import { faCog, faSort } from '@fortawesome/free-solid-svg-icons';
-import { Insumo } from '../../../../../core/models/producto-stock';
+import { Insumo } from '../../../../../core/models/insumos/insumo';
 
 @Component({
   selector: 'app-insumo-list',

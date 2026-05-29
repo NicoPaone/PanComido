@@ -1,4 +1,4 @@
-import { UnidadMedida } from '../models/producto-stock';
+import { UnidadMedida } from './insumos/insumo';
 
 export interface RecetaIngrediente {
   id: number | string;

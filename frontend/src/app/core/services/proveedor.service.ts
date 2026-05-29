@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { delay, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { INSUMOS_MOCK, Insumo } from '../models/producto-stock';
+import { INSUMOS_MOCK, Insumo } from '../models/insumos/insumo';
 import { NuevoPedidoProveedor, NuevoProveedor, PedidoProveedor, Proveedor } from '../models/proveedor';
 
 export const PROVEEDOR_ENDPOINTS = {

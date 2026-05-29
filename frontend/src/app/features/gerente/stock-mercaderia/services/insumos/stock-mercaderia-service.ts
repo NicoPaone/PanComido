@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { ApiService } from '../../../../core/services/api-service';
+import { ApiService } from '../../../../../core/services/api-service';
 import { Observable } from 'rxjs';
-import { Insumo } from '../../../../core/models/producto-stock';
+import { Insumo } from '../../../../../core/models/insumos/insumo';
 
 @Injectable({
   providedIn: 'root',

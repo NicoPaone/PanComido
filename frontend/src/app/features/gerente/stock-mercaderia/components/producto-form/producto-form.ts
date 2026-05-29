@@ -1,6 +1,6 @@
 import { Component, inject, input, output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Insumo } from '../../../../../core/models/producto-stock';
+import { Insumo } from '../../../../../core/models/insumos/insumo';
 
 @Component({
   selector: 'app-producto-form',
@@ -13,7 +13,7 @@ export class ProductoForm {
 
   producto = input<Insumo | null>(null);
 
-  salvado = output<any>();
+  guardar = output<any>();
   cancelado = output<void>();
 
   form!: FormGroup;
@@ -31,17 +31,18 @@ export class ProductoForm {
     this.form = this.fb.group({
       id: [null],
       nombre: [''],
-      stock: [0],
-      fechaVencimiento: [''],
+      stockMinimo: [0],
+      vencimiento: [''],
       unidadMedida: [''],
       categoriaIngrediente: [''],
-      stockMinimo: [0],
+      Bodega: [''],
+      cantidadInicial: [0],
     });
     
   }
   onSubmit():void{
     if(this.form.valid){
-      this.salvado.emit(this.form.value);
+      this.guardar.emit(this.form.value);
     }else{
       this.form.markAllAsTouched();
     }

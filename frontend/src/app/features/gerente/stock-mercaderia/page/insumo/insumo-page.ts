@@ -6,8 +6,7 @@ import { PageToolbar } from "../../../../../shared/ui/page-toolbar/page-toolbar"
 import { Buscador } from "../../../../../shared/ui/buscador/buscador";
 import { Dropdown } from '../../../../../shared/ui/dropdown/dropdown';
 import { Modal } from "../../../../../shared/ui/modal/modal";
-import { StockMercaderiaState } from '../../services/stock-mercaderia-state';
-import { CategoriaIngrediente } from '../../../../../core/models/producto-stock';
+import { StockMercaderiaState } from '../../services/insumos/stock-mercaderia-state';
 
 @Component({
   selector: 'app-insumo',

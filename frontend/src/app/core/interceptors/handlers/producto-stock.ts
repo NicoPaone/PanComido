@@ -1,6 +1,6 @@
 import { HttpRequest, HttpResponse, HttpHandlerFn } from "@angular/common/http";
 import { delay, Observable, of } from "rxjs";
-import { Insumo, INSUMOS_MOCK } from '../../models/producto-stock';
+import { Insumo, INSUMOS_MOCK } from '../../models/insumos/insumo';
 
 // El estado de memoria queda encapsulado solo para este dominio
 let dbMemoria: Insumo[] = [...INSUMOS_MOCK];
