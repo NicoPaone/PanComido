@@ -8,8 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Persistencia\Mappers\" />
-    <Folder Include="Persistencia\Repositorios\" />
     <Folder Include="ServiciosExternos\" />
   </ItemGroup>
 

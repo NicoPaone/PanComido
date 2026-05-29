@@ -16,6 +16,9 @@ public partial class Lote
     [Column("insumo_id")]
     public int InsumoId { get; set; }
 
+    [Column("bodega_id")]
+    public int BodegaId { get; set; }
+
     [Column("nombre")]
     public string Nombre { get; set; } = null!;
 
@@ -28,10 +31,11 @@ public partial class Lote
     [Column("fecha_vencimiento")]
     public DateOnly? FechaVencimiento { get; set; }
 
+    [ForeignKey("BodegaId")]
+    [InverseProperty("Lotes")]
+    public virtual Bodega Bodega { get; set; } = null!;
+
     [ForeignKey("InsumoId")]
     [InverseProperty("Lotes")]
     public virtual Insumo Insumo { get; set; } = null!;
-
-    [InverseProperty("Lote")]
-    public virtual ICollection<LoteBodega> LoteBodegas { get; set; } = new List<LoteBodega>();
 }
