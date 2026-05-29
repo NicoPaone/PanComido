@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.CasosDeUso.BodegaCasosDeUso;
+using PanComido.Dominio.CasosDeUso.Comanda;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.Interfaces;
 using PanComido.Dominio.Interfaces.Repositorios;
@@ -25,15 +26,20 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Mappers de Infraestructura (Dominio <-> EF)
 builder.Services.AddScoped<InsumoEntityMapper>();
 builder.Services.AddScoped<BodegaEntityMapper>();
+builder.Services.AddScoped<ComandaEntityMapper>();
 
 // Mappers de Presentacion (Dominio <-> DTOs)   
 builder.Services.AddScoped<InsumoMapper>();
 builder.Services.AddScoped<BodegaMapper>();
+builder.Services.AddScoped<ComandaMapper>();
+
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
 builder.Services.AddScoped<ILoteRepositorio, LoteRepositorio>();
 builder.Services.AddScoped<IBodegaRepositorio, BodegaRepositorio>();
+builder.Services.AddScoped<IComandaRepositorio, ComandaRepositorio>();
+
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
@@ -41,6 +47,7 @@ builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio
 // Casos de uso
 builder.Services.AddScoped<ListarInsumoCasoDeUso>();
 builder.Services.AddScoped<ListarBodegasConInsumosCasoDeUso>();
+builder.Services.AddScoped<ListarComandaActivaCocinaCasoDeUso>();
 
 
 var allowedOrigins = builder.Configuration.GetSection("CorsSettings:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
