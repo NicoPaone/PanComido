@@ -5,40 +5,19 @@ import { Mesa, EstadoMesa, FormaMesa } from '../../models/mesa.model';
 // Base de datos en RAM inicializada con 3 mesas de prueba
 let dbMesas: Mesa[] = [
   {
-    id: 1,
-    codigoInvitacion: 'MESA-01',
-    numeroMesa: 1,
-    cantidadPersonasMax: 4,
-    estadoMesa: EstadoMesa.Disponible,
-    dimensionMesa: { id: 1, forma: FormaMesa.Cuadrada, imagen: '' },
-    posicionXInicio: 50,
-    posicionXfin: 150,
-    posicionYinicio: 50,
-    posicionYFin: 150
+    id: 1, codigoInvitacion: 'MESA-01', numeroMesa: 1, cantidadPersonasMax: 4, estadoMesa: EstadoMesa.Disponible, dimensionMesa: { id: 1, forma: FormaMesa.Cuadrada, imagen: '' },
+    posicionXInicio: 45, posicionXfin: 135, // Ancho 90px
+    posicionYinicio: 45, posicionYFin: 135  // Alto 90px
   },
   {
-    id: 2,
-    codigoInvitacion: 'MESA-02',
-    numeroMesa: 2,
-    cantidadPersonasMax: 2,
-    estadoMesa: EstadoMesa.Ocupada,
-    dimensionMesa: { id: 2, forma: FormaMesa.Redonda, imagen: '' },
-    posicionXInicio: 200,
-    posicionXfin: 280,
-    posicionYinicio: 50,
-    posicionYFin: 130
+    id: 2, codigoInvitacion: 'MESA-02', numeroMesa: 2, cantidadPersonasMax: 2, estadoMesa: EstadoMesa.Ocupada, dimensionMesa: { id: 2, forma: FormaMesa.Redonda, imagen: '' },
+    posicionXInicio: 195, posicionXfin: 270, // Ancho 75px
+    posicionYinicio: 45, posicionYFin: 120   // Alto 75px
   },
   {
-    id: 3,
-    codigoInvitacion: 'MESA-03',
-    numeroMesa: 3,
-    cantidadPersonasMax: 6,
-    estadoMesa: EstadoMesa.Reservada,
-    dimensionMesa: { id: 3, forma: FormaMesa.HorizontalLarga, imagen: '' },
-    posicionXInicio: 50,
-    posicionXfin: 200,
-    posicionYinicio: 200,
-    posicionYFin: 280
+    id: 3, codigoInvitacion: 'MESA-03', numeroMesa: 3, cantidadPersonasMax: 6, estadoMesa: EstadoMesa.Reservada, dimensionMesa: { id: 3, forma: FormaMesa.HorizontalLarga, imagen: '' },
+    posicionXInicio: 45, posicionXfin: 195,  // Ancho 150px
+    posicionYinicio: 195, posicionYFin: 270  // Alto 75px
   }
 ];
 
