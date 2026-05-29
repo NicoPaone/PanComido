@@ -1,0 +1,96 @@
+
+.kds-card {
+  background: #f8fafc;
+  border: 2px solid #1e293b;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  min-width: 300px;
+}
+
+.kds-header {
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #1e293b;
+  font-weight: 800;
+  border-bottom: 2px solid #1e293b;
+}
+
+.bg-danger { background-color: #dc2626; color: white; }
+.bg-success { background-color: #6abf3f; color: #1e293b; }
+.bg-warning { background-color: #facc15; color: #1e293b; }
+.bg-gray { background-color: #94a3b8; color: white; }
+
+.timer {
+  background: white;
+  color: black;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 2px solid #1e293b;
+  font-family: monospace;
+  font-size: 1.1rem;
+}
+
+.mesa-info { font-size: 1.2rem; text-transform: uppercase; }
+
+.kds-body {
+  padding: 16px;
+  flex-grow: 1;
+  background: #f8fafc;
+}
+
+.platos-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.plato-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.plato-item:last-child { border-bottom: none; }
+
+.plato-main {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.observacion {
+  font-size: 0.9rem;
+  color: #ef4444;
+  font-weight: 600;
+  margin-top: 4px;
+  padding-left: 24px;
+}
+
+.kds-footer {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.btn-accion {
+  background-color: #6abf3f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-weight: 800;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.tiempo-est {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #475569;
+}
