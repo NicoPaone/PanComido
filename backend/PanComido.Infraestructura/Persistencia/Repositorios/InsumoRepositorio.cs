@@ -85,16 +85,6 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         })
         .ToListAsync();
 
-            foreach (var r in resultados)
-            {
-                Console.WriteLine($"Articulo {r.Articulo.Id} - {r.Articulo.Nombre} - StockActual: {r.StockActual}");
-                Console.WriteLine($"  Lotes cargados: {r.Articulo.Insumo.Lotes.Count}");
-                foreach (var l in r.Articulo.Insumo.Lotes)
-                {
-                    Console.WriteLine($"    Lote {l.Id}: cantidad={l.Cantidad}, insumo_id={l.InsumoId}");
-                }
-            }
-
             return resultados
                 .Select(r => _mapper.paraDominio(r.Articulo, r.StockActual))
                 .ToList();

@@ -27,14 +27,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<InsumoEntityMapper>();
 builder.Services.AddScoped<ProveedorEntityMapper>();
 builder.Services.AddScoped<PedidoEntityMapper>();
-
-// Mappers de Presentacion (Dominio <-> DTOs)   
-builder.Services.AddScoped<InsumoMapper>();
-builder.Services.AddScoped<ProveedorMapper>();
-builder.Services.AddScoped<PedidoMapper>();
 builder.Services.AddScoped<BodegaEntityMapper>();
 
 // Mappers de Presentacion (Dominio <-> DTOs)   
+builder.Services.AddScoped<ProveedorMapper>();
+builder.Services.AddScoped<PedidoMapper>();
 builder.Services.AddScoped<InsumoMapper>();
 builder.Services.AddScoped<BodegaMapper>();
 
@@ -52,6 +49,7 @@ builder.Services.AddScoped<ListarProveedorCasoDeUso>();
 builder.Services.AddScoped<ObtenerHistorialPedidosCasoDeUso>();
 builder.Services.AddScoped<ListarBodegasConInsumosCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosDelProveedorCasoDeUso>();
+builder.Services.AddScoped<CrearPedidoCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();

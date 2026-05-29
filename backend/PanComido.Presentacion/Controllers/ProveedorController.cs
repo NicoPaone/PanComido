@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
+using DOM = PanComido.Dominio.Entidades;
 using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.Mappers;
+using PanComido.Dominio.Interfaces.Repositorios;
 
 namespace PanComido.Presentacion.Controllers
 {
@@ -12,6 +14,9 @@ namespace PanComido.Presentacion.Controllers
         private readonly ListarProveedorCasoDeUso _listarProveedorCasoDeUso;
         private readonly ObtenerHistorialPedidosCasoDeUso _obtenerHistorialCasoDeUso;
         private readonly ListarInsumosDelProveedorCasoDeUso _listarInsumosDelProveedorCasoDeUso;
+        private readonly CrearPedidoCasoDeUso _crearPedidoCasoDeUso;
+
+        private readonly IProveedorRepositorio _proveedorRepositorio;
 
         private readonly ProveedorMapper _proveedorMapper;
         private readonly PedidoMapper _pedidoMapper;
@@ -22,6 +27,8 @@ namespace PanComido.Presentacion.Controllers
             ListarProveedorCasoDeUso listarProveedorCasoDeUso,
             ObtenerHistorialPedidosCasoDeUso obtenerHistorialCasoDeUso,
             ListarInsumosDelProveedorCasoDeUso listarInsumosDelProveedorCasoDeUso,
+            CrearPedidoCasoDeUso crearPedidoCasoDeUso,
+            IProveedorRepositorio proveedorRepositorio,
             ProveedorMapper proveedorMapper,
             PedidoMapper pedidoMapper,
             InsumoMapper insumoMapper
@@ -30,6 +37,8 @@ namespace PanComido.Presentacion.Controllers
             _listarProveedorCasoDeUso = listarProveedorCasoDeUso;
             _obtenerHistorialCasoDeUso = obtenerHistorialCasoDeUso;
             _listarInsumosDelProveedorCasoDeUso = listarInsumosDelProveedorCasoDeUso;
+            _crearPedidoCasoDeUso = crearPedidoCasoDeUso;
+            _proveedorRepositorio = proveedorRepositorio;
             _proveedorMapper = proveedorMapper;
             _pedidoMapper = pedidoMapper;
             _insumoMapper = insumoMapper;
@@ -64,6 +73,32 @@ namespace PanComido.Presentacion.Controllers
 
             var dtos = _insumoMapper.aListaDto(insumos);
             return Ok(dtos);
+        }
+
+        [HttpPost("{idProveedor}/crearPedido")]
+        public async Task<ActionResult<CrearPedidoResponseDto>> crear(
+                            int idProveedor,
+                            [FromBody] CrearPedidoRequestDto request)
+        {
+            var restauranteId = ObtenerRestauranteId();
+
+            var pedido = new DOM.Pedido
+            {
+                ProveedorId = idProveedor,
+                ItemsInsumo = request.Items.Select(item => new DOM.PedidoInsumo
+                {
+                    InsumoId = item.InsumoId,
+                    Cantidad = item.Cantidad,
+                    PrecioCompra = item.PrecioCompra
+                }).ToList()
+            };
+
+            var pedidoCreado = await _crearPedidoCasoDeUso.EjecutarAsync(pedido, restauranteId);
+
+            var proveedor = await _proveedorRepositorio.ObtenerProveedorPorIdAsync(idProveedor);
+
+            var dto = _pedidoMapper.aDtoCrear(pedidoCreado, proveedor);
+            return Ok(dto);
         }
 
         private int ObtenerRestauranteId()

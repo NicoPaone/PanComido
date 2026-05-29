@@ -29,5 +29,26 @@ namespace PanComido.Presentacion.Mappers
         {
             return pedidos.Select(aDto).ToList();
         }
+
+        public CrearPedidoResponseDto aDtoCrear(DOM.Pedido pedido, DOM.Proveedor proveedor)
+        {
+            return new CrearPedidoResponseDto
+            {
+                Id = pedido.Id,
+                Fecha = pedido.Fecha.ToString("dd/MM/yyyy"),
+                Estado = pedido.Estado,
+                ProveedorId = proveedor.Id,
+                ProveedorNombre = proveedor.Nombre,
+                ProveedorTelefono = proveedor.NumeroTelefonoWsp,
+                ItemsInsumo = pedido.ItemsInsumo.Select(item => new PedidoInsumoResponseDto
+                {
+                    InsumoId = item.InsumoId,
+                    NombreInsumo = item.NombreInsumo,
+                    Cantidad = item.Cantidad,
+                    PrecioCompra = item.PrecioCompra
+                }).ToList()
+            };
+        }
+
     }
 }
