@@ -47,6 +47,7 @@ builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio
 
 // Casos de uso
 builder.Services.AddScoped<ListarInsumoCasoDeUso>();
+builder.Services.AddScoped<ListarBodegasCasoDeUso>();
 builder.Services.AddScoped<ListarBodegasConInsumosCasoDeUso>();
 builder.Services.AddScoped<ListarProveedorCasoDeUso>();
 builder.Services.AddScoped<ObtenerHistorialPedidosCasoDeUso>();

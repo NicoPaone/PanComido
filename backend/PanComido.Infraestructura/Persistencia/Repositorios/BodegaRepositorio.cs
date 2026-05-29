@@ -24,6 +24,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<List<DOM.Bodega>> ObtenerBodegasAsync(int restauranteId)
         {
             List<EF.Bodega> bodegas = await _ctx.Bodegas
+                .Include(b => b.TipoBodega) 
                 .Where(b => b.RestauranteId == restauranteId)
                 .ToListAsync();
 
