@@ -11,7 +11,7 @@ namespace PanComido.Dominio.Interfaces.Repositorios
     {
         public Task<decimal> ObtenerStockTotalDeInsumo(int insumoId);
 
-        public Task<DateOnly> ObtenerFechaDeVencimientoMasProximaDeInsumo(int insumoId);
+        public Task<DateOnly?> ObtenerFechaDeVencimientoMasProximaDeInsumo(int insumoId);
 
         // Devuelve diccionarios para poder obtener toda la informacion en 1 consulta
         // y no pegarle a la base de datos por cada insumo que tenga las bodegas

@@ -1,5 +1,5 @@
 ﻿using PanComido.Dominio.Entidades.Enums;
-using PanComido.Dominio.Interfaces;
+using PanComido.Dominio.Interfaces.Servicios;
 using System;
 using System.Collections.Generic;
 using System.Linq;

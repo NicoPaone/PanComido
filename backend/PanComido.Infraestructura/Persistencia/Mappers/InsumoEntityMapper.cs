@@ -20,18 +20,14 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             EF.Insumo efInsumo = efArticulo.Insumo
                 ?? throw new InvalidOperationException("Articulo no es un insumo");
 
-            // El tipo lo da la categoria del insumo
-            TipoInsumo tipo = efInsumo.CategoriaInsumo.TipoAplica == 1
-                ? TipoInsumo.Ingrediente
-                : TipoInsumo.Bebida;
-
             return new DOM.Insumo
             {
                 Id = efArticulo.Id,
                 Nombre = efArticulo.Nombre,
                 Descripcion = efArticulo.Descripcion,
                 StockMinimo = efInsumo.StockMinimo,
-                Tipo = tipo,
+                // El tipo lo da la categoria del insumo
+                Tipo = (TipoInsumo)efInsumo.CategoriaInsumo.TipoAplica,
                 Categoria = efInsumo.CategoriaInsumo.Descripcion,
                 UnidadMedida = efInsumo.UnidadMedida?.Nombre
             };

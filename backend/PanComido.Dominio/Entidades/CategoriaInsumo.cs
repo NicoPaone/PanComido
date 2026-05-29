@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PanComido.Dominio.Entidades.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,11 +7,10 @@ using System.Threading.Tasks;
 
 namespace PanComido.Dominio.Entidades
 {
-    public class Bodega
+    public class CategoriaInsumo
     {
         public int Id { get; set; }
-        public string Nombre { get; set; }
-        public string TipoBodega { get; set; }
-        public List<Insumo> Insumos { get; set; } = new();
+        public string Descripcion { get; set; }
+        public TipoInsumo TipoAplica { get; set; }
     }
 }
