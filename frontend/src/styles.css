@@ -1,1 +1,98 @@
-/* You can add global styles to this file, and also import other style files */
+ /* La NUNIIITO */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap');
+
+/* VColores predeterminados de PanComido */
+:root {
+  --primary-red: #d8081c;
+  --primary-orange: #f08f1a;
+  --primary-teal: #02596C;
+  --status-success: #6abf3f;
+  --status-warning: #f7d627;
+  --status-danger: #a8041a;
+  --color-cream: #f9f3eb;
+  
+  /* Colores adicionales */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  
+  /* Tipografía */
+  --font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Reset y estilos base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  color: var(--gray-800);
+  background-color: var(--gray-50);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Force consistent page / container backgrounds
+   Keep the general app background gray and internal cards white
+   Prevent hover rules from swapping these colors. */
+.layout-wrapper,
+.main-content,
+.ver-proveedores-page,
+.nuevo-proveedor-page,
+.page-wrapper,
+body {
+  background-color: var(--gray-50) !important;
+}
+
+.panel-card,
+.info-card,
+.nested-section,
+.predictive-item,
+.predictive-empty,
+.proveedor-form .form-control,
+.panel-section {
+  background: #ffffff !important;
+}
+
+/* Ensure hover does not change the general background */
+.layout-wrapper:hover,
+.main-content:hover,
+.ver-proveedores-page:hover,
+.nuevo-proveedor-page:hover {
+  background-color: var(--gray-50) !important;
+}
+
+/* Ensure panel cards remain white on hover */
+.panel-card:hover,
+.info-card:hover,
+.nested-section:hover {
+  background: #ffffff !important;
+}
+
+dialog::backdrop {
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family);
+  font-weight: 700;
+}
+
+button {
+  font-family: var(--font-family);
+}
+
+a {
+  font-family: var(--font-family);
+}

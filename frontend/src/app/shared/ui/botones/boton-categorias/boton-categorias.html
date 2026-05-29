@@ -1,0 +1,23 @@
+<div class="position-relative d-inline-block">
+  
+  <app-boton label="Categorías" variante="secondary" (clicked)="toggle()">
+    <span class="material-symbols-outlined icon-transition" [class.rotated]="isOpen()">
+      expand_more
+    </span>
+  </app-boton>
+
+  @if (isOpen()) {
+    <div class="dropdown-menu show shadow rounded-3 border-0 mt-2 position-absolute w-100 dropdown-z">
+      
+      @for (cat of categorias(); track cat) {
+        <button class="dropdown-item py-2" (click)="seleccionar(cat)">
+          {{ cat }}
+        </button>
+      } @empty {
+        <button class="dropdown-item py-2 text-muted" disabled>Sin categorías</button>
+      }
+
+    </div>
+  }
+
+</div>
