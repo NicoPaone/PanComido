@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PanComido.Infraestructura.Persistencia.Entidades;
 
-[Table("categoria_proveedor")]
-[Index("Descripcion", Name = "categoria_proveedor_descripcion_key", IsUnique = true)]
-public partial class CategoriaProveedor
+[Table("categoria_insumo")]
+[Index("Descripcion", Name = "categoria_insumo_descripcion_key", IsUnique = true)]
+public partial class CategoriaInsumo
 {
     [Key]
     [Column("id")]
@@ -17,7 +17,13 @@ public partial class CategoriaProveedor
     [Column("descripcion")]
     public string Descripcion { get; set; } = null!;
 
-    [ForeignKey("CategoriaProveedorId")]
-    [InverseProperty("CategoriaProveedors")]
+    [Column("tipo_aplica")]
+    public int TipoAplica { get; set; }
+
+    [InverseProperty("CategoriaInsumo")]
+    public virtual ICollection<Insumo> Insumos { get; set; } = new List<Insumo>();
+
+    [ForeignKey("CategoriaInsumoId")]
+    [InverseProperty("CategoriaInsumos")]
     public virtual ICollection<Proveedor> Proveedors { get; set; } = new List<Proveedor>();
 }

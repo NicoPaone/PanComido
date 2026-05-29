@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 namespace PanComido.Dominio.Interfaces.Repositorios
 {
-    public interface IInsumoRepositorio
+    public interface IProveedorRepositorio
     {
-        Task<List<Insumo>> ObtenerInsumosAsync(int restauranteId);
-        Task<List<Insumo>> ObtenerInsumosDelProveedorAsync(int proveedorId, int restauranteId);
-
+        Task<List<Proveedor>> ObtenerProveedoresAsync(int restauranteId);
+        Task<Proveedor?> ObtenerProveedorPorIdAsync(int id);
     }
 }
