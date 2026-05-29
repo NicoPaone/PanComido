@@ -1,0 +1,41 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="dish-form-container">
+  
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <img [src]="plato()?.imagen" 
+         alt="Plato" 
+         class="img-fluid rounded" 
+         style="object-fit: cover; height: 100%; border: 1px solid #ccc;">
+    </div>
+    
+    <div class="col-md-8 d-flex flex-column gap-2">
+      <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre del plato">
+      
+      <div class="d-flex gap-2">
+        <input type="number" class="form-control w-50" formControlName="precioVenta" placeholder="Precio Venta">
+        
+        <div class="input-group w-50">
+          <span class="input-group-text bg-white">
+            <span class="material-symbols-outlined">schedule</span>
+          </span>
+          <input type="number" class="form-control" formControlName="tiempoPreparacion" placeholder="minutos">
+        </div>
+      </div>
+      
+      <select class="form-select" formControlName="categoria">
+        @for (cat of categorias(); track cat) {
+          <option [value]="cat">{{ cat }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <textarea class="form-control mb-3" rows="2" formControlName="descripcion" placeholder="Descripción..."></textarea>
+
+  <div class="d-flex justify-content-center gap-3">
+    <app-boton label="GUARDAR CAMBIOS" variante="success" tipo="submit"></app-boton>
+    
+    <app-boton label="CANCELAR" variante="outline" (clicked)="cancelar.emit()"></app-boton>
+  </div>
+
+</form>
