@@ -1,6 +1,25 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
+import { Bodega } from '../../../../../core/models/bodega/bodega';
+import { BodegaService } from './bodega-service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class BodegaState {}
+export class BodegaState {
+
+  private api = inject(BodegaService);
+
+  private _bodegas = signal<Bodega[]>([]);
+
+  bodegas = this._bodegas.asReadonly();
+
+  cargarBodegas(): void {
+    this.api.obtenerBodegas().subscribe({
+      next: (data) => this._bodegas.set(data),
+
+      error: (err) => console.error('Error al cargar bodegas', err)
+    });
+  }
+
+}
+

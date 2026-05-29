@@ -33,7 +33,6 @@
     tamanio="md"
     (clicked)="abrirModalCrear(modalFormulario)">
   </app-boton>
-  
 </app-page-toolbar>
 
 <div class="stock-list-container">
@@ -51,4 +50,15 @@
 
  <!-- ?ESTO ES NECESARIO PARA RENDERIZAR EL MODAL EN LA VISTA -->
 <app-modal #modalFormulario [titulo]="tituloModal()" (cerrado)="limpiarEstadoModal()">
-   </app-modal>
+
+  @if(modalAbierto()){
+
+    <app-producto-form
+    [producto]="productoSeleccionado()"
+    [bodegas]="bodegaState.bodegas()"
+    [categorias]="state.categoriasUnicas()"
+    (guardar)="guardarCambios($event, modalFormulario)"
+    ></app-producto-form>
+  }
+
+    </app-modal>
