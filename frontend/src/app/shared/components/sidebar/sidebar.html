@@ -1,0 +1,77 @@
+<aside class="sidebar" [class.collapsed]="isCollapsed() && !isHovered()"
+ (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+  <!-- Header con Logo -->
+  <div class="sidebar-header">
+    @if (isExpanded()) {
+      <img src="assets/images/logo/isologo-red.png" alt="Pan Comido" class="logo-full">
+    } @else {
+      <img src="assets/images/logo/iso-red.png" alt="Pan Comido" class="logo-icon">
+    }
+  </div>
+
+  <!-- Menú de Navegación -->
+  <nav class="sidebar-nav">
+    @for (item of menuItems(); track item.label) {
+      <div class="menu-item-wrapper">
+        <!-- Item Principal -->
+        @if (item.children) {
+          <div 
+            class="menu-item" 
+            [class.active]="isParentActive(item)"
+            [class.expanded]="isSubmenuExpanded(item.label)"
+            (click)="toggleSubmenu(item.label)">
+            <fa-icon [icon]="getIconComponent(item.icon)" class="menu-icon"></fa-icon>
+            @if (isExpanded()) {
+              <span class="menu-label">{{ item.label }}</span>
+              <fa-icon [icon]="isSubmenuExpanded(item.label) ? faChevronDown : faChevronRight" class="expand-icon"></fa-icon>
+            }
+          </div>
+
+          <!-- Submenú -->
+          @if (isSubmenuExpanded(item.label) && isExpanded()) {
+            <div class="submenu">
+              @for (child of item.children; track child.label) {
+                <a 
+                  [routerLink]="child.route" 
+                  class="submenu-item"
+                  [class.active]="isActive(child.route)"
+                  routerLinkActive="active">
+                  <span class="submenu-label">{{ child.label }}</span>
+                </a>
+              }
+            </div>
+          }
+        } @else {
+          <a 
+            [routerLink]="item.route" 
+            class="menu-item"
+            [class.active]="isActive(item.route)"
+            routerLinkActive="active">
+            <fa-icon [icon]="getIconComponent(item.icon)" class="menu-icon"></fa-icon>
+            @if (isExpanded()) {
+              <span class="menu-label">{{ item.label }}</span>
+            }
+          </a>
+        }
+      </div>
+    }
+  </nav>
+
+  <!-- Footer con Perfil de Usuario -->
+  <div class="sidebar-footer">
+    <div class="user-profile">
+      <div class="avatar" [style.background-color]="userProfile().avatarColor">
+        {{ userProfile().initials }}
+      </div>
+      @if (isExpanded()) {
+        <div class="user-info">
+          <div class="user-name">{{ userProfile().name }}</div>
+          <div class="user-role">{{ userProfile().role }}</div>
+        </div>
+        <button class="logout-btn" (click)="logout()" aria-label="Cerrar sesión">
+          <fa-icon [icon]="faRightFromBracket"></fa-icon>
+        </button>
+      }
+    </div>
+  </div>
+</aside>

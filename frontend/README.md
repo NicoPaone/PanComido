@@ -1,59 +1,36 @@
-# Frontend
+# PanComido - Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.8.
+Sistema de gestión para restaurante desarrollado con Angular.
 
-## Development server
+---
 
-To start a local development server, run:
-
-```bash
-ng serve
+### 1. Gestión de Estado y Datos
+```typescript
+// Ejemplo de patrón StateService con Signals (Próxima implementación)
+protected readonly user = computed(() => this._user()); 
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### 2. Estándares de Desarrollo
+- **Standalone Components**: Arquitectura sin NgModules para una gestión de dependencias granular.
+- **Signals**: Uso de reactividad fina para la gestión de estados locales y globales.
+- **Clean Code**: Priorización de legibilidad y tipado estricto en TypeScript.
 
-## Code scaffolding
+### 3. Convenciones de Nomenclatura
+- **Archivos**: `kebab-case` (ej: `stock-list.ts`).
+- **Clases**: `PascalCase` (ej: `StockList`).
+- **Selectores**: Prefijo `app-` (ej: `app-stock-list`).
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### 4. Organización Modular
+- **core/**: Servicios singleton, interceptores y modelos compartidos globales (se cargan una vez en el root).
+- **features/**: Módulos organizados por dominio funcional (auth, cocina, comensal, gerente, mozo). Implementación de lazy loading.
+- **shared/**: Componentes de UI reutilizables (botones, modales, buscadores) y componentes transversales sin lógica de negocio pesada.
+- **layouts/**: Estructuras de contenedores principales para diferentes roles de usuario.
 
+### 5. Guía de Ejecución
 ```bash
-ng generate component component-name
+npm install   # Instalación de dependencias
+npm start     # Servidor de desarrollo en localhost:4200
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+---
+*Documentación técnica de referencia para el equipo de PanComido.*

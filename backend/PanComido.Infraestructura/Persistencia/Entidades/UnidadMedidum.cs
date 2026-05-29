@@ -18,5 +18,5 @@ public partial class UnidadMedidum
     public string Nombre { get; set; } = null!;
 
     [InverseProperty("UnidadMedida")]
-    public virtual ICollection<Ingrediente> Ingredientes { get; set; } = new List<Ingrediente>();
+    public virtual ICollection<Insumo> Insumos { get; set; } = new List<Insumo>();
 }

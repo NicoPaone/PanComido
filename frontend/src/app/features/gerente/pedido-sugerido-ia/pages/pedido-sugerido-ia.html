@@ -1,0 +1,200 @@
+<div class="pedido-sugerido-page p-4 bg-light min-vh-100">
+  
+  <div class="header-container mb-4">
+    <div class="d-flex align-items-center gap-3">
+      <button class="btn-back border-0 bg-transparent text-secondary d-flex align-items-center justify-content-center" (click)="volver()" aria-label="Volver">
+        <span class="material-symbols-outlined fs-2">arrow_back</span>
+      </button>
+      <div>
+        <h1 class="page-title mb-1">Realizar pedido sugerido por IA</h1>
+        <p class="page-subtitle text-muted mb-0">Revisión de reposición automática inteligente</p>
+      </div>
+    </div>
+  </div>
+
+  @if (proveedor(); as prov) {
+    <div class="row g-4">
+      
+      <!-- Panel de Información General y Sugerencia IA -->
+      <div class="col-12 col-xl-8">
+        
+        <!-- Tarjeta Informativa de la IA -->
+        <div class="ia-alert-card mb-4 p-4 rounded-3 border-0 shadow-sm d-flex gap-3 align-items-start">
+          <div class="ia-icon-wrapper rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
+            <span class="material-symbols-outlined ia-sparkle-icon">smart_toy</span>
+          </div>
+          <div>
+            <h4 class="fw-bold mb-1 text-teal">Sugerencia inteligente de reabastecimiento</h4>
+            <p class="mb-0 text-muted small leading-relaxed">
+              El motor de IA analizó los niveles de stock actuales, el stock mínimo establecido para cada ingrediente y el consumo histórico estimado de los últimos 30 días. A continuación se listan únicamente los insumos que coinciden con las categorías del proveedor <strong>{{ prov.nombre }}</strong> ({{ prov.categorias?.join(', ') }}) y que requieren reposición.
+            </p>
+          </div>
+        </div>
+
+        <!-- Listado de Sugerencias -->
+        <div class="panel-card shadow-sm border p-4 bg-white rounded-3">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="section-title mb-0">Ítems sugeridos</h3>
+            <span class="counter-pill">{{ pedidoItems().length }} productos sugeridos</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table align-middle suggested-table">
+              <thead>
+                <tr>
+                  <th>Insumo</th>
+                  <th class="text-center" style="width: 140px;">Stock / Mínimo</th>
+                  <th class="text-center" style="width: 130px;">Consumo (30d)</th>
+                  <th class="text-center" style="width: 120px;">Cantidad</th>
+                  <th class="text-end" style="width: 110px;">P. Unitario</th>
+                  <th class="text-end" style="width: 110px;">Subtotal</th>
+                  <th class="text-center" style="width: 60px;"></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of pedidoItems(); track item.productoId) {
+                  <tr>
+                    <td>
+                      <div>
+                        <strong class="text-dark">{{ item.nombre }}</strong>
+                        @if (item.stockActual < item.stockMinimo) {
+                          <span class="badge badge-warning ms-2 small">Bajo Stock</span>
+                        }
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <span class="small-text">{{ item.stockActual }} / {{ item.stockMinimo }} {{ item.unidadMedida }}</span>
+                    </td>
+                    <td class="text-center">
+                      <span class="small-text text-muted">{{ item.consumoEstimado30Dias }} {{ item.unidadMedida }}</span>
+                    </td>
+                    <td>
+                      <div class="qty-input-wrapper">
+                        <input 
+                          type="number" 
+                          class="form-control form-control-sm text-center quantity-input-field" 
+                          min="1"
+                          [ngModel]="item.cantidadSugerida"
+                          (ngModelChange)="onCantidadCambiada(item, $event)">
+                        <span class="qty-unit small text-muted">{{ item.unidadMedida }}</span>
+                      </div>
+                    </td>
+                    <td class="text-end font-monospace text-muted">
+                      $ {{ item.precioUnitario | number:'1.0-0' }}
+                    </td>
+                    <td class="text-end font-monospace fw-bold text-dark">
+                      $ {{ (item.precioUnitario * item.cantidadSugerida) | number:'1.0-0' }}
+                    </td>
+                    <td class="text-center">
+                      <button class="btn-delete border-0 bg-transparent text-danger p-0" (click)="eliminarItem(item.productoId)" aria-label="Quitar insumo">
+                        <span class="material-symbols-outlined fs-5">delete</span>
+                      </button>
+                    </td>
+                  </tr>
+                }
+                @if (pedidoItems().length === 0) {
+                  <tr>
+                    <td colspan="7" class="text-center text-muted py-4">
+                      No hay ítems en la lista del pedido. Agrega insumos adicionales abajo.
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Buscador para agregar productos adicionales -->
+          <div class="mt-4 border-top pt-4">
+            <h4 class="fw-bold fs-6 text-dark mb-2">Agregar insumo adicional</h4>
+            <p class="text-muted small mb-3">Busca y añade otros insumos que no fueron sugeridos por la IA pero pertenecen al proveedor.</p>
+            
+            <div class="position-relative">
+              <app-buscador
+                [placeholder]="'Escribe para buscar ingredientes del proveedor...'"
+                [valor]="busqueda()"
+                (busquedaCambiada)="onSearchChanged($event)">
+              </app-buscador>
+
+              @if (sugerenciasExtras().length > 0) {
+                <div class="sugerencias-dropdown-ia shadow border rounded-3 position-absolute w-100 bg-white">
+                  @for (prod of sugerenciasExtras(); track prod.id) {
+                    <button class="sugerencia-item-ia d-flex justify-content-between align-items-center p-2 w-100 text-start border-0 bg-white" (click)="agregarProductoManual(prod)">
+                      <div>
+                        <strong>{{ prod.nombre }}</strong>
+                        <span class="text-muted small ms-2">Stock: {{ prod.stock }} {{ prod.unidadMedida }}</span>
+                      </div>
+                      <span class="material-symbols-outlined text-teal fs-5">add_circle</span>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Barra lateral: Datos del proveedor y Confirmación -->
+      <div class="col-12 col-xl-4">
+        
+        <!-- Tarjeta de Proveedor -->
+        <div class="panel-card shadow-sm border p-4 bg-white rounded-3 mb-4">
+          <h3 class="section-title mb-3">Proveedor</h3>
+          <div class="provider-info-card p-3 rounded-3 mb-3">
+            <h4 class="fw-bold text-dark mb-1">{{ prov.nombre }}</h4>
+            <p class="text-muted small mb-2"><span class="material-symbols-outlined align-middle fs-5 me-1">person</span>{{ prov.contacto }}</p>
+            <p class="text-muted small mb-2"><span class="material-symbols-outlined align-middle fs-5 me-1">call</span>{{ prov.telefono }}</p>
+            <p class="text-muted small mb-0"><span class="material-symbols-outlined align-middle fs-5 me-1">mail</span>{{ prov.email }}</p>
+          </div>
+          
+          <div class="d-flex flex-wrap gap-1 mt-2">
+            @for (cat of prov.categorias ?? []; track cat) {
+              <span class="badge bg-teal-subtle text-teal">{{ cat }}</span>
+            }
+          </div>
+        </div>
+
+        <!-- Formulario y Resumen -->
+        <div class="panel-card shadow-sm border p-4 bg-white rounded-3">
+          <h3 class="section-title mb-3">Resumen de Pedido</h3>
+
+          <label class="field-group d-flex flex-column gap-1 mb-4">
+            <span class="fw-bold small text-muted">Observaciones del Pedido</span>
+            <textarea 
+              class="form-control custom-input custom-textarea" 
+              rows="4" 
+              placeholder="Ej. Entrega urgente por la mañana..."
+              [ngModel]="observaciones()"
+              (ngModelChange)="observaciones.set($event)">
+            </textarea>
+          </label>
+
+          <div class="estimated-summary-box p-3 rounded-3 mb-4 d-flex justify-content-between align-items-center">
+            <span class="summary-label text-muted fw-semibold">Monto Estimado</span>
+            <span class="summary-amount text-dark fw-bold">$ {{ montoEstimado() | number:'1.0-0' }}</span>
+          </div>
+
+          <div class="d-flex flex-column gap-2">
+            <app-boton 
+              label="Confirmar y Enviar Pedido" 
+              variante="secondary" 
+              tamanio="lg" 
+              class="w-100"
+              [disabled]="pedidoItems().length === 0"
+              (clicked)="enviarPedido()">
+            </app-boton>
+            <app-boton 
+              label="Cancelar" 
+              variante="outline" 
+              tamanio="lg" 
+              class="w-100"
+              (clicked)="volver()">
+            </app-boton>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  }
+</div>

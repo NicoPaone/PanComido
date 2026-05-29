@@ -20,7 +20,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
         private IQueryable<EF.Proveedor> BaseQuery(int restauranteId) => _ctx.Proveedors
             .Where(p => p.RestauranteId == restauranteId)
-            .Include(p => p.CategoriaProveedors);
+            .Include(p => p.CategoriaInsumos);
 
         public async Task<List<DOM.Proveedor>> ObtenerProveedoresAsync(int restauranteId)
         {
@@ -31,8 +31,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<DOM.Proveedor?> ObtenerProveedorPorIdAsync(int id)
         {
             var efProveedor = await _ctx.Proveedors
-                .Include(p => p.CategoriaProveedors)
-                .FirstOrDefaultAsync(p => p.Id == id);
+               .Include(p => p.CategoriaInsumos)
+               .FirstOrDefaultAsync(p => p.Id == id);
 
             return efProveedor == null ? null : _mapper.paraDominio(efProveedor);
         }

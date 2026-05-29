@@ -1,0 +1,13 @@
+<div class="dropdown-container">
+  
+  <div class="dropdown-trigger" (click)="toggle()">
+    <ng-content select="[trigger]"></ng-content>
+  </div>
+
+  @if (estadoAbierto()) {
+    <div class="dropdown-menu shadow-lg">
+      <ng-content select="[menu]"></ng-content>
+    </div>
+  }
+
+</div>

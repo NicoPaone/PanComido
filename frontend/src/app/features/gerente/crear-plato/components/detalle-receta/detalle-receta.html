@@ -1,0 +1,84 @@
+<div class="receta-container">
+  <div class="receta-header-row d-flex justify-content-between align-items-center mb-3">
+    <h3 class="receta-title mb-0">Detalle receta</h3>
+    <div class="info-tooltip-container">
+      <div class="info-icon">
+        <span class="material-symbols-outlined">info</span>
+      </div>
+      <div class="info-tooltip-box">
+        El sistema reconoce los ingredientes usados en esta receta y los descuenta del stock real.
+        <br>
+        <span class="small-sub text-muted">(Una vez creado físicamente el plato)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="position-relative mb-3">
+    <app-buscador
+      [placeholder]="'Buscar ingrediente o preparación'"
+      [valor]="busqueda()"
+      (busquedaCambiada)="onSearchChanged($event)">
+    </app-buscador>
+
+    @if (sugerencias().length > 0) {
+      <div class="sugerencias-dropdown shadow-sm border rounded-3 position-absolute w-100 bg-white">
+        @for (sug of sugerencias(); track sug.id) {
+          <div class="sugerencia-item p-2" (click)="agregarIngrediente(sug)">
+            {{ sug.nombre }}
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="table-responsive">
+    <table class="table align-middle ingredient-table">
+      <thead>
+        <tr>
+          <th>Ingredientes</th>
+          <th style="width: 85px;">Cantidad</th>
+          <th style="width: 80px;">U. Medida</th>
+          <th style="width: 50px;" class="text-center">Accion</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (ing of ingredientesSeleccionados(); track ing.id) {
+          <tr>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <input type="checkbox" checked class="form-check-input ingredient-checkbox">
+                <span class="ingredient-name">{{ ing.nombre }}</span>
+              </div>
+            </td>
+            <td>
+              <input 
+                type="number" 
+                class="form-control form-control-sm text-center qty-input" 
+                min="0.01"
+                step="0.01"
+                [(ngModel)]="ing.cantidad" 
+                (ngModelChange)="onCantidadCambiada(ing)">
+            </td>
+            <td>
+              <select 
+                class="form-select form-select-sm unit-select" 
+                [(ngModel)]="ing.unidadMedida" 
+                (ngModelChange)="onUnidadCambiada()">
+                <option value="GR">gr</option>
+                <option value="L">ml</option>
+                <option value="L">l</option>
+                <option value="KG">kg</option>
+                <option value="UN">un</option>
+              </select>
+            </td>
+            <td class="text-center">
+              <button class="btn-delete" (click)="eliminarIngrediente(ing.id)">
+                <span class="material-symbols-outlined fs-5">delete</span>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
