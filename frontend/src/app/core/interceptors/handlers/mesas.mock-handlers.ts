@@ -11,8 +11,8 @@ let dbMesas: Mesa[] = [
   },
   {
     id: 2, codigoInvitacion: 'MESA-02', numeroMesa: 2, cantidadPersonasMax: 2, estadoMesa: EstadoMesa.Ocupada, dimensionMesa: { id: 2, forma: FormaMesa.Redonda, imagen: '' },
-    posicionXInicio: 195, posicionXfin: 270, // Ancho 75px
-    posicionYinicio: 45, posicionYFin: 120   // Alto 75px
+    posicionXInicio: 195, posicionXfin: 285, // Ancho 75px
+    posicionYinicio: 45, posicionYFin: 135   // Alto 75px
   },
   {
     id: 3, codigoInvitacion: 'MESA-03', numeroMesa: 3, cantidadPersonasMax: 6, estadoMesa: EstadoMesa.Reservada, dimensionMesa: { id: 3, forma: FormaMesa.HorizontalLarga, imagen: '' },

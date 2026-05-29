@@ -1,5 +1,10 @@
 <div class="mapa-wrapper">
 
+  @if (state.notificacion(); as notif) {
+    <div class="toast-notificacion" [class.error]="notif.tipo === 'error'" [class.exito]="notif.tipo === 'exito'">
+      {{ notif.mensaje }}
+    </div>
+  }
      <div class="header-controles">
         @if (!state.isEditorMode()) {
           <button type="button" class="btn-editor" (click)="state.toggleEditorMode()">Activar Edición</button>
@@ -18,6 +23,7 @@
           <button type="button" class="btn-mesa redonda" (click)="state.agregarMesa(FormaMesa.Redonda)">+</button>
           <button type="button" class="btn-mesa cuadrada" (click)="state.agregarMesa(FormaMesa.Cuadrada)">+</button>
           <button type="button" class="btn-mesa horizontal" (click)="state.agregarMesa(FormaMesa.HorizontalLarga)">+</button>
+          <button type="button" class="btn-mesa vertical" (click)="state.agregarMesa(FormaMesa.HorizontalAlta)">+</button>
         </div>
       }
 

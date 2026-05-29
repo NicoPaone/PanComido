@@ -12,11 +12,13 @@ export class MesaStateService {
   private _loading = signal<boolean>(false);
   private _isEditorMode = signal<boolean>(false);
   private _mesasBackup: Mesa[] = [];
+  private _notificacion = signal<{mensaje: string, tipo: 'exito' | 'error'} | null>(null);
 
   // 2. Estado PÚBLICO (Solo lectura para los componentes)
   mesas = this._mesas.asReadonly();
   loading = this._loading.asReadonly();
   isEditorMode = this._isEditorMode.asReadonly();
+  notificacion = this._notificacion.asReadonly();
 
   // 3. Casos de uso
   cargarMesas(): void {
@@ -28,6 +30,15 @@ export class MesaStateService {
       },
       error: () => this._loading.set(false)
     });
+  }
+
+  mostrarNotificacion(mensaje: string, tipo: 'exito' | 'error'): void {
+    this._notificacion.set({ mensaje, tipo });
+
+    // A los 3 segundos (3000ms), volvemos el signal a null para que desaparezca
+    setTimeout(() => {
+      this._notificacion.set(null);
+    }, 3000);
   }
 
   toggleEditorMode(): void {
@@ -66,18 +77,41 @@ export class MesaStateService {
 
   agregarMesa(forma: FormaMesa): void {
     const mesas = this._mesas();
-    // Buscamos el número más alto y le sumamos 1. Si no hay mesas, arrancamos en 1.
     const proximoNumero = mesas.length > 0 ? Math.max(...mesas.map(m => m.numeroMesa)) + 1 : 1;
 
+    // 1. Definimos las dimensiones iniciales según la forma elegida
+    let ancho = 90;
+    let alto = 90;
+
+    switch (forma) {
+      case FormaMesa.HorizontalLarga:
+        ancho = 150;
+        alto = 75;
+        break;
+      case FormaMesa.HorizontalAlta:
+        ancho = 75;
+        alto = 150;
+        break;
+      case FormaMesa.Redonda:
+      case FormaMesa.Cuadrada:
+      default:
+        ancho = 90;
+        alto = 90;
+        break;
+    }
+
+    // 2. Creamos la mesa aplicando la matemática a las coordenadas finales
     const nuevaMesa: Mesa = {
-      id: Date.now(), // ID temporal para que el @for de Angular no se rompa. El backend lo ignora al insertar.
+      id: Date.now(),
       codigoInvitacion: `MESA-TEMP`,
       numeroMesa: proximoNumero,
-      cantidadPersonasMax: 4, // Valor por defecto
+      cantidadPersonasMax: 4,
       estadoMesa: EstadoMesa.Disponible,
       dimensionMesa: { id: 0, forma, imagen: '' },
-      posicionXInicio: 15, posicionXfin: 105, // Coordenadas iniciales (múltiplos de 15)
-      posicionYinicio: 15, posicionYFin: 105
+      posicionXInicio: 15,
+      posicionXfin: 15 + ancho, // Calculado dinámicamente
+      posicionYinicio: 15,
+      posicionYFin: 15 + alto   // Calculado dinámicamente
     };
 
     this._mesas.update(m => [...m, nuevaMesa]);
@@ -99,27 +133,33 @@ export class MesaStateService {
     // 1. Validar duplicados
     const numeros = mesas.map(m => m.numeroMesa);
     if (new Set(numeros).size !== numeros.length) {
-      alert('¡Error! Hay mesas con números duplicados. Corregilo antes de guardar.');
+      this.mostrarNotificacion('Hay mesas con números duplicados. Corregilo antes de guardar.', 'error');
       return;
     }
 
-    // 2. EL ÚNICO PUT (Bulk Save)
-    console.log('JSON LISTO PARA MANDAR AL BACKEND CON PUT:', mesas);
+    // 2. Validar colisiones
+    for (let i = 0; i < mesas.length; i++) {
+      for (let j = i + 1; j < mesas.length; j++) {
+        const mesaA = mesas[i];
+        const mesaB = mesas[j];
 
-    /* Cuando tengas el endpoint, la llamada va acá:
-    this.api.actualizarMapaCompleto(mesas).subscribe({
-      next: () => {
-        this.toggleEditorMode(); // Salimos del editor solo si el back respondió OK
-        alert('Mapa guardado con éxito');
-      },
-      error: () => {
-        alert('Error al guardar en la base de datos');
+        const seSolapan = !(
+          mesaA.posicionXfin <= mesaB.posicionXInicio ||
+          mesaA.posicionXInicio >= mesaB.posicionXfin ||
+          mesaA.posicionYFin <= mesaB.posicionYinicio ||
+          mesaA.posicionYinicio >= mesaB.posicionYFin
+        );
+
+        if (seSolapan) {
+          this.mostrarNotificacion(`Las mesas ${mesaA.numeroMesa} y ${mesaB.numeroMesa} se están tocando.`, 'error');
+          return;
+        }
       }
-    });
-    */
+    }
 
-    // Por ahora, como estamos probando el front, simulamos el éxito:
-    this.toggleEditorMode();
-    alert('Mapa guardado con éxito (Simulado)');
+    // 3. Éxito
+    console.log('JSON LISTO PARA MANDAR AL BACKEND CON PUT:', mesas);
+    this._isEditorMode.set(false);
+    this.mostrarNotificacion('Mapa guardado con éxito', 'exito');
   }
 }
