@@ -39,7 +39,11 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                         TiempoPreparacionBase = relacion.Articulo.Plato.TiempoPreparacionBase,
                        
                         Cantidad = relacion.Cantidad,
-                        //Observaciones = relacion.Articulo.Observaciones
+                        ObservacionesGenerales = relacion.ObservacionesGenerales,
+                        ObservacionesIngredientes = relacion.ObservacionesIngrediente,
+                        Entregado = relacion.Entregado
+
+                     
 
 
                     });
