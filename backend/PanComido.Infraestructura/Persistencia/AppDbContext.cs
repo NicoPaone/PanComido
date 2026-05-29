@@ -216,6 +216,25 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("categoria_proveedor_pkey");
 
+            entity.HasMany(d => d.CategoriaIngredientes).WithMany(p => p.CategoriaProveedors)
+                .UsingEntity<Dictionary<string, object>>(
+                    "CategoriaProveedorCategoriaIngrediente",
+                    r => r.HasOne<CategoriaIngrediente>().WithMany()
+                        .HasForeignKey("CategoriaIngredienteId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("categoria_proveedor_categoria_ing_categoria_ingrediente_id_fkey"),
+                    l => l.HasOne<CategoriaProveedor>().WithMany()
+                        .HasForeignKey("CategoriaProveedorId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("categoria_proveedor_categoria_ingre_categoria_proveedor_id_fkey"),
+                    j =>
+                    {
+                        j.HasKey("CategoriaProveedorId", "CategoriaIngredienteId").HasName("categoria_proveedor_categoria_ingrediente_pkey");
+                        j.ToTable("categoria_proveedor_categoria_ingrediente");
+                        j.IndexerProperty<int>("CategoriaProveedorId").HasColumnName("categoria_proveedor_id");
+                        j.IndexerProperty<int>("CategoriaIngredienteId").HasColumnName("categoria_ingrediente_id");
+                    });
+
             entity.HasMany(d => d.Proveedors).WithMany(p => p.CategoriaProveedors)
                 .UsingEntity<Dictionary<string, object>>(
                     "CategoriaProveedorProveedor",

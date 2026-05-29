@@ -19,5 +19,9 @@ public partial class CategoriaProveedor
 
     [ForeignKey("CategoriaProveedorId")]
     [InverseProperty("CategoriaProveedors")]
+    public virtual ICollection<CategoriaIngrediente> CategoriaIngredientes { get; set; } = new List<CategoriaIngrediente>();
+
+    [ForeignKey("CategoriaProveedorId")]
+    [InverseProperty("CategoriaProveedors")]
     public virtual ICollection<Proveedor> Proveedors { get; set; } = new List<Proveedor>();
 }

@@ -13,7 +13,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
 {
     public class InsumoEntityMapper
     {
-        public DOM.Insumo paraDominio(EF.Articulo efArticulo)
+        public DOM.Insumo paraDominio(EF.Articulo efArticulo, decimal stockActual = 0)
         {
             if (efArticulo == null) return null;
 
@@ -30,6 +30,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 Id = efArticulo.Id,
                 Nombre = efArticulo.Nombre,
                 Descripcion = efArticulo.Descripcion,
+                StockActual = stockActual,
                 StockMinimo = efInsumo.StockMinimo,
                 Tipo = esIngrediente ? TipoInsumo.Ingrediente
                                               : TipoInsumo.Bebida,

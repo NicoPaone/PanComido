@@ -44,12 +44,14 @@ builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
 builder.Services.AddScoped<ILoteRepositorio, LoteRepositorio>();
 builder.Services.AddScoped<IProveedorRepositorio, ProveedorRespositorio>();
 builder.Services.AddScoped<IPedidoRepositorio, PedidoRepositorio>();
+builder.Services.AddScoped<IBodegaRepositorio, BodegaRepositorio>();
 
 // Casos de uso
 builder.Services.AddScoped<ListarInsumoCasoDeUso>();
 builder.Services.AddScoped<ListarProveedorCasoDeUso>();
 builder.Services.AddScoped<ObtenerHistorialPedidosCasoDeUso>();
-builder.Services.AddScoped<IBodegaRepositorio, BodegaRepositorio>();
+builder.Services.AddScoped<ListarBodegasConInsumosCasoDeUso>();
+builder.Services.AddScoped<ListarInsumosDelProveedorCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();

@@ -51,5 +51,53 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             var efLista = await BaseQuery(restauranteId).ToListAsync();
             return efLista.Select(a => _mapper.paraDominio(a)).ToList();
         }
+
+        public async Task<List<DOM.Insumo>> ObtenerInsumosDelProveedorAsync(int proveedorId, int restauranteId)
+        {
+            var resultados = await _ctx.Articulos
+        .Where(a => a.RestauranteId == restauranteId
+         && a.Insumo != null
+         && (
+             (a.Insumo.Ingrediente != null
+              && a.Insumo.Ingrediente.IngredientePreparado == null
+              && a.Insumo.Ingrediente.CategoriaIngrediente
+                    .CategoriaProveedors
+                    .Any(cp => cp.Proveedors.Any(p => p.Id == proveedorId)))
+             ||
+             (a.Insumo.Bebidum != null
+              && _ctx.CategoriaProveedors
+                    .Any(cp => cp.Descripcion == "Bebidas"
+                            && cp.Proveedors.Any(p => p.Id == proveedorId)))
+         ))
+        .Include(a => a.Insumo)
+            .ThenInclude(i => i.Ingrediente)
+                .ThenInclude(ing => ing.CategoriaIngrediente)
+        .Include(a => a.Insumo)
+            .ThenInclude(i => i.Ingrediente)
+                .ThenInclude(ing => ing.UnidadMedida)
+        .Include(a => a.Insumo)
+            .ThenInclude(i => i.Bebidum)
+                .ThenInclude(b => b.CategoriaBebida)
+        .Select(a => new
+        {
+            Articulo = a,
+            StockActual = a.Insumo.Lotes.Sum(l => (decimal?)l.Cantidad) ?? 0m
+        })
+        .ToListAsync();
+
+            foreach (var r in resultados)
+            {
+                Console.WriteLine($"Articulo {r.Articulo.Id} - {r.Articulo.Nombre} - StockActual: {r.StockActual}");
+                Console.WriteLine($"  Lotes cargados: {r.Articulo.Insumo.Lotes.Count}");
+                foreach (var l in r.Articulo.Insumo.Lotes)
+                {
+                    Console.WriteLine($"    Lote {l.Id}: cantidad={l.Cantidad}, insumo_id={l.InsumoId}");
+                }
+            }
+
+            return resultados
+                .Select(r => _mapper.paraDominio(r.Articulo, r.StockActual))
+                .ToList();
+        }
     }
 }
