@@ -14,23 +14,32 @@ namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
     {
         private readonly IInsumoRepositorio _insumoRepositorio;
         private readonly IEstadoStockInsumoServicio _estadoStockInsumoServicio;
+        private readonly ILoteRepositorio _loteRepositorio;
 
-        public ObtenerInsumosParaPedidoCasoDeUso(IInsumoRepositorio insumoRepositorio, IEstadoStockInsumoServicio estadoStockInsumoServicio)
+        public ObtenerInsumosParaPedidoCasoDeUso(IInsumoRepositorio insumoRepositorio, IEstadoStockInsumoServicio estadoStockInsumoServicio, ILoteRepositorio loteRepositorio)
         {
             _insumoRepositorio = insumoRepositorio;
             _estadoStockInsumoServicio = estadoStockInsumoServicio;
+            _loteRepositorio = loteRepositorio;
+
         }
 
         public async Task<List<InusmoConSugerencia>> EjecutarAsync(int proveedorId, int restauranteId)
         {
             decimal cantidadSugerida = 0;
 
-            var insumos = await _insumoRepositorio.ObtenerInsumosDelProveedorAsync(proveedorId, restauranteId);
-            var insumosConSugerencia = new List<InusmoConSugerencia>();
+            var insumosProveedor = await _insumoRepositorio.ObtenerInsumosDelProveedorAsync(proveedorId, restauranteId);
+            var insumosResto = await _insumoRepositorio.ObtenerInsumosAsync(restauranteId);
 
-            foreach (var insumo in insumos)
+            var insumosConSugerencia = new List<InusmoConSugerencia>();
+            
+            foreach (var insumo in insumosResto)
             {
-                var estadoStock = _estadoStockInsumoServicio.CalcularEstadoStock(insumo.StockActual, insumo.StockMinimo);
+              if(insumo.Id == 0 || insumosProveedor.All(i => i.Id != insumo.Id)) continue;
+
+                decimal stockActualInsumo = await _loteRepositorio.ObtenerStockTotalDeInsumo(insumo.Id);
+
+                var estadoStock = _estadoStockInsumoServicio.CalcularEstadoStock(stockActualInsumo, insumo.StockMinimo);
                 if (estadoStock == EstadoStock.Critico) cantidadSugerida = insumo.StockMinimo * 2;
                 else if (estadoStock == EstadoStock.Bajo) cantidadSugerida = insumo.StockMinimo;
                 else continue;
@@ -40,7 +49,7 @@ namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
                         Id = insumo.Id,
                         Nombre = insumo.Nombre,
                         UnidadMedida = insumo.UnidadMedida,
-                        StockActual = insumo.StockActual,
+                        StockActual = stockActualInsumo,
                         CantidadSugerida = cantidadSugerida,
                         EstadoStock = estadoStock.ToString()
                     });
