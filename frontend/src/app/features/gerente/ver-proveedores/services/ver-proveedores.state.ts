@@ -256,7 +256,7 @@ export class VerProveedoresStateService {
       return;
     }
 
-    const unidadMedida = producto?.unidadMedida ?? 'UN';
+    const unidadMedida = (producto?.unidadMedida as UnidadMedida) || 'UN';
     const itemId = producto?.id ?? `manual-${nombre.toLowerCase().replace(/\s+/g, '-')}`;
 
     this.pedidoItems.update(items => {
@@ -355,7 +355,7 @@ export class VerProveedoresStateService {
     window.open(url, '_blank');
   }
 
-  private getCantidadConfiguracion(unidadMedida: UnidadMedida): { step: number; min: number; placeholder: string } {
+  private getCantidadConfiguracion(unidadMedida: UnidadMedida | string): { step: number; min: number; placeholder: string } {
     switch (unidadMedida) {
       case 'UN':
         return { step: 1, min: 1, placeholder: '1' };
@@ -369,7 +369,7 @@ export class VerProveedoresStateService {
   }
 
 
-  private getCantidadInicial(unidadMedida: UnidadMedida): number {
+  private getCantidadInicial(unidadMedida: UnidadMedida | string): number {
     return this.getCantidadConfiguracion(unidadMedida).min;
   }
 

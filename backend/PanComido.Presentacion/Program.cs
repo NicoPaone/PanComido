@@ -74,12 +74,12 @@ var allowedOrigins = builder.Configuration.GetSection("CorsSettings:AllowedOrigi
 
 builder.Services.AddCors(options =>
 {
-   options.AddPolicy("ProduccionCors", policy =>
-   {
-      policy.WithOrigins(allowedOrigins)
-      .AllowAnyMethod()
-      .AllowAnyHeader();
-   });
+    options.AddPolicy("ProduccionCors", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+    });
 
 });
 

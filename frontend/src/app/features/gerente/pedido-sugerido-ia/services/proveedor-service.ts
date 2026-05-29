@@ -1,8 +1,9 @@
 import { Injectable, signal } from '@angular/core';
 import { delay, Observable, of } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { INSUMOS_MOCK, Insumo } from '../models/producto-stock';
-import { NuevoPedidoProveedor, NuevoProveedor, PedidoProveedor, Proveedor, SugerenciaPedidoItem } from '../models/proveedor';
+import { environment } from '../../../../../environments/environment';
+import { NuevoPedidoProveedor, NuevoProveedor, PedidoProveedor, Proveedor, SugerenciaPedidoItem } from '../../../../core/models/proveedor';
+import { Insumo, INSUMOS_MOCK } from '../../../../core/models/producto-stock';
+
 
 export const PROVEEDOR_ENDPOINTS = {
   base: `${environment.apiUrl}/proveedores`,
@@ -235,7 +236,7 @@ export class ProveedorService {
     }
 
     const providerCats = proveedor.categorias ?? [];
-    
+
     const costosMock: Record<string, number> = {
       '1': 1200,
       '2': 900,
@@ -267,7 +268,7 @@ export class ProveedorService {
           consumoEstimado30Dias,
           cantidadSugerida,
           precioUnitario
-        };
+        } as SugerenciaPedidoItem;
       });
 
     // NOTE: El endpoint del back para obtener el pedido sugerido por la IA debe conectarse aquí

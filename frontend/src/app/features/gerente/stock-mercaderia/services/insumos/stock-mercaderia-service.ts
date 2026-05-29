@@ -1,14 +1,14 @@
 import { inject, Injectable } from '@angular/core';
-import { ApiService } from '../../../../core/services/api-service';
+import { ApiService } from '../../../../../core/services/api-service';
 import { Observable } from 'rxjs';
-import { Insumo } from '../../../../core/models/producto-stock';
+import { Insumo } from '../../../../../core/models/insumos/insumo';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StockMercaderiaService{
   private api = inject(ApiService);
-  private endpoint = '/stock-mercaderia';
+  private endpoint = 'Insumo';
 
 
   getById(id:number): Observable<Insumo> {
@@ -18,6 +18,7 @@ export class StockMercaderiaService{
   getStockMercaderia():Observable<Insumo[]> { 
     return this.api.get<Insumo[]>(`${this.endpoint}`) 
   }
+
   crear(producto: Partial<Insumo>): Observable<Insumo> {
     return this.api.post<Insumo>(this.endpoint, producto);
   }
