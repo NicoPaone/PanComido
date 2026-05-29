@@ -14,7 +14,6 @@ namespace PanComido.Dominio.CasosDeUso.BodegaCasosDeUso
         private readonly IBodegaRepositorio _bodegaRepositorio;
         private readonly ILoteRepositorio _loteRepositorio;
         private readonly IInsumoRepositorio _insumoRepositorio;
-
         private readonly IEstadoStockInsumoServicio _estadoStockInsumoServicio;
 
         public ListarBodegasConInsumosCasoDeUso(IBodegaRepositorio bodegaRepositorio, ILoteRepositorio loteRepositorio, IInsumoRepositorio insumoRepositorio, IEstadoStockInsumoServicio estadoStockInsumoServicio)
