@@ -1,4 +1,6 @@
 ﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades.Enums;
+using PanComido.Dominio.Interfaces;
 using PanComido.Dominio.Interfaces.Repositorios;
 using System;
 using System.Collections.Generic;
@@ -10,18 +12,33 @@ namespace PanComido.Dominio.CasosDeUso.AvisosCasosDeUso
 {
     public class ListarInsumosConStockCritico
     {
+        private readonly IInsumoRepositorio _insumoRepositorio;
+        private readonly IEstadoStockInsumoServicio _estadoStockInsumoServicio;
+        private readonly ILoteRepositorio _loteRepositorio;
 
-        
-
-        /*public ListarInsumosConStockCritico(IAvisosRepositorio avisosRepositorio)
+        public ListarInsumosConStockCritico(IInsumoRepositorio insumoRepositorio, 
+                                            IEstadoStockInsumoServicio estadoStockInsumoServicio,
+                                            ILoteRepositorio loteRepositorio)
         {
-            _avisosRepositorio = avisosRepositorio;
+            _insumoRepositorio = insumoRepositorio;
+            _estadoStockInsumoServicio = estadoStockInsumoServicio;
+            _loteRepositorio = loteRepositorio;
         }
 
         public async Task<List<Insumo>> Ejecutar(int restauranteId)
         {
-            return await _avisosRepositorio.ObtenerInsumosConStockCritico(restauranteId);
-        }*/
-
+            List<Insumo> insumos = await _insumoRepositorio.ObtenerInsumosAsync(restauranteId);
+            List<Insumo> insumosConStockCritico = new List<Insumo>();
+            foreach (var insumo in insumos)
+            {
+                decimal stockActualInsumo = await _loteRepositorio.ObtenerStockTotalDeInsumo(insumo.Id);
+                if (_estadoStockInsumoServicio.CalcularEstadoStock(stockActualInsumo, insumo.StockMinimo) == EstadoStock.Critico)
+                {
+                    insumo.EstadoStock = EstadoStock.Critico;
+                    insumosConStockCritico.Add(insumo);
+                }
+            }
+            return insumosConStockCritico;
+        }
     }
 }
