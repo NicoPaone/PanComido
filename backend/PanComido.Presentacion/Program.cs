@@ -3,8 +3,8 @@ using PanComido.Dominio.CasosDeUso.BodegaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.Comanda;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
-using PanComido.Dominio.Interfaces;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Interfaces.Servicios;
 using PanComido.Dominio.Servicios;
 using PanComido.Infraestructura.Persistencia;
 using PanComido.Infraestructura.Persistencia.Mappers;
@@ -30,6 +30,7 @@ builder.Services.AddScoped<BodegaEntityMapper>();
 builder.Services.AddScoped<ProveedorEntityMapper>();
 builder.Services.AddScoped<PedidoEntityMapper>();
 builder.Services.AddScoped<ComandaEntityMapper>();
+builder.Services.AddScoped<CategoriaInsumoEntityMapper>();
 
 // Mappers de Presentacion (Dominio <-> DTOs)   
 builder.Services.AddScoped<InsumoMapper>();
@@ -37,6 +38,7 @@ builder.Services.AddScoped<BodegaMapper>();
 builder.Services.AddScoped<ProveedorMapper>();
 builder.Services.AddScoped<PedidoMapper>();
 builder.Services.AddScoped<ComandaMapper>();
+builder.Services.AddScoped<CategoriaInsumoMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -45,6 +47,7 @@ builder.Services.AddScoped<IBodegaRepositorio, BodegaRepositorio>();
 builder.Services.AddScoped<IProveedorRepositorio, ProveedorRespositorio>();
 builder.Services.AddScoped<IPedidoRepositorio, PedidoRepositorio>();
 builder.Services.AddScoped<IComandaRepositorio, ComandaRepositorio>();
+builder.Services.AddScoped<ICategoriaInsumoRepositorio, CategoriaInsumoRepositorio>();
 
 
 // Casos de uso
@@ -56,12 +59,10 @@ builder.Services.AddScoped<ListarBodegasConInsumosCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosDelProveedorCasoDeUso>();
 builder.Services.AddScoped<CrearPedidoCasoDeUso>();
 builder.Services.AddScoped<ListarComandaActivaCocinaCasoDeUso>();
+builder.Services.AddScoped<ListarCategoriasDeInsumosCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
-
-
-
 
 var allowedOrigins = builder.Configuration.GetSection("CorsSettings:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
 

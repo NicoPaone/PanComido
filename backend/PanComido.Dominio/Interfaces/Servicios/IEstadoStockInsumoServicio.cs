@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PanComido.Dominio.Interfaces
+namespace PanComido.Dominio.Interfaces.Servicios
 {
     public interface IEstadoStockInsumoServicio
     {
