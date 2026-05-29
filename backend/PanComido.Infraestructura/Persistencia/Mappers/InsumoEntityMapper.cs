@@ -19,6 +19,10 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
 
             EF.Insumo efInsumo = efArticulo.Insumo
                 ?? throw new InvalidOperationException("Articulo no es un insumo");
+            
+            // Detectar subtipo
+            bool esIngrediente = efInsumo.Ingrediente != null;
+            bool esBebida = efInsumo.Bebidum != null;
 
             return new DOM.Insumo
             {
@@ -31,6 +35,18 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 Categoria = efInsumo.CategoriaInsumo.Descripcion,
                 UnidadMedida = efInsumo.UnidadMedida?.Nombre
             };
+
+            if (efInsumo.Lotes != null && efInsumo.Lotes.Any())
+            {
+                insumoDominio.Lotes = efInsumo.Lotes.Select(l => new DOM.Lote
+                {
+                    Id = l.Id,
+                    Cantidad = l.Cantidad,
+                    FechaVencimiento = l.FechaVencimiento.GetValueOrDefault()
+                }).ToList();
+            }
+
+            return insumoDominio;
         }
     }
 }
