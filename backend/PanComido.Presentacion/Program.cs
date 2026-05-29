@@ -30,15 +30,18 @@ builder.Services.AddScoped<InsumoEntityMapper>();
 builder.Services.AddScoped<BodegaEntityMapper>();
 builder.Services.AddScoped<ProveedorEntityMapper>();
 builder.Services.AddScoped<PedidoEntityMapper>();
-=========
 builder.Services.AddScoped<ComandaEntityMapper>();
+builder.Services.AddScoped<CategoriaInsumoEntityMapper>();
+builder.Services.AddScoped<UnidadMedidaEntityMapper>();
+
 // Mappers de Presentacion (Dominio <-> DTOs)   
 builder.Services.AddScoped<InsumoMapper>();
 builder.Services.AddScoped<BodegaMapper>();
 builder.Services.AddScoped<ProveedorMapper>();
 builder.Services.AddScoped<PedidoMapper>();
 builder.Services.AddScoped<ComandaMapper>();
-
+builder.Services.AddScoped<CategoriaInsumoMapper>();
+builder.Services.AddScoped<UnidadMedidaMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -47,20 +50,20 @@ builder.Services.AddScoped<IBodegaRepositorio, BodegaRepositorio>();
 builder.Services.AddScoped<IProveedorRepositorio, ProveedorRespositorio>();
 builder.Services.AddScoped<IPedidoRepositorio, PedidoRepositorio>();
 builder.Services.AddScoped<IComandaRepositorio, ComandaRepositorio>();
-
->>>>>>>>> Temporary merge branch 2
-
-// Servicios
-builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
+builder.Services.AddScoped<ICategoriaInsumoRepositorio, CategoriaInsumoRepositorio>();
+builder.Services.AddScoped<IUnidadMedidaRepositorio, UnidadMedidaRepositorio>();
 
 // Casos de uso
 builder.Services.AddScoped<ListarInsumoCasoDeUso>();
-builder.Services.AddScoped<ListarBodegasCasoDeUso>();
-builder.Services.AddScoped<ListarBodegasConInsumosCasoDeUso>();
-<<<<<<<<< Temporary merge branch 1
 builder.Services.AddScoped<ListarProveedorCasoDeUso>();
 builder.Services.AddScoped<ObtenerHistorialPedidosCasoDeUso>();
+builder.Services.AddScoped<ListarBodegasCasoDeUso>();
+builder.Services.AddScoped<ListarBodegasConInsumosCasoDeUso>();
+builder.Services.AddScoped<ListarInsumosDelProveedorCasoDeUso>();
+builder.Services.AddScoped<CrearPedidoCasoDeUso>();
 builder.Services.AddScoped<ListarComandaActivaCocinaCasoDeUso>();
+builder.Services.AddScoped<ListarCategoriasDeInsumosCasoDeUso>();
+builder.Services.AddScoped<ListarUnidadesDeMedidaCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
@@ -71,12 +74,12 @@ var allowedOrigins = builder.Configuration.GetSection("CorsSettings:AllowedOrigi
 
 builder.Services.AddCors(options =>
 {
-   options.AddPolicy("ProduccionCors", policy =>
-   {
-      policy.WithOrigins(allowedOrigins)
-      .AllowAnyMethod()
-      .AllowAnyHeader();
-   });
+    options.AddPolicy("ProduccionCors", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+    });
 
 });
 
