@@ -15,6 +15,9 @@ export class BodegaService {
   obtenerBodegas(): Observable<Bodega[]> {
     return this.api.get<Bodega[]>(this.endpoint);
   }
+  obtenerBodegasConInsumos(): Observable<Bodega[]> {
+    return this.api.get<Bodega[]>(`${this.endpoint}/con-insumos`);
+  }
   obtenerBodegaPorId(id: number): Observable<Bodega> {
     return this.api.get<Bodega>(`${this.endpoint}/${id}`);
   }
