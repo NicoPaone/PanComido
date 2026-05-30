@@ -45,5 +45,37 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
 
             return insumoDominio;
         }
+
+        public EF.Articulo paraEntidad(DOM.Insumo insumoDominio)
+        {
+            var efArticulo = new EF.Articulo
+            {
+                RestauranteId = insumoDominio.RestauranteId,
+                Nombre = insumoDominio.Nombre,
+                Descripcion = insumoDominio.Descripcion,
+                PrecioVentaFinal = insumoDominio.PrecioVentaFinal,
+
+                Insumo = new EF.Insumo
+                {
+                    CategoriaInsumoId = insumoDominio.CategoriaId,
+                    UnidadMedidaId = insumoDominio.UnidadDeMedidaId,
+                    StockMinimo = insumoDominio.StockMinimo,
+
+                    Lotes = insumoDominio.Lotes.Select(l => new EF.Lote
+                    {
+                        Nombre = l.Nombre,
+                        Cantidad = l.Cantidad,
+                        BodegaId = l.BodegaId,
+                        FechaAdquisicion = l.FechaAdquisicion,
+                        FechaVencimiento = l.FechaVencimiento
+                    }).ToList()
+                }
+            };
+
+            if (insumoDominio.Tipo == TipoInsumo.Ingrediente)
+                efArticulo.Insumo.Ingrediente = new EF.Ingrediente();
+
+            return efArticulo;
+        }
     }
 }

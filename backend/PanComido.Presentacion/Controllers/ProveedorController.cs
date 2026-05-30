@@ -4,6 +4,7 @@ using DOM = PanComido.Dominio.Entidades;
 using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.Mappers;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Presentacion.DTOs.Insumos;
 
 namespace PanComido.Presentacion.Controllers
 {
