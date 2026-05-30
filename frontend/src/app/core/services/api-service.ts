@@ -20,8 +20,8 @@ export class ApiService {
     return this.http.post<T>(`${this.baseUrl}/${endpoint}`, body, { headers });
   }
   
-  put<T>(endpoint: string, body: any): Observable<T> {
-    return this.http.put<T>(`${this.baseUrl}${endpoint}`, body);
+  put<T>(endpoint: string, body?: any): Observable<T> {
+    return this.http.put<T>(`${this.baseUrl}/${endpoint}`, body);
   }
   
   delete<T>(endpoint: string): Observable<T> {

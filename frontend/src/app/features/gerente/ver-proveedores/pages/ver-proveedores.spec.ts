@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { INSUMOS_MOCK } from '../../../../core/models/insumos/insumo';
 import { PRODUCTOS_STOCK_MOCK } from '../../../../core/models/producto-stock';
 import { VerProveedoresComponent } from './ver-proveedores';
 
@@ -21,7 +22,7 @@ describe('VerProveedoresComponent', () => {
   });
 
   it('should add an item to the pedido list', () => {
-    component.productos.set(INSUMOS_MOCK);
+    component.productos.set([...PRODUCTOS_STOCK_MOCK]);
     component.onProductoTextoChange('Ajo');
     component.cantidadProducto.set(2);
 

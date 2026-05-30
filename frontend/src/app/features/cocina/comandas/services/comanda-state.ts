@@ -30,6 +30,31 @@ export class ComandaState {
     this._comandas().filter(c => c.estado === 'Finalizada')
   );
 
+  
+
+  modificarEstadoComanda(mesaId:number,tipoId:number):void { 
+    this.api.modificarEstadoComanda(mesaId,tipoId).subscribe({
+    next: (comandaActualizada) => {
+
+      this._comandas.update(comandasPrevias =>
+        comandasPrevias.map(comanda =>  
+         comanda.id === comandaActualizada.id 
+         ? { 
+            ...comanda,
+             estado: comandaActualizada.estado, 
+             estadoId: comandaActualizada.estadoId
+           } 
+           : comanda
+      ))
+    },error: (err) => {
+        console.error('Error al modificar comanda', err);
+      }
+  
+   });
+
+
+  }
+
   cargarComandasActivas():void{
     this._cargando.set(true);
     this.api.obtenerComandasActivas().subscribe({
