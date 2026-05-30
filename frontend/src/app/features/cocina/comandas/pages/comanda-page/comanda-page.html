@@ -52,5 +52,15 @@
       }
     </div>
   </details>
+  <div class="toolbar">
+<div class="kds-header-actions">
+    <app-boton-voz 
+      [enEscucha]="vozService.enEscucha()"
+      (toggle)="vozService.toggleListening()">
+    </app-boton-voz>
+  </div>
 
-</div>
+  <details class="kds-section" open>
+    </details>
+
+  </div>
