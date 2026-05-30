@@ -18,6 +18,12 @@ export const routes: Routes = [
             loadChildren: () => import('./features/gerente/gerente.routes').then(m => m.GERENTE_ROUTES)
          },
          {
+            path: 'cocina',
+            canActivate: [roleGuard],
+            data: { roles: ['Cocina'] },
+            loadChildren: () => import('./features/cocina/cocina.routes').then(m => m.COCINA_ROUTES)
+         },
+         {
             path: '',redirectTo: 'prueba', pathMatch: 'full'
          }
       ]

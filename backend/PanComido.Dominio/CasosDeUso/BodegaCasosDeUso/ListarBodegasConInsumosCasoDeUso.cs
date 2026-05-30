@@ -1,6 +1,6 @@
 ﻿using PanComido.Dominio.Entidades;
-using PanComido.Dominio.Interfaces;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Interfaces.Servicios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,6 @@ namespace PanComido.Dominio.CasosDeUso.BodegaCasosDeUso
         private readonly IBodegaRepositorio _bodegaRepositorio;
         private readonly ILoteRepositorio _loteRepositorio;
         private readonly IInsumoRepositorio _insumoRepositorio;
-
         private readonly IEstadoStockInsumoServicio _estadoStockInsumoServicio;
 
         public ListarBodegasConInsumosCasoDeUso(IBodegaRepositorio bodegaRepositorio, ILoteRepositorio loteRepositorio, IInsumoRepositorio insumoRepositorio, IEstadoStockInsumoServicio estadoStockInsumoServicio)

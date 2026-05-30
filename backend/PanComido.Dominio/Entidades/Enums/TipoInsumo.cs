@@ -8,7 +8,7 @@ namespace PanComido.Dominio.Entidades.Enums
 {
     public enum TipoInsumo
     {
-        Ingrediente,
-        Bebida
+        Ingrediente = 1,
+        Bebida = 2
     }
 }

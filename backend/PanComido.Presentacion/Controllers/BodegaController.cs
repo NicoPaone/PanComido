@@ -11,12 +11,24 @@ namespace PanComido.Presentacion.Controllers
     public class BodegaController : ControllerBase
     {
         private readonly ListarBodegasConInsumosCasoDeUso _listarBodegasConInsumosCasoDeUso;
+        private readonly ListarBodegasCasoDeUso _listarBodegasCasoDeUso;
         private readonly BodegaMapper _bodegaMapper;
 
-        public BodegaController(ListarBodegasConInsumosCasoDeUso listarBodegasConInsumosCasoDeUso, BodegaMapper bodegaMapper)
+        public BodegaController(ListarBodegasConInsumosCasoDeUso listarBodegasConInsumosCasoDeUso, 
+            BodegaMapper bodegaMapper,
+            ListarBodegasCasoDeUso listarBodegasCasoDeUso)
         {
             _listarBodegasConInsumosCasoDeUso = listarBodegasConInsumosCasoDeUso;
             _bodegaMapper = bodegaMapper;
+            _listarBodegasCasoDeUso = listarBodegasCasoDeUso;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<string>> obtener()
+        {
+            List<Bodega> bodegas = await _listarBodegasCasoDeUso.EjecutarAsync(ObtenerRestauranteId());
+
+            return Ok(_bodegaMapper.bodegasAListaDto(bodegas));
         }
 
         [HttpGet("con-insumos")]
@@ -24,7 +36,7 @@ namespace PanComido.Presentacion.Controllers
         {
             List<Bodega> bodegasConInsumos = await _listarBodegasConInsumosCasoDeUso.EjecutarAsync(ObtenerRestauranteId());
 
-            return Ok(_bodegaMapper.aListaDto(bodegasConInsumos));
+            return Ok(_bodegaMapper.bodegasConInsumosAListaDto(bodegasConInsumos));
         }
 
         // Helper temporal — luego lo pasaremos a id dinamico del restaurante

@@ -31,5 +31,5 @@ public partial class Proveedor
 
     [ForeignKey("ProveedorId")]
     [InverseProperty("Proveedors")]
-    public virtual ICollection<CategoriaProveedor> CategoriaProveedors { get; set; } = new List<CategoriaProveedor>();
+    public virtual ICollection<CategoriaInsumo> CategoriaInsumos { get; set; } = new List<CategoriaInsumo>();
 }
