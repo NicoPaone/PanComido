@@ -1,10 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-<<<<<<< HEAD:frontend/src/app/features/gerente/ver-proveedores/page/ver-proveedores.spec.ts
 import { INSUMOS_MOCK } from '../../../../core/models/insumos/insumo';
-=======
-import { PRODUCTOS_STOCK_MOCK } from '../../../../core/models/producto-stock';
->>>>>>> ba1fac2a9559ad6f3207bf2ff91cb853752e3c2b:frontend/src/app/features/gerente/ver-proveedores/pages/ver-proveedores.spec.ts
 import { VerProveedoresComponent } from './ver-proveedores';
+import { PRODUCTOS_STOCK_MOCK } from '../../../../core/models/producto-stock';
 
 describe('VerProveedoresComponent', () => {
   let component: VerProveedoresComponent;
@@ -25,7 +22,7 @@ describe('VerProveedoresComponent', () => {
   });
 
   it('should add an item to the pedido list', () => {
-    component.productos.set(INSUMOS_MOCK);
+    component.productos.set([...PRODUCTOS_STOCK_MOCK]);
     component.onProductoTextoChange('Ajo');
     component.cantidadProducto.set(2);
 
