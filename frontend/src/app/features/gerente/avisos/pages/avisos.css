@@ -1,0 +1,169 @@
+.avisos-page {
+  padding: 1rem 1.25rem 2rem;
+  font-family: var(--font-family);
+  background: #f9fafb;
+}
+
+.avisos-header .title { font-size: 1.5rem; font-weight: 800; color: #111827; margin: 0 0 6px }
+.avisos-header .subtitle { margin: 0; color: #6b7280 }
+
+.mensaje { margin: 12px 0; padding: 8px 12px; border-radius: 8px; background: rgba(16,185,129,0.12); color: #065f46 }
+
+.grid { display: grid; grid-template-columns: repeat(2, minmax(280px, 1fr)); gap: 1rem; margin-top: 1rem }
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid rgba(15,23,42,0.06);
+}
+
+.card-header { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:8px }
+.card-header h2 { margin:0; font-size:1rem; font-weight:800 }
+.card-header .badge { background: rgba(2,6,23,0.04); color:#111827; padding:6px 8px; border-radius:8px; font-weight:800; font-size:0.85rem }
+
+.card-body { padding-top:4px }
+.list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px }
+
+.list-item {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 18px;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+}
+
+.avatar { width:56px; height:56px; border-radius:999px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.25rem }
+.avatar fa-icon { font-size:22px }
+.avatar.tipo-danger { background: #A8041A }
+.avatar.tipo-warning { background: #F7D627; color: #111 }
+.avatar.tipo-success { background: #6ABF3F }
+
+.content .item-title { font-weight:800; color:#0f172a }
+.content .item-sub { color: #6b7280; font-size:0.95rem; margin-top:4px }
+.content .item-info { color: #9ca3af; font-size:0.9rem; margin-top:6px }
+
+.meta { display:flex; align-items:center; gap:12px }
+.see-more { color:#6b7280; font-weight:700; text-decoration:none; font-size:0.9rem }
+.see-more:hover { text-decoration:underline }
+
+.action-btn { border: none; cursor: pointer; border-radius: 999px; padding: 8px 14px; font-weight:800 }
+.action-btn.danger { background: #A8041A; color: #fff }
+.action-btn.warning { background: #F7D627; color: #111 }
+.action-btn.success { background: #6ABF3F; color: #fff }
+
+.list-item + .list-item { margin-top: 12px }
+
+/* Toolbar button spacing */
+.avisos-page app-page-toolbar .toolbar-actions { gap: 1rem }
+
+@media (max-width: 880px) {
+  .grid { grid-template-columns: 1fr }
+}
+
+/* New layout inspired by the provided illustration */
+.page-shell {
+  max-width: none;
+  width: 100%;
+  margin: 0 auto 18px;
+  background: linear-gradient(180deg, rgba(250,250,251,1), rgba(242,240,239,1));
+  border-radius: 8px;
+  padding: 22px;
+  box-shadow: 0 10px 30px rgba(2,6,23,0.12);
+}
+
+.shell-header { display:flex; justify-content:space-between; align-items:center; gap:16px; width:100% }
+.global-title { padding: 12px 22px }
+.global-title h1 { margin:0; font-size:1.6rem; font-weight:900 }
+.global-title p { margin:6px 0 0; color:#6b7280 }
+
+.controls { display:flex; align-items:center; gap:10px }
+.search { padding:8px 12px; border-radius:999px; border: none; background:#fff; box-shadow: inset 0 1px 0 rgba(0,0,0,0.03) }
+.pill { border-radius:999px; padding:8px 14px; font-weight:800; border:none; cursor:pointer }
+.pill.ghost { background:#fff; color:#111827 }
+.pill.solid { background:#ffb300; color:#111827 }
+
+.sections { margin-top:18px; display:flex; flex-direction:column; gap:18px }
+.section-panel { background:#fff; border-radius:8px; padding:14px; border:1px solid rgba(15,23,42,0.06) }
+.panel-header h2 { margin:0 0 8px; font-size:1rem; font-weight:800 }
+.panel-body { padding:8px 6px }
+
+.cards-grid { display:flex; gap:14px; padding:8px 4px; overflow:auto; width:100% }
+.small-card { min-width:220px; flex:0 0 22%; box-sizing:border-box }
+.card-inner { background:#ECECEC; border-radius:8px; padding:18px; display:flex; flex-direction:column; justify-content:space-between; height:120px }
+.card-title { text-align:center; font-weight:800; color:#0f172a }
+.card-action { display:flex; justify-content:center; margin-top:10px }
+.pill.danger { background:#A8041A; color:#fff }
+.pill.warning { background:#F7D627; color:#111 }
+.pill.success { background:#6ABF3F; color:#fff }
+
+.empty-card { color:#6b7280; padding:14px }
+
+.avisos-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1060;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.52);
+}
+
+.avisos-modal-card {
+  width: min(420px, 100%);
+  border-radius: 8px;
+  animation: avisosModalIn 180ms ease-out both;
+}
+
+.avisos-modal-success {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f5132;
+  background: #d1e7dd;
+}
+
+.avisos-modal-success .material-symbols-outlined {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.avisos-modal-title {
+  color: #0f172a;
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+.avisos-modal-text {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+@keyframes avisosModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 920px) {
+  .small-card { min-width:180px; flex:0 0 30% }
+}
+
+@media (max-width: 720px) {
+  .page-shell { margin:10px }
+  .cards-grid { gap:10px }
+  .small-card { min-width:160px; flex:0 0 46% }
+}

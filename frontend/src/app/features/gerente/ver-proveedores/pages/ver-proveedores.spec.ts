@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { INSUMOS_MOCK } from '../../../../core/models/insumos/insumo';
 import { PRODUCTOS_STOCK_MOCK } from '../../../../core/models/producto-stock';
 import { VerProveedoresComponent } from './ver-proveedores';
 

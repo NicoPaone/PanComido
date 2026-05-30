@@ -70,6 +70,7 @@ export class SidebarComponent {
   // Configuración de menú por rol
   private menuConfig: Record<string, MenuItem[]> = {
     Gerente: [
+      { label: 'Sistema de avisos', icon: 'faBell', route: 'gerente/avisos', roles: ['Gerente'] },
       { label: 'Usuarios', icon: 'faUsers', route: 'gerente/usuarios', roles: ['Gerente'] },
       { label: 'Configuración', icon: 'faCog', route: 'gerente/configuracion', roles: ['Gerente'] },
       { label: 'Dashboard', icon: 'faChartBar', route: 'gerente/dashboard', roles: ['Gerente'] },

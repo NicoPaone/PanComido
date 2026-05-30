@@ -10,7 +10,6 @@
   </app-page-toolbar>
 
   <div class="historial-layout mt-4">
-    <!-- Encabezado del proveedor -->
     @if (proveedorSeleccionado(); as proveedor) {
       <div class="panel-card proveedor-header mb-4">
         <div class="detail-top">
@@ -26,7 +25,6 @@
       </div>
     }
 
-    <!-- Lista de pedidos -->
     <div class="panel-card history-panel">
       <div class="history-panel-header">
         <div>
@@ -74,6 +72,13 @@
                 <span>{{ pedido.observacion }}</span>
                 <span class="history-items">{{ pedido.items.length }} ítems</span>
               </div>
+              @if (pedido.estado === 'Pendiente') {
+                <div class="history-actions">
+                  <app-boton variante="success" tamanio="sm" (clicked)="confirmarPedido($event, pedido)">
+                    <span class="fw-bold text-dark">Confirmar pedido</span>
+                  </app-boton>
+                </div>
+              }
             </article>
           }
         </div>
@@ -81,71 +86,141 @@
     </div>
   </div>
 
-  <!-- Modal de detalle de pedido -->
   @if (pedidoHistorialSeleccionado(); as pedido) {
-    <div class="pedido-modal-overlay" (click)="cerrarDetallePedido()">
+    <div class="pedido-offcanvas-backdrop" (click)="cerrarDetallePedido()"></div>
+    <aside
+      class="pedido-offcanvas"
+      tabindex="0"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="pedido-offcanvas-title"
+      (keydown.escape)="cerrarDetallePedido()">
+      <div class="pedido-modal-header">
+        <div>
+          <p class="detail-kicker mb-1">Detalle del pedido</p>
+          <h3 id="pedido-offcanvas-title" class="pedido-modal-title mb-0">{{ pedido.concepto }}</h3>
+        </div>
+        <button type="button" class="pedido-modal-close" aria-label="Cerrar detalle" (click)="cerrarDetallePedido()">
+          <fa-icon [icon]="faXmark"></fa-icon>
+        </button>
+      </div>
+
+      <div class="pedido-modal-meta">
+        <span>{{ pedido.fecha | date:'dd/MM/yyyy HH:mm' }}</span>
+        <span class="estado-pill" [class]="getEstadoClase(pedido.estado)">{{ pedido.estado }}</span>
+      </div>
+
+      <div class="pedido-modal-summary-row">
+        <span>{{ pedido.items.length }} ítems</span>
+        <span class="summary-dot">•</span>
+        <strong class="summary-amount">Monto: ${{ pedido.monto | number:'1.0-0' }}</strong>
+      </div>
+
+      <div class="pedido-modal-grid">
+        <article class="pedido-modal-info">
+          <span class="info-label">Monto</span>
+          <strong>${{ pedido.monto | number:'1.0-0' }}</strong>
+        </article>
+        <article class="pedido-modal-info">
+          <span class="info-label">Ítems</span>
+          <strong>{{ pedido.items.length }}</strong>
+        </article>
+        <article class="pedido-modal-info pedido-modal-full">
+          <span class="info-label">Observación</span>
+          <strong>{{ pedido.observacion }}</strong>
+        </article>
+      </div>
+
+      <div class="pedido-modal-items">
+        <h4 class="section-title mb-2">Productos incluidos</h4>
+        @for (item of pedido.items; track item.id) {
+          <div class="pedido-modal-item">
+            <div>
+              <strong>{{ item.nombre }}</strong>
+              <div class="history-date">
+                @if (item.precioUnitario) {
+                  Precio: ${{ item.precioUnitario | number:'1.0-0' }} c/u
+                }
+              </div>
+            </div>
+            <span class="pedido-modal-quantity">{{ item.cantidad }} {{ item.unidadMedida }}</span>
+          </div>
+        }
+      </div>
+
+      @if (pedido.estado === 'Pendiente') {
+        <div class="pedido-modal-actions">
+          <app-boton variante="outline" tamanio="md" (clicked)="agregarIngredientes()">
+            <span class="fw-bold">Agregar ingredientes</span>
+          </app-boton>
+          <app-boton variante="success" tamanio="md" (clicked)="confirmarPedido($event, pedido)">
+            <span class="fw-bold text-dark">Confirmar pedido</span>
+          </app-boton>
+        </div>
+      }
+    </aside>
+
+    @if (isAgregarIngredientesOpen && pedido.estado === 'Pendiente') {
+      <div class="pedido-modal-overlay" (click)="cerrarAgregarIngredientes()">
       <div
         class="pedido-modal-card"
         tabindex="0"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="pedido-modal-title"
+        aria-labelledby="agregar-ingrediente-title"
         (click)="$event.stopPropagation()"
-        (keydown.escape)="cerrarDetallePedido()">
+        (keydown.escape)="cerrarAgregarIngredientes()">
 
         <div class="pedido-modal-header">
           <div>
-            <p class="detail-kicker mb-1">Detalle del pedido</p>
-            <h3 id="pedido-modal-title" class="pedido-modal-title mb-0">{{ pedido.concepto }}</h3>
+            <p class="detail-kicker mb-1">Agregar al pedido</p>
+            <h3 id="agregar-ingrediente-title" class="pedido-modal-title mb-0">Ingredientes sugeridos</h3>
           </div>
-          <button type="button" class="pedido-modal-close" aria-label="Cerrar detalle" (click)="cerrarDetallePedido()">
+          <button type="button" class="pedido-modal-close" aria-label="Cerrar" (click)="cerrarAgregarIngredientes()">
             <fa-icon [icon]="faXmark"></fa-icon>
           </button>
         </div>
 
-        <div class="pedido-modal-meta">
-          <span>{{ pedido.fecha | date:'dd/MM/yyyy HH:mm' }}</span>
-          <span class="estado-pill" [class]="getEstadoClase(pedido.estado)">{{ pedido.estado }}</span>
+        <div class="ingredient-search">
+          <input
+            type="search"
+            class="form-control"
+            placeholder="Buscar ingrediente"
+            [value]="busquedaIngrediente"
+            (input)="onBusquedaIngrediente($event)">
         </div>
 
-        <div class="pedido-modal-summary-row">
-          <span>{{ pedido.items.length }} ítems</span>
-          <span class="summary-dot">•</span>
-          <strong class="summary-amount">Monto: ${{ pedido.monto | number:'1.0-0' }}</strong>
-        </div>
-
-        <div class="pedido-modal-grid">
-          <article class="pedido-modal-info">
-            <span class="info-label">Monto</span>
-            <strong>${{ pedido.monto | number:'1.0-0' }}</strong>
-          </article>
-          <article class="pedido-modal-info">
-            <span class="info-label">Ítems</span>
-            <strong>{{ pedido.items.length }}</strong>
-          </article>
-          <article class="pedido-modal-info pedido-modal-full">
-            <span class="info-label">Observación</span>
-            <strong>{{ pedido.observacion }}</strong>
-          </article>
-        </div>
-
-        <div class="pedido-modal-items">
-          <h4 class="section-title mb-2">Productos incluidos</h4>
-          @for (item of pedido.items; track item.id) {
-            <div class="pedido-modal-item">
-              <div>
-                <strong>{{ item.nombre }}</strong>
-                <div class="history-date">
-                  @if (item.precioUnitario) {
-                    Precio: ${{ item.precioUnitario | number:'1.0-0' }} c/u
-                  }
-                </div>
-              </div>
-              <span class="pedido-modal-quantity">{{ item.cantidad }} {{ item.unidadMedida }}</span>
-            </div>
+        <div class="ingredient-list">
+          @for (producto of productosParaAgregar(); track producto.id) {
+            <button
+              type="button"
+              class="ingredient-option"
+              [class.selected]="productoSeleccionadoId === producto.id.toString()"
+              (click)="seleccionarIngrediente(producto)">
+              <span>
+                <strong>{{ producto.nombre }}</strong>
+                <span>{{ producto.stock }} {{ producto.unidadMedida }} disponibles</span>
+              </span>
+              <span>{{ producto.fechaVencimiento | date:'dd/MM/yyyy' }}</span>
+            </button>
           }
+        </div>
+
+        <div class="ingredient-quantity">
+          <label class="form-label fw-medium small text-muted">Cantidad</label>
+          <input type="number" class="form-control" [value]="cantidadIngrediente" min="0.1" step="0.1" (input)="updateCantidadIngrediente($event)">
+        </div>
+
+        <div class="pedido-modal-actions">
+          <app-boton variante="outline" tamanio="md" (clicked)="cerrarAgregarIngredientes()">
+            <span class="fw-bold">Cancelar</span>
+          </app-boton>
+          <app-boton variante="success" tamanio="md" [disabled]="!productoSeleccionadoId" (clicked)="confirmarAgregarIngrediente(pedido)">
+            <span class="fw-bold text-dark">Agregar ingrediente</span>
+          </app-boton>
         </div>
       </div>
     </div>
+    }
   }
 </div>
