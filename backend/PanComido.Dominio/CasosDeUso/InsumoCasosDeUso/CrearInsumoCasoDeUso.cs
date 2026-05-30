@@ -38,6 +38,14 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
             DateOnly fechaVencimiento)
         {
 
+
+            if (cantidadInicial < insumo.StockMinimo)
+                throw new ArgumentException($"La cantidad inicial ({cantidadInicial}) no puede ser menor al stock mínimo configurado ({insumo.StockMinimo}).");
+
+            if (fechaVencimiento <= DateOnly.FromDateTime(DateTime.UtcNow))
+                throw new ArgumentException("La fecha de vencimiento debe ser una fecha futura.");
+
+
             CategoriaInsumo categoria = await _categoriaInsumoRepositorio.ObtenerPorIdAsync(insumo.CategoriaId);
 
             if (categoria == null)
@@ -48,12 +56,6 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
 
             if (!await _bodegaRepositorio.ExisteBodegaEnRestauranteAsync(restauranteId, idBodega))
                 throw new ArgumentException("La bodega destino especificada no es valida o no existe.");
-
-            if (cantidadInicial < insumo.StockMinimo)
-                throw new ArgumentException($"La cantidad inicial ({cantidadInicial}) no puede ser menor al stock mínimo configurado ({insumo.StockMinimo}).");
-            
-            if (fechaVencimiento <= DateOnly.FromDateTime(DateTime.UtcNow))
-                throw new ArgumentException("La fecha de vencimiento debe ser una fecha futura.");
 
             var loteInicial = new Lote
             {
