@@ -8,5 +8,8 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task<DateOnly?> ObtenerFechaUltimoPedidoDeProveedorAsync(int proveedorId);
         Task<List<Pedido>> ObtenerPedidosPorProveedorAsync(int proveedorId);
         Task<Pedido> CrearPedidoAsync(Pedido pedido);
+        Task<decimal> ObtenerUltimoPrecioCompraUnitarioAsync(int insumoId, int proveedorId);
+        Task<Pedido> ConfirmarPedidoAsync(int pedidoId, List<PedidoInsumo> itemsNuevos);
+        Task<Pedido> ObtenerPedidoPorIdAsync(int pedidoId);
     }
 }

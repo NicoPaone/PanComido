@@ -23,10 +23,21 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             _ctx = ctx;
             _mapper = mapper;
         }
+
+
         public async Task<List<DOM.CategoriaInsumo>> ObtenerCategoriasInsumoAsync()
         {
             List<EF.CategoriaInsumo> categoriasEF = await _ctx.CategoriaInsumos.ToListAsync();
             return categoriasEF.Select(c => _mapper.paraDominio(c)).ToList();
+        }
+
+        public async Task<DOM.CategoriaInsumo> ObtenerPorIdAsync(int categoriaId)
+        {
+            EF.CategoriaInsumo categoriaBuscada = await _ctx.CategoriaInsumos
+                .Where(c => c.Id == categoriaId)
+                .FirstOrDefaultAsync();
+
+            return _mapper.paraDominio(categoriaBuscada);
         }
     }
 }

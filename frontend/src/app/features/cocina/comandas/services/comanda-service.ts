@@ -17,5 +17,11 @@ export class ComandaService {
   }
 
 
+  //https://localhost:7204/api/Comanda/4/3 ejemplo
+  modificarEstadoComanda(mesaId:number, tipoId: number):Observable<Comanda>{
+    return this.api.put<Comanda>(`${this.endpoint}/activas/${mesaId}/${tipoId}`);
+  }
+
+
 
 }

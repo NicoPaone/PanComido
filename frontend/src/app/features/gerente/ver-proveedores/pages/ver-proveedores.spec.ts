@@ -21,7 +21,7 @@ describe('VerProveedoresComponent', () => {
   });
 
   it('should add an item to the pedido list', () => {
-    component.productos.set(PRODUCTOS_STOCK_MOCK);
+    component.productos.set([...PRODUCTOS_STOCK_MOCK]);
     component.onProductoTextoChange('Ajo');
     component.cantidadProducto.set(2);
 

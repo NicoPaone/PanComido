@@ -9,6 +9,7 @@ namespace PanComido.Dominio.Interfaces.Repositorios
 {
     public interface IUnidadMedidaRepositorio
     {
+        Task<bool> ExisteAsync(int unidadMedidaId);
         public Task<List<UnidadMedida>> ObtenerUnidadesDeMedidaAsync();
     }
 }

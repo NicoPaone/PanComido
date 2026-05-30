@@ -23,6 +23,11 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             _mapper = mapper;
         }
 
+        public async Task<bool> ExisteAsync(int unidadMedidaId)
+        {
+            return await _ctx.UnidadMedida.AnyAsync(um => um.Id == (int)unidadMedidaId);
+        }
+
         public async Task<List<UnidadMedida>> ObtenerUnidadesDeMedidaAsync()
         {
             List<EF.UnidadMedidum> unidadesDeMedidaEF = await _ctx.UnidadMedida.ToListAsync(); 

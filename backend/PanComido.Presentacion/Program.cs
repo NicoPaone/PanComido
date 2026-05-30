@@ -11,12 +11,18 @@ using PanComido.Infraestructura.Persistencia;
 using PanComido.Infraestructura.Persistencia.Mappers;
 using PanComido.Infraestructura.Persistencia.Repositorios;
 using PanComido.Presentacion.Mappers;
+using PanComido.Presentacion.SesionMock;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+//builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<RestauranteContextoFilter>();
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -41,6 +47,7 @@ builder.Services.AddScoped<ProveedorMapper>();
 builder.Services.AddScoped<PedidoMapper>();
 builder.Services.AddScoped<ComandaMapper>();
 builder.Services.AddScoped<CategoriaInsumoMapper>();
+builder.Services.AddScoped<InsumoConsugerenciaMapper>();
 builder.Services.AddScoped<UnidadMedidaMapper>();
 
 // Repositorios
@@ -55,6 +62,7 @@ builder.Services.AddScoped<IUnidadMedidaRepositorio, UnidadMedidaRepositorio>();
 
 // Casos de uso
 builder.Services.AddScoped<ListarInsumoCasoDeUso>();
+builder.Services.AddScoped<CrearInsumoCasoDeUso>();
 builder.Services.AddScoped<ListarProveedorCasoDeUso>();
 builder.Services.AddScoped<ObtenerHistorialPedidosCasoDeUso>();
 builder.Services.AddScoped<ListarBodegasCasoDeUso>();
@@ -64,6 +72,8 @@ builder.Services.AddScoped<CrearPedidoCasoDeUso>();
 builder.Services.AddScoped<ListarComandaActivaCocinaCasoDeUso>();
 builder.Services.AddScoped<ListarCategoriasDeInsumosCasoDeUso>();
 builder.Services.AddScoped<ListarUnidadesDeMedidaCasoDeUso>();
+builder.Services.AddScoped<ObtenerInsumosParaPedidoCasoDeUso>();
+builder.Services.AddScoped<ConfirmarPedidoCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
