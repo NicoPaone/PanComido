@@ -1,0 +1,11 @@
+<button 
+      (click)="toggle.emit()" 
+      class="btn-voice"
+      [class.listening]="enEscucha()">
+      
+      @if (enEscucha()) {
+        <span class="pulsing-dot"></span> 🎙️ Escuchando...
+      } @else {
+        🎤 Activar Voz
+      }
+    </button>
