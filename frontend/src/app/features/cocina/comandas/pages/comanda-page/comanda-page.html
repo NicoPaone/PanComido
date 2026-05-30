@@ -52,5 +52,13 @@
       }
     </div>
   </details>
+  <div class="toolbar">
+  <h2>Boton de voz</h2>
+  
+  <app-boton-voz 
+    [enEscucha]="vozService.enEscucha()"
+    (toggle)="vozService.toggleListening()">
+  </app-boton-voz>
+</div>
 
 </div>

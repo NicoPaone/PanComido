@@ -1,0 +1,72 @@
+.btn-voice {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 32px;
+  border-radius: 50px; /* Forma de píldora */
+  font-family: var(--font-family);
+  font-size: 1.1rem;
+  font-weight: 800; /* Letra bien gruesa para que se lea de lejos */
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  
+  /* Estado inactivo (Apagado) */
+  background-color: #ffffff;
+  color: var(--gray-600);
+  border: 2px solid var(--gray-300);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mic-icon {
+  font-size: 1.3rem;
+  filter: grayscale(100%);
+  opacity: 0.7;
+}
+
+/* Hover sutil cuando está apagado */
+.btn-voice:hover:not(.listening) {
+  border-color: var(--primary-teal);
+  color: var(--primary-teal);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px -1px rgba(2, 89, 108, 0.15);
+}
+
+.btn-voice:hover:not(.listening) .mic-icon {
+  filter: grayscale(0%);
+  opacity: 1;
+}
+
+/* 🔥 ESTADO ACTIVO (Micrófono Abierto) */
+.btn-voice.listening {
+  background-color: var(--color-cream);
+  border-color: var(--primary-red);
+  color: var(--primary-red);
+  /* El botón entero irradia un brillo suave */
+  animation: buttonPulse 2s infinite;
+}
+
+.pulsing-dot {
+  width: 14px;
+  height: 14px;
+  background-color: var(--primary-red);
+  border-radius: 50%;
+  /* El puntito emite ondas de radar */
+  animation: dotRadar 1.5s infinite;
+}
+
+/* ANIMACIONES */
+
+@keyframes dotRadar {
+  0% { box-shadow: 0 0 0 0 rgba(216, 8, 28, 0.6); }
+  70% { box-shadow: 0 0 0 12px rgba(216, 8, 28, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(216, 8, 28, 0); }
+}
+
+@keyframes buttonPulse {
+  0% { box-shadow: 0 0 0 0 rgba(216, 8, 28, 0.3); }
+  70% { box-shadow: 0 0 0 8px rgba(216, 8, 28, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(216, 8, 28, 0); }
+}
