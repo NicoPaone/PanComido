@@ -40,11 +40,7 @@ namespace PanComido.Presentacion.Controllers
       }
 
 
-        [HttpGet("activas")]
-        public async Task<ActionResult<List<ComandaResponseDto>>> ObtenerComandasActivas()
-        {
-            int restauranteId = HttpContext.ObtenerRestauranteId(); 
-
+     
 
       
 
