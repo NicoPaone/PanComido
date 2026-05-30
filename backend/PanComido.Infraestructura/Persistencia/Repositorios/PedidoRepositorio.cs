@@ -21,6 +21,36 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             _mapper = mapper;
         }
 
+        public async Task<DOM.Pedido> ConfirmarPedidoAsync(int pedidoId, List<DOM.PedidoInsumo> itemsNuevos)
+        {
+            var efPedido = await _ctx.Pedidos
+                .Include(p => p.PedidoInsumos)
+                .FirstOrDefaultAsync(p => p.Id == pedidoId);
+
+            _ctx.PedidoInsumos.RemoveRange(efPedido.PedidoInsumos);
+
+            //agregar nuevos items
+            var nuevosItems = itemsNuevos.Select(i => new EF.PedidoInsumo
+            {
+                PedidoId = pedidoId,
+                InsumoId = i.InsumoId,
+                Cantidad = i.Cantidad,
+                PrecioCompra = i.PrecioCompra
+            }).ToList();
+            _ctx.PedidoInsumos.AddRange(nuevosItems);
+
+            //cambiar estado a enviado
+            int estadoEnviadoId = await _ctx.EstadoPedidos
+                .Where(e => e.Descripcion == "Enviado")
+                .Select(e => e.Id)
+                .FirstAsync();
+            efPedido.EstadoPedidoId = estadoEnviadoId;
+
+            await _ctx.SaveChangesAsync();
+
+            return await ObtenerPedidoPorIdAsync(pedidoId);
+        }
+
         public async Task<DOM.Pedido> CrearPedidoAsync(DOM.Pedido pedido)
         {
             int estadoPendienteId = await _ctx.EstadoPedidos
@@ -34,12 +64,16 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             await _ctx.SaveChangesAsync();
 
             EF.Pedido pedidoCompleto = await _ctx.Pedidos
-    .Where(p => p.Id == efPedido.Id)
-    .Include(p => p.EstadoPedido)
-    .Include(p => p.PedidoInsumos)
-        .ThenInclude(pi => pi.Insumo)
-            .ThenInclude(i => i.IdArticuloNavigation)
-    .FirstAsync();
+                .Where(p => p.Id == efPedido.Id)
+                .Include(p => p.EstadoPedido)
+                .Include(p => p.PedidoInsumos)
+                    .ThenInclude(pi => pi.Insumo)
+                        .ThenInclude(i => i.IdArticuloNavigation)
+                        .Include(p => p.Proveedor)
+                            .Include(p => p.PedidoInsumos)
+                               .ThenInclude(pi => pi.Insumo)
+                                   .ThenInclude(i => i.UnidadMedida)
+                                           .FirstAsync();
 
             return _mapper.paraDominio(pedidoCompleto);
 
@@ -56,18 +90,50 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             return fechaMaxima;
         }
 
+        public async Task<DOM.Pedido> ObtenerPedidoPorIdAsync(int pedidoId)
+        {
+            var efPedido = await _ctx.Pedidos
+                .Where(p => p.Id == pedidoId)
+                .Include(p => p.EstadoPedido)
+                .Include(p => p.PedidoInsumos)
+                    .ThenInclude(pi => pi.Insumo)
+                        .ThenInclude(i => i.IdArticuloNavigation)
+                        .Include(p => p.Proveedor)
+                            .Include(p => p.PedidoInsumos)
+                                .ThenInclude(pi => pi.Insumo)
+                                    .ThenInclude(i => i.UnidadMedida)
+                .FirstOrDefaultAsync();
+            if (efPedido == null) return null;
+            return _mapper.paraDominio(efPedido);
+        }
+
         public async Task<List<DOM.Pedido>> ObtenerPedidosPorProveedorAsync(int proveedorId)
         {
             var efPedidos = await _ctx.Pedidos
                 .Where(p => p.ProveedorId == proveedorId)
                 .Include(p => p.EstadoPedido)
+                .Include(p => p.Proveedor)
                 .Include(p => p.PedidoInsumos)
                     .ThenInclude(pi => pi.Insumo)
                         .ThenInclude(i => i.IdArticuloNavigation)
+                .Include(p => p.PedidoInsumos)
+                    .ThenInclude(pi => pi.Insumo)
+                        .ThenInclude(i => i.UnidadMedida)
                 .OrderByDescending(p => p.Fecha)
                 .ToListAsync();
 
             return efPedidos.Select(_mapper.paraDominio).ToList();
+        }
+
+        public async Task<decimal> ObtenerUltimoPrecioCompraUnitarioAsync(int insumoId, int proveedorId)
+        {
+            var efPrecio = await _ctx.PedidoInsumos
+                .Where(pi => pi.InsumoId == insumoId && pi.Pedido.ProveedorId == proveedorId)
+                .OrderByDescending(pi => pi.Pedido.Fecha)
+                .Select(pi => (decimal?)pi.PrecioCompra)
+                .FirstOrDefaultAsync();
+
+            return efPrecio ?? 0;
         }
     }
 }

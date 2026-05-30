@@ -1,0 +1,138 @@
+.mesa-container {
+  /* position: absolute; */ /* ELIMINAR ESTA LÍNEA, el absoluto va al padre */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white; /* Base text color for green/red/black states */
+  font-size: 1.2rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: filter 0.2s;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Cuando el usuario mantiene presionado el click */
+.mesa-container:active {
+  cursor: grabbing;
+}
+
+/* Hover separado */
+.mesa-container:hover {
+  filter: brightness(1.1);
+}
+
+/* Asegurar que el texto sea visible y tenga z-index */
+span.numero {
+  position: relative;
+  z-index: 5;
+}
+
+/* --- ESTILOS DE ESTADO (Colores de fondo) --- */
+.estado-disponible { background-color: #6abf3f; } /* Verde */
+.estado-ocupada { background-color: #bf0f22; }    /* Rojo */
+.estado-reservada { background-color: #f7d627; color: black; }
+.estado-deshabilitada { background-color: #000000; }
+
+/* ESTILOS DE FORMA (Bordes) */
+.forma-redonda { border-radius: 50%; }
+.forma-cuadrada { border-radius: 8px; }
+.forma-horizontal_larga { border-radius: 8px; }
+.forma-horizontal_alta { border-radius: 8px; }
+
+/* Estilos para el editor */
+.input-numero {
+  width: 35px;
+  height: 35px;
+  background: white;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  color: black;
+  font-weight: bold;
+  font-size: 1.1rem;
+  text-align: center;
+  outline: none;
+  z-index: 5;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: border 0.2s;
+}
+
+.input-numero:focus {
+  border: 2px solid #2980b9; /* Borde azul suave al hacer click para editar */
+}
+
+/* Oculta las flechas de subir/bajar número nativas del navegador */
+.input-numero::-webkit-outer-spin-button,
+.input-numero::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.input-numero { -moz-appearance: textfield; }
+
+.popup-acciones {
+  position: absolute;
+  top: calc(100% + 12px); /* Aparece exactamente 12px por debajo del borde de la mesa */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #FDF9F1 !important; /* El color crema del diseño */
+  border: 1px solid #333;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 9999;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 140px;
+  cursor: default;
+}
+
+/* La flechita hacia arriba centrada */
+.popup-acciones::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 10px;
+  height: 10px;
+  background-color: #FDF9F1;
+  border-top: 1px solid #333;
+  border-left: 1px solid #333;
+}
+
+.btn-accion {
+  background: white;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #2c3e50;
+  font-weight: normal; /* Anulamos la negrita que hereda de la mesa */
+  text-align: center;
+  font-size: 0.9rem;
+  white-space: nowrap; /* Obliga a que "Ocupar mesa" quede en un solo renglón */
+  transition: all 0.2s;
+}
+
+.btn-accion:hover {
+  background: #e8f6f3;
+  border-color: #1abc9c;
+}
+
+.btn-eliminar {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #c0392b;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
