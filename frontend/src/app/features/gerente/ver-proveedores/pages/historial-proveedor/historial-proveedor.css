@@ -8,7 +8,6 @@
   max-width: 960px;
 }
 
-/* ── Cabecera del proveedor ── */
 .proveedor-header .detail-top {
   display: flex;
   align-items: flex-start;
@@ -16,7 +15,6 @@
   gap: 1rem;
 }
 
-/* ── Panel de historial ── */
 .history-panel {
   background: #ffffff;
   border: 1px solid #e5e7eb;
@@ -33,7 +31,6 @@
   margin-bottom: 0.25rem;
 }
 
-/* ── Skeleton ── */
 .historial-skeleton {
   display: grid;
   gap: 0.85rem;
@@ -71,7 +68,6 @@
   100% { background-position: -200% 0; }
 }
 
-/* ── Empty state ── */
 .empty-state-panel {
   min-height: 200px;
   display: flex;
@@ -81,10 +77,6 @@
   padding: 1.5rem 0 0.5rem;
 }
 
-/* Reutilizamos las clases de ver-proveedores.css para cards, pills, modal etc. */
-/* (están disponibles globalmente o vía el mismo módulo de estilos) */
-
-/* ── Cards de historial ── */
 .history-list {
   display: grid;
   gap: 0.85rem;
@@ -128,12 +120,16 @@
   font-size: 0.92rem;
 }
 
+.history-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .history-items {
   font-size: 0.82rem;
   color: #6b7280;
 }
 
-/* ── Pills ── */
 .counter-pill,
 .status-pill,
 .estado-pill {
@@ -172,7 +168,6 @@
 .estado-pendiente  { background: rgba(234, 179, 8, 0.18);  color: #a16207; }
 .estado-cancelado  { background: rgba(239, 68, 68, 0.14); color: #b91c1c; }
 
-/* ── Info cards (header del proveedor) ── */
 .panel-card {
   background: #ffffff;
   border: 1px solid #e5e7eb;
@@ -204,7 +199,6 @@
   font-size: 0.92rem;
 }
 
-/* ── Modal de detalle de pedido ── */
 .pedido-modal-overlay {
   position: fixed;
   inset: 0;
@@ -213,8 +207,28 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
+  z-index: 1100;
+  animation: overlayFadeIn 180ms ease;
+}
+
+.pedido-offcanvas-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
   z-index: 1000;
   animation: overlayFadeIn 180ms ease;
+}
+
+.pedido-offcanvas {
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: min(440px, 100%);
+  background: #ffffff;
+  z-index: 1001;
+  box-shadow: -18px 0 50px rgba(15, 23, 42, 0.18);
+  padding: 1.25rem;
+  overflow: auto;
+  animation: offcanvasIn 180ms ease both;
 }
 
 .pedido-modal-card {
@@ -332,6 +346,62 @@
   white-space: nowrap;
 }
 
+.pedido-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.ingredient-search {
+  margin-top: 1rem;
+}
+
+.ingredient-list {
+  display: grid;
+  gap: 0.6rem;
+  max-height: 280px;
+  overflow: auto;
+  margin-top: 0.9rem;
+  padding-right: 0.2rem;
+}
+
+.ingredient-option {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111827;
+  padding: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ingredient-option span:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.ingredient-option span span,
+.ingredient-option > span:last-child {
+  color: #6b7280;
+  font-size: 0.86rem;
+}
+
+.ingredient-option.selected {
+  border-color: var(--primary-teal);
+  box-shadow: 0 0 0 3px rgba(2, 89, 108, 0.12);
+}
+
+.ingredient-quantity {
+  margin-top: 1rem;
+}
+
 @keyframes overlayFadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -342,7 +412,11 @@
   to   { transform: translateY(0) scale(1); opacity: 1; }
 }
 
-/* ── Responsive ── */
+@keyframes offcanvasIn {
+  from { transform: translateX(24px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
 @media (max-width: 767.98px) {
   .history-card-header,
   .proveedor-header .detail-top {

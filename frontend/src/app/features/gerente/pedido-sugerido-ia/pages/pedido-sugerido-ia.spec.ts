@@ -3,9 +3,9 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
 import { PedidoSugeridoIAComponent } from './pedido-sugerido-ia';
+import { ProveedorService } from '../services/proveedor-service';
 import { Proveedor, SugerenciaPedidoItem } from '../../../../core/models/proveedor';
 import { Insumo as ProductoStockMock } from '../../../../core/models/producto-stock';
-import { ProveedorService } from '../services/proveedor-service';
 
 describe('PedidoSugeridoIAComponent', () => {
   let component: PedidoSugeridoIAComponent;

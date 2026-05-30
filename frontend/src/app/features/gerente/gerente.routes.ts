@@ -34,5 +34,13 @@ export const GERENTE_ROUTES: Routes = [
   {
     path: 'pedido-sugerido-ia/:id',
     loadComponent: () => import('./pedido-sugerido-ia/pages/pedido-sugerido-ia').then(m => m.PedidoSugeridoIAComponent)
+  },
+  {
+    path: 'avisos',
+    loadComponent: () => import('./avisos/pages/avisos').then(m => m.AvisosPage)
+  },
+  {
+    path: 'aviso-vencimientos',
+    loadComponent: () => import('./aviso-vencimientos/pages/aviso-vencimientos').then(m => m.VencimientosPage)
   }
 ];

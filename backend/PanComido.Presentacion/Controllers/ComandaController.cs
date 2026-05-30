@@ -2,6 +2,7 @@
 using PanComido.Dominio.CasosDeUso.Comanda;
 using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.Mappers;
+using PanComido.Presentacion.SesionMock;
 
 namespace PanComido.Presentacion.Controllers
 {
@@ -24,7 +25,7 @@ namespace PanComido.Presentacion.Controllers
         [HttpGet("activas")]
         public async Task<ActionResult<List<ComandaResponseDto>>> ObtenerComandasActivas()
         {
-            int restauranteId = 1; 
+            int restauranteId = HttpContext.ObtenerRestauranteId(); 
 
             var comandas = await listarComandasActivasCasoDeUso.Ejecutar(restauranteId);
 
