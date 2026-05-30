@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
-using DOM = PanComido.Dominio.Entidades;
-using PanComido.Presentacion.DTOs;
-using PanComido.Presentacion.Mappers;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.DTOs.Insumos;
+using PanComido.Presentacion.Mappers;
+using PanComido.Presentacion.SesionMock;
+using DOM = PanComido.Dominio.Entidades;
 
 namespace PanComido.Presentacion.Controllers
 {
@@ -57,7 +58,7 @@ namespace PanComido.Presentacion.Controllers
         [HttpGet]
         public async Task<ActionResult<List<ProveedorResponseDto>>> obtener()
         {
-            var restauranteId = ObtenerRestauranteId();
+            var restauranteId = HttpContext.ObtenerRestauranteId();
 
             var proveedores = await _listarProveedorCasoDeUso.EjecutarAsync(restauranteId);
 
@@ -78,7 +79,7 @@ namespace PanComido.Presentacion.Controllers
         [HttpGet("{idProveedor}/insumos")]
         public async Task<ActionResult<List<InsumoResponseDto>>> obtenerInsumos(int idProveedor)
         {
-            var restauranteId = ObtenerRestauranteId();
+            var restauranteId = HttpContext.ObtenerRestauranteId();
             var insumos = await _listarInsumosDelProveedorCasoDeUso.EjecutarAsync(idProveedor, restauranteId);
 
             var dtos = _insumoMapper.aListaDto(insumos);
@@ -90,7 +91,7 @@ namespace PanComido.Presentacion.Controllers
                             int idProveedor,
                             [FromBody] CrearPedidoRequestDto request)
         {
-            var restauranteId = ObtenerRestauranteId();
+            var restauranteId = HttpContext.ObtenerRestauranteId();
 
             var pedido = new DOM.Pedido
             {
@@ -114,7 +115,7 @@ namespace PanComido.Presentacion.Controllers
         [HttpGet("{idProveedor}/insumos-a-reponer")]
         public async Task<ActionResult<List<InsumoParaReponerResponseDto>>> obtenerInsumosAReponer(int idProveedor)
         {
-            var restauranteId = ObtenerRestauranteId();
+            var restauranteId = HttpContext.ObtenerRestauranteId(); 
             var insumosSugeridos = await _obtenerInsumosParaPedidoCasoDeUso.EjecutarAsync(idProveedor, restauranteId);
 
             var dtos = _insumoConsugerenciaMapper.aListaDto(insumosSugeridos);
@@ -142,10 +143,6 @@ namespace PanComido.Presentacion.Controllers
             };
 
             return Ok(dto);
-        }
-        private int ObtenerRestauranteId()
-        {
-            return 1;
         }
     }
 }
