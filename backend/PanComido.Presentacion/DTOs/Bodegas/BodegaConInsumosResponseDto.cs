@@ -1,4 +1,6 @@
-﻿namespace PanComido.Presentacion.DTOs.Bodegas
+﻿using PanComido.Presentacion.DTOs.Insumos;
+
+namespace PanComido.Presentacion.DTOs.Bodegas
 {
     public class BodegaConInsumosResponseDto
     {

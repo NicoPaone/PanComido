@@ -21,6 +21,12 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             _ctx = ctx;
             _mapper = mapper;
         }
+
+        public async Task<bool> ExisteBodegaEnRestauranteAsync(int restauranteId, int bodegaId)
+        {
+            return await _ctx.Bodegas.AnyAsync(b => b.Id == bodegaId && b.RestauranteId == restauranteId);
+        }
+
         public async Task<List<DOM.Bodega>> ObtenerBodegasAsync(int restauranteId)
         {
             List<EF.Bodega> bodegas = await _ctx.Bodegas
