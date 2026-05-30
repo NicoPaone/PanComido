@@ -95,13 +95,16 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             var efPedido = await _ctx.Pedidos
                 .Where(p => p.Id == pedidoId)
                 .Include(p => p.EstadoPedido)
+                .Include(p => p.Proveedor)
                 .Include(p => p.PedidoInsumos)
                     .ThenInclude(pi => pi.Insumo)
                         .ThenInclude(i => i.IdArticuloNavigation)
-                        .Include(p => p.Proveedor)
-                            .Include(p => p.PedidoInsumos)
-                                .ThenInclude(pi => pi.Insumo)
-                                    .ThenInclude(i => i.UnidadMedida)
+                .Include(p => p.PedidoInsumos)
+                    .ThenInclude(pi => pi.Insumo)
+                        .ThenInclude(i => i.UnidadMedida)
+                .Include(p => p.PedidoInsumos)
+                    .ThenInclude(pi => pi.Insumo)
+                        .ThenInclude(i => i.CategoriaInsumo)
                 .FirstOrDefaultAsync();
             if (efPedido == null) return null;
             return _mapper.paraDominio(efPedido);

@@ -1,6 +1,6 @@
 ﻿using PanComido.Dominio.Entidades;
 using PanComido.Infraestructura.Persistencia.Entidades;
-using PanComido.Presentacion.DTOs;
+using PanComido.Presentacion.DTOs.Pedidos;
 using DOM = PanComido.Dominio.Entidades;
 
 

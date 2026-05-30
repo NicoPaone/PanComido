@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
+namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
 {
     public class ConfirmarPedidoCasoDeUso
     {
