@@ -186,17 +186,14 @@ export class VerProveedoresStateService {
     const proveedor = this.proveedorSeleccionado();
     if (!proveedor || pedido.estado !== 'Pendiente') return;
 
-    this.api.confirmarPedidoProveedor(proveedor.id, pedido.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (pedidos) => {
-          this._historialProveedor.set(pedidos);
-          this.pedidoHistorialSeleccionado.update(seleccionado =>
-            seleccionado?.id === pedido.id ? { ...seleccionado, estado: 'Confirmado' } : seleccionado
-          );
-          this.mensajeAccion.set('Pedido confirmado');
-        }
-      });
+    const pedidos = this._historialProveedor().map(item =>
+      item.id === pedido.id ? { ...item, estado: 'Confirmado' as EstadoPedidoProveedor } : item
+    );
+    this._historialProveedor.set(pedidos);
+    this.pedidoHistorialSeleccionado.update(seleccionado =>
+      seleccionado?.id === pedido.id ? { ...seleccionado, estado: 'Confirmado' } : seleccionado
+    );
+    this.mensajeAccion.set('Pedido confirmado');
   }
 
   agregarIngredienteAPedido(pedido: PedidoProveedor, productoId: number | string, cantidad: number): void {
@@ -212,16 +209,23 @@ export class VerProveedoresStateService {
       precioUnitario: this.preciosMock[producto.id] ?? 500
     };
 
-    this.api.agregarItemPedidoProveedor(proveedor.id, pedido.id, item)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (pedidos) => {
-          this._historialProveedor.set(pedidos);
-          const actualizado = pedidos.find(itemPedido => itemPedido.id.toString() === pedido.id.toString()) ?? null;
-          this.pedidoHistorialSeleccionado.set(actualizado);
-          this.mensajeAccion.set('Ingrediente agregado');
-        }
-      });
+    const pedidos = this._historialProveedor().map(itemPedido => {
+      if (itemPedido.id !== pedido.id) return itemPedido;
+
+      const existe = itemPedido.items.some(pedidoItem => pedidoItem.id.toString() === item.id.toString());
+      const items = existe
+        ? itemPedido.items.map(pedidoItem => pedidoItem.id.toString() === item.id.toString()
+          ? { ...pedidoItem, cantidad: pedidoItem.cantidad + item.cantidad, precioUnitario: item.precioUnitario }
+          : pedidoItem)
+        : [...itemPedido.items, item];
+      const monto = items.reduce((total, pedidoItem) => total + (pedidoItem.precioUnitario ?? 0) * pedidoItem.cantidad, 0);
+
+      return { ...itemPedido, items, monto };
+    });
+
+    this._historialProveedor.set(pedidos);
+    this.pedidoHistorialSeleccionado.set(pedidos.find(itemPedido => itemPedido.id === pedido.id) ?? null);
+    this.mensajeAccion.set('Ingrediente agregado');
   }
 
   seleccionarProducto(producto: Insumo): void {
@@ -325,9 +329,13 @@ export class VerProveedoresStateService {
     this.api.crearPedidoProveedor(proveedor.id, pedido)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (actualizado) => {
-          this.proveedores.update(lista => lista.map(item => item.id === actualizado.id ? actualizado : item));
-          this.proveedorSeleccionadoId.set(actualizado.id);
+        next: (pedidoCreado) => {
+          this._historialProveedor.update(pedidos => [pedidoCreado, ...pedidos]);
+          this.proveedores.update(lista => lista.map(item => item.id === proveedor.id ? {
+            ...item,
+            fechaUltimoPedido: pedidoCreado.fecha
+          } : item));
+          this.proveedorSeleccionadoId.set(proveedor.id);
           this.panelModo.set('historial');
           
           this.abrirWhatsapp(proveedor, items, concepto, observacion);

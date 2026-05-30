@@ -1,8 +1,8 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { VencimientosApiService } from './vencimientos.service';
 import { IngredienteVencimiento, VencimientoProveedor, VencimientoPedidoActivo } from '../../../../core/models/vencimientos.model';
-import { NuevoPedidoProveedor, Proveedor } from '../../../../core/models/proveedor';
-import { Observable } from 'rxjs';
+import { NuevoPedidoProveedor } from '../../../../core/models/proveedor';
+import { map, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class VencimientosStateService {
@@ -85,7 +85,7 @@ export class VencimientosStateService {
     this.mostrarMensaje('Cocina notificada');
   }
 
-  crearPedidoPendiente(cantidad: number): Observable<Proveedor> | null {
+  crearPedidoPendiente(cantidad: number): Observable<VencimientoProveedor> | null {
     const ingrediente = this._ingredienteSeleccionado();
     const proveedor = this._proveedorSeleccionado();
     if (!ingrediente || !proveedor) return null;
@@ -106,7 +106,7 @@ export class VencimientosStateService {
       }]
     };
 
-    return this.api.crearPedidoProveedor(proveedor.id, pedido);
+    return this.api.crearPedidoProveedor(proveedor.id, pedido).pipe(map(() => proveedor));
   }
 
   private mostrarMensaje(mensaje: string) {

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { take } from 'rxjs';
@@ -18,13 +18,17 @@ import { AvisosStateService } from '../services/avisos.state';
   styleUrls: ['./avisos.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AvisosPage {
+export class AvisosPage implements OnInit {
   state = inject(AvisosStateService);
   pedidoState = inject(VencimientosStateService);
   router = inject(Router);
   isPedidoOffcanvasOpen = false;
   cantidadAgregar = 1;
   stockAvisoSeleccionado: Aviso | null = null;
+
+  ngOnInit(): void {
+    this.state.cargarSugerenciasCocina();
+  }
 
   onBuscar(term: string) {
     this.state.setSearchTerm(term);
@@ -79,6 +83,15 @@ export class AvisosPage {
       this.cerrarPedidoStock();
       this.router.navigate(['/staff', 'gerente', 'ver-proveedores', proveedor.id, 'historial']);
     });
+  }
+
+  cerrarConfirmacionCarta(): void {
+    this.state.cerrarConfirmacionCarta();
+  }
+
+  irAModificarCarta(): void {
+    this.state.cerrarConfirmacionCarta();
+    this.router.navigate(['/staff', 'gerente', 'modificar-carta']);
   }
 
   private getStockDisponible(aviso: Aviso): number {

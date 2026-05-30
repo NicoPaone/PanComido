@@ -103,6 +103,61 @@
 
 .empty-card { color:#6b7280; padding:14px }
 
+.avisos-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1060;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.52);
+}
+
+.avisos-modal-card {
+  width: min(420px, 100%);
+  border-radius: 8px;
+  animation: avisosModalIn 180ms ease-out both;
+}
+
+.avisos-modal-success {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f5132;
+  background: #d1e7dd;
+}
+
+.avisos-modal-success .material-symbols-outlined {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.avisos-modal-title {
+  color: #0f172a;
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+.avisos-modal-text {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+@keyframes avisosModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @media (max-width: 920px) {
   .small-card { min-width:180px; flex:0 0 30% }
 }

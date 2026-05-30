@@ -5,7 +5,7 @@ import { Observable, of, delay } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  currentRole = signal<string>('Cocina');
+  currentRole = signal<string>('Gerente');
 
   // NOTE: El endpoint del back para validar credenciales de gerente debe conectarse aquí
   validateManagerCredentials(username: string, password: string): Observable<boolean> {
