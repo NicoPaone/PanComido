@@ -66,7 +66,7 @@ export class VerProveedoresApiService {
         email: '',
         direccion: '',
         activo: true,
-        fechaUltimoPedido: proveedor.fechaUltimoPedido,
+        fechaUltimoPedido: this.normalizarFecha(proveedor.fechaUltimoPedido),
         categorias: proveedor.categorias ?? []
       })))
     );
@@ -110,7 +110,7 @@ export class VerProveedoresApiService {
     const items = pedido.itemsInsumo ?? [];
     return {
       id: pedido.id,
-      fecha: pedido.fecha ?? '',
+      fecha: this.normalizarFecha(pedido.fecha) ?? '',
       concepto: `Pedido #${pedido.id}`,
       monto: items.reduce((total, item) => total + item.cantidad * item.precioCompra, 0),
       estado: this.mapEstado(pedido.estado),
@@ -140,5 +140,13 @@ export class VerProveedoresApiService {
   private mapEstado(estado: string | null): PedidoProveedor['estado'] {
     if (estado === 'Confirmado' || estado === 'Recibido' || estado === 'Cancelado') return estado;
     return 'Pendiente';
+  }
+
+  private normalizarFecha(fecha: string | null): string | null {
+    if (!fecha) return null;
+    const partes = fecha.split('/');
+    if (partes.length !== 3) return fecha;
+    const [dia, mes, anio] = partes;
+    return `${anio}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
   }
 }
