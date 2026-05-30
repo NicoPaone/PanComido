@@ -1,72 +1,74 @@
-.btn-voice {
-  display: inline-flex;
+.fab-voice {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 12px 32px;
-  border-radius: 50px; /* Forma de píldora */
-  font-family: var(--font-family);
-  font-size: 1.1rem;
-  font-weight: 800; /* Letra bien gruesa para que se lea de lejos */
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   cursor: pointer;
   
-  /* Estado inactivo (Apagado) */
-  background-color: #ffffff;
-  color: var(--gray-600);
-  border: 2px solid var(--gray-300);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.mic-icon {
-  font-size: 1.3rem;
-  filter: grayscale(100%);
-  opacity: 0.7;
-}
-
-/* Hover sutil cuando está apagado */
-.btn-voice:hover:not(.listening) {
-  border-color: var(--primary-teal);
+  position: fixed; 
+  top: 24px;
+  right: 32px;
+  z-index: 999;
+  
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(2, 89, 108, 0.15), inset 0 0 0 2px var(--primary-teal);
   color: var(--primary-teal);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 8px -1px rgba(2, 89, 108, 0.15);
+  
+  /* Transición con efecto rebote */
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-.btn-voice:hover:not(.listening) .mic-icon {
-  filter: grayscale(0%);
-  opacity: 1;
+.icon-mic {
+  width: 28px;
+  height: 28px;
+  transition: transform 0.3s ease;
 }
 
-/* 🔥 ESTADO ACTIVO (Micrófono Abierto) */
-.btn-voice.listening {
-  background-color: var(--color-cream);
-  border-color: var(--primary-red);
-  color: var(--primary-red);
-  /* El botón entero irradia un brillo suave */
-  animation: buttonPulse 2s infinite;
+.fab-voice:hover:not(.is-listening) {
+  transform: scale(1.1) translateY(-4px);
+  box-shadow: 0 12px 40px rgba(2, 89, 108, 0.25), inset 0 0 0 2px var(--primary-teal);
 }
 
-.pulsing-dot {
-  width: 14px;
-  height: 14px;
-  background-color: var(--primary-red);
-  border-radius: 50%;
-  /* El puntito emite ondas de radar */
-  animation: dotRadar 1.5s infinite;
+.fab-voice.is-listening {
+  background: linear-gradient(135deg, var(--primary-red), var(--primary-orange));
+  box-shadow: 0 10px 40px rgba(216, 8, 28, 0.4);
+  box-shadow: 0 15px 35px rgba(216, 8, 28, 0.4), inset 0 0 0 0 transparent;
+  color: #ffffff;
+  
+  transform: scale(1.15);
+  animation: floatActive 3s ease-in-out infinite;
 }
 
-/* ANIMACIONES */
-
-@keyframes dotRadar {
-  0% { box-shadow: 0 0 0 0 rgba(216, 8, 28, 0.6); }
-  70% { box-shadow: 0 0 0 12px rgba(216, 8, 28, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(216, 8, 28, 0); }
+/* --- EL ECUALIZADOR --- */
+.audio-waves {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
 }
 
-@keyframes buttonPulse {
-  0% { box-shadow: 0 0 0 0 rgba(216, 8, 28, 0.3); }
-  70% { box-shadow: 0 0 0 8px rgba(216, 8, 28, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(216, 8, 28, 0); }
+.wave {
+  width: 4px;
+  background-color: #ffffff;
+  border-radius: 4px;
+  animation: equalize 0.8s ease-in-out infinite alternate;
+}
+
+.wave:nth-child(1) { height: 40%; animation-delay: 0.0s; }
+.wave:nth-child(2) { height: 100%; animation-delay: 0.3s; }
+.wave:nth-child(3) { height: 60%; animation-delay: 0.1s; }
+.wave:nth-child(4) { height: 80%; animation-delay: 0.4s; }
+
+@keyframes equalize {
+  0% { height: 20%; opacity: 0.7; }
+  100% { height: 100%; opacity: 1; }
+}
+
+@keyframes floatActive {
+  0%, 100% { transform: scale(1.15) translateY(0); }
+  50% { transform: scale(1.15) translateY(-5px); box-shadow: 0 20px 45px rgba(216, 8, 28, 0.5); }
 }

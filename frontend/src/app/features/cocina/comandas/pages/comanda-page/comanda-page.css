@@ -71,3 +71,15 @@
   font-weight: 800;
   text-transform: uppercase;
 }
+.comandas-container {
+  position: relative; /* Necesario para el posicionado absoluto de los hijos */
+  padding-top: 20px; /* Espacio para que no se pegue el contenido arriba */
+}
+
+/* Contenedor del botón flotante arriba a la derecha */
+.kds-header-actions {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  z-index: 100; /* Por encima de las tarjetas */
+}
