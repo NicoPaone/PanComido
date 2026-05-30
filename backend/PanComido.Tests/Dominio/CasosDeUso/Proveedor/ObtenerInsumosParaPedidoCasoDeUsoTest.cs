@@ -170,13 +170,13 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
             int proveedorId = 1;
             int restauranteId = 1;
             var insumosProveedor = new List<DOM.Insumo>
-    {
-        new DOM.Insumo { Id = 10, Nombre = "Tomate"},
-    };
-            var insumosResto = new List<DOM.Insumo>
-    {
-        new DOM.Insumo { Id = 99, Nombre = "Cebolla", StockMinimo = 10},
-    };
+            {
+                new DOM.Insumo { Id = 10, Nombre = "Tomate"},
+            };
+                    var insumosResto = new List<DOM.Insumo>
+            {
+                new DOM.Insumo { Id = 99, Nombre = "Cebolla", StockMinimo = 10},
+            };
             _insumoRepoMock
                 .Setup(r => r.ObtenerInsumosDelProveedorAsync(proveedorId, restauranteId))
                 .ReturnsAsync(insumosProveedor);
