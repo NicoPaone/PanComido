@@ -33,15 +33,10 @@ export class Modal {
 
   // Detecta si el clic fue en el fondo oscuro
   onBackdropClick(event: MouseEvent) {
-    const dialog = this.modalRef().nativeElement;
-    const rect = dialog.getBoundingClientRect();
-    
-    // Si el clic ocurre fuera de las coordenadas de la caja blanca, cerramos
-    const isInDialog = (rect.top <= event.clientY && event.clientY <= rect.top + rect.height &&
-      rect.left <= event.clientX && event.clientX <= rect.left + rect.width);
-      
-    if (!isInDialog) {
+     // Si el clic cayó exactamente en el fondo (el dialog host) y no en un div hijo
+    if (event.target === this.modalRef().nativeElement) {
       this.cerrar();
     }
+  
   }
 }

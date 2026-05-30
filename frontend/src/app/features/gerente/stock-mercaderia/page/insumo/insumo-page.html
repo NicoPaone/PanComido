@@ -17,13 +17,11 @@
     
     <div menu>
       <ul>
-        <li (click)="categoria.set(''); filtroDropdown.cerrar()">Todos</li>
-        <li (click)="categoria.set('Verdura'); filtroDropdown.cerrar()">Verduras</li>
-        <li (click)="categoria.set('Carne'); filtroDropdown.cerrar()">Carnes</li>
-        <li (click)="categoria.set('Lacteo'); filtroDropdown.cerrar()">Lácteos</li>
-        <li (click)="categoria.set('Bebida'); filtroDropdown.cerrar()">Bebidas</li>
-        <li (click)="categoria.set('Almacen'); filtroDropdown.cerrar()">Almacén</li>
-
+        <li (click)="categoria.set('Categorías'); filtroDropdown.cerrar()">Todos</li>
+        @for(cat of state.categoriasUnicas(); track cat){
+          <li (click)="categoria.set(cat); filtroDropdown.cerrar()">{{cat}}</li>
+        }
+        
       </ul>
     </div>
   </app-dropdown>
@@ -35,14 +33,36 @@
     tamanio="md"
     (clicked)="abrirModalCrear(modalFormulario)">
   </app-boton>
-  
 </app-page-toolbar>
 
 <div class="stock-list-container">
   <div class="stock-list-button">
-    <app-boton label="Productos" variante="tab" tamanio="md" [activo]="tabSeleccionada() === 'productos'" (clicked)="tabSeleccionada.set('productos')"></app-boton>
-    <app-boton label="Bodegas" variante="tab" [activo]="tabSeleccionada() === 'bodegas'" (clicked)="tabSeleccionada.set('bodegas')"></app-boton>
-    <app-boton label="Lotes" variante="tab" [activo]="tabSeleccionada() === 'lotes'" (clicked)="tabSeleccionada.set('lotes')"></app-boton>
+    <app-boton label="Productos" variante="tab" tamanio="md" 
+      [activo]="tabSeleccionada() === 'productos'" 
+      (clicked)="tabSeleccionada.set('productos')">
+    </app-boton>
+
+    <app-dropdown #dropdownBodegas>
+
+      <app-boton trigger label="Bodegas" variante="tab" 
+      [activo]="tabSeleccionada() === 'bodegas'" 
+      (clicked)="tabSeleccionada.set('bodegas')">
+    </app-boton>
+      <div menu>
+          <ul>
+            @for(bodega of bodegaState.bodegas(); track bodega.id) {
+              <li (click)="seleccionarBodega(bodega.id); dropdownBodegas.cerrar()">
+                {{ bodega.nombre }}
+              </li>
+            }
+          </ul>
+        </div>
+  </app-dropdown>
+    <app-boton label="Lotes" variante="tab" 
+    [activo]="tabSeleccionada() === 'lotes'" 
+      (clicked)="tabSeleccionada.set('lotes')">
+    </app-boton>
+
   </div>
 
   <app-insumo-list 
@@ -53,4 +73,15 @@
 
  <!-- ?ESTO ES NECESARIO PARA RENDERIZAR EL MODAL EN LA VISTA -->
 <app-modal #modalFormulario [titulo]="tituloModal()" (cerrado)="limpiarEstadoModal()">
-   </app-modal>
+
+  @if(modalAbierto()){
+
+    <app-producto-form
+    [producto]="productoSeleccionado()"
+    [bodegas]="bodegaState.bodegas()"
+    [categorias]="state.categoriasUnicas()"
+    (guardar)="guardarCambios($event, modalFormulario)"
+    ></app-producto-form>
+  }
+
+    </app-modal>

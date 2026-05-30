@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { Insumo } from '../../../../core/models/producto-stock';
+import { Insumo } from '../../../../../core/models/insumos/insumo';
 import { StockMercaderiaService } from './stock-mercaderia-service';
 
 @Injectable({
@@ -15,8 +15,15 @@ export class StockMercaderiaState {
   productos = this._productos.asReadonly();
   cargando = this._cargando.asReadonly();
 
+  categoriasUnicas = computed(() =>{
+    const list = this._productos();
+    const unicas = new Set(list.map( p => p.categoria).filter(c=> Boolean(c)));
+
+    return Array.from(unicas).sort();
+  })
+
   productosCriticos = computed(() =>
-    this._productos().filter(p => p.stock <= p.stockMinimo)
+    this._productos().filter(p => p.stockActual <= p.stockMinimo)
   );
 
   cantidadProductosCriticos = computed(() =>

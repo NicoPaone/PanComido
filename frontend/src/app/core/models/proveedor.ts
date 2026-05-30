@@ -1,4 +1,4 @@
-import { UnidadMedida } from '../models/producto-stock';
+import { UnidadMedida } from './insumos/insumo';
 
 export type EstadoPedidoProveedor = 'Pendiente' | 'Confirmado' | 'Recibido' | 'Cancelado';
 

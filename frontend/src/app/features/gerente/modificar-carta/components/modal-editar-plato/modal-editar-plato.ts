@@ -5,7 +5,7 @@ import { Boton } from '../../../../../shared/ui/botones/boton/boton';
 import { ToggleComponent } from '../../../../../shared/ui/toggle/toggle';
 import { Buscador } from '../../../../../shared/ui/buscador/buscador';
 import { calcularCostoReceta } from '../../../../../core/services/plato.service';
-import { Insumo, INSUMOS_MOCK } from '../../../../../core/models/producto-stock';
+import { Insumo, INSUMOS_MOCK } from '../../../../../core/models/insumos/insumo';
 
 @Component({
   selector: 'app-modal-editar-plato',

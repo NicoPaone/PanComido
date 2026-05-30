@@ -1,7 +1,7 @@
 import { Component, output, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Buscador } from '../../../../../shared/ui/buscador/buscador';
-import { INSUMOS_MOCK, Insumo, UnidadMedida } from '../../../../../core/models/producto-stock';
+import { INSUMOS_MOCK, Insumo, UnidadMedida } from '../../../../../core/models/insumos/insumo';
 import { RecetaIngrediente } from '../../../../../core/models/plato';
 
 @Component({
