@@ -6,8 +6,8 @@
         public string Nombre { get; set; }
         public int InsumoId { get; set; }
         public decimal Cantidad { get; set; }
-        public DateTime FechaAdquisicion { get; set; }
+        public DateOnly FechaAdquisicion { get; set; }
         // Relación de navegación
-        public DateTime FechaVencimiento { get; set; }
+        public DateOnly FechaVencimiento { get; set; }
     }
 }

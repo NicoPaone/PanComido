@@ -15,12 +15,14 @@ namespace PanComido.Presentacion.Controllers
         private readonly ObtenerHistorialPedidosCasoDeUso _obtenerHistorialCasoDeUso;
         private readonly ListarInsumosDelProveedorCasoDeUso _listarInsumosDelProveedorCasoDeUso;
         private readonly CrearPedidoCasoDeUso _crearPedidoCasoDeUso;
+        private readonly ObtenerInsumosParaPedidoCasoDeUso _obtenerInsumosParaPedidoCasoDeUso;
 
         private readonly IProveedorRepositorio _proveedorRepositorio;
 
         private readonly ProveedorMapper _proveedorMapper;
         private readonly PedidoMapper _pedidoMapper;
         private readonly InsumoMapper _insumoMapper;
+        private readonly InsumoConsugerenciaMapper _insumoConsugerenciaMapper;
 
 
         public ProveedorController(
@@ -28,20 +30,24 @@ namespace PanComido.Presentacion.Controllers
             ObtenerHistorialPedidosCasoDeUso obtenerHistorialCasoDeUso,
             ListarInsumosDelProveedorCasoDeUso listarInsumosDelProveedorCasoDeUso,
             CrearPedidoCasoDeUso crearPedidoCasoDeUso,
+            ObtenerInsumosParaPedidoCasoDeUso obtenerInsumosParaPedidoCasoDeUso,
             IProveedorRepositorio proveedorRepositorio,
             ProveedorMapper proveedorMapper,
             PedidoMapper pedidoMapper,
-            InsumoMapper insumoMapper
+            InsumoMapper insumoMapper,
+            InsumoConsugerenciaMapper insumoConsugerenciaMapper
             )
         {
             _listarProveedorCasoDeUso = listarProveedorCasoDeUso;
             _obtenerHistorialCasoDeUso = obtenerHistorialCasoDeUso;
             _listarInsumosDelProveedorCasoDeUso = listarInsumosDelProveedorCasoDeUso;
             _crearPedidoCasoDeUso = crearPedidoCasoDeUso;
+            _obtenerInsumosParaPedidoCasoDeUso = obtenerInsumosParaPedidoCasoDeUso;
             _proveedorRepositorio = proveedorRepositorio;
             _proveedorMapper = proveedorMapper;
             _pedidoMapper = pedidoMapper;
             _insumoMapper = insumoMapper;
+            _insumoConsugerenciaMapper = insumoConsugerenciaMapper;
         }
 
         [HttpGet]
@@ -101,6 +107,15 @@ namespace PanComido.Presentacion.Controllers
             return Ok(dto);
         }
 
+        [HttpGet("{idProveedor}/insumos-a-reponer")]
+        public async Task<ActionResult<List<InsumoParaReponerResponseDto>>> obtenerInsumosAReponer(int idProveedor)
+        {
+            var restauranteId = ObtenerRestauranteId();
+            var insumosSugeridos = await _obtenerInsumosParaPedidoCasoDeUso.EjecutarAsync(idProveedor, restauranteId);
+
+            var dtos = _insumoConsugerenciaMapper.aListaDto(insumosSugeridos);
+            return Ok(dtos);
+        }
         private int ObtenerRestauranteId()
         {
             return 1;

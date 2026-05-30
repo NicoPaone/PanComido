@@ -26,6 +26,6 @@ namespace PanComido.Dominio.Entidades
         // datos del subtipo
         public string Categoria { get; set; }      // categoria_ingrediente o categoria_bebida
         public string UnidadMedida { get; set; }   // solo ingredientes
-
+        public List<Lote> Lotes { get; set; } = new List<Lote>();
     }
 }
