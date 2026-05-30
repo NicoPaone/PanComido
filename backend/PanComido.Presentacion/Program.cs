@@ -55,6 +55,7 @@ builder.Services.AddScoped<IUnidadMedidaRepositorio, UnidadMedidaRepositorio>();
 
 // Casos de uso
 builder.Services.AddScoped<ListarInsumoCasoDeUso>();
+builder.Services.AddScoped<CrearInsumoCasoDeUso>();
 builder.Services.AddScoped<ListarProveedorCasoDeUso>();
 builder.Services.AddScoped<ObtenerHistorialPedidosCasoDeUso>();
 builder.Services.AddScoped<ListarBodegasCasoDeUso>();

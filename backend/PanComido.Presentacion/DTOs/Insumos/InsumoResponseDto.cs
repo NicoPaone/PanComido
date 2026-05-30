@@ -1,6 +1,6 @@
 ﻿using PanComido.Infraestructura.Persistencia.Entidades;
 
-namespace PanComido.Presentacion.DTOs
+namespace PanComido.Presentacion.DTOs.Insumos
 {
     public class InsumoResponseDto
     {

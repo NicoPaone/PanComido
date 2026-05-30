@@ -53,5 +53,15 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
             return efLista.Select(a => _mapper.paraDominio(a)).ToList();
         }
+
+        public async Task CrearAsync(DOM.Insumo insumoDominio)
+        {
+            
+            EF.Articulo efArticulo = _mapper.paraEntidad(insumoDominio);
+
+            await _ctx.Articulos.AddAsync(efArticulo);
+
+            await _ctx.SaveChangesAsync();
+        }
     }
 }
