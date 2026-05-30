@@ -4,6 +4,7 @@ using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.Entidades;
 using PanComido.Presentacion.DTOs.Insumos;
 using PanComido.Presentacion.Mappers;
+using PanComido.Presentacion.SesionMock;
 
 namespace PanComido.Presentacion.Controllers
 {
@@ -25,7 +26,7 @@ namespace PanComido.Presentacion.Controllers
         [HttpGet]
         public async Task<ActionResult<List<InsumoResponseDto>>> obtener() {
 
-            var restauranteId = ObtenerRestauranteId();
+            var restauranteId = HttpContext.ObtenerRestauranteId();
 
             var insumos = await _listarInsumoCasoDeUso.EjecutarAsync(restauranteId);
 
@@ -41,7 +42,7 @@ namespace PanComido.Presentacion.Controllers
 
             try
             {
-                int restauranteId = ObtenerRestauranteId();
+                int restauranteId = HttpContext.ObtenerRestauranteId();
 
                 Insumo insumoDominio = _mapper.aDominio(request);
 
@@ -65,10 +66,6 @@ namespace PanComido.Presentacion.Controllers
             }
         }
 
-        private int ObtenerRestauranteId()
-        {
-            return 1;
-        }
 
 
 
