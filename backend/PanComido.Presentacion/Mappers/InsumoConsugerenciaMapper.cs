@@ -14,7 +14,9 @@ namespace PanComido.Presentacion.Mappers
                 UnidadMedida = insumoSugerido.UnidadMedida,
                 StockActual = insumoSugerido.StockActual,
                 CantidadSugerida = insumoSugerido.CantidadSugerida,
-                EstadoStock = insumoSugerido.EstadoStock?.ToString()
+                EstadoStock = insumoSugerido.EstadoStock?.ToString(),
+                PrecioUnitario = insumoSugerido.PrecioUnitario,
+                PrecioTotalSugerido = insumoSugerido.PrecioTotalSugerido
             };
         }
 

@@ -15,13 +15,14 @@ namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
         private readonly IInsumoRepositorio _insumoRepositorio;
         private readonly IEstadoStockInsumoServicio _estadoStockInsumoServicio;
         private readonly ILoteRepositorio _loteRepositorio;
+        private readonly IPedidoRepositorio _pedidoRepositorio;
 
-        public ObtenerInsumosParaPedidoCasoDeUso(IInsumoRepositorio insumoRepositorio, IEstadoStockInsumoServicio estadoStockInsumoServicio, ILoteRepositorio loteRepositorio)
+        public ObtenerInsumosParaPedidoCasoDeUso(IInsumoRepositorio insumoRepositorio, IEstadoStockInsumoServicio estadoStockInsumoServicio, ILoteRepositorio loteRepositorio, IPedidoRepositorio pedidoRepositorio)
         {
             _insumoRepositorio = insumoRepositorio;
             _estadoStockInsumoServicio = estadoStockInsumoServicio;
             _loteRepositorio = loteRepositorio;
-
+            _pedidoRepositorio = pedidoRepositorio;
         }
 
         public async Task<List<InusmoConSugerencia>> EjecutarAsync(int proveedorId, int restauranteId)
@@ -44,6 +45,9 @@ namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
                 else if (estadoStock == EstadoStock.Bajo) cantidadSugerida = insumo.StockMinimo;
                 else continue;
 
+                decimal ultimoPrecioCompra = await _pedidoRepositorio.ObtenerUltimoPrecioCompraUnitarioAsync(insumo.Id, proveedorId);
+                decimal calcularPrecioTotal = cantidadSugerida * ultimoPrecioCompra;
+
                 insumosConSugerencia.Add(new InusmoConSugerencia
                     {
                         Id = insumo.Id,
@@ -51,8 +55,10 @@ namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
                         UnidadMedida = insumo.UnidadMedida,
                         StockActual = stockActualInsumo,
                         CantidadSugerida = cantidadSugerida,
-                        EstadoStock = estadoStock.ToString()
-                    });
+                        EstadoStock = estadoStock.ToString(),
+                        PrecioUnitario = ultimoPrecioCompra,
+                        PrecioTotalSugerido = calcularPrecioTotal
+                });
             }
             return insumosConSugerencia;
         }

@@ -8,5 +8,7 @@
         public decimal StockActual { get; set; }
         public decimal CantidadSugerida { get; set; }
         public string EstadoStock { get; set; }
+        public decimal PrecioUnitario { get; set; }
+        public decimal PrecioTotalSugerido { get; set; }
     }
 }

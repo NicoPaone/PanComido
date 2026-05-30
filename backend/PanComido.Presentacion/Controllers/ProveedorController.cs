@@ -16,6 +16,7 @@ namespace PanComido.Presentacion.Controllers
         private readonly ListarInsumosDelProveedorCasoDeUso _listarInsumosDelProveedorCasoDeUso;
         private readonly CrearPedidoCasoDeUso _crearPedidoCasoDeUso;
         private readonly ObtenerInsumosParaPedidoCasoDeUso _obtenerInsumosParaPedidoCasoDeUso;
+        private readonly ConfirmarPedidoCasoDeUso _confirmarPedidoCasoDeUso;
 
         private readonly IProveedorRepositorio _proveedorRepositorio;
 
@@ -31,6 +32,7 @@ namespace PanComido.Presentacion.Controllers
             ListarInsumosDelProveedorCasoDeUso listarInsumosDelProveedorCasoDeUso,
             CrearPedidoCasoDeUso crearPedidoCasoDeUso,
             ObtenerInsumosParaPedidoCasoDeUso obtenerInsumosParaPedidoCasoDeUso,
+            ConfirmarPedidoCasoDeUso confirmarPedidoCasoDeUso,
             IProveedorRepositorio proveedorRepositorio,
             ProveedorMapper proveedorMapper,
             PedidoMapper pedidoMapper,
@@ -48,6 +50,7 @@ namespace PanComido.Presentacion.Controllers
             _pedidoMapper = pedidoMapper;
             _insumoMapper = insumoMapper;
             _insumoConsugerenciaMapper = insumoConsugerenciaMapper;
+            _confirmarPedidoCasoDeUso = confirmarPedidoCasoDeUso;
         }
 
         [HttpGet]
@@ -115,6 +118,29 @@ namespace PanComido.Presentacion.Controllers
 
             var dtos = _insumoConsugerenciaMapper.aListaDto(insumosSugeridos);
             return Ok(dtos);
+        }
+
+        [HttpPut("{pedidoId}/confirmar")]
+        public async Task<ActionResult<ConfirmarPedidoResponseDto>> ConfirmarPedido(int pedidoId, [FromBody] ConfirmarPedidoRequestDto request)
+        {
+            var itemsInsumo = request.ListaInsumosPedido.Select(item => new DOM.PedidoInsumo
+            {
+                InsumoId = item.InsumoId,
+                Cantidad = item.Cantidad,
+                PrecioCompra = item.PrecioCompra
+            }).ToList();
+
+            var (pedido, linkWpp) = await _confirmarPedidoCasoDeUso.EjecutarAsync(pedidoId, itemsInsumo);
+
+            var pedidoDto = _pedidoMapper.aDto(pedido);
+
+            var dto = new ConfirmarPedidoResponseDto
+            {
+                PedidoConfirmado = pedidoDto,
+                LinkWpp = linkWpp
+            };
+
+            return Ok(dto);
         }
         private int ObtenerRestauranteId()
         {
