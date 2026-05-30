@@ -43,6 +43,15 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             return efLista.Select(a => _mapper.paraDominio(a)).ToList();
         }
 
+        public async Task<List<DOM.Insumo>> ObtenerInsumosConLotesAsync(int restauranteId)
+        {
+            var efLista = await BaseQuery(restauranteId)
+                                .Include(a => a.Insumo)
+                                    .ThenInclude(i => i.Lotes).ToListAsync();
+
+            return efLista.Select(a => _mapper.paraDominio(a)).ToList();
+        }
+
         public async Task<List<DOM.Insumo>> ObtenerInsumosDelProveedorAsync(int proveedorId, int restauranteId)
         {
             var efLista = await BaseQuery(restauranteId)
@@ -52,6 +61,16 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .ToListAsync();
 
             return efLista.Select(a => _mapper.paraDominio(a)).ToList();
+        }
+
+        public async Task CrearAsync(DOM.Insumo insumoDominio)
+        {
+            
+            EF.Articulo efArticulo = _mapper.paraEntidad(insumoDominio);
+
+            await _ctx.Articulos.AddAsync(efArticulo);
+
+            await _ctx.SaveChangesAsync();
         }
     }
 }

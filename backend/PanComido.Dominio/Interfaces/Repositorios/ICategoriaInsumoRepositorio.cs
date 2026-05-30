@@ -9,7 +9,8 @@ namespace PanComido.Dominio.Interfaces.Repositorios
 {
     public interface ICategoriaInsumoRepositorio
     {
-            Task<List<CategoriaInsumo>> ObtenerCategoriasInsumoAsync();
+        Task<CategoriaInsumo> ObtenerPorIdAsync(int categoriaId);
+        Task<List<CategoriaInsumo>> ObtenerCategoriasInsumoAsync();
             
     }
 }
