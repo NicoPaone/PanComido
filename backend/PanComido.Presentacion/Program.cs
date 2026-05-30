@@ -67,6 +67,7 @@ builder.Services.AddScoped<ListarComandaActivaCocinaCasoDeUso>();
 builder.Services.AddScoped<ListarCategoriasDeInsumosCasoDeUso>();
 builder.Services.AddScoped<ListarUnidadesDeMedidaCasoDeUso>();
 builder.Services.AddScoped<ObtenerInsumosParaPedidoCasoDeUso>();
+builder.Services.AddScoped<ConfirmarPedidoCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();

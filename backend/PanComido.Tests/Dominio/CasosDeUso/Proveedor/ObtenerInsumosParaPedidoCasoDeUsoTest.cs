@@ -17,12 +17,14 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
         private readonly Mock<IInsumoRepositorio> _insumoRepoMock;
         private readonly Mock<ILoteRepositorio> _loteRepoMock;
         private readonly Mock<IEstadoStockInsumoServicio> _estadoInsumoServicioMock;
+        private readonly Mock<IPedidoRepositorio> _pedidoRepoMock;
 
         public ObtenerInsumosParaPedidoCasoDeUsoTest()
         {
             _insumoRepoMock = new Mock<IInsumoRepositorio>();
             _loteRepoMock = new Mock<ILoteRepositorio>();
             _estadoInsumoServicioMock = new Mock<IEstadoStockInsumoServicio>();
+            _pedidoRepoMock = new Mock<IPedidoRepositorio>();
         }
 
         [Fact]
@@ -61,7 +63,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
             var casoDeUso = new ObtenerInsumosParaPedidoCasoDeUso(
                 _insumoRepoMock.Object,
                 _estadoInsumoServicioMock.Object,
-                _loteRepoMock.Object
+                _loteRepoMock.Object,
+                _pedidoRepoMock.Object
                 );
 
             var resultado = await casoDeUso.EjecutarAsync(proveedorId, restauranteId);
@@ -108,7 +111,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
             var casoDeUso = new ObtenerInsumosParaPedidoCasoDeUso(
                 _insumoRepoMock.Object,
                 _estadoInsumoServicioMock.Object,
-                _loteRepoMock.Object
+                _loteRepoMock.Object,
+                _pedidoRepoMock.Object
                 );
 
             var resultado = await casoDeUso.EjecutarAsync(proveedorId, restauranteId);
@@ -155,7 +159,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
             var casoDeUso = new ObtenerInsumosParaPedidoCasoDeUso(
                 _insumoRepoMock.Object,
                 _estadoInsumoServicioMock.Object,
-                _loteRepoMock.Object
+                _loteRepoMock.Object,
+                _pedidoRepoMock.Object
                 );
 
             var resultado = await casoDeUso.EjecutarAsync(proveedorId, restauranteId);
@@ -173,7 +178,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
             {
                 new DOM.Insumo { Id = 10, Nombre = "Tomate"},
             };
-                    var insumosResto = new List<DOM.Insumo>
+            var insumosResto = new List<DOM.Insumo>
             {
                 new DOM.Insumo { Id = 99, Nombre = "Cebolla", StockMinimo = 10},
             };
@@ -193,7 +198,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
             var casoDeUso = new ObtenerInsumosParaPedidoCasoDeUso(
                 _insumoRepoMock.Object,
                 _estadoInsumoServicioMock.Object,
-                _loteRepoMock.Object
+                _loteRepoMock.Object,
+                _pedidoRepoMock.Object
                 );
 
             var resultado = await casoDeUso.EjecutarAsync(proveedorId, restauranteId);
