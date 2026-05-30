@@ -13,12 +13,14 @@ export class MesaStateService {
   private _isEditorMode = signal<boolean>(false);
   private _mesasBackup: Mesa[] = [];
   private _notificacion = signal<{mensaje: string, tipo: 'exito' | 'error'} | null>(null);
+  private _mesaSeleccionada = signal<number | null>(null);
 
   // 2. Estado PÚBLICO (Solo lectura para los componentes)
   mesas = this._mesas.asReadonly();
   loading = this._loading.asReadonly();
   isEditorMode = this._isEditorMode.asReadonly();
   notificacion = this._notificacion.asReadonly();
+  mesaSeleccionada = this._mesaSeleccionada.asReadonly();
 
   // 3. Casos de uso
   cargarMesas(): void {
@@ -44,9 +46,9 @@ export class MesaStateService {
   toggleEditorMode(): void {
     const isEditor = this._isEditorMode();
     if (!isEditor) {
-      // Al entrar al modo edición, sacamos la "foto" inmutable
       this._mesasBackup = JSON.parse(JSON.stringify(this._mesas()));
     }
+    this._mesaSeleccionada.set(null); // <-- Limpiamos menús abiertos
     this._isEditorMode.set(!isEditor);
   }
 
@@ -68,13 +70,20 @@ export class MesaStateService {
       posicionYFin: mesaActual.posicionYFin + deltaY
     };
 
+
     // Optimistic Update: Mutamos el signal para que la mesa quede ahí al instante.
     // Y LISTO. Cero llamadas HTTP acá. Todo se guarda cuando toquen "Guardar Mapa".
     this._mesas.update(mesas =>
       mesas.map(m => m.id === id ? { ...m, ...nuevosDatos } : m)
     );
   }
+  seleccionarMesa(id: number | null): void {
+    // Si estamos en modo editor, el clic no hace nada (porque arrastramos)
+    if (this._isEditorMode()) return;
 
+    // Si hace clic en la misma mesa que ya está abierta, la cerramos (toggle). Si es otra, la abrimos.
+    this._mesaSeleccionada.update(actual => actual === id ? null : id);
+  }
   agregarMesa(forma: FormaMesa): void {
     const mesas = this._mesas();
     const proximoNumero = mesas.length > 0 ? Math.max(...mesas.map(m => m.numeroMesa)) + 1 : 1;
@@ -119,6 +128,15 @@ export class MesaStateService {
 
   eliminarMesa(id: number): void {
     this._mesas.update(mesas => mesas.filter(m => m.id !== id));
+  }
+
+  cambiarEstadoMesa(id: number, nuevoEstado: EstadoMesa): void {
+    // Mutamos el signal para pisar solo la propiedad estadoMesa
+    this._mesas.update(mesas =>
+      mesas.map(m => m.id === id ? { ...m, estadoMesa: nuevoEstado } : m)
+    );
+
+    this._mesaSeleccionada.set(null);
   }
 
   actualizarNumero(id: number, nuevoNumero: number): void {

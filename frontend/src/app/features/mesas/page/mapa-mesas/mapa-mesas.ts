@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { CdkDragEnd, DragDropModule, Point } from '@angular/cdk/drag-drop';
 import { MesaStateService } from '../../services/mesa.state';
 import { MesaItem } from '../../components/mesa-item/mesa-item';
-import { FormaMesa } from '../../../../core/models/mesa.model';
+import { EstadoMesa, FormaMesa } from '../../../../core/models/mesa.model';
 
 @Component({
   selector: 'app-mapa-mesas',
@@ -35,8 +35,24 @@ export class MapaMesas implements OnInit {
     event.source._dragRef.reset();
     this.state.moverMesa(id, deltaX, deltaY);
   }
-
-  onMesaClick(id: number) {
+  ejecutarAccion(id: number, accion: string) {
+    switch (accion) {
+      case 'ocupar':
+        this.state.cambiarEstadoMesa(id, EstadoMesa.Ocupada);
+        break;
+      case 'cerrar':
+        this.state.cambiarEstadoMesa(id, EstadoMesa.Disponible);
+        break;
+      case 'deshabilitar':
+        this.state.cambiarEstadoMesa(id, EstadoMesa.Deshabilitada);
+        break;
+      case 'detalles':
+        // Por ahora lo dejamos vacío con un log, acá vamos a abrir el modal de la comanda después
+        console.log('Próximamente: Abrir modal de detalles para la mesa', id);
+        this.state.seleccionarMesa(null); // Solo cerramos el menú
+        break;
+    }
+  } onMesaClick(id: number) {
     if (this.state.isEditorMode()) return; // En modo editor no abrimos modales
 
 

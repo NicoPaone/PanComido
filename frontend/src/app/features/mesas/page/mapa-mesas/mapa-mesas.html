@@ -27,18 +27,20 @@
         </div>
       }
 
-     <div class="plano-fondo" [class.modo-grilla]="state.isEditorMode()">
+  <div class="plano-fondo" [class.modo-grilla]="state.isEditorMode()" (click)="state.seleccionarMesa(null)">
   @for (mesa of state.mesas(); track mesa.id) {
-    <app-mesa-item
+   <app-mesa-item
       [mesa]="mesa"
       [isEditorMode]="state.isEditorMode()"
+      [isSeleccionada]="state.mesaSeleccionada() === mesa.id"
       cdkDrag
       cdkDragBoundary=".plano-fondo"
       [cdkDragDisabled]="!state.isEditorMode()"
       (cdkDragEnded)="onDragEnded(mesa.id, $event)"
-      (clickMesa)="onMesaClick($event)"
+      (clickMesa)="state.seleccionarMesa($event)"
       (cambioNumero)="state.actualizarNumero($event.id, $event.numero)"
       (eliminar)="state.eliminarMesa($event)"
+      (accionMenu)="ejecutarAccion(mesa.id, $event)"
       style="position: absolute; display: block;"
       [style.left.px]="mesa.posicionXInicio"
       [style.top.px]="mesa.posicionYinicio">

@@ -30,9 +30,9 @@ span.numero {
 }
 
 /* --- ESTILOS DE ESTADO (Colores de fondo) --- */
-.estado-disponible { background-color: #68B342; }
-.estado-ocupada { background-color: #C11818; }
-.estado-reservada { background-color: #F1C40F; color: black; } /* Reservada gets BLACK text */
+.estado-disponible { background-color: #6abf3f; } /* Verde */
+.estado-ocupada { background-color: #bf0f22; }    /* Rojo */
+.estado-reservada { background-color: #f7d627; color: black; }
 .estado-deshabilitada { background-color: #000000; }
 
 /* ESTILOS DE FORMA (Bordes) */
@@ -69,6 +69,57 @@ span.numero {
   margin: 0;
 }
 .input-numero { -moz-appearance: textfield; }
+
+.popup-acciones {
+  position: absolute;
+  top: calc(100% + 12px); /* Aparece exactamente 12px por debajo del borde de la mesa */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #FDF9F1 !important; /* El color crema del diseño */
+  border: 1px solid #333;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 9999;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 140px;
+  cursor: default;
+}
+
+/* La flechita hacia arriba centrada */
+.popup-acciones::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 10px;
+  height: 10px;
+  background-color: #FDF9F1;
+  border-top: 1px solid #333;
+  border-left: 1px solid #333;
+}
+
+.btn-accion {
+  background: white;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #2c3e50;
+  font-weight: normal; /* Anulamos la negrita que hereda de la mesa */
+  text-align: center;
+  font-size: 0.9rem;
+  white-space: nowrap; /* Obliga a que "Ocupar mesa" quede en un solo renglón */
+  transition: all 0.2s;
+}
+
+.btn-accion:hover {
+  background: #e8f6f3;
+  border-color: #1abc9c;
+}
 
 .btn-eliminar {
   position: absolute;
