@@ -12,18 +12,15 @@ import { Mesa } from '../../../../core/models/mesa.model';
 })
 export class MesaItem {
   mesa = input.required<Mesa>();
-  isEditorMode = input<boolean>(false); // Para saber si mostramos el input o el texto
+  isEditorMode = input<boolean>(false);
   isSeleccionada = input<boolean>(false);
 
-  // Output para avisarle al padre si hicieron click
   clickMesa = output<number>();
   accionMenu = output<'ocupar' | 'detalles' | 'deshabilitar' | 'cerrar' | 'abrir'>();
 
-  // Cálculos dinámicos
   ancho = computed(() => this.mesa().posicionXfin - this.mesa().posicionXInicio);
   alto = computed(() => this.mesa().posicionYFin - this.mesa().posicionYinicio);
 
-  // Mapeo dinámico de clases CSS según el enum
   claseEstado = computed(() => `estado-${this.mesa().estadoMesa}`);
   claseForma = computed(() => `forma-${this.mesa().dimensionMesa.forma}`);
 
@@ -31,7 +28,7 @@ export class MesaItem {
   eliminar = output<number>();
 
   manejarClickMesa(event: Event) {
-    event.stopPropagation(); // Frenamos la burbuja acá
+    event.stopPropagation();
     this.clickMesa.emit(this.mesa().id);
   }
 

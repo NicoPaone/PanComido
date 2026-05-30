@@ -7,7 +7,6 @@ import { Mesa, EstadoMesa, FormaMesa } from '../../../core/models/mesa.model';
 export class MesaStateService {
   private api = inject(MesaService);
 
-  // 1. Estado PRIVADO
   private _mesas = signal<Mesa[]>([]);
   private _loading = signal<boolean>(false);
   private _isEditorMode = signal<boolean>(false);
@@ -15,14 +14,12 @@ export class MesaStateService {
   private _notificacion = signal<{mensaje: string, tipo: 'exito' | 'error'} | null>(null);
   private _mesaSeleccionada = signal<number | null>(null);
 
-  // 2. Estado PÚBLICO (Solo lectura para los componentes)
   mesas = this._mesas.asReadonly();
   loading = this._loading.asReadonly();
   isEditorMode = this._isEditorMode.asReadonly();
   notificacion = this._notificacion.asReadonly();
   mesaSeleccionada = this._mesaSeleccionada.asReadonly();
 
-  // 3. Casos de uso
   cargarMesas(): void {
     this._loading.set(true);
     this.api.getMesas().subscribe({
@@ -37,7 +34,6 @@ export class MesaStateService {
   mostrarNotificacion(mensaje: string, tipo: 'exito' | 'error'): void {
     this._notificacion.set({ mensaje, tipo });
 
-    // A los 3 segundos (3000ms), volvemos el signal a null para que desaparezca
     setTimeout(() => {
       this._notificacion.set(null);
     }, 3000);
@@ -53,12 +49,10 @@ export class MesaStateService {
   }
 
   cancelarEdicion(): void {
-    // Restauramos el estado pisándolo con la foto que sacamos antes
     this._mesas.set(JSON.parse(JSON.stringify(this._mesasBackup)));
     this._isEditorMode.set(false);
   }
 
-  // Este método lo va a llamar el mapa cuando sueltes el clic del drag & drop
   moverMesa(id: number, deltaX: number, deltaY: number): void {
     const mesaActual = this._mesas().find(m => m.id === id);
     if (!mesaActual) return;
@@ -71,24 +65,19 @@ export class MesaStateService {
     };
 
 
-    // Optimistic Update: Mutamos el signal para que la mesa quede ahí al instante.
-    // Y LISTO. Cero llamadas HTTP acá. Todo se guarda cuando toquen "Guardar Mapa".
     this._mesas.update(mesas =>
       mesas.map(m => m.id === id ? { ...m, ...nuevosDatos } : m)
     );
   }
   seleccionarMesa(id: number | null): void {
-    // Si estamos en modo editor, el clic no hace nada (porque arrastramos)
     if (this._isEditorMode()) return;
 
-    // Si hace clic en la misma mesa que ya está abierta, la cerramos (toggle). Si es otra, la abrimos.
     this._mesaSeleccionada.update(actual => actual === id ? null : id);
   }
   agregarMesa(forma: FormaMesa): void {
     const mesas = this._mesas();
     const proximoNumero = mesas.length > 0 ? Math.max(...mesas.map(m => m.numeroMesa)) + 1 : 1;
 
-    // 1. Definimos las dimensiones iniciales según la forma elegida
     let ancho = 90;
     let alto = 90;
 
@@ -109,7 +98,6 @@ export class MesaStateService {
         break;
     }
 
-    // 2. Creamos la mesa aplicando la matemática a las coordenadas finales
     const nuevaMesa: Mesa = {
       id: Date.now(),
       codigoInvitacion: `MESA-TEMP`,
@@ -118,9 +106,9 @@ export class MesaStateService {
       estadoMesa: EstadoMesa.Disponible,
       dimensionMesa: { id: 0, forma, imagen: '' },
       posicionXInicio: 15,
-      posicionXfin: 15 + ancho, // Calculado dinámicamente
+      posicionXfin: 15 + ancho,
       posicionYinicio: 15,
-      posicionYFin: 15 + alto   // Calculado dinámicamente
+      posicionYFin: 15 + alto
     };
 
     this._mesas.update(m => [...m, nuevaMesa]);
@@ -131,7 +119,6 @@ export class MesaStateService {
   }
 
   cambiarEstadoMesa(id: number, nuevoEstado: EstadoMesa): void {
-    // Mutamos el signal para pisar solo la propiedad estadoMesa
     this._mesas.update(mesas =>
       mesas.map(m => m.id === id ? { ...m, estadoMesa: nuevoEstado } : m)
     );
@@ -148,14 +135,12 @@ export class MesaStateService {
   guardarConfiguracion(): void {
     const mesas = this._mesas();
 
-    // 1. Validar duplicados
     const numeros = mesas.map(m => m.numeroMesa);
     if (new Set(numeros).size !== numeros.length) {
       this.mostrarNotificacion('Hay mesas con números duplicados. Corregilo antes de guardar.', 'error');
       return;
     }
 
-    // 2. Validar colisiones
     for (let i = 0; i < mesas.length; i++) {
       for (let j = i + 1; j < mesas.length; j++) {
         const mesaA = mesas[i];
@@ -175,7 +160,6 @@ export class MesaStateService {
       }
     }
 
-    // 3. Éxito
     console.log('JSON LISTO PARA MANDAR AL BACKEND CON PUT:', mesas);
     this._isEditorMode.set(false);
     this.mostrarNotificacion('Mapa guardado con éxito', 'exito');
