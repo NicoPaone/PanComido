@@ -1,4 +1,4 @@
-﻿namespace PanComido.Presentacion.DTOs
+﻿namespace PanComido.Presentacion.DTOs.Proveedores
 {
     public class ProveedorResponseDto
     {
