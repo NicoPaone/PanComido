@@ -32,7 +32,7 @@ import { configuracionRestauranteMock } from '../../../../../app/core/intercepto
   styleUrls: ['./ver-carta.css'],
 
 })
-export class VerCartaComponent {
+export class VerCarta {
 
   constructor(
     private router: Router,

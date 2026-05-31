@@ -14,7 +14,7 @@ import { configuracionRestauranteMock } from '../../../../core/interceptors/hand
   templateUrl: './nro-de-mesa.html',
   styleUrls: ['./nro-de-mesa.css']
 })
-export class NroDeMesaComponent {
+export class NroDeMesa {
 constructor(
   private router: Router
 ) {}

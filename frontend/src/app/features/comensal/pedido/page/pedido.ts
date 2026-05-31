@@ -28,7 +28,7 @@ import { configuracionRestauranteMock } from '../../../../core/interceptors/hand
   templateUrl: './pedido.html',
   styleUrls: ['./pedido.css']
 })
-export class PedidoComponent
+export class Pedido
 implements OnInit {
 
   pedidos: ItemPedido[] = [];

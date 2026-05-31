@@ -15,7 +15,7 @@ import { HeaderEscanearMesa } from '../components/header-escanear-mesa/header-es
   templateUrl: './escanear-mesa.html',
   styleUrls: ['./escanear-mesa.css']
 })
-export class ScanQrComponent
+export class ScanQr
 implements AfterViewInit {
 
   @ViewChild('video')
