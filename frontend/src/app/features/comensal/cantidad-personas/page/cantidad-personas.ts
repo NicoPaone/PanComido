@@ -3,6 +3,8 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { HeaderCantidadPersonas } from '../components/header-cantidad-personas/header-cantidad-personas';
+import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
+import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
 
 @Component({
   selector: 'app-cantidad-personas',
@@ -10,7 +12,8 @@ import { HeaderCantidadPersonas } from '../components/header-cantidad-personas/h
   imports: [
     CommonModule,
     Boton,
-    HeaderCantidadPersonas
+    HeaderCantidadPersonas, 
+    BotonComensal
   ],
   templateUrl: './cantidad-personas.html',
   styleUrls: ['./cantidad-personas.css']
@@ -19,6 +22,7 @@ export class CantidadPersonasComponent {
 
   cantidadPersonas = 1;
   maxCantidad = 5;
+   configuracion = configuracionRestauranteMock;
 
   constructor(
     private router: Router

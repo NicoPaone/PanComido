@@ -29,8 +29,13 @@
     <app-boton variante="outline" label="Cancelar">
     </app-boton>
 
-    <app-boton variante="success" label="Aceptar" (clicked)="aceptar()">
-    </app-boton>
+    <app-boton-comensal
+  [backgroundColor]="configuracion.paleta.botonPrimario"
+  [textColor]="configuracion.paleta.textoClaro"
+  label="Aceptar"
+  
+  (clicked)="aceptar()">
+</app-boton-comensal>
 
   </div>
 

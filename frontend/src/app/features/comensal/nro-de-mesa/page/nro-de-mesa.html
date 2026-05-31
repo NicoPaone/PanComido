@@ -20,17 +20,17 @@
   <app-boton
     variante="outline"
     label="Cancelar"
-    class="flex-fill"
+
   >
   </app-boton>
 
-  <app-boton
-    variante="success"
-    label="Aceptar"
-    class="flex-fill"
-     (clicked)="irACantidadPersonas()"
-  >
-  </app-boton>
+<app-boton-comensal
+  [backgroundColor]="configuracion.paleta.botonPrimario"
+  [textColor]="configuracion.paleta.textoClaro"
+  label="Aceptar"
+
+  (clicked)="irACantidadPersonas()">
+</app-boton-comensal>
 
 </div>
 

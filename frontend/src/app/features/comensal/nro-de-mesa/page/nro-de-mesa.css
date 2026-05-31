@@ -62,15 +62,7 @@ margin-top: 50px;
 
 }
 
-.mesa-buttons {
 
-  width: 100%;
-
-  display: flex;
-
-  gap: 16px;
-
-}
 
 .mesa-buttons button {
 
@@ -81,5 +73,14 @@ margin-top: 50px;
   font-size: 18px;
 
   border-radius: 14px;
+
+}
+
+.mesa-buttons{
+
+  display: flex;
+ justify-content: center;
+ align-items: center;
+  gap: 16px;
 
 }

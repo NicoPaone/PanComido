@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Plato } from '../../../../../app/core/models/plato';
 import { Buscador } from '../../../../../app/shared/ui/buscador/buscador';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
-
+import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
 import { ListaPlatosComensalComponent } from '../components/lista-platos-comensal/lista-platos-comensal';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 import { PedidoService } from '../../../../../app/core/services/pedido.service';
 import { FormsModule } from '@angular/forms';
 import { ItemPedido } from '../../../../core/models/item-pedido';
+import { configuracionRestauranteMock } from '../../../../../app/core/interceptors/handlers/configuracion-restaurante.mock';
 
 @Component({
   selector: 'app-ver-carta',
@@ -23,6 +24,7 @@ import { ItemPedido } from '../../../../core/models/item-pedido';
     ListaPlatosComensalComponent,
     Buscador,
     Boton,
+      BotonComensal,
     FontAwesomeModule,
     FormsModule
   ],
@@ -47,6 +49,7 @@ export class VerCartaComponent {
   faFilter = faFilter;
   tipoOrden: string = '';
   cantidadPersonas: number = 1;
+  configuracion = configuracionRestauranteMock;
 
   @Input() logoUrl: string = 'assets/images/logo/logo_el_ferroviario.png';
 
@@ -357,6 +360,10 @@ ngOnInit() {
   this.cantidadPersonas = history.state?.cantidadPersonas ?? 1;
 }
 
-
-
+get cantidadTotalPedido(): number {
+  return this.pedidoService.obtenerPedidos().reduce(
+    (total, item) => total + item.cantidad,
+    0
+  );
+}
 }
