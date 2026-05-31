@@ -7,7 +7,7 @@ using PanComido.Presentacion.SesionMock;
 
 namespace PanComido.Presentacion.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("bodega")]
     [ApiController]
     public class BodegaController : ControllerBase
     {
