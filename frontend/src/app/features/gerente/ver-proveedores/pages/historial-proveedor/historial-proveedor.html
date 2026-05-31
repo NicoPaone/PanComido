@@ -199,9 +199,9 @@
               (click)="seleccionarIngrediente(producto)">
               <span>
                 <strong>{{ producto.nombre }}</strong>
-                <span>{{ producto.stock }} {{ producto.unidadMedida }} disponibles</span>
+                <span>{{ producto.stockActual }} {{ producto.unidadMedida }} disponibles</span>
               </span>
-              <span>{{ producto.fechaVencimiento | date:'dd/MM/yyyy' }}</span>
+              <span>{{ producto.vencimiento | date:'dd/MM/yyyy' }}</span>
             </button>
           }
         </div>

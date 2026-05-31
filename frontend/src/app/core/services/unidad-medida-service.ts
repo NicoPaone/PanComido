@@ -10,7 +10,7 @@ export class UnidadMedidaService {
 
   private api = inject(ApiClient);
 
-  private endpoint = 'UnidadMedida'
+  private endpoint = 'unidad-medida'
 
   obtenerUnidades(): Observable<UnidadMedida[]> {
     return this.api.get<UnidadMedida[]>(this.endpoint);

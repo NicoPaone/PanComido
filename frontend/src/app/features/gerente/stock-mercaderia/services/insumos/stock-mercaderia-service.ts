@@ -9,7 +9,7 @@ import { CrearInsumoRequest } from '../../../../../core/models/insumos/crear-ins
 
 export class StockMercaderiaService {
   private api = inject(ApiService);
-  private endpoint = 'Insumo';
+  private endpoint = 'insumo';
 
   getStockMercaderia(): Observable<Insumo[]> {
     return this.api.get<InsumoResponseDto[]>(this.endpoint).pipe(
@@ -41,8 +41,11 @@ export class StockMercaderiaService {
 
  
   crear(producto: CrearInsumoRequest): Observable<Insumo> {
-    return this.api.post<InsumoResponseDto>(this.endpoint, producto).pipe(
-      map(dto => this.toDomain(dto))
+    return this.api.post< {insumo: InsumoResponseDto, mensaje: string} >(this.endpoint, producto).pipe(
+      map(response => {
+        const insumoData = response.insumo;
+        return this.toDomain(insumoData);
+      })
     );
   }
 
