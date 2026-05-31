@@ -35,54 +35,8 @@ export const routes: Routes = [
 
    {
       path: 'comensal',
+      loadChildren: () => import('./features/comensal/comensal.routes').then(m => m.COMENSAL_ROUTES)
 
-      children: [
-
-         {
-            path: 'escanear-mesa',
-            loadComponent: () =>
-               import('./features/comensal/escanear-mesa/page/escanear-mesa')
-                  .then(m => m.ScanQrComponent)
-         },
-         {
-            path: 'nro-de-mesa',
-            loadComponent: () =>
-               import('./features/comensal/nro-de-mesa/page/nro-de-mesa')
-                  .then(m => m.NroDeMesaComponent)
-         },
-         {
-            path: 'cantidad-personas',
-            loadComponent: () =>
-               import('./features/comensal/cantidad-personas/page/cantidad-personas')
-                  .then(m => m.CantidadPersonasComponent)
-         },
-         {
-            path: 'ver-carta',
-            loadComponent: () =>
-               import('./features/comensal/ver-carta/page/ver-carta')
-                  .then(m => m.VerCartaComponent)
-         },
-
-         {
-            path: 'pedido',
-            loadComponent: () =>
-               import('./features/comensal/pedido/page/pedido')
-                  .then(m => m.PedidoComponent)
-         },
-         {
-            path: 'personalizar-plato',
-            loadComponent: () =>
-               import('./features/comensal/personalizar-plato/page/personalizar-plato')
-                  .then(m => m.PersonalizarPlatoComponent)
-         },
-
-         {
-            path: '',
-            redirectTo: 'ver-carta',
-            pathMatch: 'full'
-         }
-
-      ]
    },
 
 ];

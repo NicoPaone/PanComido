@@ -13,14 +13,14 @@ import {
 
 import { Router } from '@angular/router';
 
-import { VerCartaComponent } from './ver-carta';
+import { VerCarta } from './ver-carta';
 
 import { PedidoService } from '../../../../../app/core/services/pedido.service';
 
 describe('VerCartaComponent', () => {
 
-  let component: VerCartaComponent;
-  let fixture: ComponentFixture<VerCartaComponent>;
+  let component: VerCarta;
+  let fixture: ComponentFixture<VerCarta>;
 
   let pedidoServiceMock: any;
   let routerMock: any;
@@ -36,7 +36,7 @@ describe('VerCartaComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [VerCartaComponent],
+      imports: [VerCarta],
       providers: [
         {
           provide: PedidoService,
@@ -49,7 +49,7 @@ describe('VerCartaComponent', () => {
       ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(VerCartaComponent);
+    fixture = TestBed.createComponent(VerCarta);
 
     component = fixture.componentInstance;
 

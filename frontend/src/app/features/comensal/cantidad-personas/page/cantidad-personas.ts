@@ -18,7 +18,7 @@ import { configuracionRestauranteMock } from '../../../../core/interceptors/hand
   templateUrl: './cantidad-personas.html',
   styleUrls: ['./cantidad-personas.css']
 })
-export class CantidadPersonasComponent {
+export class CantidadPersonas {
 
   cantidadPersonas = 1;
   maxCantidad = 5;

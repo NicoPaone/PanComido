@@ -16,7 +16,7 @@ import { Boton } from '../../../../shared/ui/botones/boton/boton';
   templateUrl: './personalizar-plato.html',
   styleUrls: ['./personalizar-plato.css']
 })
-export class PersonalizarPlatoComponent implements OnInit {
+export class PersonalizarPlato implements OnInit {
 
   plato: any;
 
