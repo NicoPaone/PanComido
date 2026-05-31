@@ -1,0 +1,120 @@
+<div class="container-fluid p-3 bg-light min-vh-100">
+
+  <!-- VOLVER -->
+  <div
+    class="d-flex align-items-center gap-2 mb-4 volver"
+    (click)="volver()"
+  >
+
+    <span class="material-symbols-outlined">
+      arrow_back
+    </span>
+
+    <span class="fw-semibold">
+      Volver al pedido
+    </span>
+
+  </div>
+
+  <!-- CARD -->
+  <div class="card border-0 shadow-sm rounded-4 p-3">
+
+    <!-- IMAGEN -->
+    <img
+      [src]="plato?.plato?.imagen"
+      class="img-fluid rounded-4 mb-4 plato-img"
+    >
+
+    <!-- TITULO -->
+    <h2 class="fw-bold mb-2">
+      {{ plato?.plato?.nombre }}
+    </h2>
+
+    <!-- DESCRIPCION -->
+    <p class="text-muted mb-4">
+      {{ plato?.plato?.descripcion }}
+    </p>
+
+    <!-- EXTRAS -->
+    <div class="mb-4">
+
+      <h5 class="fw-bold mb-3">
+        Agregar extras
+      </h5>
+
+      <div class="d-flex flex-wrap gap-2">
+
+        @for (extra of ingredientesExtra; track extra) {
+
+          <div
+            class="chip"
+            [class.selected]="extrasSeleccionados.includes(extra)"
+            (click)="toggleExtra(extra)"
+          >
+            {{ extra }}
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+    <!-- REMOVER -->
+    <div class="mb-4">
+
+      <h5 class="fw-bold mb-3">
+        Remover ingredientes
+      </h5>
+
+      <div class="d-flex flex-wrap gap-2">
+
+        @for (ingrediente of ingredientesRemover; track ingrediente) {
+
+          <div
+            class="chip remove"
+            [class.selected-remove]="
+              removidosSeleccionados.includes(ingrediente)
+            "
+            (click)="toggleRemover(ingrediente)"
+          >
+            {{ ingrediente }}
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+    <!-- OBSERVACIONES -->
+    <div class="mb-4">
+
+      <h5 class="fw-bold mb-3">
+        Observaciones
+      </h5>
+
+      <textarea
+        class="form-control rounded-4"
+        rows="4"
+        placeholder="Ej: sin sal, bien cocido, etc."
+        [(ngModel)]="observaciones"
+      >
+      </textarea>
+
+    </div>
+
+    <!-- BOTON -->
+    <app-boton
+      variante="success"
+      class="w-100"
+      (click)="guardarCambios()"
+    >
+
+      Guardar cambios
+
+    </app-boton>
+
+  </div>
+
+</div>

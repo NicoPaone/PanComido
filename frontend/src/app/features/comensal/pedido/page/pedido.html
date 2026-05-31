@@ -1,11 +1,7 @@
 <div class="container-fluid p-3 bg-light min-vh-100">
 
   <!-- VOLVER -->
-  <div
-    class="d-flex align-items-center gap-2 mb-4"
-    (click)="volver()"
-    style="cursor: pointer;"
-  >
+  <div class="d-flex align-items-center gap-2 mb-4" (click)="volver()" style="cursor: pointer;">
 
     <span class="material-symbols-outlined">
       arrow_back
@@ -23,28 +19,19 @@
   </h2>
 
   <!-- CARD PLATOS -->
-  <div
-    *ngFor="let item of pedidos; let i = index"
-    class="card border-0 shadow-sm rounded-4 p-3 mb-4"
-  >
+  <div *ngFor="let item of pedidos; let i = index" class="card border-0 shadow-sm rounded-4 p-3 mb-4">
 
     <!-- BOTON ELIMINAR -->
     <div class="d-flex justify-content-end">
 
-      <span
-        class="material-symbols-outlined text-dark"
-        style="cursor: pointer;"
-        (click)="eliminarPedido(i)"
-      >
+      <span class="material-symbols-outlined text-dark" style="cursor: pointer;" (click)="eliminarPedido(i)">
         close
       </span>
 
     </div>
 
     <!-- TITULO Y PRECIO -->
-    <div
-      class="d-flex justify-content-between align-items-center mb-3"
-    >
+    <div class="d-flex justify-content-between align-items-center mb-3">
 
       <div>
 
@@ -61,8 +48,8 @@
       <span class="fw-bold fs-5">
 
         $ {{
-          item.plato.precioVenta *
-          item.cantidad
+        item.plato.precioVenta *
+        item.cantidad
         }}
 
       </span>
@@ -70,11 +57,7 @@
     </div>
 
     <!-- IMAGEN -->
-    <img
-      [src]="item.plato.imagen"
-      class="img-fluid rounded-4 mb-3"
-      style="height: 220px; object-fit: cover;"
-    >
+    <img [src]="item.plato.imagen" class="img-fluid rounded-4 mb-3" style="height: 220px; object-fit: cover;">
 
     <!-- DESCRIPCION -->
     <p class="text-muted mb-4">
@@ -86,10 +69,7 @@
     <!-- BOTONES -->
     <div class="d-flex flex-column gap-2">
 
-      <app-boton
-        variante="success"
-        class="w-100"
-      >
+      <app-boton variante="success" class="w-100">
 
         <span class="material-symbols-outlined">
           add
@@ -100,11 +80,7 @@
         </span>
 
       </app-boton>
-
-      <app-boton
-        variante="warning"
-        class="w-100"
-      >
+      <app-boton variante="warning" class="w-100" (click)="irAPersonalizar(item)">
 
         <span class="material-symbols-outlined">
           edit
