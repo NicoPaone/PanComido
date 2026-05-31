@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PanComido.Dominio.CasosDeUso.Comanda
+namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
 {
     public class ListarComandaActivaCocinaCasoDeUso
     {

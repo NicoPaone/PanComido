@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace PanComido.Dominio.Entidades.Enums
 {
-    public enum EstadoComanda
+    public enum EstadoMesa
     {
-        Nueva = 1,
-        EnPreparacion = 2,
-        EnEspera = 3,
-        Finalizada = 4,
-        Abierta = 5,
-
+        Disponible = 1,
+        Ocupada = 2,
+        Reservada = 3,
+        Deshabilitada = 4
     }
 }
