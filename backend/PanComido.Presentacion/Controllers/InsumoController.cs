@@ -8,7 +8,7 @@ using PanComido.Presentacion.SesionMock;
 
 namespace PanComido.Presentacion.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("insumo")]
     [ApiController]
     public class InsumoController : ControllerBase
     {
