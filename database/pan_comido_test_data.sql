@@ -185,17 +185,17 @@ INSERT INTO articulo_configuracion_articulo (articulo_id, configuracion_articulo
 -- categoria_plato: 1=Entrada, 2=Principal, 3=Postre, 4=Guarnición
 
 INSERT INTO plato (id_articulo, tipo_plato_id, categoria_plato_id, tiempo_preparacion_base, destacado, sugerencia) VALUES
-    (1,  3, 2, 20, TRUE,  'Ideal para compartir'),
-    (2,  3, 2, 25, FALSE, NULL),
-    (3,  2, 2, 25, TRUE,  'Nuestro plato estrella'),
-    (4,  5, 2, 15, FALSE, NULL),
-    (5,  6, 1, 10, FALSE, 'Liviana, ideal como entrada'),
-    (6,  4, 2, 30, TRUE,  'Corte premium'),
-    (7,  1, 2, 15, FALSE, NULL),
-    (8,  9, 1, 20, FALSE, 'Recién salidas del horno'),
-    (9,  2, 4, 10, FALSE, NULL),
-    (10, 6, 1, 5,  FALSE, NULL),
-    (11, 8, 2, 15, FALSE, 'Opción ligera y sabrosa');
+    (1,  3, 2, 20, TRUE,  TRUE),
+    (2,  3, 2, 25, FALSE, FALSE),
+    (3,  2, 2, 25, TRUE,  TRUE),
+    (4,  5, 2, 15, FALSE, FALSE),
+    (5,  6, 1, 10, FALSE, TRUE),
+    (6,  4, 2, 30, TRUE,  TRUE),
+    (7,  1, 2, 15, FALSE, FALSE),
+    (8,  9, 1, 20, FALSE, TRUE),
+    (9,  2, 4, 10, FALSE, FALSE),
+    (10, 6, 1, 5,  FALSE, FALSE),
+    (11, 8, 2, 15, FALSE, TRUE);
 
 -- ============================================================
 -- INSUMOS (subtipo de Articulo) — ahora con categoria_insumo_id y unidad_medida_id

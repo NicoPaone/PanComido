@@ -34,6 +34,9 @@ public partial class Articulo
     [Column("precio_promocional")]
     public decimal? PrecioPromocional { get; set; }
 
+    [Column("url_imagen")]
+    public string? UrlImagen { get; set; }
+
     [InverseProperty("Articulo")]
     public virtual ICollection<ArticuloComandum> ArticuloComanda { get; set; } = new List<ArticuloComandum>();
 
