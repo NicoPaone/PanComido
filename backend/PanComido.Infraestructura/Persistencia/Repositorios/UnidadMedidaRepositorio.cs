@@ -23,9 +23,10 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             _mapper = mapper;
         }
 
-        public async Task<bool> ExisteAsync(int unidadMedidaId)
+        public async Task<UnidadMedida> ObtenerPorIdAsync(int unidadMedidaId)
         {
-            return await _ctx.UnidadMedida.AnyAsync(um => um.Id == (int)unidadMedidaId);
+            EF.UnidadMedidum unidadBuscada = await _ctx.UnidadMedida.FirstOrDefaultAsync(u => u.Id == unidadMedidaId);
+            return _mapper.paraDominio(unidadBuscada);
         }
 
         public async Task<List<UnidadMedida>> ObtenerUnidadesDeMedidaAsync()
