@@ -46,11 +46,11 @@ export class InsumoPage {
     return ['Categorías', ...nombres];
   })
 
-  productoSeleccionado = computed(() => {
-    const id = this.productoEditandoId();
-    return this.state.productos().find(p => p.id === id) || null;
-  })
-
+ productoSeleccionado = computed(() => {
+  const id = this.productoEditandoId();
+  if (!id) return null;
+  return this.state.productos().find(p => p.id === id) || null;
+});
  
   
   productosFiltrados = computed(() => {

@@ -185,9 +185,9 @@ export class ProveedorService {
 
     const sugeridos: SugerenciaPedidoItem[] = INSUMOS_MOCK
       .filter(prod => providerCats.includes(prod.categoriaIngrediente.descripcion))
-      .filter(prod => prod.stock < prod.stockMinimo * 1.5)
+      .filter(prod => prod.stockActual < prod.stockMinimo * 1.5)
       .map(prod => {
-        const cantidadSugerida = Math.max(1, Math.round(prod.stockMinimo * 2 - prod.stock));
+        const cantidadSugerida = Math.max(1, Math.round(prod.stockMinimo * 2 - prod.stockActual));
         const consumoEstimado30Dias = prod.stockMinimo * 3;
         const precioUnitario = costosMock[prod.id.toString()] ?? 500;
 
@@ -196,7 +196,7 @@ export class ProveedorService {
           nombre: prod.nombre,
           // ✅ FIX: Pasamos el objeto UnidadMedida completo
           unidadMedida: prod.unidadMedida, 
-          stockActual: prod.stock,
+          stockActual: prod.stockActual,
           stockMinimo: prod.stockMinimo,
           consumoEstimado30Dias,
           cantidadSugerida,

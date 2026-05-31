@@ -41,8 +41,8 @@ export class ProductoForm {
     const prod = this.producto();
     if(prod){
       this.form.patchValue({
-        ...prod,stockInicial: prod.stock,
-         fechaVencimiento: prod.fechaVencimiento ? prod.fechaVencimiento.split('T')[0] : ''
+        ...prod,stockInicial: prod.stockActual,
+         fechaVencimiento: prod.vencimiento ? prod.vencimiento.split('T')[0] : ''
       });
     }
 

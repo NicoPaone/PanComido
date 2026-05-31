@@ -88,7 +88,7 @@ export class PedidoSugeridoIAStateService {
       productoId: prod.id.toString(),
       nombre: prod.nombre,
       unidadMedida: prod.unidadMedida,
-      stockActual: prod.stock,
+      stockActual: prod.stockActual,
       stockMinimo: prod.stockMinimo,
       consumoEstimado30Dias: prod.stockMinimo * 3,
       cantidadSugerida: 1,

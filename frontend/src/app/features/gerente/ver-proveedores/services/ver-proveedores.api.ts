@@ -145,8 +145,8 @@ export class VerProveedoresApiService {
     return {
       id: dto.id,
       nombre: dto.nombre ?? 'Sin Nombre',
-      stock: dto.stockActual,
-      fechaVencimiento: dto.vencimiento ?? '',
+      stockActual: dto.stockActual,
+      vencimiento: dto.vencimiento ?? '',
       stockMinimo: dto.stockMinimo,
       
       unidadMedida: { 
