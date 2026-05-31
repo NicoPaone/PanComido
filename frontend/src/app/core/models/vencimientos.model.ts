@@ -1,4 +1,4 @@
-import { UnidadMedida } from './producto-stock';
+import { UnidadMedida } from "./unidad-medida";
 
 export interface IngredienteVencimiento {
   id: string | number;

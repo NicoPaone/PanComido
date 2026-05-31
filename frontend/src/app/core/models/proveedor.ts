@@ -1,4 +1,4 @@
-import { UnidadMedida } from './insumos/insumo';
+import { UnidadMedida } from "./unidad-medida";
 
 export type EstadoPedidoProveedor = 'Pendiente' | 'Confirmado' | 'Recibido' | 'Cancelado';
 
