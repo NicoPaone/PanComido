@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PanComido.Dominio.Interfaces.Repositorios;
 
-namespace PanComido.Dominio.CasosDeUso.Comanda
+namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
 {
    public class ModificarEstadoComandaCasoDeUso
    {

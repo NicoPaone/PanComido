@@ -1,5 +1,6 @@
 ﻿using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
+using PanComido.Infraestructura.Persistencia.Entidades;
 using System.Collections.Generic;
 using DOM = PanComido.Dominio.Entidades;
 using EF = PanComido.Infraestructura.Persistencia.Entidades;
@@ -52,6 +53,21 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
 
         
             return comandaDominio;
+        }
+
+        public Comandum paraEntidad(DOM.Comanda comandaDominio)
+        {
+            return new EF.Comandum
+            {
+                Id = comandaDominio.Id,
+                MesaId = comandaDominio.MesaId,
+                RestauranteId = comandaDominio.RestauranteId,
+                EstadoComandaId = (int)comandaDominio.Estado,
+                CantComensales = comandaDominio.CantComensales,
+                HoraInicio = comandaDominio.HoraInicio,
+                HoraFin = comandaDominio.HoraFin,
+                PagoId = comandaDominio.PagoID,
+            };
         }
     }
 }
