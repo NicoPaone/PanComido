@@ -7,12 +7,12 @@ using DOM = PanComido.Dominio.Entidades;
 
 namespace PanComido.Infraestructura.Persistencia.Repositorios
 {
-    public class ProveedorRespositorio : IProveedorRepositorio
+    public class ProveedorRepositorio : IProveedorRepositorio
     {
         private readonly AppDbContext _ctx;
         private readonly ProveedorEntityMapper _mapper;
 
-        public ProveedorRespositorio(AppDbContext context, ProveedorEntityMapper mapper)
+        public ProveedorRepositorio(AppDbContext context, ProveedorEntityMapper mapper)
         {
             _ctx = context;
             _mapper = mapper;

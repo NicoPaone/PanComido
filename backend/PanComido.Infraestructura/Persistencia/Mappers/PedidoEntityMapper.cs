@@ -27,7 +27,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                     UnidadMedida = pi.Insumo.UnidadMedida.Nombre,
                     Cantidad = pi.Cantidad,
                     PrecioCompra = pi.PrecioCompra,
-                    CateoriaInsumoId = pi.Insumo.CategoriaInsumoId
+                    CategoriaInsumoId = pi.Insumo.CategoriaInsumoId
                 }).ToList()
             };
         }

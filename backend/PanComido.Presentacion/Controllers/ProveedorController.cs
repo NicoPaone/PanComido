@@ -13,7 +13,7 @@ namespace PanComido.Presentacion.Controllers
 {
     [Route("proveedor")]
     [ApiController]
-    public class ProveedorController : Controller
+    public class ProveedorController : ControllerBase
     {
         private readonly ListarProveedorCasoDeUso _listarProveedorCasoDeUso;
         private readonly ObtenerHistorialPedidosCasoDeUso _obtenerHistorialCasoDeUso;

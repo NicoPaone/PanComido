@@ -40,6 +40,7 @@ builder.Services.AddScoped<PedidoEntityMapper>();
 builder.Services.AddScoped<ComandaEntityMapper>();
 builder.Services.AddScoped<CategoriaInsumoEntityMapper>();
 builder.Services.AddScoped<UnidadMedidaEntityMapper>();
+builder.Services.AddScoped<LoteEntityMapper>();
 
 // Mappers de Presentacion (Dominio <-> DTOs)   
 builder.Services.AddScoped<InsumoMapper>();
@@ -50,12 +51,13 @@ builder.Services.AddScoped<ComandaMapper>();
 builder.Services.AddScoped<CategoriaInsumoMapper>();
 builder.Services.AddScoped<InsumoConsugerenciaMapper>();
 builder.Services.AddScoped<UnidadMedidaMapper>();
+builder.Services.AddScoped<LoteRecepcionMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
 builder.Services.AddScoped<ILoteRepositorio, LoteRepositorio>();
 builder.Services.AddScoped<IBodegaRepositorio, BodegaRepositorio>();
-builder.Services.AddScoped<IProveedorRepositorio, ProveedorRespositorio>();
+builder.Services.AddScoped<IProveedorRepositorio, ProveedorRepositorio>();
 builder.Services.AddScoped<IPedidoRepositorio, PedidoRepositorio>();
 builder.Services.AddScoped<IComandaRepositorio, ComandaRepositorio>();
 builder.Services.AddScoped<ICategoriaInsumoRepositorio, CategoriaInsumoRepositorio>();
@@ -75,7 +77,9 @@ builder.Services.AddScoped<ListarCategoriasDeInsumosCasoDeUso>();
 builder.Services.AddScoped<ListarUnidadesDeMedidaCasoDeUso>();
 builder.Services.AddScoped<ModificarEstadoComandaCasoDeUso>();
 builder.Services.AddScoped<ObtenerInsumosParaPedidoCasoDeUso>();
-builder.Services.AddScoped<ConfirmarPedidoCasoDeUso>();
+builder.Services.AddScoped<EnviarPedidoProveedorCasoDeUso>();
+builder.Services.AddScoped<GenerarSugerenciasRecepcionCasoDeUso>();
+builder.Services.AddScoped<RecibirPedidoProveedorCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();

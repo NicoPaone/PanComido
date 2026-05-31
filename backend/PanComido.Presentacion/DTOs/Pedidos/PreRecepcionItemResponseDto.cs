@@ -7,6 +7,6 @@
         public decimal Cantidad { get; set; }
         public string NombreLote { get; set; }
         public int BodegaIdSug { get; set; }
-        public DateOnly FechaVencimientoSug { get; set; }
+        public string FechaVencimientoSug { get; set; }
     }
 }
