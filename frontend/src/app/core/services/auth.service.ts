@@ -1,0 +1,23 @@
+import { Injectable, signal } from '@angular/core';
+import { Observable, of, delay } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  currentRole = signal<string>('Cocina');
+
+  // NOTE: El endpoint del back para validar credenciales de gerente debe conectarse aquí
+  validateManagerCredentials(username: string, password: string): Observable<boolean> {
+    const esValido = username.toLowerCase().trim() === 'gerente' && password === '123456';
+    return of(esValido).pipe(delay(250));
+  }
+
+  hasRole(roles: string[]): boolean {
+    return roles.includes(this.currentRole());
+  }
+
+  setRole(role: string): void {
+    this.currentRole.set(role);
+  }
+}

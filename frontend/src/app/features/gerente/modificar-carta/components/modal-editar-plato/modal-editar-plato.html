@@ -10,15 +10,14 @@
     <div class="row g-3">
       <div class="col-12 col-sm-4 text-center d-flex flex-column align-items-center gap-2">
         <div class="image-preview-card border p-2 bg-white">
-          <ng-container *ngIf="imagen(); else noImage">
+          @if (imagen()) {
             <img [src]="imagen()" class="dish-image-large img-fluid" alt="Vista previa">
-          </ng-container>
-          <ng-template #noImage>
+          } @else {
             <div class="image-placeholder d-flex flex-column align-items-center justify-content-center">
               <span class="material-symbols-outlined placeholder-icon">add_a_photo</span>
               <span class="placeholder-text small mt-1">Sin imagen</span>
             </div>
-          </ng-template>
+          }
         </div>
 
         <div class="visibility-toggle-wrapper bg-white border p-2 rounded-3 w-100 d-flex justify-content-center">
@@ -60,10 +59,16 @@
                 type="number" 
                 class="form-control custom-input border-start-0" 
                 [ngModel]="precioVenta()" 
-                (ngModelChange)="precioVenta.set($event)">
+                (ngModelChange)="precioVenta.set($event === null || $event === '' ? null : +$event)">
             </div>
           </div>
         </div>
+
+        @if (precioEsMenorQueCosto()) {
+          <div class="alert alert-warning py-2 px-3 small mb-3">
+            <strong>Advertencia comercial:</strong> El precio de venta es menor o igual al costo.
+          </div>
+        }
 
         <div class="mb-3">
           <label class="form-label font-bold">URL de imagen</label>
@@ -127,7 +132,10 @@
                   <input 
                     type="number" 
                     class="form-control form-control-sm text-center qty-input" 
-                    [(ngModel)]="ing.cantidad">
+                    min="0.01"
+                    step="0.01"
+                    [(ngModel)]="ing.cantidad"
+                    (ngModelChange)="onCantidadCambiada(ing)">
                 </td>
                 <td>
                   <select 
@@ -173,7 +181,7 @@
         tamanio="md" 
         (clicked)="onSave()"
         class="save-btn"
-        [disabled]="!nombre().trim() || precioVenta() === null || costo() === null">
+        [disabled]="!nombre().trim() || precioVenta() === null || precioVenta()! <= 0 || costo() === null || costo()! <= 0">
       </app-boton>
     </div>
   </div>

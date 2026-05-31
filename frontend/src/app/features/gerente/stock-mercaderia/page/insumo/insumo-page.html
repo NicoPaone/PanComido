@@ -1,0 +1,87 @@
+<app-page-toolbar>
+  
+  <app-buscador 
+    buscador 
+    placeholder="Buscar ingrediente..."
+    (busquedaCambiada)="termino.set($event)">
+  </app-buscador>
+
+  <app-dropdown filtros #filtroDropdown>
+
+    <app-boton 
+      trigger
+      [label]="categoria() || 'Categorías'"
+      variante="teal" 
+      tamanio="md">
+    </app-boton>
+    
+    <div menu>
+      <ul>
+        <li (click)="categoria.set('Categorías'); filtroDropdown.cerrar()">Todos</li>
+        @for(cat of state.categoriasUnicas(); track cat){
+          <li (click)="categoria.set(cat); filtroDropdown.cerrar()">{{cat}}</li>
+        }
+        
+      </ul>
+    </div>
+  </app-dropdown>
+
+  <app-boton 
+    acciones
+    label="NUEVO PRODUCTO" 
+    variante="secondary" 
+    tamanio="md"
+    (clicked)="abrirModalCrear(modalFormulario)">
+  </app-boton>
+</app-page-toolbar>
+
+<div class="stock-list-container">
+  <div class="stock-list-button">
+    <app-boton label="Productos" variante="tab" tamanio="md" 
+      [activo]="tabSeleccionada() === 'productos'" 
+      (clicked)="tabSeleccionada.set('productos')">
+    </app-boton>
+
+    <app-dropdown #dropdownBodegas>
+
+      <app-boton trigger label="Bodegas" variante="tab" 
+      [activo]="tabSeleccionada() === 'bodegas'" 
+      (clicked)="tabSeleccionada.set('bodegas')">
+    </app-boton>
+      <div menu>
+          <ul>
+            @for(bodega of bodegaState.bodegas(); track bodega.id) {
+              <li (click)="seleccionarBodega(bodega.id); dropdownBodegas.cerrar()">
+                {{ bodega.nombre }}
+              </li>
+            }
+          </ul>
+        </div>
+  </app-dropdown>
+    <app-boton label="Lotes" variante="tab" 
+    [activo]="tabSeleccionada() === 'lotes'" 
+      (clicked)="tabSeleccionada.set('lotes')">
+    </app-boton>
+
+  </div>
+
+  <app-insumo-list 
+    [productos]="productosFiltrados()"
+    (editar)="abrirModalEditar(modalFormulario, $event)">
+  </app-insumo-list>
+</div>
+
+ <!-- ?ESTO ES NECESARIO PARA RENDERIZAR EL MODAL EN LA VISTA -->
+<app-modal #modalFormulario [titulo]="tituloModal()" (cerrado)="limpiarEstadoModal()">
+
+  @if(modalAbierto()){
+
+    <app-producto-form
+    [producto]="productoSeleccionado()"
+    [bodegas]="bodegaState.bodegas()"
+    [categorias]="state.categoriasUnicas()"
+    (guardar)="guardarCambios($event, modalFormulario)"
+    ></app-producto-form>
+  }
+
+    </app-modal>

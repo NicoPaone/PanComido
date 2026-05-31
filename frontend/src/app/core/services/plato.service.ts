@@ -1,6 +1,14 @@
 import { Injectable, signal } from '@angular/core';
 import { Plato, RecetaIngrediente } from '../models/plato';
 import { Observable, of, delay } from 'rxjs';
+import { environment } from '../../../environments/environment';
+
+export const PLATO_ENDPOINTS = {
+  base: `${environment.apiUrl}/platos`,
+  crear: `${environment.apiUrl}/platos`,
+  actualizar: (id: number) => `${environment.apiUrl}/platos/${id}`,
+  eliminar: (id: number) => `${environment.apiUrl}/platos/${id}`
+};
 
 const COSTOS_INGREDIENTES: Record<string, number> = {
   '1': 1200,
@@ -188,7 +196,18 @@ private platosList = signal<Plato[]>([
   }
 ]);
   getPlatos(): Observable<Plato[]> {
+    // NOTE: El endpoint del back para listar platos debe conectarse aquí
     return of(this.platosList()).pipe(delay(200));
+  }
+
+  crearPlato(plato: Omit<Plato, 'id'>): Observable<Plato> {
+    const nuevoPlato: Plato = {
+      ...plato,
+      id: Date.now()
+    };
+    this.platosList.update(platos => [...platos, nuevoPlato]);
+    // NOTE: El endpoint del back para crear un plato nuevo debe conectarse aquí
+    return of(nuevoPlato).pipe(delay(200));
   }
 
   updatePlato(id: number, updatedData: Partial<Plato>): Observable<Plato> {
@@ -205,11 +224,13 @@ private platosList = signal<Plato[]>([
       })
     );
     const updated = this.platosList().find(p => p.id === id)!;
+    // NOTE: El endpoint del back para actualizar platos debe conectarse aquí
     return of(updated).pipe(delay(200));
   }
 
   deletePlato(id: number): Observable<boolean> {
     this.platosList.update(platos => platos.filter(p => p.id !== id));
+    // NOTE: El endpoint del back para borrar platos debe conectarse aquí
     return of(true).pipe(delay(200));
   }
 }

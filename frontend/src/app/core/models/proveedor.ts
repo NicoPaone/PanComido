@@ -1,9 +1,9 @@
-import { UnidadMedida } from '../model/producto-stock-mock';
+import { UnidadMedida } from './insumos/insumo';
 
 export type EstadoPedidoProveedor = 'Pendiente' | 'Confirmado' | 'Recibido' | 'Cancelado';
 
 export interface PedidoProveedor {
-  id: number;
+  id: string | number;
   fecha: string;
   concepto: string;
   monto: number;
@@ -13,14 +13,15 @@ export interface PedidoProveedor {
 }
 
 export interface PedidoProveedorItem {
-  id: string;
+  id: string | number;
   nombre: string;
   cantidad: number;
   unidadMedida: UnidadMedida;
+  precioUnitario?: number;
 }
 
 export interface Proveedor {
-  id: number;
+  id: string | number;
   nombre: string;
   contacto: string;
   telefono: string;
@@ -28,11 +29,12 @@ export interface Proveedor {
   direccion: string;
   activo: boolean;
   fechaUltimoPedido: string | null;
-  historialPedidos: PedidoProveedor[];
+  historialPedidos?: PedidoProveedor[];
+  categorias?: string[];
 }
 
 export interface NuevoPedidoProveedor {
-  proveedorId: number;
+  proveedorId: number | string;
   concepto: string;
   monto: number;
   observacion: string;
@@ -51,7 +53,18 @@ export interface NuevoProveedor {
 }
 
 export interface ProductoPedidoProveedor {
-  id: string;
+  id: string | number;
   nombre: string;
   unidadMedida: UnidadMedida;
+}
+
+export interface SugerenciaPedidoItem {
+  productoId: string;
+  nombre: string;
+  unidadMedida: UnidadMedida;
+  stockActual: number;
+  stockMinimo: number;
+  consumoEstimado30Dias: number;
+  cantidadSugerida: number;
+  precioUnitario: number;
 }

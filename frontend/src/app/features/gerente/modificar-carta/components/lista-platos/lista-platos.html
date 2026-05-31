@@ -1,11 +1,39 @@
-<div class="row row-cols-1 row-cols-lg-2 g-4">
-  <div class="col mb-4" *ngFor="let plato of platos()">
-    <app-card-plato 
-      [plato]="plato" 
-      [isExploding]="plato.id === explodingId()"
-      (toggleVisible)="onToggleVisible($event)"
-      (editPlato)="onEditPlato($event)"
-      (deletePlato)="onDeletePlato($event)">
-    </app-card-plato>
+@if (layoutMode() === 'grid') {
+  <div class="row row-cols-1 row-cols-lg-2 g-4">
+    @for (plato of platos(); track plato.id) {
+      <div class="col mb-4">
+        <app-card-plato 
+          [plato]="plato" 
+          [layoutMode]="'grid'"
+          [isExploding]="plato.id === explodingId()"
+          (toggleVisible)="onToggleVisible($event)"
+          (editPlato)="onEditPlato($event)"
+          (deletePlato)="onDeletePlato($event)"
+          (toggleRecomendado)="onToggleRecomendado($event)">
+        </app-card-plato>
+      </div>
+    } @empty {
+      <div class="col-12 text-center py-4 text-muted">
+        No hay platos disponibles en este momento.
+      </div>
+    }
   </div>
-</div>
+} @else {
+  <div class="d-flex flex-column gap-3">
+    @for (plato of platos(); track plato.id) {
+      <app-card-plato 
+        [plato]="plato" 
+        [layoutMode]="'list'"
+        [isExploding]="plato.id === explodingId()"
+        (toggleVisible)="onToggleVisible($event)"
+        (editPlato)="onEditPlato($event)"
+        (deletePlato)="onDeletePlato($event)"
+        (toggleRecomendado)="onToggleRecomendado($event)">
+      </app-card-plato>
+    } @empty {
+      <div class="text-center py-4 text-muted">
+        No hay platos disponibles en este momento.
+      </div>
+    }
+  </div>
+}

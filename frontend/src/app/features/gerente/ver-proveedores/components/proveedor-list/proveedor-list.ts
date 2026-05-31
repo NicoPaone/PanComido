@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
 import { Proveedor } from '../../../../../core/models/proveedor';
 
@@ -8,21 +8,22 @@ import { Proveedor } from '../../../../../core/models/proveedor';
   standalone: true,
   imports: [CommonModule, Boton],
   templateUrl: './proveedor-list.html',
-  styleUrl: './proveedor-list.css'
+  styleUrl: './proveedor-list.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProveedorListComponent {
   proveedores = input.required<Proveedor[]>();
-  proveedorSeleccionadoId = input<number | null>(null);
+  proveedorSeleccionadoId = input<number |string| null>(null);
 
   seleccionar = output<Proveedor>();
   crearPedido = output<Proveedor>();
   verHistorial = output<Proveedor>();
 
-  esSeleccionado(proveedorId: number): boolean {
+  esSeleccionado(proveedorId: number | string): boolean {
     return this.proveedorSeleccionadoId() === proveedorId;
   }
 
-  trackPorId(_: number, proveedor: Proveedor): number {
+  trackPorId(_: number | string, proveedor: Proveedor): number | string {
     return proveedor.id;
   }
 }

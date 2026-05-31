@@ -1,0 +1,18 @@
+﻿using PanComido.Dominio.Entidades;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace PanComido.Dominio.Interfaces.Repositorios
+{
+    public interface IComandaRepositorio
+    {
+        Task<List<Comanda>> ObtenerComandasActivasAsync(int restauranteId);
+
+        Task<Comanda?> ObtenerComandaPorIdMesaAsync(int mesaId);
+        Task<Comanda?> ModificarEstadoComandaAsync(int mesaId, int estadoId);
+        Task CrearAsync(Comanda comanda);
+    }
+}

@@ -1,19 +1,19 @@
-import { Component, effect, input, output, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, effect, input, output, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Plato, RecetaIngrediente } from '../../../../../core/models/plato';
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
 import { ToggleComponent } from '../../../../../shared/ui/toggle/toggle';
 import { Buscador } from '../../../../../shared/ui/buscador/buscador';
-import { PRODUCTOS_STOCK_MOCK, ProductoStockMock } from '../../../../../core/model/producto-stock-mock';
 import { calcularCostoReceta } from '../../../../../core/services/plato.service';
+import { Insumo, INSUMOS_MOCK } from '../../../../../core/models/insumos/insumo';
 
 @Component({
   selector: 'app-modal-editar-plato',
   standalone: true,
-  imports: [CommonModule, FormsModule, Boton, ToggleComponent, Buscador],
+  imports: [FormsModule, Boton, ToggleComponent, Buscador],
   templateUrl: './modal-editar-plato.html',
-  styleUrls: ['./modal-editar-plato.css']
+  styleUrls: ['./modal-editar-plato.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ModalEditarPlatoComponent {
   plato = input.required<Plato>();
@@ -32,11 +32,17 @@ export class ModalEditarPlatoComponent {
     return calcularCostoReceta(this.receta());
   });
 
+  precioEsMenorQueCosto = computed(() => {
+    const venta = this.precioVenta() ?? 0;
+    const costoVal = this.costo() ?? 0;
+    return venta > 0 && costoVal > 0 && venta <= costoVal;
+  });
+
   sugerencias = computed(() => {
     const query = this.busqueda().toLowerCase().trim();
     if (!query) return [];
     
-    return PRODUCTOS_STOCK_MOCK.filter(prod => 
+    return INSUMOS_MOCK.filter(prod => 
       prod.nombre.toLowerCase().includes(query) &&
       !this.receta().some(selected => selected.id === prod.id)
     );
@@ -63,7 +69,7 @@ export class ModalEditarPlatoComponent {
     this.busqueda.set(value);
   }
 
-  agregarIngrediente(producto: ProductoStockMock) {
+  agregarIngrediente(producto: Insumo) {
     const nuevo: RecetaIngrediente = {
       id: producto.id,
       nombre: producto.nombre,
@@ -75,18 +81,21 @@ export class ModalEditarPlatoComponent {
     this.busqueda.set('');
   }
 
-  eliminarIngrediente(id: string) {
+  eliminarIngrediente(id: string | number) {
     this.receta.update(items => items.filter(item => item.id !== id));
   }
 
-  onCantidadCambiada() {
+  onCantidadCambiada(ing: RecetaIngrediente) {
+    if (ing.cantidad === null || ing.cantidad === undefined || ing.cantidad < 0.01) {
+      ing.cantidad = 0.01;
+    }
   }
 
   onUnidadCambiada() {
   }
 
   onSave() {
-    if (!this.nombre().trim() || this.precioVenta() === null || this.costo() === null) {
+    if (!this.nombre().trim() || this.precioVenta() === null || this.precioVenta()! <= 0 || this.costo() === null || this.costo()! <= 0) {
       return;
     }
     this.save.emit({

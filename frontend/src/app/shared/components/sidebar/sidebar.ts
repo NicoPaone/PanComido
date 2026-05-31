@@ -1,18 +1,19 @@
-import { Component, signal, computed, HostListener } from '@angular/core';
+import { Component, signal, computed, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { MenuItem, UserProfile } from '../../../core/model/menu-item.model';
+import { MenuItem, UserProfile } from '../../../core/models/menu-item.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { 
-  faUsers, 
-  faCog, 
-  faChartBar, 
-  faBox, 
-  faTruck, 
-  faReceipt, 
-  faUtensils, 
-  faClipboardList, 
-  faTag, 
+import { AuthService } from '../../../core/services/auth.service';
+import {
+  faUsers,
+  faCog,
+  faChartBar,
+  faBox,
+  faTruck,
+  faReceipt,
+  faUtensils,
+  faClipboardList,
+  faTag,
   faTableCells,
   faRightFromBracket,
   faChevronDown,
@@ -31,6 +32,8 @@ import {
   styleUrls: ['./sidebar.css']
 })
 export class SidebarComponent {
+  private readonly authService = inject(AuthService);
+
   // Íconos de FontAwesome
   readonly faUsers = faUsers;
   readonly faCog = faCog;
@@ -49,12 +52,12 @@ export class SidebarComponent {
   readonly faFireBurner = faFireBurner;
   readonly faCarrot = faCarrot;
   readonly faListCheck = faListCheck;
-  
+
 
   isCollapsed = signal(true); // Colapsado por defecto como Gmail
   isHovered = signal(false);
   expandedMenus = signal<string[]>([]);
-  currentRole = signal<string>('Gerente'); // MVP: Rol hardcodeado
+  currentRole = computed(() => this.authService.currentRole());
 
   // Perfil de usuario
   userProfile = signal<UserProfile>({
@@ -67,10 +70,11 @@ export class SidebarComponent {
   // Configuración de menú por rol
   private menuConfig: Record<string, MenuItem[]> = {
     Gerente: [
+      { label: 'Sistema de avisos', icon: 'faBell', route: 'gerente/avisos', roles: ['Gerente'] },
       { label: 'Usuarios', icon: 'faUsers', route: 'gerente/usuarios', roles: ['Gerente'] },
       { label: 'Configuración', icon: 'faCog', route: 'gerente/configuracion', roles: ['Gerente'] },
       { label: 'Dashboard', icon: 'faChartBar', route: 'gerente/dashboard', roles: ['Gerente'] },
-      { label: 'Stock/Mercadería', icon: 'faBox', route: 'gerente/stock-mercaderia', roles: ['Gerente'] }, 
+      { label: 'Stock/Mercadería', icon: 'faBox', route: 'gerente/stock-mercaderia', roles: ['Gerente'] },
       {
         label: 'Pedidos y Proveedor',
         icon: 'faTruck',
@@ -93,7 +97,7 @@ export class SidebarComponent {
         ]
       },
       { label: 'Plato del día', icon: 'faTag', route: 'gerente/plato-dia', roles: ['Gerente'] },
-      { label: 'Mapa de mesas', icon: 'faTableCells', route: 'gerente/mesas', roles: ['Gerente'] }
+     { label: 'Mapa de mesas', icon: 'faTableCells', route: 'gerente/mapa-de-mesas', roles: ['Gerente'] }
     ],
     Mozo: [
       { label: 'Mesas', icon: 'faTableCells', route: 'mozo/mesas', roles: ['Mozo'] },
@@ -120,7 +124,7 @@ export class SidebarComponent {
 
   constructor(private router: Router) {}
 
- 
+
 
   onMouseEnter(): void {
     if (this.isCollapsed()) {

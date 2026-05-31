@@ -1,28 +1,46 @@
 import { Routes } from '@angular/router';
 
 export const GERENTE_ROUTES: Routes = [
-  { 
+  {
     path: 'stock-mercaderia',
-    loadComponent: () => import('./stock-mercaderia/page/stock/stock').then(m => m.Stock)
+    loadComponent: () => import('./stock-mercaderia/page/insumo/insumo-page').then(m => m.InsumoPage)
 
 
     },
-
+    {
+   path: 'mapa-de-mesas',
+    loadComponent: () => import('../mesas/page/mapa-mesas/mapa-mesas').then(m => m.MapaMesas)
+  },
   {
     path: 'modificar-carta',
-    loadComponent: () => import('./modificar-carta/page/modificar-carta').then(m => m.ModificarCartaComponent)
+    loadComponent: () => import('./modificar-carta/pages/modificar-carta').then(m => m.ModificarCartaComponent)
   },
   {
     path: 'ver-proveedores',
-    loadComponent: () => import('./ver-proveedores/page/ver-proveedores').then(m => m.VerProveedoresComponent)
+    loadComponent: () => import('./ver-proveedores/pages/ver-proveedores').then(m => m.VerProveedoresComponent)
+  },
+  {
+    path: 'ver-proveedores/:id/historial',
+    loadComponent: () => import('./ver-proveedores/pages/historial-proveedor/historial-proveedor').then(m => m.HistorialProveedorComponent)
   },
   {
     path: 'nuevo-proveedor',
-    loadComponent: () => import('./nuevo-proveedor/page/nuevo-proveedor').then(m => m.NuevoProveedorComponent)
+    loadComponent: () => import('./nuevo-proveedor/pages/nuevo-proveedor').then(m => m.NuevoProveedorComponent)
   },
   {
     path: 'crear-plato',
-    loadComponent: () => import('./crear-plato/page/crear-plato').then(m => m.CrearPlatoComponent)
+    loadComponent: () => import('./crear-plato/pages/crear-plato').then(m => m.CrearPlatoComponent)
+  },
+  {
+    path: 'pedido-sugerido-ia/:id',
+    loadComponent: () => import('./pedido-sugerido-ia/pages/pedido-sugerido-ia').then(m => m.PedidoSugeridoIAComponent)
+  },
+  {
+    path: 'avisos',
+    loadComponent: () => import('./avisos/pages/avisos').then(m => m.AvisosPage)
+  },
+  {
+    path: 'aviso-vencimientos',
+    loadComponent: () => import('./aviso-vencimientos/pages/aviso-vencimientos').then(m => m.VencimientosPage)
   }
-
 ];

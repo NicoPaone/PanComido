@@ -1,20 +1,22 @@
-import { Component, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { Plato } from '../../../../../core/models/plato';
 import { CardPlatoComponent } from '../card-plato/card-plato';
 
 @Component({
   selector: 'app-lista-platos',
   standalone: true,
-  imports: [CommonModule, CardPlatoComponent],
+  imports: [CardPlatoComponent],
   templateUrl: './lista-platos.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListaPlatosComponent {
   platos = input<Plato[]>([]);
+  layoutMode = input<'grid' | 'list'>('grid');
   explodingId = input<number | null>(null);
   toggleVisible = output<Plato>();
   editPlato = output<Plato>();
   deletePlato = output<Plato>();
+  toggleRecomendado = output<Plato>();
 
   onToggleVisible(plato: Plato) {
     this.toggleVisible.emit(plato);
@@ -26,5 +28,9 @@ export class ListaPlatosComponent {
 
   onDeletePlato(plato: Plato) {
     this.deletePlato.emit(plato);
+  }
+
+  onToggleRecomendado(plato: Plato) {
+    this.toggleRecomendado.emit(plato);
   }
 }
