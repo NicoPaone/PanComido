@@ -271,6 +271,7 @@ CREATE TABLE articulo (
     precio_venta_final      DECIMAL,
     precio_ganancia         DECIMAL,
     precio_promocional      DECIMAL
+    url_imagen              TEXT,
     -- cantidad_actual es campo calculado en la app
 );
 
@@ -288,7 +289,7 @@ CREATE TABLE plato (
     categoria_plato_id      INTEGER NOT NULL REFERENCES categoria_plato(id),
     tiempo_preparacion_base INTEGER NOT NULL, -- en minutos
     destacado               BOOLEAN NOT NULL DEFAULT FALSE,
-    sugerencia              TEXT
+    sugerencia              BOOLEAN NOT NULL DEFAULT FALSE
     -- costo_base es campo calculado en la app
 );
 
