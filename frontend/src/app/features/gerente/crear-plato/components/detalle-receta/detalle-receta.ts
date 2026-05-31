@@ -1,8 +1,8 @@
 import { Component, output, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Buscador } from '../../../../../shared/ui/buscador/buscador';
-import { INSUMOS_MOCK, Insumo, UnidadMedida } from '../../../../../core/models/insumos/insumo';
 import { RecetaIngrediente } from '../../../../../core/models/plato';
+import { Insumo, INSUMOS_MOCK } from '../../../../../core/models/insumos/insumo';
 
 @Component({
   selector: 'app-detalle-receta',

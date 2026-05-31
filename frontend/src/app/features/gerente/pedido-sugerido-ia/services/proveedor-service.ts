@@ -1,9 +1,10 @@
 import { Injectable, signal } from '@angular/core';
 import { delay, Observable, of } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
-import { NuevoPedidoProveedor, NuevoProveedor, PedidoProveedor, Proveedor, SugerenciaPedidoItem } from '../../../../core/models/proveedor';
-import { Insumo, INSUMOS_MOCK } from '../../../../core/models/producto-stock';
 
+// Modelos de Dominio Estrictos
+import { NuevoPedidoProveedor, NuevoProveedor, PedidoProveedor, Proveedor, SugerenciaPedidoItem } from '../../../../core/models/proveedor';
+import { Insumo, INSUMOS_MOCK } from '../../../../core/models/insumos/insumo';
 
 export const PROVEEDOR_ENDPOINTS = {
   base: `${environment.apiUrl}/proveedores`,
@@ -16,6 +17,7 @@ export const PROVEEDOR_ENDPOINTS = {
   sugerenciaIA: (id: number) => `${environment.apiUrl}/proveedores/${id}/pedido-sugerido-ia`
 };
 
+// 🔥 FIX: Actualizado al modelo estricto de PedidoProveedor
 const PROVEEDORES_MOCK: Proveedor[] = [
   {
     id: 1,
@@ -36,8 +38,9 @@ const PROVEEDORES_MOCK: Proveedor[] = [
         estado: 'Recibido',
         observacion: 'Recepción completa en cámaras',
         items: [
-          { id: '6', nombre: 'Bife de Chorizo', cantidad: 10, unidadMedida: 'KG' },
-          { id: '5', nombre: 'Tomate Perita', cantidad: 12, unidadMedida: 'KG' }
+          // ✅ FIX: El ID ahora es number, y unidadMedida es un objeto
+          { id: 6, nombre: 'Bife de Chorizo', cantidad: 10, unidadMedida: { id: 1, nombre: 'KG' }, precioUnitario: 18450 },
+          { id: 5, nombre: 'Tomate Perita', cantidad: 12, unidadMedida: { id: 1, nombre: 'KG' }, precioUnitario: 0 }
         ]
       },
       {
@@ -48,7 +51,7 @@ const PROVEEDORES_MOCK: Proveedor[] = [
         estado: 'Confirmado',
         observacion: 'En preparación',
         items: [
-          { id: '4', nombre: 'Harina 0000', cantidad: 20, unidadMedida: 'KG' }
+          { id: 4, nombre: 'Harina 0000', cantidad: 20, unidadMedida: { id: 1, nombre: 'KG' }, precioUnitario: 6600 }
         ]
       }
     ]
@@ -72,78 +75,7 @@ const PROVEEDORES_MOCK: Proveedor[] = [
         estado: 'Recibido',
         observacion: 'Entrega sin incidencias',
         items: [
-          { id: '4', nombre: 'Harina 0000', cantidad: 25, unidadMedida: 'KG' },
-          { id: '8', nombre: 'Sal Fina', cantidad: 8, unidadMedida: 'KG' }
-        ]
-      },
-      {
-        id: 202,
-        fecha: '2026-04-15T08:15:00.000Z',
-        concepto: 'Stock general de almacén',
-        monto: 123000,
-        estado: 'Cancelado',
-        observacion: 'Falta de disponibilidad',
-        items: [
-          { id: '3', nombre: 'Aceite de Girasol', cantidad: 15, unidadMedida: 'L' }
-        ]
-      }
-    ]
-  },
-  {
-    id: 3,
-    nombre: 'La Bodega Mayorista',
-    contacto: 'Sofía Herrera',
-    telefono: '+54 11 3333-9911',
-    email: 'contacto@labodegamayorista.com',
-    direccion: 'Parque Industrial, Pilar',
-    activo: true,
-    fechaUltimoPedido: '2026-05-20T11:10:00.000Z',
-    categorias: ['Almacen'],
-    historialPedidos: [
-      {
-        id: 301,
-        fecha: '2026-05-20T11:10:00.000Z',
-        concepto: 'Bebidas y descartables',
-        monto: 221300,
-        estado: 'Pendiente',
-        observacion: 'Esperando confirmación de despacho',
-        items: [
-          { id: '10', nombre: 'Vinagre de Alcohol', cantidad: 16, unidadMedida: 'L' }
-        ]
-      },
-      {
-        id: 302,
-        fecha: '2026-05-02T12:20:00.000Z',
-        concepto: 'Reposición quincenal',
-        monto: 168900,
-        estado: 'Recibido',
-        observacion: 'Completado en tiempo',
-        items: [
-          { id: '7', nombre: 'Huevos Blancos', cantidad: 12, unidadMedida: 'UN' }
-        ]
-      }
-    ]
-  },
-  {
-    id: 4,
-    nombre: 'Frutas del Norte',
-    contacto: 'Carla Benítez',
-    telefono: '+54 11 2222-7744',
-    email: 'pedidos@frutasdelnorte.com',
-    direccion: 'Mercado Central, La Matanza',
-    activo: false,
-    fechaUltimoPedido: '2026-04-30T07:40:00.000Z',
-    categorias: ['Verdura'],
-    historialPedidos: [
-      {
-        id: 401,
-        fecha: '2026-04-30T07:40:00.000Z',
-        concepto: 'Frutas de estación',
-        monto: 84500,
-        estado: 'Recibido',
-        observacion: 'Proveedor inactivo temporalmente',
-        items: [
-          { id: '11', nombre: 'Pimienta Negra en Grano', cantidad: 2, unidadMedida: 'KG' }
+          { id: 4, nombre: 'Harina 0000', cantidad: 25, unidadMedida: { id: 1, nombre: 'KG' }, precioUnitario: 3900 }
         ]
       }
     ]
@@ -176,6 +108,7 @@ export class ProveedorService {
 
   crearPedidoProveedor(id: number | string, pedido: NuevoPedidoProveedor): Observable<Proveedor> {
     const fechaPedido = new Date().toISOString();
+    
     const nuevoPedido: PedidoProveedor = {
       id: Date.now(),
       fecha: fechaPedido,
@@ -183,12 +116,20 @@ export class ProveedorService {
       monto: pedido.monto,
       estado: 'Pendiente',
       observacion: pedido.observacion,
-      items: pedido.items
+     items: pedido.items.map(item => ({
+        id: Number(item.id),
+        nombre: item.nombre ?? 'Insumo',
+        cantidad: item.cantidad,
+
+        unidadMedida: item.unidadMedida ?? { id: 0, nombre: 'UN' }, 
+        
+        precioUnitario: item.precioUnitario ?? 0
+      }))
     };
 
     this.proveedoresSignal.update(proveedores =>
       proveedores.map(proveedor => {
-        if (proveedor.id !== id) {
+        if (proveedor.id !== Number(id)) {
           return proveedor;
         }
 
@@ -200,7 +141,7 @@ export class ProveedorService {
       })
     );
 
-    const actualizado = this.proveedoresSignal().find(proveedor => proveedor.id === id)!;
+    const actualizado = this.proveedoresSignal().find(proveedor => proveedor.id === Number(id))!;
     return of(actualizado).pipe(delay(180));
   }
 
@@ -238,21 +179,12 @@ export class ProveedorService {
     const providerCats = proveedor.categorias ?? [];
 
     const costosMock: Record<string, number> = {
-      '1': 1200,
-      '2': 900,
-      '3': 1500,
-      '4': 600,
-      '5': 1100,
-      '6': 7500,
-      '7': 120,
-      '8': 300,
-      '9': 800,
-      '10': 700,
-      '11': 4500
+      '1': 1200, '2': 900, '3': 1500, '4': 600, '5': 1100, 
+      '6': 7500, '7': 120, '8': 300, '9': 800, '10': 700, '11': 4500
     };
 
     const sugeridos: SugerenciaPedidoItem[] = INSUMOS_MOCK
-      .filter(prod => providerCats.includes(prod.categoriaIngrediente))
+      .filter(prod => providerCats.includes(prod.categoriaIngrediente.descripcion))
       .filter(prod => prod.stock < prod.stockMinimo * 1.5)
       .map(prod => {
         const cantidadSugerida = Math.max(1, Math.round(prod.stockMinimo * 2 - prod.stock));
@@ -262,7 +194,8 @@ export class ProveedorService {
         return {
           productoId: prod.id.toString(),
           nombre: prod.nombre,
-          unidadMedida: prod.unidadMedida,
+          // ✅ FIX: Pasamos el objeto UnidadMedida completo
+          unidadMedida: prod.unidadMedida, 
           stockActual: prod.stock,
           stockMinimo: prod.stockMinimo,
           consumoEstimado30Dias,
@@ -271,8 +204,6 @@ export class ProveedorService {
         } as SugerenciaPedidoItem;
       });
 
-    // NOTE: El endpoint del back para obtener el pedido sugerido por la IA debe conectarse aquí
-    // return this.http.get<SugerenciaPedidoItem[]>(PROVEEDOR_ENDPOINTS.sugerenciaIA(id));
     return of(sugeridos).pipe(delay(250));
   }
 }
