@@ -1,6 +1,6 @@
 ﻿using PanComido.Dominio.Entidades;
 using PanComido.Infraestructura.Persistencia.Entidades;
-using PanComido.Presentacion.DTOs;
+using PanComido.Presentacion.DTOs.Pedidos;
 using DOM = PanComido.Dominio.Entidades;
 
 
@@ -30,16 +30,16 @@ namespace PanComido.Presentacion.Mappers
             return pedidos.Select(aDto).ToList();
         }
 
-        public CrearPedidoResponseDto aDtoCrear(DOM.Pedido pedido, DOM.Proveedor proveedor)
+        public CrearPedidoResponseDto aDtoCrear(DOM.Pedido pedido)
         {
             return new CrearPedidoResponseDto
             {
                 Id = pedido.Id,
                 Fecha = pedido.Fecha.ToString("dd/MM/yyyy"),
                 Estado = pedido.Estado,
-                ProveedorId = proveedor.Id,
-                ProveedorNombre = proveedor.Nombre,
-                ProveedorTelefono = proveedor.NumeroTelefonoWsp,
+                ProveedorId = pedido.ProveedorId,
+                ProveedorNombre = pedido.ProveedorNombre,
+                ProveedorTelefono = pedido.ProveedorTelefono,
                 ItemsInsumo = pedido.ItemsInsumo.Select(item => new PedidoInsumoResponseDto
                 {
                     InsumoId = item.InsumoId,

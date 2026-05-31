@@ -1,6 +1,6 @@
-﻿namespace PanComido.Presentacion.DTOs
+﻿namespace PanComido.Presentacion.DTOs.Pedidos
 {
-    public class ConfirmarPedidoResponseDto
+    public class EnviarPedidoResponseDto
     {
         public PedidoResponseDto PedidoConfirmado { get; set; }
         public string LinkWpp { get; set; }

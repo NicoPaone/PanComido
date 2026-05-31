@@ -25,14 +25,14 @@ namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
             _pedidoRepositorio = pedidoRepositorio;
         }
 
-        public async Task<List<InusmoConSugerencia>> EjecutarAsync(int proveedorId, int restauranteId)
+        public async Task<List<InsumoConSugerencia>> EjecutarAsync(int proveedorId, int restauranteId)
         {
             decimal cantidadSugerida = 0;
 
             var insumosProveedor = await _insumoRepositorio.ObtenerInsumosDelProveedorAsync(proveedorId, restauranteId);
             var insumosResto = await _insumoRepositorio.ObtenerInsumosAsync(restauranteId);
 
-            var insumosConSugerencia = new List<InusmoConSugerencia>();
+            var insumosConSugerencia = new List<InsumoConSugerencia>();
             
             foreach (var insumo in insumosResto)
             {
@@ -48,7 +48,7 @@ namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
                 decimal ultimoPrecioCompra = await _pedidoRepositorio.ObtenerUltimoPrecioCompraUnitarioAsync(insumo.Id, proveedorId);
                 decimal calcularPrecioTotal = cantidadSugerida * ultimoPrecioCompra;
 
-                insumosConSugerencia.Add(new InusmoConSugerencia
+                insumosConSugerencia.Add(new InsumoConSugerencia
                     {
                         Id = insumo.Id,
                         Nombre = insumo.Nombre,

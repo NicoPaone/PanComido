@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
+namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
 {
-    public class ConfirmarPedidoCasoDeUso
+    public class EnviarPedidoProveedorCasoDeUso
     {
         private readonly IPedidoRepositorio _pedidoRepositorio;
 
-        public ConfirmarPedidoCasoDeUso(IPedidoRepositorio pedidoRepositorio)
+        public EnviarPedidoProveedorCasoDeUso(IPedidoRepositorio pedidoRepositorio)
         {
             _pedidoRepositorio = pedidoRepositorio;
         }
@@ -24,7 +24,7 @@ namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
             if (pedidoExistente.Estado != "Pendiente") throw new InvalidOperationException("Solo se pueden confirmar pedidos en estado Pendiente");
             if (itemsNuevos == null || itemsNuevos.Count == 0) throw new ArgumentException("El pedido debe contener al menos un item");
 
-            DOM.Pedido pedidoConfirmado = await _pedidoRepositorio.ConfirmarPedidoAsync(pedidoId, itemsNuevos);
+            DOM.Pedido pedidoConfirmado = await _pedidoRepositorio.EnviarPedidoAsync(pedidoId, itemsNuevos);
 
             // msj wpp
             var sb = new StringBuilder();

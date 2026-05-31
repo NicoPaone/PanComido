@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PanComido.Dominio.Entidades
 {
-    public class InusmoConSugerencia
+    public class InsumoConSugerencia
     {
         public int Id { get; set; }
         public string Nombre { get; set; }

@@ -21,7 +21,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             _mapper = mapper;
         }
 
-        public async Task<DOM.Pedido> ConfirmarPedidoAsync(int pedidoId, List<DOM.PedidoInsumo> itemsNuevos)
+        public async Task<DOM.Pedido> EnviarPedidoAsync(int pedidoId, List<DOM.PedidoInsumo> itemsNuevos)
         {
             var efPedido = await _ctx.Pedidos
                 .Include(p => p.PedidoInsumos)
@@ -69,11 +69,11 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .Include(p => p.PedidoInsumos)
                     .ThenInclude(pi => pi.Insumo)
                         .ThenInclude(i => i.IdArticuloNavigation)
-                        .Include(p => p.Proveedor)
-                            .Include(p => p.PedidoInsumos)
-                               .ThenInclude(pi => pi.Insumo)
-                                   .ThenInclude(i => i.UnidadMedida)
-                                           .FirstAsync();
+                .Include(p => p.Proveedor)
+                .Include(p => p.PedidoInsumos)
+                         .ThenInclude(pi => pi.Insumo)
+                         .ThenInclude(i => i.UnidadMedida)
+                .FirstAsync();
 
             return _mapper.paraDominio(pedidoCompleto);
 
@@ -95,13 +95,16 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             var efPedido = await _ctx.Pedidos
                 .Where(p => p.Id == pedidoId)
                 .Include(p => p.EstadoPedido)
+                .Include(p => p.Proveedor)
                 .Include(p => p.PedidoInsumos)
                     .ThenInclude(pi => pi.Insumo)
                         .ThenInclude(i => i.IdArticuloNavigation)
-                        .Include(p => p.Proveedor)
-                            .Include(p => p.PedidoInsumos)
-                                .ThenInclude(pi => pi.Insumo)
-                                    .ThenInclude(i => i.UnidadMedida)
+                .Include(p => p.PedidoInsumos)
+                    .ThenInclude(pi => pi.Insumo)
+                        .ThenInclude(i => i.UnidadMedida)
+                .Include(p => p.PedidoInsumos)
+                    .ThenInclude(pi => pi.Insumo)
+                        .ThenInclude(i => i.CategoriaInsumo)
                 .FirstOrDefaultAsync();
             if (efPedido == null) return null;
             return _mapper.paraDominio(efPedido);
@@ -134,6 +137,20 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .FirstOrDefaultAsync();
 
             return efPrecio ?? 0;
+        }
+
+        public async Task MarcarComoRecibidoAsync(int pedidoId)
+        {
+            var efPedido = await _ctx.Pedidos
+                 .Include(p => p.PedidoInsumos)
+                 .FirstOrDefaultAsync(p => p.Id == pedidoId);
+
+            int estadoEnviadoId = await _ctx.EstadoPedidos
+                .Where(e => e.Descripcion == "Recibido")
+                .Select(e => e.Id)
+                .FirstAsync();
+            efPedido.EstadoPedidoId = estadoEnviadoId;
+            await _ctx.SaveChangesAsync();
         }
     }
 }
