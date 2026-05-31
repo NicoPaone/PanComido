@@ -5,7 +5,7 @@ namespace PanComido.Presentacion.Mappers
 {
     public class InsumoConsugerenciaMapper
     {
-        public InsumoParaReponerResponseDto aDto(DOM.InusmoConSugerencia insumoSugerido)
+        public InsumoParaReponerResponseDto aDto(DOM.InsumoConSugerencia insumoSugerido)
         {
             return new InsumoParaReponerResponseDto
             {
@@ -21,7 +21,7 @@ namespace PanComido.Presentacion.Mappers
         }
 
         public List<InsumoParaReponerResponseDto> aListaDto(
-            List<DOM.InusmoConSugerencia> insumosSugeridos)
+            List<DOM.InsumoConSugerencia> insumosSugeridos)
         {
             return insumosSugeridos
                 .Select(i => aDto(i))

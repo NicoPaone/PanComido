@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using PanComido.Dominio.CasosDeUso.Comanda;
+using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
 using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.SesionMock;

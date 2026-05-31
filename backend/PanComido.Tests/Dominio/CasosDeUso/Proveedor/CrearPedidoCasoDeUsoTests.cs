@@ -1,5 +1,5 @@
 ﻿using Moq;
-using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
+using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
 using DOM = PanComido.Dominio.Entidades;
 

@@ -1,21 +1,26 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
+using DOM = PanComido.Dominio.Entidades;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EF = PanComido.Infraestructura.Persistencia.Entidades;
+using PanComido.Infraestructura.Persistencia.Mappers;
 
 namespace PanComido.Infraestructura.Persistencia.Repositorios
 {
     public class LoteRepositorio : ILoteRepositorio
     {
         private readonly AppDbContext _ctx;
-        public LoteRepositorio(AppDbContext ctx)
+        private readonly LoteEntityMapper _loteEntityMapper;
+
+        public LoteRepositorio(AppDbContext ctx, LoteEntityMapper loteEntityMapper)
         {
             _ctx = ctx;
+            _loteEntityMapper = loteEntityMapper;
         }
 
         public async Task<DateOnly?> ObtenerFechaDeVencimientoMasProximaDeInsumo(int insumoId)
@@ -60,8 +65,18 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .ToDictionaryAsync(x => (x.InsumoId, x.BodegaId), x => x.StockTotal);
         }
 
-        
+        public async Task CrearLotesAsync(List<DOM.Lote> lotes)
+        {
+            var efLote = lotes.Select(_loteEntityMapper.paraEntidad).ToList();
+            _ctx.Lotes.AddRange(efLote);
+            await _ctx.SaveChangesAsync();
+        }
 
-        
+        public async Task<int> ContarLotesConNombreBaseAsync(string nombreBase)
+        {
+            return await _ctx.Lotes
+                .Where(l => l.Nombre.StartsWith(nombreBase))
+                .CountAsync();
+        }
     }
 }
