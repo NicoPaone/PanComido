@@ -384,8 +384,8 @@ export class VerProveedoresStateService {
 
   private esProductoSugerido(producto: Insumo): boolean {
     const hoy = new Date();
-    const vencimiento = new Date(`${producto.fechaVencimiento}T00:00:00`);
+    const vencimiento = new Date(`${producto.vencimiento}T00:00:00`);
     const dias = Math.ceil((vencimiento.getTime() - hoy.getTime()) / 86400000);
-    return producto.stock < producto.stockMinimo * 1.5 || dias <= 30;
+    return producto.stockActual < producto.stockMinimo * 1.5 || dias <= 30;
   }
 }

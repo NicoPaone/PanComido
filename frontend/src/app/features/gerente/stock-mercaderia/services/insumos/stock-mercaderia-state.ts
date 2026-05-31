@@ -8,15 +8,15 @@ import { CategoriaInsumo } from '../../../../../core/models/insumos/categorias/c
 import { forkJoin } from 'rxjs';
 import { CrearInsumoRequest } from '../../../../../core/models/insumos/crear-insumo-request';
 
+
 @Injectable({
   providedIn: 'root',
 })
 export class StockMercaderiaState {
-
   private api = inject(StockMercaderiaService);
   private apiUnidadMedida = inject(UnidadMedidaService);
   private apiCategoriaInsumos = inject(CategoriaInsumoService);
- 
+  
   private _productos = signal<Insumo[]>([]);
   private _unidadMedidas = signal<UnidadMedida[]>([]);
   private _categoriasInsumos = signal<CategoriaInsumo[]>([]);
@@ -27,32 +27,28 @@ export class StockMercaderiaState {
   unidadMedidas = this._unidadMedidas.asReadonly();
   categoriasInsumos = this._categoriasInsumos.asReadonly();
 
-
-
-  
-
   productosCriticos = computed(() =>
-    this._productos().filter(p => p.stock <= p.stockMinimo)
+    this._productos().filter(p => p.stockActual <= p.stockMinimo)
   );
 
   cantidadProductosCriticos = computed(() =>
     this.productosCriticos().length
   );
 
-
-  cargarMercaderia(): void{
+  cargarMercaderia(): void {
     this._cargando.set(true);
     this.api.getStockMercaderia().subscribe({
-      next: (data) =>{
+      next: (data) => {
         this._productos.set(data);
         this._cargando.set(false);
-       },
+      },
       error: (err) => {
         console.error('Error al cargar mercadería', err);
         this._cargando.set(false);
       }
-    })
+    });
   }
+
   cargarCatalogos(): void { 
     forkJoin({
       categoriasRes: this.apiCategoriaInsumos.obtenerCategorias(),
@@ -65,6 +61,7 @@ export class StockMercaderiaState {
       error: (err) => console.error('Error al cargar catalogos', err)
     });
   }
+
   guardarProducto(producto: CrearInsumoRequest): void {
     this._cargando.set(true);
     
@@ -82,11 +79,16 @@ export class StockMercaderiaState {
       });
     } else {
       this.api.crear(producto).subscribe({
-        next: (nuevo) => {
+        next: (nuevo: Insumo) => {
           this._productos.update(lista => [...lista, nuevo]);
           this._cargando.set(false);
+          console.log(nuevo);
         },
-        error: () => this._cargando.set(false)
+        error: (err) => {
+          this._cargando.set(false)
+          console.log('el error: ',err.error.error)
+
+        }
       });
     }
   }
@@ -101,5 +103,4 @@ export class StockMercaderiaState {
       error: () => this._cargando.set(false)
     });
   }
-
 }

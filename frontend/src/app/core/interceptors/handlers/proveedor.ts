@@ -93,17 +93,17 @@ export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandler
       const providerCats = prov.categorias ?? [];
       const sugeridos = INSUMOS_MOCK
         .filter((prod: Insumo) => providerCats.includes(prod.categoriaIngrediente.descripcion))
-        .filter((prod: Insumo) => prod.stock < prod.stockMinimo * 1.5)
+        .filter((prod: Insumo) => prod.stockActual < prod.stockMinimo * 1.5)
         .map((prod: Insumo) => {
           return {
             productoId: prod.id.toString(),
             nombre: prod.nombre,
             unidadMedida: prod.unidadMedida, // ✅ FIX: Ahora pasa el objeto directamente
-            stockActual: prod.stock,
+            stockActual: prod.stockActual,
             stockMinimo: prod.stockMinimo,
             consumoEstimado30Dias: prod.stockMinimo * 3,
             kind: 'sugerencia',
-            cantidadSugerida: Math.max(1, Math.round(prod.stockMinimo * 2 - prod.stock)),
+            cantidadSugerida: Math.max(1, Math.round(prod.stockMinimo * 2 - prod.stockActual)),
             precioUnitario: preciosMock[prod.id.toString()] ?? 500
           };
         });

@@ -21,8 +21,8 @@ export class InsumoList {
   faSort = faSort;
   editar = output<number>();
  getBadgeClass(item: Insumo): string {
-    if (item.stock <= item.stockMinimo * 0.5) return 'bg-critical';
-    if (item.stock <= item.stockMinimo) return 'bg-warning';
+    if (item.stockActual <= item.stockMinimo * 0.5) return 'bg-critical';
+    if (item.stockActual <= item.stockMinimo) return 'bg-warning';
     return 'bg-success';
   }
 }
