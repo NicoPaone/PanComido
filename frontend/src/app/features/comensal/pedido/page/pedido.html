@@ -69,28 +69,35 @@
     <!-- BOTONES -->
     <div class="d-flex flex-column gap-2">
 
-      <app-boton variante="success" class="w-100">
+     <app-boton-comensal
+  class="w-100"
+  [backgroundColor]="configuracion.paleta.botonSecundario"
+  [textColor]="configuracion.paleta.textoOscuro">
 
-        <span class="material-symbols-outlined">
-          add
-        </span>
+  <span class="material-symbols-outlined">
+    add
+  </span>
 
-        <span>
-          Agregar al pedido
-        </span>
+  <span>
+    Agregar al pedido
+  </span>
 
-      </app-boton>
-      <app-boton variante="warning" class="w-100" (click)="irAPersonalizar(item)">
+</app-boton-comensal>
+      <app-boton-comensal
+  class="w-100"
+  [backgroundColor]="configuracion.paleta.botonPrimario"
+  [textColor]="configuracion.paleta.textoClaro"
+  (clicked)="irAPersonalizar(item)">
 
-        <span class="material-symbols-outlined">
-          edit
-        </span>
+  <span class="material-symbols-outlined">
+    edit
+  </span>
 
-        <span>
-          Personalizar
-        </span>
+  <span>
+    Personalizar
+  </span>
 
-      </app-boton>
+</app-boton-comensal>
 
     </div>
 

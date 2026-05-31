@@ -12,13 +12,18 @@ from '../../../../core/models/item-pedido';
 
 import { Boton }
 from '../../../../shared/ui/botones/boton/boton';
+import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
+import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
+
+
 
 @Component({
   selector: 'app-pedido',
   standalone: true,
   imports: [
     CommonModule,
-    Boton
+    Boton,
+    BotonComensal
   ],
   templateUrl: './pedido.html',
   styleUrls: ['./pedido.css']
@@ -27,6 +32,7 @@ export class PedidoComponent
 implements OnInit {
 
   pedidos: ItemPedido[] = [];
+configuracion = configuracionRestauranteMock;
 
   constructor(
 

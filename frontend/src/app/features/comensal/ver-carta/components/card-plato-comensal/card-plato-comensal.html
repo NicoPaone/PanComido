@@ -23,10 +23,14 @@
 
         <!-- PLATO DEL DIA -->
         @if (plato.platoDelDia) {
+<span
+  class="badge mb-2"
+  [style.background-color]="configuracion.paleta.botonPrimario"
+  [style.color]="configuracion.paleta.textoClaro">
 
-        <span class="badge bg-success mb-2">
-          Plato del día
-        </span>
+  Plato del día
+
+</span>
 
         }
 
@@ -57,16 +61,21 @@
           align-items-end
           ">
         <!-- BOTON -->
-        <app-boton variante="success" class="w-100 " (clicked)="agregar()">
-          <span class="material-symbols-outlined">
-            add
-          </span>
+<app-boton-comensal
+  class="w-100"
+  [backgroundColor]="configuracion.paleta.botonSecundario"
+  [textColor]="configuracion.paleta.textoOscuro"
+  (clicked)="agregar()">
 
-          <span>
-            Agregar
-          </span>
-        </app-boton>
+  <span class="material-symbols-outlined">
+    add
+  </span>
 
+  <span>
+    Agregar
+  </span>
+
+</app-boton-comensal>
 
         <!-- CONTADOR -->
         <div class="d-flex flex-column align-items-center">

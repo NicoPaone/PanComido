@@ -44,11 +44,15 @@
     </div>
 
     <!-- FILTRO -->
-    <button class="btn filtro-btn shadow-sm rounded-3 px-3" (click)="mostrarFiltros = true">
+   <button
+  class="btn filtro-btn shadow-sm rounded-3 px-3"
+  [style.background-color]="configuracion.paleta.botonPrimario"
+  [style.color]="configuracion.paleta.textoClaro"
+  (click)="mostrarFiltros = true">
 
-      <fa-icon [icon]="faFilter"></fa-icon>
+  <fa-icon [icon]="faFilter"></fa-icon>
 
-    </button>
+</button>
 
 
 
@@ -59,43 +63,58 @@
 
     <div>
 
-      <app-boton variante="teal" (click)="irAPedido()" label="Pedido">
+<app-boton-comensal
+  [backgroundColor]="configuracion.paleta.botonPrimario"
+  [textColor]="configuracion.paleta.textoClaro"
+  (clicked)="irAPedido()">
 
+  <span class="d-flex align-items-center gap-2">
+    <span class="material-symbols-outlined">
+      edit_note
+    </span>
 
+    <span>
+      Pedido ({{ cantidadTotalPedido }})
+    </span>
+  </span>
 
-      </app-boton>
+</app-boton-comensal>
 
     </div>
 
     <div>
 
-      <select class="custom-select" (change)="ordenar($any($event.target).value)">
+  <select
+  class="custom-select"
+  [style.background-color]="configuracion.paleta.botonPrimario"
+  [style.color]="configuracion.paleta.textoClaro"
+  (change)="ordenar($any($event.target).value)">
 
-        <option value="">
-          Ordenar por
-        </option>
+  <option value="">
+    Ordenar por
+  </option>
 
-        <option value="default">
-          Predeterminado
-        </option>
+  <option value="default">
+    Predeterminado
+  </option>
 
-        <option value="precio-menor">
-          Menor precio
-        </option>
+  <option value="precio-menor">
+    Menor precio
+  </option>
 
-        <option value="precio-mayor">
-          Mayor precio
-        </option>
+  <option value="precio-mayor">
+    Mayor precio
+  </option>
 
-        <option value="tiempo">
-          Más rápidos
-        </option>
+  <option value="tiempo">
+    Más rápidos
+  </option>
 
-        <option value="nombre">
-          A-Z
-        </option>
+  <option value="nombre">
+    A-Z
+  </option>
 
-      </select>
+</select>
 
     </div>
 
@@ -264,15 +283,22 @@
   </div>
 
   <!-- BOTON -->
-  <app-boton variante="success" customClass="w-100" (click)="aplicarFiltros()">
+<app-boton-comensal
+  [backgroundColor]="configuracion.paleta.botonSecundario"
+  [textColor]="configuracion.paleta.textoOscuro"
+  customClass="w-100"
+  (clicked)="aplicarFiltros()">
 
-    Aplicar filtros
+  Aplicar filtros
 
-  </app-boton>
+</app-boton-comensal>
 
 </div>
 
-<button class="btn shadow waiter-btn">
+<button
+  class="btn shadow waiter-btn"
+  [style.background-color]="configuracion.paleta.botonPrimario"
+  [style.color]="configuracion.paleta.textoClaro">
 
   <span class="material-symbols-outlined waiter-icon">
     room_service
