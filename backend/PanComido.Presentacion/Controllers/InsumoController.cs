@@ -8,7 +8,7 @@ using PanComido.Presentacion.SesionMock;
 
 namespace PanComido.Presentacion.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("insumo")]
     [ApiController]
     public class InsumoController : ControllerBase
     {
@@ -46,7 +46,7 @@ namespace PanComido.Presentacion.Controllers
 
                 Insumo insumoDominio = _mapper.aDominio(request);
 
-                await _crearInsumoCasoDeUso.EjecutarAsync(
+                Insumo insumoCreado = await _crearInsumoCasoDeUso.EjecutarAsync(
                     restauranteId,
                     insumoDominio,
                     request.CantidadInicial,
@@ -54,7 +54,10 @@ namespace PanComido.Presentacion.Controllers
                     request.FechaVencimiento
                 );
 
-                return StatusCode(201, new { mensaje = "Insumo creado correctamente." });
+                return StatusCode(201, new {
+                    insumo = _mapper.aDto(insumoCreado),
+                    mensaje = "Insumo creado correctamente." 
+                });
             }
             catch (ArgumentException ex)
             {

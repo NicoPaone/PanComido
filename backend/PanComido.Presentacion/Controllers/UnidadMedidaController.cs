@@ -6,7 +6,7 @@ using PanComido.Presentacion.Mappers;
 
 namespace PanComido.Presentacion.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("unidad-medida")]
     [ApiController]
     public class UnidadMedidaController : ControllerBase
     {
