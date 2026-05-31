@@ -13,9 +13,10 @@ export class CategoriaInsumoService {
 
   private api = inject(ApiService);
 
-  private endpoint = 'CategoriaInsumo';
+  private endpoint = 'categoria-insumo';
 
   obtenerCategorias(): Observable<CategoriaInsumo[]> {
+    
     return this.api.get<CategoriaInsumo[]>(this.endpoint);
   }
 }
