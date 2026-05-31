@@ -1,5 +1,8 @@
 import { Routes } from '@angular/router';
 import { roleGuard } from './core/guards/role.guard';
+//import { DEFAULT_ROUTE } from './app.config';
+
+const DEFAULT_ROUTE = 'staff/gerente';
 
 export const routes: Routes = [
    {
@@ -7,11 +10,7 @@ export const routes: Routes = [
       loadComponent: () => 
           import('./layouts/staff-layout/staff-layout').then(m => m.StaffLayout),
       children: [
-         {
-            path: 'prueba', loadComponent: () =>
-                import('./shared/components/prueba/prueba').then(m => m.Prueba)
-         },
-         {
+          {
             path: 'gerente',
             canActivate: [roleGuard],
             data: { roles: ['Gerente'] },
@@ -23,16 +22,17 @@ export const routes: Routes = [
             data: { roles: ['Cocina'] },
             loadChildren: () => import('./features/cocina/cocina.routes').then(m => m.COCINA_ROUTES)
          },
+         
          {
-            path: '',redirectTo: 'prueba', pathMatch: 'full'
+            path: '',redirectTo: 'cocina', pathMatch: 'full'
          }
       ]
    },
    {
-      path: '', redirectTo: 'staff/prueba', pathMatch: 'full'
+      path: '', redirectTo: DEFAULT_ROUTE, pathMatch: 'full'
    },
 
    {
-      path: '**', redirectTo: 'staff/prueba'
+      path: '**', redirectTo: DEFAULT_ROUTE
    }
 ];
