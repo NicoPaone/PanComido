@@ -23,7 +23,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
          Console.WriteLine("modificar en repoo");
          var efComanda = await _ctx.Comanda
-            .FirstOrDefaultAsync(m => m.MesaId == mesaId && m.EstadoComandaId != (int)EstadoComanda.Finalizada);
+            .FirstOrDefaultAsync(m => m.MesaId == mesaId 
+            && m.EstadoComandaId != (int)EstadoComanda.Finalizada
+            && m.EstadoComandaId != (int)EstadoComanda.Abierta);
          Console.WriteLine("El objeto: "+ efComanda);
 
          if (efComanda == null)
@@ -50,7 +52,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             .ThenInclude(ac => ac.Articulo)
             .ThenInclude (a => a.Plato)
             .Where(c => c.RestauranteId == restauranteId)
-            .Where(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada)
+            .Where(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada
+                        && c.EstadoComandaId != (int)EstadoComanda.Abierta)
             .ToListAsync();
          return  efList.Select(C=> _mapper.ParaDominio(C)).ToList();
       }

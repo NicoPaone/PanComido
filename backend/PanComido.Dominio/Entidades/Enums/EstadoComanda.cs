@@ -11,7 +11,8 @@ namespace PanComido.Dominio.Entidades.Enums
         Nueva = 1,
         EnPreparacion = 2,
         EnEspera = 3,
-        Finalizada = 4 
+        Finalizada = 4,
+        Abierta = 5,
 
     }
 }
