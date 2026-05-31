@@ -43,7 +43,7 @@ export class InsumoPage {
 
   categoriasFiltro = computed(() =>{
     const nombres = this.state.categoriasInsumos().map(c => c.descripcion);
-    return ['Categorías', ...nombres];
+    return [...nombres];
   })
 
  productoSeleccionado = computed(() => {
