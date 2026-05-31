@@ -69,6 +69,12 @@ export const routes: Routes = [
                import('./features/comensal/pedido/page/pedido')
                   .then(m => m.PedidoComponent)
          },
+         {
+            path: 'personalizar-plato',
+            loadComponent: () =>
+               import('./features/comensal/personalizar-plato/page/personalizar-plato')
+                  .then(m => m.PersonalizarPlatoComponent)
+         },
 
          {
             path: '',

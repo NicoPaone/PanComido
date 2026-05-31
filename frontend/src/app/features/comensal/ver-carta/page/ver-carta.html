@@ -5,7 +5,10 @@
 
     <div class="d-flex align-items-center gap-2">
 
-      <img>
+      <!-- Logo -->
+      <div class="logo">
+        <img [src]="logoUrl" alt="Logo" />
+      </div>
 
     </div>
 
@@ -16,9 +19,9 @@
           person
         </span>
 
-       <span class="fw-semibold">
-  {{ cantidadPersonas }}
-</span>
+        <span class="fw-semibold">
+          {{ cantidadPersonas }}
+        </span>
       </div>
 
       <div class="fw-semibold">
@@ -97,6 +100,46 @@
     </div>
 
   </div>
+
+  <div class="d-flex flex-wrap gap-2 mb-3" *ngIf="
+    tiposSeleccionados.length > 0 ||
+    bebidasSeleccionadas.length > 0 ||
+    restriccionesSeleccionadas.length > 0
+  ">
+
+    <!-- TIPOS -->
+    @for (tipo of tiposSeleccionados; track tipo) {
+
+    <div class="filtro-chip">
+      {{ tipo }}
+    </div>
+
+    }
+
+    <!-- BEBIDAS -->
+    @for (bebida of bebidasSeleccionadas; track bebida) {
+
+    <div class="filtro-chip">
+      {{ bebida }}
+    </div>
+
+    }
+
+    <!-- RESTRICCIONES -->
+    @for (restriccion of restriccionesSeleccionadas; track restriccion) {
+
+    <div class="filtro-chip">
+      {{ restriccion }}
+    </div>
+
+    }
+
+
+
+  </div>
+
+
+
   <!-- LISTA -->
   <app-lista-platos-comensal [platos]="filteredPlatos" (agregarPedido)="agregarAlPedido($event)">
   </app-lista-platos-comensal>
@@ -125,19 +168,19 @@
 
   <!-- TIPO -->
   <div class="mb-4">
-<div class="d-flex flex-column gap-2 mb-4">
-    <label>
+    <div class="d-flex flex-column gap-2 mb-4">
+      <label>
 
-      <input type="checkbox" (change)="mostrarTodos($event)">
+        <input type="checkbox" (change)="mostrarTodos($event)">
 
-      Mostrar todo
+        Mostrar todo
 
-    </label>
-</div>
+      </label>
+    </div>
     <h5 class="fw-semibold mb-3">
       Tipo de plato
     </h5>
- 
+
     <div class="d-flex flex-column gap-2">
 
 
@@ -203,7 +246,7 @@
     <div class="d-flex flex-column gap-2">
 
       <label>
-        <input type="checkbox" value="vegano" (change)="toggleFiltro($event, restriccionesSeleccionadas)">Vegano
+        <input type="checkbox" value="vegano" (change)="toggleFiltro($event, restriccionesSeleccionadas)"> Vegano
       </label>
 
       <label>

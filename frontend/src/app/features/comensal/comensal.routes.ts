@@ -24,5 +24,7 @@ export const COMENSAL_ROUTES: Routes = [
     loadComponent: () => import('./ver-carta/page/ver-carta').then(m => m.VerCartaComponent)
   },
 
+  
+
 ];
 

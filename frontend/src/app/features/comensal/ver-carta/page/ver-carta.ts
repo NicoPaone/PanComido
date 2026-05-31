@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { Plato } from '../../../../../app/core/models/plato';
@@ -47,6 +47,8 @@ export class VerCartaComponent {
   faFilter = faFilter;
   tipoOrden: string = '';
   cantidadPersonas: number = 1;
+
+  @Input() logoUrl: string = 'assets/images/logo/logo_el_ferroviario.png';
 
   platos: Plato[] = [
     {
@@ -354,5 +356,7 @@ aplicarFiltros() {
 ngOnInit() {
   this.cantidadPersonas = history.state?.cantidadPersonas ?? 1;
 }
+
+
 
 }

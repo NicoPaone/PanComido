@@ -106,3 +106,18 @@
 
 }
 
+.logo img {
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+}
+
+.filtro-chip {
+  background-color: #ffffff;
+  color: var(--status-success);
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--status-success);
+  font-size: 14px;
+  font-weight: 500;
+}

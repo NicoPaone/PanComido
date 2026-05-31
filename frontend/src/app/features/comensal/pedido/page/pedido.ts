@@ -81,4 +81,17 @@ implements OnInit {
 
   }
 
+  irAPersonalizar(item: any) {
+
+  this.router.navigate(
+    ['/comensal/personalizar-plato'],
+    {
+      state: {
+        plato: item
+      }
+    }
+  );
+
+}
+
 }
