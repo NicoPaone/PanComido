@@ -1,5 +1,6 @@
 ﻿using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Interfaces.Servicios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,21 +17,25 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
         private readonly IUnidadMedidaRepositorio _unidadMedidaRepositorio;
         private readonly ICategoriaInsumoRepositorio _categoriaInsumoRepositorio;
 
+        private readonly IEstadoStockInsumoServicio _estadoStockInsumoServicio;
+
 
         public CrearInsumoCasoDeUso(IInsumoRepositorio insumoRepositorio,
             ILoteRepositorio loteRepositorio,
             IBodegaRepositorio bodegaRepositorio,
             IUnidadMedidaRepositorio unidadMedidaRepositorio,
-            ICategoriaInsumoRepositorio categoriaInsumoRepositorio)
+            ICategoriaInsumoRepositorio categoriaInsumoRepositorio,
+            IEstadoStockInsumoServicio estadoStockInsumoServicio)
         {
             _insumoRepositorio = insumoRepositorio;
             _bodegaRepositorio = bodegaRepositorio;
             _unidadMedidaRepositorio = unidadMedidaRepositorio; 
             _categoriaInsumoRepositorio = categoriaInsumoRepositorio;
             _loteRepositorio = loteRepositorio;
+            _estadoStockInsumoServicio = estadoStockInsumoServicio;
         }
 
-        public async Task EjecutarAsync(
+        public async Task<Insumo> EjecutarAsync(
             int restauranteId,
             Insumo insumo, 
             int cantidadInicial,
@@ -45,17 +50,20 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
             if (fechaVencimiento <= DateOnly.FromDateTime(DateTime.UtcNow))
                 throw new ArgumentException("La fecha de vencimiento debe ser una fecha futura.");
 
+            if (!await _bodegaRepositorio.ExisteBodegaEnRestauranteAsync(restauranteId, idBodega))
+                throw new ArgumentException("La bodega destino especificada no es valida o no existe.");
 
             CategoriaInsumo categoria = await _categoriaInsumoRepositorio.ObtenerPorIdAsync(insumo.CategoriaId);
 
             if (categoria == null)
                 throw new ArgumentException("La categoría de insumo seleccionada no existe en el sistema.");
 
-            if (!await _unidadMedidaRepositorio.ExisteAsync(insumo.UnidadDeMedidaId))
+            UnidadMedida unidadMedida = await _unidadMedidaRepositorio.ObtenerPorIdAsync(insumo.UnidadDeMedidaId);
+
+            if (unidadMedida == null)
                 throw new ArgumentException("La unidad de medida seleccionada no existe en el sistema.");
 
-            if (!await _bodegaRepositorio.ExisteBodegaEnRestauranteAsync(restauranteId, idBodega))
-                throw new ArgumentException("La bodega destino especificada no es valida o no existe.");
+            
 
             var loteInicial = new Lote
             {
@@ -70,7 +78,15 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
             insumo.Tipo = categoria.TipoAplica;
             insumo.Lotes = new List<Lote> { loteInicial };
 
-            await _insumoRepositorio.CrearAsync(insumo);
+            Insumo insumoCreado = await _insumoRepositorio.CrearAsync(insumo);
+
+            insumoCreado.Categoria = categoria.Descripcion;
+            insumoCreado.UnidadMedida = unidadMedida.Nombre;
+            insumoCreado.Vencimiento = loteInicial.FechaVencimiento;
+            insumoCreado.StockActual = loteInicial.Cantidad;
+            insumoCreado.EstadoStock = _estadoStockInsumoServicio.CalcularEstadoStock(insumoCreado.StockActual, insumoCreado.StockMinimo);
+
+            return insumoCreado;
         }
     }
     
