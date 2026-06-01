@@ -11,5 +11,9 @@ namespace PanComido.Dominio.Interfaces.Repositorios
     {
         Task<Mesa?> ObtenerPorIdAsync(int id, int restauranteId);
         Task ActualizarAsync(Mesa mesa);
+        Task<List<MesaConPosiciones>> ObtenerTodasAsync(int restauranteId);
+
+
+      
     }
 }
