@@ -58,7 +58,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .Select(e => e.Id)
                 .FirstAsync();
 
-            EF.Pedido efPedido = _mapper.paraEf(pedido, estadoPendienteId);
+            EF.Pedido efPedido = _mapper.paraEntidad(pedido, estadoPendienteId);
 
             _ctx.Pedidos.Add(efPedido);
             await _ctx.SaveChangesAsync();
@@ -151,6 +151,21 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .FirstAsync();
             efPedido.EstadoPedidoId = estadoEnviadoId;
             await _ctx.SaveChangesAsync();
+        }
+
+        public async Task<List<int>> ObtenerInsumosEnPedidosNoRecibidosAsync(int proveedorId)
+        {
+            var insumosIds = await _ctx.PedidoInsumos
+                .Include(pi => pi.Pedido)
+                    .ThenInclude(p => p.EstadoPedido)
+                .Where(pi => pi.Pedido.ProveedorId == proveedorId)
+                .Where(pi => pi.Pedido.EstadoPedido.Descripcion == "Pendiente" || pi.Pedido.EstadoPedido.Descripcion == "Enviado")
+                .Select(pi => pi.InsumoId)
+                .Distinct()
+                .ToListAsync();
+
+            return insumosIds;
+
         }
     }
 }

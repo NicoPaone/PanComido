@@ -24,7 +24,7 @@ namespace PanComido.Presentacion.Controllers
             this._mapper = mapper;
         }
 
-        [HttpGet("formulario-datos")]
+        [HttpGet("formulario-plato")]
         public async Task<ActionResult<DatosFormularioCrearPlatoResponseDto>> ObtenerDatosFormulario()
         {
             // Extraemos el ID del filtro de contexto, sin hardcodear nada

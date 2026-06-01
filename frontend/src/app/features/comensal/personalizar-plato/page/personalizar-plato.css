@@ -1,0 +1,31 @@
+.volver {
+  cursor: pointer;
+}
+
+.plato-img {
+  height: 240px;
+  object-fit: cover;
+}
+
+.chip {
+  padding: 10px 16px;
+  border-radius: 20px;
+  background-color: #eeeeee;
+  cursor: pointer;
+  transition: 0.2s;
+  font-weight: 500;
+}
+
+.chip.selected {
+  background-color: #00897b;
+  color: white;
+}
+
+.chip.remove.selected-remove {
+  background-color: #e53935;
+  color: white;
+}
+
+textarea {
+  resize: none;
+}

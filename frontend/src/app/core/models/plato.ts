@@ -1,4 +1,4 @@
-import { UnidadMedida } from './insumos/insumo';
+import { UnidadMedida } from "./unidad-medida";
 
 export interface RecetaIngrediente {
   id: number | string;
@@ -12,8 +12,14 @@ export interface Plato {
   nombre: string;
   precioVenta: number;
   costo: number;
+  tiempo: number;
+  tipo: string;
+  bebida: string;
+  restriccion: string;
   visible: boolean;
   imagen: string;
+  descripcion: string;
+  platoDelDia: boolean;
   receta?: RecetaIngrediente[];
   tiempoPreparacion?: number;
   categoria?: string;

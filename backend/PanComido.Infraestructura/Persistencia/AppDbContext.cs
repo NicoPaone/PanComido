@@ -52,6 +52,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Ingrediente> Ingredientes { get; set; }
 
+    public virtual DbSet<IngredienteIngredientePreparado> IngredienteIngredientePreparados { get; set; }
+
     public virtual DbSet<IngredientePreparado> IngredientePreparados { get; set; }
 
     public virtual DbSet<Insumo> Insumos { get; set; }
@@ -344,25 +346,19 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.IdInsumoNavigation).WithOne(p => p.Ingrediente)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("ingrediente_id_insumo_fkey");
+        });
 
-            entity.HasMany(d => d.IngredientePreparados).WithMany(p => p.Ingredientes)
-                .UsingEntity<Dictionary<string, object>>(
-                    "IngredienteIngredientePreparado",
-                    r => r.HasOne<IngredientePreparado>().WithMany()
-                        .HasForeignKey("IngredientePreparadoId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("ingrediente_ingrediente_preparado_ingrediente_preparado_id_fkey"),
-                    l => l.HasOne<Ingrediente>().WithMany()
-                        .HasForeignKey("IngredienteId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("ingrediente_ingrediente_preparado_ingrediente_id_fkey"),
-                    j =>
-                    {
-                        j.HasKey("IngredienteId", "IngredientePreparadoId").HasName("ingrediente_ingrediente_preparado_pkey");
-                        j.ToTable("ingrediente_ingrediente_preparado");
-                        j.IndexerProperty<int>("IngredienteId").HasColumnName("ingrediente_id");
-                        j.IndexerProperty<int>("IngredientePreparadoId").HasColumnName("ingrediente_preparado_id");
-                    });
+        modelBuilder.Entity<IngredienteIngredientePreparado>(entity =>
+        {
+            entity.HasKey(e => new { e.IngredienteId, e.IngredientePreparadoId }).HasName("ingrediente_ingrediente_preparado_pkey");
+
+            entity.HasOne(d => d.Ingrediente).WithMany(p => p.IngredienteIngredientePreparados)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("ingrediente_ingrediente_preparado_ingrediente_id_fkey");
+
+            entity.HasOne(d => d.IngredientePreparado).WithMany(p => p.IngredienteIngredientePreparados)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("ingrediente_ingrediente_preparado_ingrediente_preparado_id_fkey");
         });
 
         modelBuilder.Entity<IngredientePreparado>(entity =>

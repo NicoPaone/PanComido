@@ -1,11 +1,10 @@
 <app-page-toolbar>
-  
   <app-buscador 
     buscador 
     placeholder="Buscar ingrediente..."
     (busquedaCambiada)="termino.set($event)">
   </app-buscador>
-
+  
   <app-dropdown filtros #filtroDropdown>
 
     <app-boton 
@@ -18,12 +17,13 @@
     <div menu>
       <ul>
         <li (click)="categoria.set('Categorías'); filtroDropdown.cerrar()">Todos</li>
-        @for(cat of state.categoriasUnicas(); track cat){
+        @for(cat of categoriasFiltro(); track cat){
           <li (click)="categoria.set(cat); filtroDropdown.cerrar()">{{cat}}</li>
         }
         
       </ul>
     </div>
+    
   </app-dropdown>
 
   <app-boton 
@@ -76,12 +76,13 @@
 
   @if(modalAbierto()){
 
-    <app-producto-form
-    [producto]="productoSeleccionado()"
-    [bodegas]="bodegaState.bodegas()"
-    [categorias]="state.categoriasUnicas()"
-    (guardar)="guardarCambios($event, modalFormulario)"
-    ></app-producto-form>
+  <app-producto-form 
+    [producto]="productoSeleccionado()" 
+    [bodegas]="bodegaState.bodegas()" 
+    [categorias]="state.categoriasInsumos()" 
+    [unidadesMedida]="state.unidadMedidas()" 
+    (guardar)="guardarCambios($event, modalFormulario)">
+  </app-producto-form>
   }
 
     </app-modal>

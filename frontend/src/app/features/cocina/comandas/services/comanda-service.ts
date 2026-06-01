@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 export class ComandaService {
 
   private api = inject(ApiService)
-  private endpoint = 'Comanda';
+  private endpoint = 'api/Comanda';
 
   obtenerComandasActivas():Observable<Comanda[]>{
     return this.api.get<Comanda[]>(`${this.endpoint}/activas`);

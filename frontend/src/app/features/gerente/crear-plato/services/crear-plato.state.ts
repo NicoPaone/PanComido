@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CrearPlatoApiService } from './crear-plato.api';
-import { RecetaIngrediente } from '../../../../core/models/plato';
+import { Plato, RecetaIngrediente } from '../../../../core/models/plato';
 import { calcularCostoReceta } from '../../../../core/services/plato.service';
 
 @Injectable({ providedIn: 'root' })
@@ -72,7 +72,7 @@ export class CrearPlatoStateService {
       visible: this.visible(),
       imagen: this.imagenSelected(),
       receta: this.receta()
-    };
+    } as Omit<Plato, 'id'>;
 
     this.api.crearPlato(nuevoPlato)
       .pipe(takeUntilDestroyed(this.destroyRef))

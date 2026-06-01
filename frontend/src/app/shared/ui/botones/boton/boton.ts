@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, Input, input, output } from '@angular/core';
 
 export type BotonVariante = 'primary' | 'secondary' | 'danger' | 'outline' | 'tab' | 'teal' | 'warning' | 'success';
 export type BotonTamanio = 'sm' | 'md' | 'lg';
@@ -11,7 +11,7 @@ export type BotonTamanio = 'sm' | 'md' | 'lg';
   styleUrl: './boton.css',
 })
 export class Boton {
-  
+  //@Input() variant: 'teal' | 'orange' | 'edit' | 'add' | 'delete' = 'teal';
   
   label = input<string>();
   variante = input<BotonVariante>('primary');

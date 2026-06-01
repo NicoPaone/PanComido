@@ -32,7 +32,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             };
         }
 
-        public EF.Pedido paraEf(DOM.Pedido pedido, int estadoPedidoId)
+        public EF.Pedido paraEntidad(DOM.Pedido pedido, int estadoPedidoId)
         {
             return new EF.Pedido
             {

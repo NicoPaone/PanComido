@@ -1,11 +1,20 @@
 import { Injectable, signal } from '@angular/core';
 import { Observable, of, delay } from 'rxjs';
 
+
+const ROLE_ROUTES: Record<string, string> = {
+  'Gerente': 'staff/gerente',
+  'Cocina':  'staff/cocina',
+  'Mozo':    'staff/mozo',
+};
+const DEFAULT_ROUTE = 'staff/cocina';
+
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  currentRole = signal<string>('Cocina');
+  currentRole = signal<string>('Mozo');
 
   // NOTE: El endpoint del back para validar credenciales de gerente debe conectarse aquí
   validateManagerCredentials(username: string, password: string): Observable<boolean> {
@@ -19,5 +28,9 @@ export class AuthService {
 
   setRole(role: string): void {
     this.currentRole.set(role);
+  }
+  getHomeRoute():string{
+    const role = this.currentRole();
+    return ROLE_ROUTES[role] ||DEFAULT_ROUTE;
   }
 }

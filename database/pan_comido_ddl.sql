@@ -270,8 +270,8 @@ CREATE TABLE articulo (
     descripcion             TEXT,
     precio_venta_final      DECIMAL,
     precio_ganancia         DECIMAL,
-    precio_promocional      DECIMAL
-    url_imagen              TEXT,
+    precio_promocional      DECIMAL,
+    url_imagen              TEXT
     -- cantidad_actual es campo calculado en la app
 );
 
@@ -315,6 +315,7 @@ CREATE TABLE ingrediente_preparado (
 CREATE TABLE ingrediente_ingrediente_preparado (
     ingrediente_id          INTEGER NOT NULL REFERENCES ingrediente(id_insumo),
     ingrediente_preparado_id INTEGER NOT NULL REFERENCES ingrediente_preparado(id_ingrediente),
+    cantidad        DECIMAL NOT NULL, -- por ahora siempre en kg
     PRIMARY KEY (ingrediente_id, ingrediente_preparado_id)
 );
 
@@ -330,6 +331,7 @@ CREATE TABLE plato_ingrediente (
     plato_id        INTEGER NOT NULL REFERENCES plato(id_articulo),
     ingrediente_id  INTEGER NOT NULL REFERENCES ingrediente(id_insumo),
     opcional        BOOLEAN NOT NULL DEFAULT FALSE,
+    cantidad        DECIMAL NOT NULL, -- por ahora siempre en kg
     PRIMARY KEY (plato_id, ingrediente_id)
 );
 
