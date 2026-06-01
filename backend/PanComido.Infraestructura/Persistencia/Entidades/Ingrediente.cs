@@ -13,16 +13,6 @@ public partial class Ingrediente
     [Column("id_insumo")]
     public int IdInsumo { get; set; }
 
-    [Column("categoria_ingrediente_id")]
-    public int CategoriaIngredienteId { get; set; }
-
-    [Column("unidad_medida_id")]
-    public int UnidadMedidaId { get; set; }
-
-    [ForeignKey("CategoriaIngredienteId")]
-    [InverseProperty("Ingredientes")]
-    public virtual CategoriaIngrediente CategoriaIngrediente { get; set; } = null!;
-
     [ForeignKey("IdInsumo")]
     [InverseProperty("Ingrediente")]
     public virtual Insumo IdInsumoNavigation { get; set; } = null!;
@@ -32,10 +22,6 @@ public partial class Ingrediente
 
     [InverseProperty("Ingrediente")]
     public virtual ICollection<PlatoIngrediente> PlatoIngredientes { get; set; } = new List<PlatoIngrediente>();
-
-    [ForeignKey("UnidadMedidaId")]
-    [InverseProperty("Ingredientes")]
-    public virtual UnidadMedidum UnidadMedida { get; set; } = null!;
 
     [ForeignKey("IngredienteId")]
     [InverseProperty("Ingredientes")]

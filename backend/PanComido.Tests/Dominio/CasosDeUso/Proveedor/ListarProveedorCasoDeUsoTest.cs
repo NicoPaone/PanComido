@@ -1,6 +1,5 @@
 ﻿using Moq;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
-using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 
 namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor

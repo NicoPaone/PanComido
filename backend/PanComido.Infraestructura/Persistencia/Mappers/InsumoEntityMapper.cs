@@ -20,10 +20,6 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             // El scaffold genera: efArticulo.Insumo
             EF.Insumo efInsumo = efArticulo.Insumo
                 ?? throw new InvalidOperationException("Articulo no es un insumo");
-            
-            // Detectar subtipo
-            bool esIngrediente = efInsumo.Ingrediente != null;
-            bool esBebida = efInsumo.Bebidum != null;
 
             var insumoDominio = new DOM.Insumo
             {
@@ -32,18 +28,9 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 Descripcion = efArticulo.Descripcion,
                 StockActual = stockActual,
                 StockMinimo = efInsumo.StockMinimo,
-                Tipo = esIngrediente ? TipoInsumo.Ingrediente
-                                              : TipoInsumo.Bebida,
-                Categoria = esIngrediente
-                    ? efInsumo.Ingrediente
-                              .CategoriaIngrediente?.Descripcion
-                    : efInsumo.Bebidum
-                              .CategoriaBebida?.Descripcion,
-                
-                UnidadMedida = esIngrediente
-                    ? efInsumo.Ingrediente
-                              .UnidadMedida?.Nombre
-                    : null,
+                Tipo = (TipoInsumo)efInsumo.CategoriaInsumo.TipoAplica,
+                Categoria = efInsumo.CategoriaInsumo.Descripcion,
+                UnidadMedida = efInsumo.UnidadMedida?.Nombre
             };
 
             if (efInsumo.Lotes != null && efInsumo.Lotes.Any())
@@ -57,6 +44,38 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             }
 
             return insumoDominio;
+        }
+
+        public EF.Articulo paraEntidad(DOM.Insumo insumoDominio)
+        {
+            var efArticulo = new EF.Articulo
+            {
+                RestauranteId = insumoDominio.RestauranteId,
+                Nombre = insumoDominio.Nombre,
+                Descripcion = insumoDominio.Descripcion,
+                PrecioVentaFinal = insumoDominio.PrecioVentaFinal,
+
+                Insumo = new EF.Insumo
+                {
+                    CategoriaInsumoId = insumoDominio.CategoriaId,
+                    UnidadMedidaId = insumoDominio.UnidadDeMedidaId,
+                    StockMinimo = insumoDominio.StockMinimo,
+
+                    Lotes = insumoDominio.Lotes.Select(l => new EF.Lote
+                    {
+                        Nombre = l.Nombre,
+                        Cantidad = l.Cantidad,
+                        BodegaId = l.BodegaId,
+                        FechaAdquisicion = l.FechaAdquisicion,
+                        FechaVencimiento = l.FechaVencimiento
+                    }).ToList()
+                }
+            };
+
+            if (insumoDominio.Tipo == TipoInsumo.Ingrediente)
+                efArticulo.Insumo.Ingrediente = new EF.Ingrediente();
+
+            return efArticulo;
         }
     }
 }

@@ -1,14 +1,16 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiClient } from '../../../../core/services/api-client';
-import { ProveedorService } from '../../../../core/services/proveedor.service';
+
 import { Proveedor, SugerenciaPedidoItem, NuevoPedidoProveedor } from '../../../../core/models/proveedor';
 import { Insumo as ProductoStockMock } from '../../../../core/models/producto-stock';
+import { ProveedorService } from './proveedor-service';
 
 @Injectable({ providedIn: 'root' })
 export class PedidoSugeridoIAApiService {
+  
   private api = inject(ApiClient);
-  private proveedorService = inject(ProveedorService, { optional: true });
+  private proveedorService = inject(ProveedorService);
 
   private isMock(): boolean {
     return !!this.proveedorService && this.proveedorService.constructor.name !== 'ProveedorService';

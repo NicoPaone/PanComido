@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace PanComido.Dominio.Entidades
 {
@@ -14,18 +14,22 @@ namespace PanComido.Dominio.Entidades
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
         public decimal? PrecioVentaFinal { get; set; }
-        // de tabla insumo
         public decimal StockMinimo { get; set; }
-
-        public decimal StockActual { get; set; }
-        public DateOnly? Vencimiento { get; set; }
-        // calculado por el Use Case(no está en la BD)
-        public EstadoStock? EstadoStock { get; set; }
-        // subtipo: Ingrediente o Bebida
         public TipoInsumo Tipo { get; set; }
-        // datos del subtipo
-        public string Categoria { get; set; }      // categoria_ingrediente o categoria_bebida
-        public string UnidadMedida { get; set; }   // solo ingredientes
+        public string Categoria { get; set; }      
+        public string UnidadMedida { get; set; }
         public List<Lote> Lotes { get; set; } = new List<Lote>();
+
+        // propiedades para hacer alta
+        public int CategoriaId { get; set; }
+        public int UnidadDeMedidaId { get; set; }
+
+        public int RestauranteId { get; set; }
+
+        // propiedades calculadas
+        public DateOnly? Vencimiento { get; set; }
+        public decimal StockActual { get; set; }
+        public EstadoStock? EstadoStock { get; set; }
+
     }
 }

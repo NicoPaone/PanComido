@@ -1,0 +1,105 @@
+.producto-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+label {
+  font-weight: 600;
+  color: var(--gray-800, #1f2937);
+  font-size: 0.95rem;
+}
+
+.form-control {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--gray-400, #9ca3af);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 1rem;
+  background-color: #ffffff;
+  color: var(--gray-800, #1f2937);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+}
+
+.form-control:focus {
+  border-color: var(--primary-teal, #02596C);
+  box-shadow: 0 0 0 3px rgba(2, 89, 108, 0.1);
+}
+
+select.form-control {
+  cursor: pointer;
+  appearance: auto;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.btn-guardar {
+  background-color: var(--status-success, #6abf3f);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem 2.5rem;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  text-transform: uppercase;
+}
+
+.btn-guardar:hover:not(:disabled) {
+  background-color: #58a332;
+}
+
+.btn-guardar:active:not(:disabled) {
+  transform: translateY(2px);
+}
+
+.btn-guardar:disabled {
+  background-color: var(--gray-400, #9ca3af);
+  cursor: not-allowed;
+}
+
+
+.text-danger {
+  color: var(--status-danger, #a8041a);
+}
+
+.error-text {
+  color: var(--status-danger, #a8041a);
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 0.2rem;
+  animation: fadeIn 0.2s ease-in-out; 
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.form-control.ng-invalid.ng-touched {
+  border-color: var(--status-danger, #a8041a);
+  box-shadow: 0 0 0 3px rgba(168, 4, 26, 0.1);
+}

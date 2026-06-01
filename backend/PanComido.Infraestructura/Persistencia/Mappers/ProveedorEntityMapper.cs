@@ -19,9 +19,9 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 RestauranteId = efProveedor.RestauranteId,
                 Nombre = efProveedor.Nombre,
                 NumeroTelefonoWsp = efProveedor.NumeroTelefonoWsp,
-                Categorias = efProveedor.CategoriaProveedors
-                                .Select(cp => cp.Descripcion)
-                                .ToList()
+                Categorias = efProveedor.CategoriaInsumos
+                .Select(ci => ci.Descripcion)
+                .ToList()
             };
         }
     }

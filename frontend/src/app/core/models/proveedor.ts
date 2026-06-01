@@ -1,4 +1,4 @@
-import { UnidadMedida } from '../models/producto-stock';
+import { UnidadMedida } from './insumos/insumo';
 
 export type EstadoPedidoProveedor = 'Pendiente' | 'Confirmado' | 'Recibido' | 'Cancelado';
 
@@ -29,7 +29,7 @@ export interface Proveedor {
   direccion: string;
   activo: boolean;
   fechaUltimoPedido: string | null;
-  historialPedidos: PedidoProveedor[];
+  historialPedidos?: PedidoProveedor[];
   categorias?: string[];
 }
 

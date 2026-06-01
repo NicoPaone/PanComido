@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { StockMercaderiaService } from './stock-mercaderia-service';
+import { StockMercaderiaService } from './insumos/stock-mercaderia-service';
 
 describe('StockMercaderiaService', () => {
   let service: StockMercaderiaService;

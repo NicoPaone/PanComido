@@ -1,10 +1,10 @@
-import { UnidadMedida } from '../models/producto-stock';
+import { UnidadMedida } from './insumos/insumo';
 
 export interface RecetaIngrediente {
   id: number | string;
   nombre: string;
   cantidad: number;
-  unidadMedida: UnidadMedida;
+  unidadMedida: UnidadMedida | string;
 }
 
 export interface Plato {
@@ -17,4 +17,6 @@ export interface Plato {
   receta?: RecetaIngrediente[];
   tiempoPreparacion?: number;
   categoria?: string;
+  recomendado?: boolean;
+  ventas?: number;
 }

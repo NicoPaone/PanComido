@@ -15,13 +15,19 @@ import { ToggleComponent } from '../../../../../shared/ui/toggle/toggle';
 export class CardPlatoComponent {
   
   plato = input.required<Plato>();
+  layoutMode = input<'grid' | 'list'>('grid');
   isExploding = input<boolean>(false);
   toggleVisible = output<Plato>();
   editPlato = output<Plato>();
   deletePlato = output<Plato>();
+  toggleRecomendado = output<Plato>();
   
   onToggle() {
     this.toggleVisible.emit(this.plato());
+  }
+
+  onToggleRecomendado() {
+    this.toggleRecomendado.emit(this.plato());
   }
 
   onEdit() {

@@ -62,7 +62,7 @@ describe('VerProveedoresStateService', () => {
               observacion: pedido.observacion,
               items: pedido.items
             },
-            ...prov.historialPedidos
+            ...(prov.historialPedidos ?? [])
           ]
         };
         return of(updatedProv);
@@ -271,7 +271,7 @@ describe('VerProveedoresStateService', () => {
     expect(service.pedidoItems()).toHaveLength(0);
     expect(service.panelModo()).toBe('historial');
     expect(service.mensajeAccion()).toBe('Pedido agregado correctamente');
-    expect(service.proveedores().find(p => p.id === 1)?.historialPedidos).toHaveLength(1);
+    expect(service.historialProveedor()).toHaveLength(1);
 
     openSpy.mockRestore();
   });

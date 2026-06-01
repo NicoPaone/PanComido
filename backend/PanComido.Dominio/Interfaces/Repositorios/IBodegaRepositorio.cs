@@ -9,6 +9,7 @@ namespace PanComido.Dominio.Interfaces.Repositorios
 {
     public interface IBodegaRepositorio
     {
+        Task<bool> ExisteBodegaEnRestauranteAsync(int restauranteId, int bodegaId);
         Task<List<Bodega>> ObtenerBodegasAsync(int restauranteId);
     }
 }

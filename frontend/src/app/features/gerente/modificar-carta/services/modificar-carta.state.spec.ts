@@ -10,9 +10,9 @@ describe('ModificarCartaStateService', () => {
   let apiServiceMock: any;
 
   const mockPlatos: Plato[] = [
-    { id: 1, nombre: 'Milanesa', precioVenta: 100, costo: 50, visible: true, receta: [], imagen: '' },
-    { id: 2, nombre: 'Papas', precioVenta: 80, costo: 40, visible: false, receta: [], imagen: '' },
-    { id: 3, nombre: 'Pizza', precioVenta: 120, costo: 60, visible: true, receta: [], imagen: '' }
+    { id: 1, nombre: 'Milanesa', precioVenta: 100, costo: 50, visible: true, recomendado: true, ventas: 10, receta: [], imagen: '', categoria: 'Principales' },
+    { id: 2, nombre: 'Papas', precioVenta: 80, costo: 40, visible: false, recomendado: false, ventas: 30, receta: [], imagen: '', categoria: 'Entradas' },
+    { id: 3, nombre: 'Pizza', precioVenta: 120, costo: 60, visible: true, recomendado: true, ventas: 20, receta: [], imagen: '', categoria: 'Principales' }
   ];
 
   beforeEach(() => {
@@ -153,5 +153,100 @@ describe('ModificarCartaStateService', () => {
     expect(service.platos()).toHaveLength(2);
     expect(service.platos().find(p => p.id === 3)).toBeUndefined();
     expect(service.platoAEliminar()).toBeNull();
+  });
+
+  it('debería filtrar y ordenar platosRecomendados por ventas de forma descendente', () => {
+    service.cargarPlatos();
+    const recomendados = service.platosRecomendados();
+    expect(recomendados).toHaveLength(2);
+    // Pizza (id: 3, ventas: 20) debe estar primero que Milanesa (id: 1, ventas: 10)
+    expect(recomendados[0].id).toBe(3);
+    expect(recomendados[1].id).toBe(1);
+  });
+
+  it('debería filtrar platosNormales excluyendo los recomendados visibles', () => {
+    service.cargarPlatos();
+    const normales = service.platosNormales();
+    expect(normales).toHaveLength(1);
+    expect(normales[0].id).toBe(2); // Papas
+  });
+
+  it('debería excluir platos recomendados invisibles de platosRecomendados y enviarlos al final de platosNormales', () => {
+    service.cargarPlatos();
+    
+    expect(service.platosRecomendados()).toHaveLength(2);
+    expect(service.platosNormales()).toHaveLength(1);
+
+    const pizza = service.platos().find(p => p.id === 3)!;
+    
+    vi.useFakeTimers();
+    service.toggleVisibility(pizza);
+    vi.advanceTimersByTime(450);
+    vi.useRealTimers();
+
+    const recomendados = service.platosRecomendados();
+    expect(recomendados).toHaveLength(1);
+    expect(recomendados[0].id).toBe(1);
+
+    const normales = service.platosNormales();
+    expect(normales).toHaveLength(2);
+    expect(normales[0].id).toBe(2); // Papas (invisible, normal)
+    expect(normales[1].id).toBe(3); // Pizza (invisible, recomendado)
+  });
+
+  it('debería alternar el estado recomendado tras llamar a toggleRecomendado()', () => {
+    service.cargarPlatos();
+    const platoNormal = service.platos()[1]; // Papas (recomendado: false)
+
+    service.toggleRecomendado(platoNormal);
+
+    expect(apiServiceMock.updatePlato).toHaveBeenCalledWith(2, { recomendado: true });
+    expect(service.platos().find(p => p.id === 2)?.recomendado).toBe(true);
+  });
+
+  it('debería revertir el estado recomendado si falla la petición API al alternar recomendación', () => {
+    apiServiceMock.updatePlato.mockReturnValueOnce(throwError(() => new Error('Error de red')));
+    service.cargarPlatos();
+    const platoNormal = service.platos()[1]; // Papas (recomendado: false)
+
+    service.toggleRecomendado(platoNormal);
+
+    expect(service.platos().find(p => p.id === 2)?.recomendado).toBe(false);
+  });
+
+  it('debería filtrar platos por categoría al llamar a setCategoria()', () => {
+    service.cargarPlatos();
+    
+    // Al filtrar por 'Principales'
+    service.setCategoria('Principales');
+    expect(service.selectedCategoria()).toBe('Principales');
+    
+    // Milanesa (id: 1) y Pizza (id: 3) son Principales recomendados
+    const recomendados = service.platosRecomendados();
+    expect(recomendados).toHaveLength(2);
+    expect(recomendados[0].id).toBe(3); // Pizza (ventas: 20)
+    expect(recomendados[1].id).toBe(1); // Milanesa (ventas: 10)
+    
+    // Papas (id: 2, Entradas) no debe aparecer en platosNormales
+    expect(service.platosNormales()).toHaveLength(0);
+    
+    // Al filtrar por 'Entradas'
+    service.setCategoria('Entradas');
+    expect(service.selectedCategoria()).toBe('Entradas');
+    expect(service.platosRecomendados()).toHaveLength(0); // Ninguno es Entrada
+    expect(service.platosNormales()).toHaveLength(1);
+    expect(service.platosNormales()[0].id).toBe(2); // Papas
+  });
+
+  it('debería restablecer el filtro de categoría al pasar null a setCategoria()', () => {
+    service.cargarPlatos();
+    
+    service.setCategoria('Principales');
+    expect(service.platosNormales()).toHaveLength(0);
+    
+    service.setCategoria(null);
+    expect(service.selectedCategoria()).toBeNull();
+    expect(service.platosRecomendados()).toHaveLength(2);
+    expect(service.platosNormales()).toHaveLength(1);
   });
 });

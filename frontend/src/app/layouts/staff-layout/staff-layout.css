@@ -10,11 +10,23 @@
   padding: 2rem;
   /* Mismo ancho que tu sidebar expandido */
   margin-left: 280px; 
-  transition: margin-left 0.3s ease;
+  transition: margin-left 0.3s ease, padding 0.3s ease;
   overflow-x: hidden;
 }
 
 .layout-wrapper.sidebar-collapsed .main-content {
   /* Mismo ancho que tu sidebar colapsado */
   margin-left: 80px; 
+}
+
+@media (max-width: 991.98px) {
+  .main-content {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .main-content {
+    padding: 0.75rem;
+  }
 }

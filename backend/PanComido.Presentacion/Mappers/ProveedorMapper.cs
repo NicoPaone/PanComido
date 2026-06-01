@@ -1,4 +1,4 @@
-﻿using PanComido.Presentacion.DTOs;
+﻿using PanComido.Presentacion.DTOs.Proveedores;
 using DOM = PanComido.Dominio.Entidades;
 
 namespace PanComido.Presentacion.Mappers
