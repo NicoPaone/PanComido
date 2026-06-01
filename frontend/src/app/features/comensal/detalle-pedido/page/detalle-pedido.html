@@ -1,0 +1,82 @@
+<div class="container-fluid p-3 bg-light min-vh-100">
+
+  <!-- VOLVER -->
+  <div class="d-flex align-items-center gap-2 mb-4"
+       (click)="volver()"
+       style="cursor: pointer;">
+
+    <span class="material-symbols-outlined">
+      arrow_back
+    </span>
+
+    <span class="fw-semibold">
+      Volver
+    </span>
+
+  </div>
+
+  <!-- TITULO -->
+  <h2 class="fw-bold mb-1">Pedido</h2>
+
+  <p class="text-muted mb-4">
+    {{ pedidos.length }} items
+  </p>
+
+  <!-- DETALLE -->
+  <div class="mb-4">
+
+    <h5 class="fw-bold mb-3">Detalle del pedido</h5>
+
+    <div *ngFor="let item of pedidos" class="mb-3">
+
+      <div class="d-flex justify-content-between">
+        <span class="fw-semibold">
+          {{ item.plato.nombre }} x{{ item.cantidad }}
+        </span>
+
+        <span>
+          ${{ item.plato.precioVenta * item.cantidad }}
+        </span>
+      </div>
+
+      <div class="d-flex justify-content-between text-muted small mt-1">
+        <span>Precio unitario</span>
+        <span>${{ item.plato.precioVenta }}</span>
+      </div>
+
+    <!-- EDITAR -->
+<app-boton-comensal
+  class="link-editar"
+  [textColor]="configuracion.paleta.botonPrimario"
+  (click)="editar(item)">
+
+  Editar
+</app-boton-comensal>
+
+      <hr>
+
+    </div>
+
+  </div>
+
+  <!-- TOTAL -->
+  <div class="d-flex justify-content-between fw-bold fs-5 mb-4">
+    <span>Total</span>
+    <span>${{ total }}</span>
+  </div>
+
+  <!-- BOTON CONFIRMAR -->
+ <app-boton-comensal
+  class="w-100"
+  [backgroundColor]="configuracion.paleta.botonPrimario"
+  [textColor]="configuracion.paleta.textoClaro"
+  (clicked)="confirmarPedido()">
+
+  Confirmar pedido
+
+</app-boton-comensal>
+</div>
+
+<app-llamar-al-mozo
+  [configuracion]="configuracion">
+</app-llamar-al-mozo>

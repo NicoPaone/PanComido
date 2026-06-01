@@ -24,12 +24,23 @@ agregarPedido =
 
 configuracion = configuracionRestauranteMock;
 
+// agregar() {
+
+//  this.agregarPedido.emit({
+//   plato: this.plato,
+//   cantidad: this.cantidad
+// });
+
+// }
+
 agregar() {
 
- this.agregarPedido.emit({
-  plato: this.plato,
-  cantidad: this.cantidad
-});
+  console.log('CLICK EN:', this.plato.nombre);
+
+  this.agregarPedido.emit({
+    plato: this.plato,
+    cantidad: this.cantidad
+  });
 
 }
 

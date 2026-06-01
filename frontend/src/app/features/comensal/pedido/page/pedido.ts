@@ -14,6 +14,7 @@ import { Boton }
 from '../../../../shared/ui/botones/boton/boton';
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
 import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
+import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
 
 
 
@@ -23,10 +24,10 @@ import { configuracionRestauranteMock } from '../../../../core/interceptors/hand
   imports: [
     CommonModule,
     Boton,
-    BotonComensal
+    BotonComensal,
+    LlamarAlMozo
   ],
-  templateUrl: './pedido.html',
-  styleUrls: ['./pedido.css']
+  templateUrl: './pedido.html'
 })
 export class Pedido
 implements OnInit {
@@ -42,6 +43,10 @@ configuracion = configuracionRestauranteMock;
     private router: Router
 
   ) {}
+
+  irADetallePedido() {
+  this.router.navigate(['/comensal/detalle-pedido']);
+}
 
   ngOnInit() {
 
@@ -99,5 +104,7 @@ configuracion = configuracionRestauranteMock;
   );
 
 }
+
+
 
 }

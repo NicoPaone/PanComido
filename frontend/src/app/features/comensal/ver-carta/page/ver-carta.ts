@@ -15,6 +15,7 @@ import { PedidoService } from '../../../../../app/core/services/pedido.service';
 import { FormsModule } from '@angular/forms';
 import { ItemPedido } from '../../../../core/models/item-pedido';
 import { configuracionRestauranteMock } from '../../../../../app/core/interceptors/handlers/configuracion-restaurante.mock';
+import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
 
 @Component({
   selector: 'app-ver-carta',
@@ -26,7 +27,8 @@ import { configuracionRestauranteMock } from '../../../../../app/core/intercepto
     Boton,
       BotonComensal,
     FontAwesomeModule,
-    FormsModule
+    FormsModule,
+    LlamarAlMozo
   ],
   templateUrl: './ver-carta.html',
   styleUrls: ['./ver-carta.css'],

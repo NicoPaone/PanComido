@@ -38,6 +38,12 @@ export const COMENSAL_ROUTES: Routes = [
     loadComponent: () =>
       import('./personalizar-plato/page/personalizar-plato')
         .then(m => m.PersonalizarPlato)
-  }
+  },
+  {
+  path: 'detalle-pedido',
+  loadComponent: () =>
+    import('./detalle-pedido/page/detalle-pedido')
+      .then(m => m.DetallePedido)
+}
 ];
 
