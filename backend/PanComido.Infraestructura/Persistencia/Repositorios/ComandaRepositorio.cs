@@ -56,19 +56,19 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         }
 
 
-        public async Task<List<Comanda>> ObtenerComandasActivasAsync(int restauranteId)
-        {
-            var efList = await _ctx.Comanda
-               .Include(c => c.EstadoComanda)
-               .Include(c => c.ArticuloComanda)
-               .ThenInclude(ac => ac.Articulo)
-               .ThenInclude(a => a.Plato)
-               .Where(c => c.RestauranteId == restauranteId)
-               .Where(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada
-                           && c.EstadoComandaId != (int)EstadoComanda.Abierta)
-               .ToListAsync();
-            return efList.Select(C => _mapper.ParaDominio(C)).ToList();
-        }
+      public async Task<List<Comanda>> ObtenerComandasActivasParaCocinaAsync(int restauranteId)
+      {
+         var efList = await  _ctx.Comanda
+            .Include(c => c.EstadoComanda)
+            .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.Plato != null))
+                .ThenInclude(ac => ac.Articulo)
+                    .ThenInclude(a => a.Plato)
+            .Where(c => c.RestauranteId == restauranteId)
+            .Where(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada
+                        && c.EstadoComandaId != (int)EstadoComanda.Abierta)
+            .ToListAsync();
+         return  efList.Select(C=> _mapper.ParaDominio(C)).ToList();
+      }
 
         public async Task<List<Comanda>> ObtenerComandasActivasPorMozoAsync(int mozoId)
         {
