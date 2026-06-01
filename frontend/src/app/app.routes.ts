@@ -8,10 +8,10 @@ export const routes: Routes = [
    {
       path: 'staff',
       loadComponent: () =>
-          import('./layouts/staff-layout/staff-layout').then(m => m.StaffLayout),
+         import('./layouts/staff-layout/staff-layout').then(m => m.StaffLayout),
 
       children: [
-          {
+         {
             path: 'gerente',
             canActivate: [roleGuard],
             data: { roles: ['Gerente'] },
@@ -31,7 +31,7 @@ export const routes: Routes = [
             loadChildren: () => import('./features/mozo/mozo.routes').then(m => m.MOZO_ROUTES)
          },
          {
-            path: '',redirectTo: 'cocina', pathMatch: 'full'
+            path: '', redirectTo: 'cocina', pathMatch: 'full'
          }
 
       ]
@@ -39,11 +39,11 @@ export const routes: Routes = [
 
    /* COMENSAL */
 
-  {
-  path: 'comensal',
- loadChildren: () => import('./features/comensal/comensal.routes').then(m => m.COMENSAL_ROUTES)
-    
-},
+   {
+      path: 'comensal',
+      loadChildren: () => import('./features/comensal/comensal.routes').then(m => m.COMENSAL_ROUTES)
+
+   },
    {
       path: '', redirectTo: DEFAULT_ROUTE, pathMatch: 'full'
    },
