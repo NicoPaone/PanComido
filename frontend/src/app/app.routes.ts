@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { roleGuard } from './core/guards/role.guard';
-//import { DEFAULT_ROUTE } from './app.config';
 
 const DEFAULT_ROUTE = 'staff/gerente';
 
@@ -24,7 +23,12 @@ export const routes: Routes = [
             data: { roles: ['Cocina'] },
             loadChildren: () => import('./features/cocina/cocina.routes').then(m => m.COCINA_ROUTES)
          },
-
+         {
+            path: 'mozo',
+            canActivate: [roleGuard],
+            data: { roles: ['Mozo'] },
+            loadChildren: () => import('./features/mozo/mozo.routes').then(m => m.MOZO_ROUTES)
+         },
          {
             path: '', redirectTo: 'cocina', pathMatch: 'full'
          }
