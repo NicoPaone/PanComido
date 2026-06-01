@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace PanComido.Dominio.Entidades
 {
-    internal class Ingrediente
+    public class Ingrediente
     {
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public string UnidadMedida { get; set; }
+        public decimal CostoUnitario { get; set; }
+
+
     }
 }

@@ -6,7 +6,15 @@ using System.Threading.Tasks;
 
 namespace PanComido.Dominio.Entidades
 {
-    internal class DatosFormularioCrearPlato
+    public class DatosFormularioCrearPlato
     {
+        public List <TipoPlato> TiposPlato { get; set; } = new List<TipoPlato>() ;
+        public List <CategoriaPlato> CategoriasPlato { get; set; } = new List<CategoriaPlato>();
+        public List<Restriccion> Restricciones { get; set; } = new List<Restriccion>();
+        public List<Ingrediente> Ingredientes { get; set; } = new List<Ingrediente>();
+        public List<IngredientePreparado> IngredientePreparados { get; set; } = new List<IngredientePreparado>();
+
     }
+
+
 }

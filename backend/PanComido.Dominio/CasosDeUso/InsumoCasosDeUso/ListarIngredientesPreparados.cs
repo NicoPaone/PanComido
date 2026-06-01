@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PanComido.Dominio.Interfaces.Servicios;
 
 namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
 {
@@ -30,7 +31,7 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
             {
                 ingrediente.StockActual  = await _loteRepositorio.ObtenerStockTotalDeInsumo(ingrediente.Id);
 
-                ingrediente.FechaVencimientoProxima = await _loteRepositorio.ObtenerFechaDeVencimientoMasProximaDeInsumo(ingrediente.Id);
+                ingrediente.FechaVencimientoProxima = (DateOnly)await _loteRepositorio.ObtenerFechaDeVencimientoMasProximaDeInsumo(ingrediente.Id);
 
                 ingrediente.EstadoStock =  _estadoStockServicio.CalcularEstadoStock(ingrediente.StockActual, ingrediente.StockMinimo );
 
