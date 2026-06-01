@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.BodegaCasosDeUso;
+using PanComido.Dominio.CasosDeUso.CartaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
+using PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
@@ -13,7 +15,10 @@ using PanComido.Dominio.Servicios;
 using PanComido.Infraestructura.Persistencia;
 using PanComido.Infraestructura.Persistencia.Mappers;
 using PanComido.Infraestructura.Persistencia.Repositorios;
+using PanComido.Presentacion;
+using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
+using PanComido.Presentacion.Servicios;
 using PanComido.Presentacion.SesionMock;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +34,7 @@ builder.Services.AddControllers(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR();
 
 // Conexion a BD
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -44,6 +50,9 @@ builder.Services.AddScoped<CategoriaInsumoEntityMapper>();
 builder.Services.AddScoped<UnidadMedidaEntityMapper>();
 builder.Services.AddScoped<MesaEntityMapper>();
 builder.Services.AddScoped<LoteEntityMapper>();
+builder.Services.AddScoped<ArticuloEntityMapper>();
+builder.Services.AddScoped<PlatoEntityMapper>();
+builder.Services.AddScoped<LlamadoEntityMapper>();
 
 // Mappers de Presentacion (Dominio <-> DTOs)   
 builder.Services.AddScoped<InsumoMapper>();
@@ -56,6 +65,7 @@ builder.Services.AddScoped<InsumoConsugerenciaMapper>();
 builder.Services.AddScoped<UnidadMedidaMapper>();
 builder.Services.AddScoped<LoteRecepcionMapper>();
 builder.Services.AddScoped<LoteMapper>();
+builder.Services.AddScoped<LlamadoMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -67,6 +77,9 @@ builder.Services.AddScoped<IComandaRepositorio, ComandaRepositorio>();
 builder.Services.AddScoped<ICategoriaInsumoRepositorio, CategoriaInsumoRepositorio>();
 builder.Services.AddScoped<IUnidadMedidaRepositorio, UnidadMedidaRepositorio>();
 builder.Services.AddScoped<IMesaRepositorio, MesaRepositorio>();
+builder.Services.AddScoped<IArticuloRepositorio, ArticuloRepositorio>();
+builder.Services.AddScoped<ILlamadoRepositorio, LlamadoRepositorio>();
+builder.Services.AddScoped<IMozoRepositorio, MozoRepositorio>();
 
 // Casos de uso
 builder.Services.AddScoped<ListarInsumoCasoDeUso>();
@@ -86,11 +99,21 @@ builder.Services.AddScoped<OcuparMesaCasoDeUso>();
 builder.Services.AddScoped<EnviarPedidoProveedorCasoDeUso>();
 builder.Services.AddScoped<GenerarSugerenciasRecepcionCasoDeUso>();
 builder.Services.AddScoped<RecibirPedidoProveedorCasoDeUso>();
+builder.Services.AddScoped<ObtenerCartaCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConStockCriticoCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConVencimientoProximoCasoDeUso>();
+builder.Services.AddScoped<LlamarMozoCasoDeUso>();
+builder.Services.AddScoped<ListarLlamadosPendientesCasoDeUso>();
+builder.Services.AddScoped<ResolverLlamadoCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
+//Servicios externos
+builder.Services.AddScoped<IComandaNotificador, ComandaNotificadorSignalR>();
+builder.Services.AddScoped<ILlamadoNotificador, LlamadoNotificadorSignalR>();
 
 var allowedOrigins = builder.Configuration.GetSection("CorsSettings:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
 
@@ -102,9 +125,9 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(allowedOrigins)
         .AllowAnyMethod()
-        .AllowAnyHeader();
+        .AllowAnyHeader()
+        .AllowCredentials();
     });
-
 });
 
 var app = builder.Build();
@@ -118,10 +141,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseExceptionHandler(o => { });
+
 app.UseCors("ProduccionCors");
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+//mapear el hub de SignalR
+app.MapHub<PanComidoHub>("/hubs/pancomido");
 
 app.Run();

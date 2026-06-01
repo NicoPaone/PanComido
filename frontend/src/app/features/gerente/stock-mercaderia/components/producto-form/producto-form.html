@@ -1,33 +1,34 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()" class="producto-form">
   
-  <div class="form-group full-width">
-    <label for="nombre">Nombre <span class="text-danger">*</span></label>
-    <input id="nombre" type="text" formControlName="nombre" class="form-control" placeholder="Ej: Tomate perita">
-    @if (getError('nombre'); as error) {
-      <div class="error-text">{{ error }}</div>
-    }
+  <div class="form-row">
+    <div class="form-group full-width">
+      <label for="nombre">Nombre <span class="text-danger">*</span></label>
+      <input id="nombre" type="text" formControlName="nombre" class="form-control" placeholder="Ej: Tomate perita">
+      @if (getError('nombre'); as error) { <div class="error-text">{{ error }}</div> }
+    </div>
+    
+    <div class="form-group full-width">
+      <label for="descripcion">Descripción</label>
+      <input id="descripcion" type="text" formControlName="descripcion" class="form-control" placeholder="Opcional">
+    </div>
   </div>
 
   <div class="form-row">
     <div class="form-group">
       <label for="stockMinimo">Stock mínimo <span class="text-danger">*</span></label>
       <input id="stockMinimo" type="number" formControlName="stockMinimo" class="form-control" min="0">
-      @if (getError('stockMinimo'); as error) {
-        <div class="error-text">{{ error }}</div>
-      }
+      @if (getError('stockMinimo'); as error) { <div class="error-text">{{ error }}</div> }
     </div>
     
     <div class="form-group">
-      <label for="unidadMedida">Unidad <span class="text-danger">*</span></label>
-      <select id="unidadMedida" formControlName="unidadMedida" class="form-control">
-        <option value="KG">KG</option>
-        <option value="L">L</option>
-        <option value="GR">GR</option>
-        <option value="UN">UN</option>
+      <label for="unidadDeMedidaId">Unidad <span class="text-danger">*</span></label>
+      <select id="unidadDeMedidaId" formControlName="unidadDeMedidaId" class="form-control">
+        <option value="" disabled selected>Seleccione...</option>
+        @for (unidad of unidadesMedida(); track unidad.id) {
+          <option [value]="unidad.id">{{ unidad.nombre }}</option>
+        }
       </select>
-      @if (getError('unidadMedida'); as error) {
-        <div class="error-text">{{ error }}</div>
-      }
+      @if (getError('unidadDeMedidaId'); as error) { <div class="error-text">{{ error }}</div> }
     </div>
   </div>
 
@@ -35,11 +36,16 @@
     <div class="form-group">
       <label for="stockInicial">Cantidad inicial <span class="text-danger">*</span></label>
       <input id="stockInicial" type="number" formControlName="stockInicial" class="form-control" min="0">
-      @if (getError('stockInicial'); as error) {
-        <div class="error-text">{{ error }}</div>
-      }
+      @if (getError('stockInicial'); as error) { <div class="error-text">{{ error }}</div> }
     </div>
     
+    <div class="form-group">
+      <label for="precioVentaFinal">Precio (Si se vende directo)</label>
+      <input id="precioVentaFinal" type="number" formControlName="precioVentaFinal" class="form-control" min="0">
+    </div>
+  </div>
+
+  <div class="form-row">
     <div class="form-group">
       <label for="bodegaId">Bodega <span class="text-danger">*</span></label>
       <select id="bodegaId" formControlName="bodegaId" class="form-control">
@@ -48,27 +54,28 @@
           <option [value]="bodega.id">{{ bodega.nombre }}</option>
         }
       </select>
-      @if (getError('bodegaId'); as error) {
-        <div class="error-text">{{ error }}</div>
-      }
+      @if (getError('bodegaId'); as error) { <div class="error-text">{{ error }}</div> }
+    </div>
+
+    <div class="form-group">
+      <label for="categoriaId">Categoría <span class="text-danger">*</span></label>
+      <select id="categoriaId" formControlName="categoriaId" class="form-control">
+        <option value="" disabled selected>Seleccione...</option>
+        @for (cat of categorias(); track cat.id) {
+          <option [value]="cat.id">{{ cat.descripcion }}</option>
+        }
+      </select>
+      @if (getError('categoriaId'); as error) { <div class="error-text">{{ error }}</div> }
     </div>
   </div>
 
   <div class="form-group full-width">
-    <label for="categoria">Categoría <span class="text-danger">*</span></label>
-    <select id="categoria" formControlName="categoria" class="form-control">
-      <option value="" disabled selected>Seleccione una categoría</option>
-      @for (cat of categorias(); track cat) {
-        <option [value]="cat">{{ cat }}</option>
-      }
-    </select>
-    @if (getError('categoria'); as error) {
-      <div class="error-text">{{ error }}</div>
-    }
+    <label for="fechaVencimiento">Fecha de Vencimiento <span class="text-danger">*</span></label>
+    <input id="fechaVencimiento" type="date" formControlName="fechaVencimiento" class="form-control">
+    @if (getError('fechaVencimiento'); as error) { <div class="error-text">{{ error }}</div> }
   </div>
 
   <div class="form-actions">
     <button type="submit" class="btn-guardar" [disabled]="form.invalid">GUARDAR</button>
   </div>
-
 </form>

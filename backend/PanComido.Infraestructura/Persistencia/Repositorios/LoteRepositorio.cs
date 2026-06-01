@@ -78,5 +78,10 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .Where(l => l.Nombre.StartsWith(nombreBase))
                 .CountAsync();
         }
+
+        public Task<Dictionary<int, decimal>> ObtenerStockTotalDeInsumos(int restauranteId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

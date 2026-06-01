@@ -1,0 +1,23 @@
+<app-header-escanear-mesa
+  [title]="'Mesa'"
+  (close)="cerrarScanner()">
+</app-header-escanear-mesa>
+
+<div class="scanner-container">
+
+  <div class="scanner-box">
+    <video #video></video>
+  </div>
+
+  <div class="scanner-text">
+    <span class="material-symbols-outlined">
+      qr_code_scanner
+    </span>
+
+    <p>
+      Apunta la cámara al código QR
+      de la mesa para escanearlo
+    </p>
+  </div>
+
+</div>

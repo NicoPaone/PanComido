@@ -1,0 +1,24 @@
+.header {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-bottom: 1px solid #eaeaea;
+  background: #fff;
+}
+
+.back {
+  font-size: 22px;
+  cursor: pointer;
+  padding: 6px 10px;
+}
+
+.logo {
+  margin-left: 10px;
+}
+
+.logo img {
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+}

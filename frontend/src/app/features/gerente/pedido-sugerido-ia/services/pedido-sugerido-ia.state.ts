@@ -2,7 +2,7 @@ import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PedidoSugeridoIAApiService } from './pedido-sugerido-ia.api';
 import { Proveedor, SugerenciaPedidoItem } from '../../../../core/models/proveedor';
-import { Insumo as ProductoStockMock } from '../../../../core/models/producto-stock';
+import { Insumo as ProductoStockMock } from '../../../../core/models/insumos/insumo';
 
 @Injectable({ providedIn: 'root' })
 export class PedidoSugeridoIAStateService {
@@ -35,7 +35,7 @@ export class PedidoSugeridoIAStateService {
 
     return this.productosDisponibles().filter(prod =>
       prod.nombre.toLowerCase().includes(query) &&
-      categories.includes(prod.categoriaIngrediente) &&
+      categories.includes(prod.categoriaIngrediente.descripcion) &&
       !this.pedidoItems().some(item => item.productoId === prod.id.toString())
     );
   });
@@ -88,7 +88,7 @@ export class PedidoSugeridoIAStateService {
       productoId: prod.id.toString(),
       nombre: prod.nombre,
       unidadMedida: prod.unidadMedida,
-      stockActual: prod.stock,
+      stockActual: prod.stockActual,
       stockMinimo: prod.stockMinimo,
       consumoEstimado30Dias: prod.stockMinimo * 3,
       cantidadSugerida: 1,

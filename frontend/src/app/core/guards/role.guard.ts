@@ -12,7 +12,7 @@ export const roleGuard: CanActivateFn = (route, state) => {
     return true;
   }
 
-  // NOTE: El endpoint del back para verificar el token o rol de sesión debe integrarse aquí
-  router.navigate(['/staff/prueba']);
-  return false;
+  // NOTE: El endpoint del back para verificar el token o rol de 
+  // sesión debe integrarse aquí
+ return router.createUrlTree([authService.getHomeRoute()]);
 };

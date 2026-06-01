@@ -8,12 +8,8 @@ using System.Threading.Tasks;
 
 namespace PanComido.Dominio.Entidades
 {
-    public class Insumo
+    public class Insumo : Articulo
     {
-        public int Id { get; set; }
-        public string Nombre { get; set; }
-        public string Descripcion { get; set; }
-        public decimal? PrecioVentaFinal { get; set; }
         public decimal StockMinimo { get; set; }
         public TipoInsumo Tipo { get; set; }
         public string Categoria { get; set; }      
@@ -23,7 +19,6 @@ namespace PanComido.Dominio.Entidades
         // propiedades para hacer alta
         public int CategoriaId { get; set; }
         public int UnidadDeMedidaId { get; set; }
-
         public int RestauranteId { get; set; }
 
         // propiedades calculadas
