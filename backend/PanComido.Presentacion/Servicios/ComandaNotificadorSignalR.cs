@@ -7,7 +7,7 @@ namespace PanComido.Presentacion.Servicios
 {
     public class ComandaNotificadorSignalR : IComandaNotificador
     {
-        public readonly IHubContext<PanComidoHub> _hubContext;
+        private readonly IHubContext<PanComidoHub> _hubContext;
 
         public ComandaNotificadorSignalR(IHubContext<PanComidoHub> hubContext)
         {
