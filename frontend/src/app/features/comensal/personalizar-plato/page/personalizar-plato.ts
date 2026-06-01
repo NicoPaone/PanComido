@@ -2,8 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-
+import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
+import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
 
 @Component({
   selector: 'app-personalizar-plato',
@@ -11,7 +12,8 @@ import { Boton } from '../../../../shared/ui/botones/boton/boton';
   imports: [
     CommonModule,
     Boton,
-    FormsModule
+    FormsModule,
+    LlamarAlMozo
   ],
   templateUrl: './personalizar-plato.html',
   styleUrls: ['./personalizar-plato.css']
@@ -19,6 +21,7 @@ import { Boton } from '../../../../shared/ui/botones/boton/boton';
 export class PersonalizarPlato implements OnInit {
 
   plato: any;
+   configuracion = configuracionRestauranteMock;
 
   ingredientesExtra = [
     'Queso extra',

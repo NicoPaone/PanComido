@@ -10,11 +10,24 @@ export class PedidoService {
 
   pedidos: ItemPedido[] = [];
 
-  agregarPedido(item: ItemPedido) {
+  // agregarPedido(item: ItemPedido) {
 
-    this.pedidos.push(item);
+  //   this.pedidos.push(item);
 
-  }
+  // }
+
+agregarPedido(item: ItemPedido) {
+
+  console.log('Agregando:', item.plato.nombre);
+
+  this.pedidos.push(item);
+
+  console.log(
+    'Pedidos actuales:',
+    this.pedidos.map(p => p.plato.nombre)
+  );
+
+}
 
   obtenerPedidos() {
 
