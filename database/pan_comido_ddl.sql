@@ -270,8 +270,8 @@ CREATE TABLE articulo (
     descripcion             TEXT,
     precio_venta_final      DECIMAL,
     precio_ganancia         DECIMAL,
-    precio_promocional      DECIMAL
-    url_imagen              TEXT,
+    precio_promocional      DECIMAL,
+    url_imagen              TEXT
     -- cantidad_actual es campo calculado en la app
 );
 

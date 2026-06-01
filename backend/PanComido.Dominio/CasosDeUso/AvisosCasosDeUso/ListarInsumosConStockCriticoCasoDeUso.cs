@@ -11,13 +11,13 @@ using System.Threading.Tasks;
 
 namespace PanComido.Dominio.CasosDeUso.AvisosCasosDeUso
 {
-    public class ListarInsumosConStockCritico
+    public class ListarInsumosConStockCriticoCasoDeUso
     {
         private readonly IInsumoRepositorio _insumoRepositorio;
         private readonly IEstadoStockInsumoServicio _estadoStockInsumoServicio;
         private readonly ILoteRepositorio _loteRepositorio;
 
-        public ListarInsumosConStockCritico(IInsumoRepositorio insumoRepositorio, 
+        public ListarInsumosConStockCriticoCasoDeUso(IInsumoRepositorio insumoRepositorio, 
                                             IEstadoStockInsumoServicio estadoStockInsumoServicio,
                                             ILoteRepositorio loteRepositorio)
         {
@@ -26,7 +26,7 @@ namespace PanComido.Dominio.CasosDeUso.AvisosCasosDeUso
             _loteRepositorio = loteRepositorio;
         }
 
-        public async Task<List<Insumo>> Ejecutar(int restauranteId)
+        public async Task<List<Insumo>> EjecutarAsync(int restauranteId)
         {
             List<Insumo> insumos = await _insumoRepositorio.ObtenerInsumosAsync(restauranteId);
             List<Insumo> insumosConStockCritico = new List<Insumo>();
