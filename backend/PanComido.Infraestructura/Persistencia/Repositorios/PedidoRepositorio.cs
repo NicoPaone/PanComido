@@ -152,5 +152,20 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             efPedido.EstadoPedidoId = estadoEnviadoId;
             await _ctx.SaveChangesAsync();
         }
+
+        public async Task<List<int>> ObtenerInsumosEnPedidosNoRecibidosAsync(int proveedorId)
+        {
+            var insumosIds = await _ctx.PedidoInsumos
+                .Include(pi => pi.Pedido)
+                    .ThenInclude(p => p.EstadoPedido)
+                .Where(pi => pi.Pedido.ProveedorId == proveedorId)
+                .Where(pi => pi.Pedido.EstadoPedido.Descripcion == "Pendiente" || pi.Pedido.EstadoPedido.Descripcion == "Enviado")
+                .Select(pi => pi.InsumoId)
+                .Distinct()
+                .ToListAsync();
+
+            return insumosIds;
+
+        }
     }
 }

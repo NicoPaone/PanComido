@@ -12,7 +12,9 @@ using PanComido.Dominio.Servicios;
 using PanComido.Infraestructura.Persistencia;
 using PanComido.Infraestructura.Persistencia.Mappers;
 using PanComido.Infraestructura.Persistencia.Repositorios;
+using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
+using PanComido.Presentacion.Servicios;
 using PanComido.Presentacion.SesionMock;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +30,7 @@ builder.Services.AddControllers(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR();
 
 // Conexion a BD
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -88,6 +91,9 @@ builder.Services.AddScoped<RecibirPedidoProveedorCasoDeUso>();
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
 
+//Servicios externos
+builder.Services.AddScoped<IComandaNotificador, ComandaNotificadorSignalR>();
+
 var allowedOrigins = builder.Configuration.GetSection("CorsSettings:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
 
 
@@ -98,9 +104,9 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(allowedOrigins)
         .AllowAnyMethod()
-        .AllowAnyHeader();
+        .AllowAnyHeader()
+        .AllowCredentials();
     });
-
 });
 
 var app = builder.Build();
@@ -119,5 +125,8 @@ app.UseCors("ProduccionCors");
 app.UseAuthorization();
 
 app.MapControllers();
+
+//mapear el hub de SignalR
+app.MapHub<PanComidoHub>("/hubs/pancomido");
 
 app.Run();

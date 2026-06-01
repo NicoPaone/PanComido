@@ -16,10 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Hubs\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\PanComido.Infraestructura\PanComido.Infraestructura.csproj" />
   </ItemGroup>
 
