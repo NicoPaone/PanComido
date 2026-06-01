@@ -1,9 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { ApiClient } from '../../../../core/services/api-client';
-import { Proveedor, PedidoProveedor, NuevoPedidoProveedor } from '../../../../core/models/proveedor';
-import { Insumo as ProductoStockMock } from '../../../../core/models/producto-stock';
 
+// Modelos de Dominio
+import { Proveedor, PedidoProveedor, NuevoPedidoProveedor } from '../../../../core/models/proveedor';
+import { Insumo } from '../../../../core/models/insumos/insumo';
+import { CategoriaInsumo } from '../../../../core/models/insumos/categorias/categoria-insumo';
+import { UnidadMedida } from '../../../../core/models/unidad-medida';
+
+// DTOs (Lo que escupe la red)
 interface ProveedorResponseDto {
   id: number;
   nombre: string | null;
@@ -58,42 +63,48 @@ export class VerProveedoresApiService {
 
   getProveedores(): Observable<Proveedor[]> {
     return this.api.get<ProveedorResponseDto[]>('Proveedor').pipe(
-      map(proveedores => proveedores.map(proveedor => ({
-        id: proveedor.id,
-        nombre: proveedor.nombre ?? '',
-        contacto: proveedor.nombre ?? '',
-        telefono: proveedor.numeroTelefonoWsp ?? '',
-        email: '',
-        direccion: '',
-        activo: true,
-        fechaUltimoPedido: this.normalizarFecha(proveedor.fechaUltimoPedido),
-        categorias: proveedor.categorias ?? []
-      })))
+      map(proveedores => proveedores.map(dto => this.mapProveedor(dto)))
     );
   }
 
   getHistorialPedidos(id: number | string): Observable<PedidoProveedor[]> {
     return this.api.get<PedidoResponseDto[]>(`Proveedor/${id}/historial-pedidos`).pipe(
-      map(pedidos => pedidos.map(pedido => this.mapPedido(pedido)))
+      map(pedidos => pedidos.map(dto => this.mapPedido(dto)))
     );
   }
 
-  getProductosDisponibles(): Observable<ProductoStockMock[]> {
+  getProductosDisponibles(): Observable<Insumo[]> {
     return this.api.get<InsumoResponseDto[]>('Insumo').pipe(
-      map(insumos => insumos.map(insumo => this.mapInsumo(insumo)))
+      map(insumos => insumos.map(dto => this.mapInsumo(dto)))
     );
   }
 
-  getInsumosProveedor(id: number | string): Observable<ProductoStockMock[]> {
+  getInsumosProveedor(id: number | string): Observable<Insumo[]> {
     return this.api.get<InsumoResponseDto[]>(`Proveedor/${id}/insumos`).pipe(
-      map(insumos => insumos.map(insumo => this.mapInsumo(insumo)))
+      map(insumos => insumos.map(dto => this.mapInsumo(dto)))
     );
   }
 
   crearPedidoProveedor(id: number | string, pedido: NuevoPedidoProveedor): Observable<PedidoProveedor> {
-    return this.api.post<CrearPedidoResponseDto>(`Proveedor/${id}/crearPedido`, this.mapCrearPedidoRequest(pedido)).pipe(
+    const payload = this.mapCrearPedidoRequest(pedido);
+    return this.api.post<CrearPedidoResponseDto>(`Proveedor/${id}/crearPedido`, payload).pipe(
       map(response => this.mapPedido(response))
     );
+  }
+
+
+  private mapProveedor(dto: ProveedorResponseDto): Proveedor {
+    return {
+      id: dto.id,
+      nombre: dto.nombre ?? 'Sin Nombre',
+      contacto: dto.nombre ?? 'Sin Contacto',
+      telefono: dto.numeroTelefonoWsp ?? '',
+      email: '',
+      direccion: '', 
+      activo: true,
+      fechaUltimoPedido: this.normalizarFecha(dto.fechaUltimoPedido),
+      categorias: dto.categorias ?? []
+    };
   }
 
   private mapCrearPedidoRequest(pedido: NuevoPedidoProveedor): CrearPedidoRequestDto {
@@ -101,49 +112,69 @@ export class VerProveedoresApiService {
       items: pedido.items.map(item => ({
         insumoId: Number(item.id),
         cantidad: item.cantidad,
-        precioCompra: item.precioUnitario ?? 1
+        precioCompra: item.precioUnitario ?? 0 
       }))
     };
   }
 
-  private mapPedido(pedido: PedidoResponseDto): PedidoProveedor {
-    const items = pedido.itemsInsumo ?? [];
+ private mapPedido(dto: PedidoResponseDto): PedidoProveedor {
+    const items = dto.itemsInsumo ?? [];
     return {
-      id: pedido.id,
-      fecha: this.normalizarFecha(pedido.fecha) ?? '',
-      concepto: `Pedido #${pedido.id}`,
-      monto: items.reduce((total, item) => total + item.cantidad * item.precioCompra, 0),
-      estado: this.mapEstado(pedido.estado),
+      id: dto.id,
+      fecha: this.normalizarFecha(dto.fecha) ?? new Date().toISOString().split('T')[0],
+      concepto: `Pedido #${dto.id}`,
+      monto: items.reduce((total, item) => total + (item.cantidad * item.precioCompra), 0),
+      estado: this.mapEstado(dto.estado),
       observacion: '',
       items: items.map(item => ({
         id: item.insumoId,
-        nombre: item.nombreInsumo ?? '',
+        nombre: item.nombreInsumo ?? 'Insumo Desconocido',
         cantidad: item.cantidad,
-        unidadMedida: 'UN',
+        
+        unidadMedida: { 
+          id: 0, 
+          nombre: 'UN' 
+        } as UnidadMedida, 
+        
         precioUnitario: item.precioCompra
       }))
     };
   }
-
-  private mapInsumo(insumo: InsumoResponseDto): ProductoStockMock {
+  private mapInsumo(dto: InsumoResponseDto): Insumo {
+   
     return {
-      id: insumo.id,
-      nombre: insumo.nombre ?? '',
-      stock: insumo.stockActual,
-      fechaVencimiento: insumo.vencimiento ?? '',
-      unidadMedida: (insumo.unidadMedida ?? 'UN') as ProductoStockMock['unidadMedida'],
-      categoriaIngrediente: (insumo.categoria ?? 'Almacen') as ProductoStockMock['categoriaIngrediente'],
-      stockMinimo: insumo.stockMinimo
+      id: dto.id,
+      nombre: dto.nombre ?? 'Sin Nombre',
+      stockActual: dto.stockActual,
+      vencimiento: dto.vencimiento ?? '',
+      stockMinimo: dto.stockMinimo,
+      
+      unidadMedida: { 
+        id: 0, 
+        nombre: dto.unidadMedida ?? 'UN' 
+      } as UnidadMedida,
+      
+      categoriaIngrediente: { 
+        id: 0, 
+        descripcion: dto.categoria ?? 'Sin Categoría', 
+        tipoAplica: dto.tipo ?? 'Ingrediente' 
+      } as CategoriaInsumo
     };
   }
 
   private mapEstado(estado: string | null): PedidoProveedor['estado'] {
-    if (estado === 'Confirmado' || estado === 'Recibido' || estado === 'Cancelado') return estado;
-    return 'Pendiente';
+    const estadosValidos = ['Confirmado', 'Recibido', 'Cancelado'];
+    return estadosValidos.includes(estado as string) ? (estado as PedidoProveedor['estado']) : 'Pendiente';
   }
+
 
   private normalizarFecha(fecha: string | null): string | null {
     if (!fecha) return null;
+    
+    if (fecha.includes('-')) {
+        return fecha.split('T')[0]; 
+    }
+
     const partes = fecha.split('/');
     if (partes.length !== 3) return fecha;
     const [dia, mes, anio] = partes;

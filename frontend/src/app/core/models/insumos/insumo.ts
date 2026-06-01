@@ -1,30 +1,29 @@
 
-export type UnidadMedida= 'KG'| 'L' |'GR' | 'UN' | '-';
-export type CategoriaIngrediente = 'Verdura' | 'Almacen' | 'Carne' | 'Lacteos'| 'Bebidas' | 'Sin alcohol';
+
+import { UnidadMedida } from "../unidad-medida";
+import { CategoriaInsumo } from "./categorias/categoria-insumo";
 
 
-// [
-//   {
-//     "id": 12,
-//     "nombre": "Coca-Cola 500ml",
-//     "stockActual": 24,
-//     "unidadMedida": "-",
-//     "vencimiento": null,
-//     "stockMinimo": 5,
-//     "estadoStock": "Normal",
-//     "tipo": "Bebida",
-//     "categoria": "Sin alcohol"
-//   },
-export interface Insumo {
+export interface Insumo{
     id: number;
     nombre: string;
-    stockActual: number;        
-    unidadMedida: UnidadMedida | string;
-    vencimiento: string | null;  
+    stockActual: number;
+    vencimiento: string;
+    unidadMedida: UnidadMedida;
+    categoriaIngrediente: CategoriaInsumo;
     stockMinimo: number;
-    estadoStock: string;        
-    tipo: string;             
-    categoria: string;          
+
+}
+export interface InsumoResponseDto {
+  id: number;
+  nombre: string;
+  stockActual: number;
+  stockMinimo: number;
+  vencimiento: string | null;
+  unidadMedida: string; 
+  categoria: string;   
+  tipo: string;
+  estadoStock: string;
 }
 
 export const INSUMOS_MOCK: Insumo[] = [
@@ -32,66 +31,55 @@ export const INSUMOS_MOCK: Insumo[] = [
     id: 1, 
     nombre: 'Ajo',
     stockActual: 5, 
-    unidadMedida: 'KG',
     vencimiento: '2026-05-17',
     stockMinimo: 5,
-    estadoStock: 'Normal',
-    tipo: 'Verdura',
-    categoria: 'Verdura'
+    unidadMedida: { id: 1, nombre: 'Kg' },
+    categoriaIngrediente: { id: 2, descripcion: 'Verdura', tipoAplica: 'Ingrediente' }
   },
   {
     id: 2, 
     nombre: 'Cebolla',
     stockActual: 25, 
-    unidadMedida: 'KG',
     vencimiento: '2026-06-10',
     stockMinimo: 10,
-    estadoStock: 'Normal',
-    tipo: 'Verdura',
-    categoria: 'Verdura'
+    unidadMedida: { id: 1, nombre: 'Kg' },
+    categoriaIngrediente: { id: 2, descripcion: 'Verdura', tipoAplica: 'Ingrediente' }
   },
   {
     id: 3, 
     nombre: 'Aceite de Girasol',
     stockActual: 3, 
-    unidadMedida: 'L',
     vencimiento: '2027-01-20',
     stockMinimo: 5,
-    estadoStock: 'Normal',
-    tipo: 'Almacen',
-    categoria: 'Almacen'
+    unidadMedida: { id: 3, nombre: 'Lt' },
+    categoriaIngrediente: { id: 9, descripcion: 'Aceites y Grasas', tipoAplica: 'Ingrediente' }
   },
   {
     id: 4, 
     nombre: 'Harina 0000',
     stockActual: 1, 
-    unidadMedida: 'KG',
     vencimiento: '2026-12-05',
     stockMinimo: 15,
-    estadoStock: 'Normal',
-    tipo: 'Almacen',
-    categoria: 'Almacen'
+    unidadMedida: { id: 1, nombre: 'Kg' },
+    categoriaIngrediente: { id: 11, descripcion: 'Harinas y Panificados', tipoAplica: 'Ingrediente' }
   },
   {
     id: 5, 
     nombre: 'Tomate Perita',
     stockActual: 12, 
-    unidadMedida: 'KG',
     vencimiento: '2026-05-25',
     stockMinimo: 5,
-    estadoStock: 'Normal',
-    tipo: 'Verdura',
-    categoria: 'Verdura'
+    unidadMedida: { id: 1, nombre: 'Kg' },
+    categoriaIngrediente: { id: 2, descripcion: 'Verdura', tipoAplica: 'Ingrediente' }
   },
   {
     id: 6, 
     nombre: 'Bife de Chorizo',
     stockActual: 3, 
-    unidadMedida: 'KG',
     vencimiento: '2026-05-28',
     stockMinimo: 10,
-    estadoStock: 'Normal',
-    tipo: 'Carne',
-    categoria: 'Carne'
+    unidadMedida: { id: 1, nombre: 'Kg' },
+    categoriaIngrediente: { id: 3, descripcion: 'Carne', tipoAplica: 'Ingrediente' }
   }
 ];
+

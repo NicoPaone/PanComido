@@ -1,13 +1,14 @@
 import { HttpRequest, HttpResponse, HttpHandlerFn } from "@angular/common/http";
 import { delay, Observable, of } from "rxjs";
 import { Proveedor, NuevoPedidoProveedor, NuevoProveedor, PedidoProveedor } from "../../models/proveedor";
-import { PRODUCTOS_STOCK_MOCK, Insumo } from "../../models/producto-stock";
+import { INSUMOS_MOCK, Insumo } from "../../models/insumos/insumo";
 
 const preciosMock: Record<string, number> = {
   '1': 1200, '2': 900, '3': 1500, '4': 600, '5': 1100,
   '6': 7500, '7': 120, '8': 300, '9': 800, '10': 700, '11': 4500
 };
 
+// 🔥 FIX: Actualizado con objetos UnidadMedida e IDs numéricos
 let dbProveedores: Proveedor[] = [
   {
     id: 1,
@@ -28,8 +29,9 @@ let dbProveedores: Proveedor[] = [
         estado: 'Recibido',
         observacion: 'Recepción completa en cámaras',
         items: [
-          { id: '6', nombre: 'Bife de Chorizo', cantidad: 10, unidadMedida: 'KG' },
-          { id: '5', nombre: 'Tomate Perita', cantidad: 12, unidadMedida: 'KG' }
+          // ✅ FIX: UnidadMedida ahora es el objeto {id, nombre}
+          { id: 6, nombre: 'Bife de Chorizo', cantidad: 10, unidadMedida: { id: 1, nombre: 'KG' }, precioUnitario: 18450 },
+          { id: 5, nombre: 'Tomate Perita', cantidad: 12, unidadMedida: { id: 1, nombre: 'KG' }, precioUnitario: 0 }
         ]
       }
     ]
@@ -78,7 +80,7 @@ export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandler
 
   if (method === 'GET') {
     if (url.includes('/productos-disponibles')) {
-      return of(new HttpResponse({ status: 200, body: PRODUCTOS_STOCK_MOCK })).pipe(delay(200));
+      return of(new HttpResponse({ status: 200, body: INSUMOS_MOCK })).pipe(delay(200));
     }
     
     if (url.includes('/pedido-sugerido-ia')) {
@@ -89,19 +91,19 @@ export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandler
       if (!prov) return of(new HttpResponse({ status: 404 }));
 
       const providerCats = prov.categorias ?? [];
-      const sugeridos = PRODUCTOS_STOCK_MOCK
-        .filter((prod: Insumo) => providerCats.includes(prod.categoriaIngrediente))
-        .filter((prod: Insumo) => prod.stock < prod.stockMinimo * 1.5)
+      const sugeridos = INSUMOS_MOCK
+        .filter((prod: Insumo) => providerCats.includes(prod.categoriaIngrediente.descripcion))
+        .filter((prod: Insumo) => prod.stockActual < prod.stockMinimo * 1.5)
         .map((prod: Insumo) => {
           return {
             productoId: prod.id.toString(),
             nombre: prod.nombre,
-            unidadMedida: prod.unidadMedida,
-            stockActual: prod.stock,
+            unidadMedida: prod.unidadMedida, // ✅ FIX: Ahora pasa el objeto directamente
+            stockActual: prod.stockActual,
             stockMinimo: prod.stockMinimo,
             consumoEstimado30Dias: prod.stockMinimo * 3,
             kind: 'sugerencia',
-            cantidadSugerida: Math.max(1, Math.round(prod.stockMinimo * 2 - prod.stock)),
+            cantidadSugerida: Math.max(1, Math.round(prod.stockMinimo * 2 - prod.stockActual)),
             precioUnitario: preciosMock[prod.id.toString()] ?? 500
           };
         });
@@ -218,7 +220,14 @@ export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandler
           monto: body.monto || monto,
           estado: 'Pendiente',
           observacion: body.observacion,
-          items: body.items
+          
+          items: body.items.map(item => ({
+             id: Number(item.id),
+             nombre: item.nombre ?? 'Insumo',
+             cantidad: item.cantidad,
+             unidadMedida: item.unidadMedida ?? { id: 0, nombre: 'UN' },
+             precioUnitario: item.precioUnitario ?? 0
+          }))
         };
         dbProveedores[index] = {
           ...dbProveedores[index],

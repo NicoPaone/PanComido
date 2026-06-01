@@ -6,7 +6,7 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
 import { PageToolbar } from '../../../../../shared/ui/page-toolbar/page-toolbar';
 import { PedidoProveedor, EstadoPedidoProveedor } from '../../../../../core/models/proveedor';
-import { Insumo } from '../../../../../core/models/producto-stock';
+import { Insumo } from '../../../../../core/models/insumos/insumo';
 import { VerProveedoresStateService } from '../../services/ver-proveedores.state';
 
 @Component({
@@ -84,7 +84,7 @@ export class HistorialProveedorComponent implements OnInit {
   seleccionarIngrediente(producto: Insumo): void {
     this.productoSeleccionadoId = producto.id.toString();
     this.busquedaIngrediente = producto.nombre;
-    this.cantidadIngrediente = producto.unidadMedida === 'UN' ? 1 : 0.5;
+    this.cantidadIngrediente = producto.unidadMedida.nombre === 'UN' ? 1 : 0.5;
   }
 
   updateCantidadIngrediente(event: Event): void {
