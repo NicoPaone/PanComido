@@ -37,6 +37,16 @@ export class MesaLecturaState {
   seleccionarMesa(id: number | null): void {
     this._mesaSeleccionada.update(actual => actual === id ? null : id);
   }
+  ocuparMesa(mesaId:number,cantidadComensales:number):void{
+    this.api.ocuparMesa(mesaId, cantidadComensales).subscribe({
+      next: (mesaActualizada) => {
+        this._mesas.update(mesas => mesas.map(m => m.id === mesaId ? mesaActualizada : m));
+        this._mesaSeleccionada.set(null);
+        this.mostrarNotificacion('Mesa ocupada exitosamente', 'exito');
+      },
+      error: () => this.mostrarNotificacion('Error al ocupar la mesa', 'error')
+    });
+  }
 
   cambiarEstadoMesa(id: number, nuevoEstado: EstadoMesa): void {
     this._mesas.update(mesas =>
