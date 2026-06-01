@@ -53,20 +53,18 @@ export class MesaStateService {
     this._isEditorMode.set(false);
   }
 
-  moverMesa(id: number, deltaX: number, deltaY: number): void {
+    moverMesa(id: number, deltaX: number, deltaY: number): void {
     const mesaActual = this._mesas().find(m => m.id === id);
     if (!mesaActual) return;
 
-    const nuevosDatos: Partial<Mesa> = {
-      posicionXInicio: mesaActual.posicionXInicio + deltaX,
-      posicionXfin: mesaActual.posicionXfin + deltaX,
-      posicionYinicio: mesaActual.posicionYinicio + deltaY,
-      posicionYFin: mesaActual.posicionYFin + deltaY
-    };
-
-
     this._mesas.update(mesas =>
-      mesas.map(m => m.id === id ? { ...m, ...nuevosDatos } : m)
+      mesas.map(m => m.id === id ? {
+        ...m,
+        posicionXInicio: m.posicionXInicio + deltaX,
+        posicionXFin: m.posicionXFin + deltaX,
+        posicionYInicio: m.posicionYInicio + deltaY,
+        posicionYFin: m.posicionYFin + deltaY
+      } : m)
     );
   }
   seleccionarMesa(id: number | null): void {
@@ -83,36 +81,29 @@ export class MesaStateService {
 
     switch (forma) {
       case FormaMesa.HorizontalLarga:
-        ancho = 150;
-        alto = 75;
-        break;
+        ancho = 150; alto = 75; break;
       case FormaMesa.HorizontalAlta:
-        ancho = 75;
-        alto = 150;
-        break;
-      case FormaMesa.Redonda:
-      case FormaMesa.Cuadrada:
+        ancho = 75; alto = 150; break;
       default:
-        ancho = 90;
-        alto = 90;
-        break;
+        ancho = 90; alto = 90; break;
     }
 
     const nuevaMesa: Mesa = {
       id: Date.now(),
-      codigoInvitacion: `MESA-TEMP`,
+      codigoInvitacion: '',
       numeroMesa: proximoNumero,
       cantidadPersonasMax: 4,
       estadoMesa: EstadoMesa.Disponible,
-      dimensionMesa: { id: 0, forma, imagen: '' },
+      dimensionMesa: { id: 0, forma},
       posicionXInicio: 15,
-      posicionXfin: 15 + ancho,
-      posicionYinicio: 15,
+      posicionXFin: 15 + ancho,
+      posicionYInicio: 15,
       posicionYFin: 15 + alto
     };
 
     this._mesas.update(m => [...m, nuevaMesa]);
   }
+
 
   eliminarMesa(id: number): void {
     this._mesas.update(mesas => mesas.filter(m => m.id !== id));
@@ -131,30 +122,29 @@ export class MesaStateService {
       mesas.map(m => m.id === id ? { ...m, numeroMesa: nuevoNumero } : m)
     );
   }
-
-  guardarConfiguracion(): void {
+guardarConfiguracion(): void {
     const mesas = this._mesas();
 
+    // Validar números duplicados
     const numeros = mesas.map(m => m.numeroMesa);
     if (new Set(numeros).size !== numeros.length) {
-      this.mostrarNotificacion('Hay mesas con números duplicados. Corregilo antes de guardar.', 'error');
+      this.mostrarNotificacion('Hay mesas con números duplicados.', 'error');
       return;
     }
 
+    // Validar solapamiento
     for (let i = 0; i < mesas.length; i++) {
       for (let j = i + 1; j < mesas.length; j++) {
-        const mesaA = mesas[i];
-        const mesaB = mesas[j];
-
+        const a = mesas[i];
+        const b = mesas[j];
         const seSolapan = !(
-          mesaA.posicionXfin <= mesaB.posicionXInicio ||
-          mesaA.posicionXInicio >= mesaB.posicionXfin ||
-          mesaA.posicionYFin <= mesaB.posicionYinicio ||
-          mesaA.posicionYinicio >= mesaB.posicionYFin
+          a.posicionXFin <= b.posicionXInicio ||
+          a.posicionXInicio >= b.posicionXFin ||
+          a.posicionYFin <= b.posicionYInicio ||
+          a.posicionYInicio >= b.posicionYFin
         );
-
         if (seSolapan) {
-          this.mostrarNotificacion(`Las mesas ${mesaA.numeroMesa} y ${mesaB.numeroMesa} se están tocando.`, 'error');
+          this.mostrarNotificacion(`Las mesas ${a.numeroMesa} y ${b.numeroMesa} se están tocando.`, 'error');
           return;
         }
       }
