@@ -41,3 +41,4 @@
 .btn-success { background-color: var(--status-success, #6abf3f); color: white; }
 .btn-outline { background-color: #ffffff; border: 1px solid var(--gray-300, #d1d5db); color: var(--gray-700, #374151); }
 .btn-outline:hover { background-color: var(--gray-100, #f3f4f6); }
+

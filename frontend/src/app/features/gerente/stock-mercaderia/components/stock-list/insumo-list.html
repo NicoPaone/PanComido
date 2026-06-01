@@ -15,10 +15,10 @@
             <td class="font-bold">{{ item.nombre }}</td>
             <td class="text-center">
               <span class="stock-pill" [ngClass]="getBadgeClass(item)">
-                {{ item.stockActual }}
+                {{ item.stockActual}}
               </span>
             </td>
-            <td class="text-center gray-text">{{ item.unidadMedida }}</td>
+            <td class="text-center gray-text">{{ item.unidadMedida.nombre }}</td>
             <td class="text-center gray-text">{{ item.vencimiento }}</td>
             <td class="text-center gray-text">{{ item.stockMinimo }}</td>
             <td class="text-end">

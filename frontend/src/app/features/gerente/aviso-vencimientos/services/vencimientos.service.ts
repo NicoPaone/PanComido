@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map, switchMap, of } from 'rxjs';
 import { ApiClient } from '../../../../core/services/api-client';
 import { IngredienteVencimiento, VencimientoProveedor, VencimientoPedidoActivo } from '../../../../core/models/vencimientos.model';
-import { Insumo } from '../../../../core/models/producto-stock';
+import { Insumo } from '../../../../core/models/insumos/insumo';
 import { NuevoPedidoProveedor, PedidoProveedor } from '../../../../core/models/proveedor';
 
 interface ProveedorResponseDto {
@@ -48,7 +48,10 @@ export class VencimientosApiService {
           nombre: insumo.nombre ?? '',
           fechaVencimiento: insumo.vencimiento ?? '',
           stockDisponible: insumo.stockActual,
-          unidadMedida: (insumo.unidadMedida ?? 'UN') as Insumo['unidadMedida']
+         unidadMedida: { 
+            id: 0, 
+            nombre: insumo.unidadMedida ?? 'UN' 
+          }
         }))
       )
     );

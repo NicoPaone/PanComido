@@ -1,0 +1,21 @@
+/* Tarjetas de Platos */
+.dish-card {
+  border-radius: 12px;
+   overflow:hidden;
+}
+.dish-img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+
+
+@media (max-width: 576px){
+
+  .dish-img{
+    height:120px;
+  }
+
+}

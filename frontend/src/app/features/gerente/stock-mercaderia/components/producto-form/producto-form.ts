@@ -5,6 +5,8 @@ import { Bodega } from '../../../../../core/models/bodega/bodega';
 import { CrearInsumoRequest } from '../../../../../core/models/insumos/crear-insumo-request';
 
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { CategoriaInsumo } from '../../../../../core/models/insumos/categorias/categoria-insumo';
+import { UnidadMedida } from '../../../../../core/models/unidad-medida';
 
 export const stockMinimoValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const stockMinimo = control.get('stockMinimo')?.value;
@@ -27,8 +29,8 @@ export class ProductoForm {
 
   producto = input<Insumo | null>(null);
   bodegas = input<Bodega[]>([]);
-  categorias = input<string[]>([]);
-
+  categorias = input<CategoriaInsumo[]>([]);
+  unidadesMedida = input<UnidadMedida[]>([]);
   guardar = output<CrearInsumoRequest>();
   cancelado = output<void>();
 
@@ -38,54 +40,55 @@ export class ProductoForm {
 
     const prod = this.producto();
     if(prod){
-
       this.form.patchValue({
-        ...prod,stockInicial: prod.stockActual
+        ...prod,stockInicial: prod.stockActual,
+         fechaVencimiento: prod.vencimiento ? prod.vencimiento.split('T')[0] : ''
       });
     }
 
   }
-  private initForm(): void{
-   this.form = this.fb.group({
+ private initForm(): void {
+    this.form = this.fb.group({
       nombre: ['', Validators.required],
+      descripcion: [''], 
+      precioVentaFinal: [0, Validators.min(0)], 
       stockMinimo: [0, [Validators.required, Validators.min(0)]],
-      unidadMedida: ['KG', Validators.required],
+      unidadDeMedidaId: ['', Validators.required],
       stockInicial: [0, [Validators.required, Validators.min(0)]],
       bodegaId: ['', Validators.required],
-      categoria: ['', Validators.required],
+      categoriaId: ['', Validators.required], 
+      fechaVencimiento: ['', Validators.required], 
       tipo: ['Ingrediente'] 
     }, { validators: stockMinimoValidator });
-    
+
+    console.log(this.form);
   }
- onSubmit(): void {
-    if(this.form.valid) {
+onSubmit(): void {
+    if (this.form.valid) {
       const formValue = this.form.value;
       
-      // Armamos el DTO exacto casteando los números (los inputs HTML devuelven strings)
       const payload: CrearInsumoRequest = {
         nombre: formValue.nombre,
-        unidadMedida: formValue.unidadMedida,
+        descripcion: formValue.descripcion || '',
+        precioVentaFinal: Number(formValue.precioVentaFinal) || 0,
         stockMinimo: Number(formValue.stockMinimo),
-        tipo: formValue.tipo,
-        categoria: formValue.categoria,
-        stockInicial: Number(formValue.stockInicial),
-        bodegaId: Number(formValue.bodegaId)
+        categoriaId: Number(formValue.categoriaId),
+        unidadDeMedidaId: Number(formValue.unidadDeMedidaId),
+        cantidadInicial: Number(formValue.stockInicial),
+        bodegaId: Number(formValue.bodegaId),
+        fechaVencimiento: formValue.fechaVencimiento 
+        // input type="date" deberia devolver YYYY-MM-DD
       };
-      
+      console.log("el payloadd: ",payload);
       this.guardar.emit(payload);
       this.form.reset({
-        id: null,
-        nombre: '',
         stockMinimo: 0,
-        unidadMedida: 'KG',
+        precioVentaFinal: 0,
         stockInicial: 0,
-        bodegaId: '',
-        categoria: '',
         tipo: 'Ingrediente'
-
       });
     } else {
-      this.form.markAllAsTouched(); // Pinta los errores si intentan guardar vacío
+      this.form.markAllAsTouched();
     }
   }
   getError(campo:string): string|null{

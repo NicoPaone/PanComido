@@ -1,16 +1,16 @@
 import { Routes } from '@angular/router';
 import { roleGuard } from './core/guards/role.guard';
 
+const DEFAULT_ROUTE = 'staff/gerente';
+
 export const routes: Routes = [
+
    {
       path: 'staff',
-      loadComponent: () => 
-          import('./layouts/staff-layout/staff-layout').then(m => m.StaffLayout),
+      loadComponent: () =>
+         import('./layouts/staff-layout/staff-layout').then(m => m.StaffLayout),
+
       children: [
-         {
-            path: 'prueba', loadComponent: () =>
-                import('./shared/components/prueba/prueba').then(m => m.Prueba)
-         },
          {
             path: 'gerente',
             canActivate: [roleGuard],
@@ -23,16 +23,32 @@ export const routes: Routes = [
             data: { roles: ['Cocina'] },
             loadChildren: () => import('./features/cocina/cocina.routes').then(m => m.COCINA_ROUTES)
          },
+
          {
-            path: '',redirectTo: 'prueba', pathMatch: 'full'
+            path: 'mozo',
+            canActivate: [roleGuard],
+            data: { roles: ['Mozo'] },
+            loadChildren: () => import('./features/mozo/mozo.routes').then(m => m.MOZO_ROUTES)
+         },
+         {
+            path: '', redirectTo: 'cocina', pathMatch: 'full'
          }
+
       ]
    },
+
+   /* COMENSAL */
+
    {
-      path: '', redirectTo: 'staff/prueba', pathMatch: 'full'
+      path: 'comensal',
+      loadChildren: () => import('./features/comensal/comensal.routes').then(m => m.COMENSAL_ROUTES)
+
+   },
+   {
+      path: '', redirectTo: DEFAULT_ROUTE, pathMatch: 'full'
    },
 
    {
-      path: '**', redirectTo: 'staff/prueba'
+      path: '**', redirectTo: DEFAULT_ROUTE
    }
 ];
