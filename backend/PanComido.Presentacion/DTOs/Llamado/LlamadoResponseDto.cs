@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PanComido.Dominio.Entidades
+﻿namespace PanComido.Presentacion.DTOs.Llamado
 {
-    public class Llamado
+    public class LlamadoResponseDto
     {
         public int Id { get; set; }
         public int? MozoId { get; set; }
-        public int? GerenteId { get; set; }
         public int CategoriaLlamadoId { get; set; }
         public string CategoriaDescripcion { get; set; }
         public string Descripcion { get; set; }

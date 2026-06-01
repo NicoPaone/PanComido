@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="CasosDeUso\MozoCasoDeUso\" />
     <Folder Include="Excepciones\" />
     <Folder Include="ObjetosDeValor\" />
   </ItemGroup>
