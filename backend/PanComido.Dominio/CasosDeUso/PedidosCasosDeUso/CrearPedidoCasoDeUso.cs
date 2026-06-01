@@ -27,19 +27,19 @@ namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
         public async Task<Pedido> EjecutarAsync(Pedido pedido, int restauranteId)
         {
             if (pedido.ItemsInsumo.Select(i => i.InsumoId).Distinct().Count() != pedido.ItemsInsumo.Count)
-                throw new Exception("Hay insumos duplicados");
+                throw new InvalidOperationException("Hay insumos duplicados");
 
             Proveedor proveedor = await _proveedorRepositorio.ObtenerProveedorPorIdAsync(pedido.ProveedorId);
             if (proveedor == null || proveedor.RestauranteId != restauranteId)
             {
-                throw new Exception("Proveedor no encontrado");
+                throw new KeyNotFoundException("Proveedor no encontrado");
             }
 
             List<Insumo> insumos = await _insumoRepositorio.ObtenerInsumosDelProveedorAsync(proveedor.Id, restauranteId);
 
             var idsValidos = insumos.Select(i => i.Id).ToHashSet();
             if (pedido.ItemsInsumo.Any(item => !idsValidos.Contains(item.InsumoId)))
-                throw new Exception("Hay insumos que no pertenecen al proveedor");
+                throw new ArgumentException("Hay insumos que no pertenecen al proveedor");
 
             pedido.Fecha = DateOnly.FromDateTime(DateTime.Now);
             pedido.Estado = "Pendiente";
