@@ -58,7 +58,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .Select(e => e.Id)
                 .FirstAsync();
 
-            EF.Pedido efPedido = _mapper.paraEf(pedido, estadoPendienteId);
+            EF.Pedido efPedido = _mapper.paraEntidad(pedido, estadoPendienteId);
 
             _ctx.Pedidos.Add(efPedido);
             await _ctx.SaveChangesAsync();
