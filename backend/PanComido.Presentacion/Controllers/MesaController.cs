@@ -39,9 +39,9 @@ namespace PanComido.Presentacion.Controllers
             {
                 int restauranteId = HttpContext.ObtenerRestauranteId();
 
-                await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, id, request.CantidadComensales.Value);
+                var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, id, request.CantidadComensales.Value);
 
-                return StatusCode(201, new { mensaje = "Mesa ocupada exitosamente. Podés empezar a pedir." });
+                return StatusCode(201, _mapper.aDto(mesaConPosiciones) );
             }
             catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException)
             {
