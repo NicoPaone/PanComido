@@ -8,7 +8,7 @@
    @if (!isEditorMode() && isSeleccionada()) {
     <div class="popup-acciones" (click)="$event.stopPropagation()">
 
-        @if (mesa().estadoMesa === 'disponible') {
+        @if (mesa().estadoMesa === 'Disponible') {
           <button type="button" class="btn-accion" (click)="accionMenu.emit('ocupar')">Ocupar mesa</button>
         } @else {
           <button type="button" class="btn-accion" (click)="accionMenu.emit('detalles')">Ver detalles</button>
