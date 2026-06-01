@@ -1,11 +1,13 @@
-import { Component, effect, input, output, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, input, output, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Plato, RecetaIngrediente } from '../../../../../core/models/plato';
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
 import { ToggleComponent } from '../../../../../shared/ui/toggle/toggle';
 import { Buscador } from '../../../../../shared/ui/buscador/buscador';
 import { calcularCostoReceta } from '../../../../../core/services/plato.service';
-import { Insumo, INSUMOS_MOCK } from '../../../../../core/models/insumos/insumo';
+import { Insumo } from '../../../../../core/models/insumos/insumo';
+import { ModificarCartaApiService } from '../../services/modificar-carta.api';
 
 @Component({
   selector: 'app-modal-editar-plato',
@@ -16,6 +18,9 @@ import { Insumo, INSUMOS_MOCK } from '../../../../../core/models/insumos/insumo'
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ModalEditarPlatoComponent {
+  private api = inject(ModificarCartaApiService);
+  private destroyRef = inject(DestroyRef);
+
   plato = input.required<Plato>();
   save = output<Partial<Plato>>();
   close = output<void>();
@@ -27,6 +32,7 @@ export class ModalEditarPlatoComponent {
 
   receta = signal<RecetaIngrediente[]>([]);
   busqueda = signal<string>('');
+  insumos = signal<Insumo[]>([]);
 
   costo = computed(() => {
     return calcularCostoReceta(this.receta());
@@ -42,13 +48,15 @@ export class ModalEditarPlatoComponent {
     const query = this.busqueda().toLowerCase().trim();
     if (!query) return [];
     
-    return INSUMOS_MOCK.filter(prod => 
+    return this.insumos().filter(prod =>
       prod.nombre.toLowerCase().includes(query) &&
       !this.receta().some(selected => selected.id === prod.id)
     );
   });
 
   constructor() {
+    this.cargarInsumos();
+
     effect(() => {
       const p = this.plato();
       if (p) {
@@ -67,6 +75,15 @@ export class ModalEditarPlatoComponent {
 
   onSearchChanged(value: string) {
     this.busqueda.set(value);
+  }
+
+  cargarInsumos(): void {
+    this.api.getInsumos()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: insumos => this.insumos.set(insumos),
+        error: () => this.insumos.set([])
+      });
   }
 
   agregarIngrediente(producto: Insumo) {

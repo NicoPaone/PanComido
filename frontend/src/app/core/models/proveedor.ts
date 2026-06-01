@@ -1,6 +1,6 @@
 import { UnidadMedida } from "./unidad-medida";
 
-export type EstadoPedidoProveedor = 'Pendiente' | 'Confirmado' | 'Recibido' | 'Cancelado';
+export type EstadoPedidoProveedor = 'Pendiente' | 'Enviado' | 'Recibido';
 
 export interface PedidoProveedor {
   id: string | number;
@@ -64,7 +64,16 @@ export interface SugerenciaPedidoItem {
   unidadMedida: UnidadMedida;
   stockActual: number;
   stockMinimo: number;
-  consumoEstimado30Dias: number;
+  estadoStock?: string;
   cantidadSugerida: number;
   precioUnitario: number;
+}
+
+export interface PreRecepcionPedidoItem {
+  insumoId: number;
+  nombreInsumo: string;
+  cantidad: number;
+  nombreLote: string;
+  bodegaId: number;
+  fechaVencimiento: string;
 }

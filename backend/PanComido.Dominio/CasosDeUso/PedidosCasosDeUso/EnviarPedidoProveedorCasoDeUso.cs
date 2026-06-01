@@ -1,4 +1,4 @@
-﻿using DOM = PanComido.Dominio.Entidades;
+using DOM = PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using System;
 using System.Collections.Generic;
