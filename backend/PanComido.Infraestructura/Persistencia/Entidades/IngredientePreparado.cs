@@ -17,7 +17,6 @@ public partial class IngredientePreparado
     [InverseProperty("IngredientePreparado")]
     public virtual Ingrediente IdIngredienteNavigation { get; set; } = null!;
 
-    [ForeignKey("IngredientePreparadoId")]
-    [InverseProperty("IngredientePreparados")]
-    public virtual ICollection<Ingrediente> Ingredientes { get; set; } = new List<Ingrediente>();
+    [InverseProperty("IngredientePreparado")]
+    public virtual ICollection<IngredienteIngredientePreparado> IngredienteIngredientePreparados { get; set; } = new List<IngredienteIngredientePreparado>();
 }
