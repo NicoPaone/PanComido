@@ -1,0 +1,39 @@
+<div class="llamados-container">
+  <div class="header">
+    <h2>Llamados Activos</h2>
+    @if( pendientes().length > 0) {
+      <span class="subtitulo">Tenés {{ pendientes().length }} llamado(s) pendiente(s).</span>
+    }
+  </div>
+
+  @if (cargando()) {
+    <div class="estado estado-info">
+      <p>Cargando llamados...</p>
+    </div>
+  }
+
+  @else if (error()) {
+    <div class="estado estado-error">
+      <p>{{ error() }}</p>
+      <button class="btn-reintentar" (click)="reintentar()">Reintentar</button>
+    </div>
+  }
+
+  @else if (pendientes().length === 0) {
+    <div class="estado estado-vacio">
+      <p>No tenés llamados pendientes</p>
+    </div>
+  }
+
+  @else {
+    <div class="lista-llamados">
+      @for (llamado of pendientes(); track llamado.id) {
+        <app-llamado-card
+          [llamado]="llamado"
+          [resolviendo]="resolviendoId() === llamado.id"
+          (resolver)="resolverLlamado($event)">
+        </app-llamado-card>
+      }
+    </div>
+  }
+</div>
