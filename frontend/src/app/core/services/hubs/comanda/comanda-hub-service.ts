@@ -25,6 +25,7 @@ export class ComandaHubService {
     
     // 5. Escuchamos el evento
     this.conexion.hub.on("EstadoComandaModificada", (data: Comanda) => {
+      console.log('Comanda modificada:', data);
       this.comandaModificada.set(data);
     });
   }
