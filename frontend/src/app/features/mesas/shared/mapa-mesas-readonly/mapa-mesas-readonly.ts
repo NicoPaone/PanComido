@@ -10,7 +10,7 @@ import { EstadoMesa } from '../../../../core/models/mesa.model';
   styleUrl: './mapa-mesas-readonly.css',
 })
 export class MapaMesasReadonly {
-   state = inject(MesaLecturaState);
+    state = inject(MesaLecturaState);
 
   altura = input<string>('500px');
 
@@ -28,14 +28,14 @@ export class MapaMesasReadonly {
   }
 
   ejecutarAccion(mesaId: number, accion: string) {
+    this.state.seleccionarMesa(null);
+
     switch (accion) {
       case 'ocupar':
         this.onOcuparMesa.emit(mesaId);
-        this.state.seleccionarMesa(null);
         break;
       case 'detalles':
         this.onVerDetalles.emit(mesaId);
-        this.state.seleccionarMesa(null);
         break;
       case 'cerrar':
         this.state.cambiarEstadoMesa(mesaId, EstadoMesa.Disponible);
@@ -45,4 +45,5 @@ export class MapaMesasReadonly {
         break;
     }
   }
+
 }
