@@ -1,5 +1,8 @@
-﻿using PanComido.Dominio.Entidades;
+﻿using Microsoft.EntityFrameworkCore;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
+using DOM = PanComido.Dominio.Entidades;
+using EF = PanComido.Infraestructura.Persistencia.Entidades;
 using PanComido.Infraestructura.Persistencia.Mappers;
 using System;
 using System.Collections.Generic;
@@ -20,9 +23,12 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             _llamadoMapper = llamadoMapper;
         }
 
-        public Task crearLlamadoAsync(Llamado llamado)
+        public async Task crearLlamadoAsync(DOM.Llamado llamado)
         {
-            return Task.CompletedTask;
+            EF.Llamado efLlamado = _llamadoMapper.paraEntidad(llamado);
+            await _ctx.Llamados.AddAsync(efLlamado);
+
+            await _ctx.SaveChangesAsync();
         }
     }
 }
