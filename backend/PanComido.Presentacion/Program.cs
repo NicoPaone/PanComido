@@ -69,10 +69,7 @@ builder.Services.AddScoped<CategoriaInsumoMapper>();
 builder.Services.AddScoped<InsumoConsugerenciaMapper>();
 builder.Services.AddScoped<UnidadMedidaMapper>();
 builder.Services.AddScoped<LoteRecepcionMapper>();
-builder.Services.AddScoped<LoteMapper>();
-builder.Services.AddScoped<LlamadoMapper>();
-builder.Services.AddScoped<FormularioParaCrearPlatoMapper>();
-
+builder.Services.AddScoped<MesaMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -108,15 +105,8 @@ builder.Services.AddScoped<OcuparMesaCasoDeUso>();
 builder.Services.AddScoped<EnviarPedidoProveedorCasoDeUso>();
 builder.Services.AddScoped<GenerarSugerenciasRecepcionCasoDeUso>();
 builder.Services.AddScoped<RecibirPedidoProveedorCasoDeUso>();
-builder.Services.AddScoped<ObtenerDatosParaFormularioCrearPlato>();
+builder.Services.AddScoped<ListarMesasCasoDeUso>();
 
-builder.Services.AddScoped<ObtenerCartaCasoDeUso>();
-builder.Services.AddScoped<ListarInsumosConStockCriticoCasoDeUso>();
-builder.Services.AddScoped<ListarInsumosConVencimientoProximoCasoDeUso>();
-builder.Services.AddScoped<LlamarMozoCasoDeUso>();
-builder.Services.AddScoped<ListarLlamadosPendientesCasoDeUso>();
-builder.Services.AddScoped<ResolverLlamadoCasoDeUso>();
-builder.Services.AddScoped<ListarComandasActivasMozoCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
