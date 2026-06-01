@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { SignalRConexionService } from './base-hub-service';
 
+import { LlamadoService } from './llamado-service';
 
-describe('BaseHubService', () => {
-  let service: SignalRConexionService;
+describe('LlamadoService', () => {
+  let service: LlamadoService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(SignalRConexionService);
+    service = TestBed.inject(LlamadoService);
   });
 
   it('should be created', () => {
