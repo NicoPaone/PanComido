@@ -1,0 +1,91 @@
+.llamado-card {
+  display: flex;
+  align-items: center;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+}
+
+.llamado-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Variante mientras se está resolviendo */
+.llamado-card.esta-resolviendo {
+  opacity: 0.6;
+  pointer-events: none;   /* bloquea clicks mientras resuelve */
+}
+
+/* Icon-box: cuadradito verde izquierdo */
+.icon-box {
+  background-color: #70c143;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+  margin: 4px;
+  flex-shrink: 0;
+  color: white;
+}
+
+.icon-box fa-icon {
+  color: white;
+}
+
+/* Contenido central */
+.content-box {
+  flex-grow: 1;
+  padding: 0 16px;
+  min-width: 0;
+}
+
+.content-box h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.content-box p {
+  margin: 0;
+  font-size: 0.95rem;
+  opacity: 0.9;
+  word-wrap: break-word;
+}
+
+/* Botón derecho */
+.action-box {
+  padding-right: 16px;
+  flex-shrink: 0;
+}
+
+.btn-resolver {
+  background-color: #70c143;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s;
+}
+
+.btn-resolver:hover:not(:disabled) {
+  background-color: #5ea834;
+}
+
+.btn-resolver:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

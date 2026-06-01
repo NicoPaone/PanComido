@@ -1,0 +1,24 @@
+<div [ngClass]="clases()">
+  <div class="icon-box">
+    <fa-icon [icon]="iconoLlamada" size="2x" />
+  </div>
+
+  <!-- Contenido central -->
+  <div class="content-box">
+    <h3>{{ titulo() }}</h3>
+    <p>{{ llamado().descripcion || 'Sin descripción' }}</p>
+  </div>
+
+  <div class="action-box">
+   <button
+  class="btn-resolver"
+  [disabled]="resolviendo()"
+  (click)="resolver.emit(llamado().id)"
+  [attr.aria-label]="'Marcar como resuelto'">
+  <fa-icon 
+    [icon]="iconoAccion()" 
+    [class.fa-spin]="resolviendo()">
+  </fa-icon>
+</button>
+  </div>
+</div>
