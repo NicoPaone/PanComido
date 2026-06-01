@@ -32,11 +32,13 @@ namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
             var insumosProveedor = await _insumoRepositorio.ObtenerInsumosDelProveedorAsync(proveedorId, restauranteId);
             var insumosResto = await _insumoRepositorio.ObtenerInsumosAsync(restauranteId);
 
+            List<int> insumoEnPedidoPendiente = await _pedidoRepositorio.ObtenerInsumosEnPedidosNoRecibidosAsync(proveedorId);
+
             var insumosConSugerencia = new List<InsumoConSugerencia>();
             
             foreach (var insumo in insumosResto)
             {
-              if(insumo.Id == 0 || insumosProveedor.All(i => i.Id != insumo.Id)) continue;
+              if(insumo.Id == 0 || insumosProveedor.All(i => i.Id != insumo.Id) || insumoEnPedidoPendiente.Contains(insumo.Id)) continue;
 
                 decimal stockActualInsumo = await _loteRepositorio.ObtenerStockTotalDeInsumo(insumo.Id);
 
