@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { roleGuard } from './core/guards/role.guard';
 
+const DEFAULT_ROUTE = 'staff/gerente';
+
 export const routes: Routes = [
 
    {
@@ -9,14 +11,7 @@ export const routes: Routes = [
           import('./layouts/staff-layout/staff-layout').then(m => m.StaffLayout),
 
       children: [
-
-         {
-            path: 'prueba',
-            loadComponent: () =>
-                import('./shared/components/prueba/prueba').then(m => m.Prueba)
-         },
-
-         {
+          {
             path: 'gerente',
             canActivate: [roleGuard],
             data: { roles: ['Gerente'] },
@@ -30,9 +25,13 @@ export const routes: Routes = [
          },
 
          {
-            path: '',
-            redirectTo: 'prueba',
-            pathMatch: 'full'
+            path: 'mozo',
+            canActivate: [roleGuard],
+            data: { roles: ['Mozo'] },
+            loadChildren: () => import('./features/mozo/mozo.routes').then(m => m.MOZO_ROUTES)
+         },
+         {
+            path: '',redirectTo: 'cocina', pathMatch: 'full'
          }
 
       ]
@@ -45,5 +44,11 @@ export const routes: Routes = [
  loadChildren: () => import('./features/comensal/comensal.routes').then(m => m.COMENSAL_ROUTES)
     
 },
+   {
+      path: '', redirectTo: DEFAULT_ROUTE, pathMatch: 'full'
+   },
 
+   {
+      path: '**', redirectTo: DEFAULT_ROUTE
+   }
 ];

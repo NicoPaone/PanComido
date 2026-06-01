@@ -1,26 +1,31 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Insumo } from '../../../../../core/models/insumos/insumo';
 import { StockMercaderiaService } from './stock-mercaderia-service';
+import { UnidadMedidaService } from '../../../../../core/services/unidad-medida-service';
+import { CategoriaInsumoService } from '../categorias/categoria-insumo.service';
+import { UnidadMedida } from '../../../../../core/models/unidad-medida';
+import { CategoriaInsumo } from '../../../../../core/models/insumos/categorias/categoria-insumo';
+import { forkJoin } from 'rxjs';
+import { CrearInsumoRequest } from '../../../../../core/models/insumos/crear-insumo-request';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class StockMercaderiaState {
-
   private api = inject(StockMercaderiaService);
- 
+  private apiUnidadMedida = inject(UnidadMedidaService);
+  private apiCategoriaInsumos = inject(CategoriaInsumoService);
+  
   private _productos = signal<Insumo[]>([]);
+  private _unidadMedidas = signal<UnidadMedida[]>([]);
+  private _categoriasInsumos = signal<CategoriaInsumo[]>([]);
   private _cargando = signal<boolean>(false);
 
   productos = this._productos.asReadonly();
   cargando = this._cargando.asReadonly();
-
-  categoriasUnicas = computed(() =>{
-    const list = this._productos();
-    const unicas = new Set(list.map( p => p.categoria).filter(c=> Boolean(c)));
-
-    return Array.from(unicas).sort();
-  })
+  unidadMedidas = this._unidadMedidas.asReadonly();
+  categoriasInsumos = this._categoriasInsumos.asReadonly();
 
   productosCriticos = computed(() =>
     this._productos().filter(p => p.stockActual <= p.stockMinimo)
@@ -30,25 +35,40 @@ export class StockMercaderiaState {
     this.productosCriticos().length
   );
 
-  cargarMercaderia(): void{
+  cargarMercaderia(): void {
     this._cargando.set(true);
     this.api.getStockMercaderia().subscribe({
-      next: (data) =>{
+      next: (data) => {
         this._productos.set(data);
         this._cargando.set(false);
-       },
+      },
       error: (err) => {
         console.error('Error al cargar mercadería', err);
         this._cargando.set(false);
       }
-    })
+    });
   }
-  guardarProducto(producto: Insumo): void {
+
+  cargarCatalogos(): void { 
+    forkJoin({
+      categoriasRes: this.apiCategoriaInsumos.obtenerCategorias(),
+      unidadesRes: this.apiUnidadMedida.obtenerUnidades()
+    }).subscribe({
+      next: (response) => {
+        this._categoriasInsumos.set(response.categoriasRes);
+        this._unidadMedidas.set(response.unidadesRes);
+      },
+      error: (err) => console.error('Error al cargar catalogos', err)
+    });
+  }
+
+  guardarProducto(producto: CrearInsumoRequest): void {
     this._cargando.set(true);
     
-    if (producto.id) {
-      // Caso: Edición
-      this.api.actualizar(producto.id, producto).subscribe({
+    const idEdicion = (producto as any).id;
+
+    if (idEdicion) {
+      this.api.actualizar(idEdicion, producto).subscribe({
         next: (updated) => {
           this._productos.update(lista => 
             lista.map(p => p.id === updated.id ? updated : p)
@@ -58,13 +78,17 @@ export class StockMercaderiaState {
         error: () => this._cargando.set(false)
       });
     } else {
-      // Caso: Creación
       this.api.crear(producto).subscribe({
-        next: (nuevo) => {
+        next: (nuevo: Insumo) => {
           this._productos.update(lista => [...lista, nuevo]);
           this._cargando.set(false);
+          console.log(nuevo);
         },
-        error: () => this._cargando.set(false)
+        error: (err) => {
+          this._cargando.set(false)
+          console.log('el error: ',err.error.error)
+
+        }
       });
     }
   }
@@ -79,5 +103,4 @@ export class StockMercaderiaState {
       error: () => this._cargando.set(false)
     });
   }
-
 }

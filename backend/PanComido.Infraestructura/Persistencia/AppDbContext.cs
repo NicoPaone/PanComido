@@ -550,6 +550,7 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.IdArticulo).ValueGeneratedNever();
             entity.Property(e => e.Destacado).HasDefaultValue(false);
+            entity.Property(e => e.Sugerencia).HasDefaultValue(false);
 
             entity.HasOne(d => d.CategoriaPlato).WithMany(p => p.Platos)
                 .OnDelete(DeleteBehavior.ClientSetNull)
