@@ -1,0 +1,49 @@
+<div class="mis-mesas-page">
+  <h1>Mis Mesas</h1>
+
+  <!-- Mapa de mesas reutilizado (sin drag & drop) -->
+  <app-mapa-mesas-readonly
+    altura="450px"
+    (onOcuparMesa)="onOcuparMesa($event)"
+    (onVerDetalles)="onVerDetalles($event)"
+    (onMesaSeleccionada)="onMesaSeleccionada($event)"
+  />
+
+  <!-- Modal: Ocupar Mesa -->
+  @if (mostrarModalOcupar()) {
+    <div class="modal-overlay" (click)="cerrarModalOcupar()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <h2>Ocupar Mesa</h2>
+        <p>Mesa N° {{ mesaSeleccionadaId() }}</p>
+
+        <div class="campo">
+          <label>Cantidad de comensales</label>
+          <input type="number"
+                 [value]="cantidadComensales()"
+                 (input)="cantidadComensales.set(+$any($event.target).value)"
+                 min="1" max="20">
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-cancelar" (click)="cerrarModalOcupar()">Cancelar</button>
+          <button class="btn-confirmar" (click)="confirmarOcupar()">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Modal: Comanda / Detalles -->
+  @if (mostrarModalComanda()) {
+    <div class="modal-overlay" (click)="cerrarModalComanda()">
+      <div class="modal-content modal-comanda" (click)="$event.stopPropagation()">
+        <h2>Comanda - Mesa {{ mesaComandaId() }}</h2>
+        <p>Aquí se muestra la comanda activa de la mesa...</p>
+        <!-- TODO: Integrar con ComandaState y mostrar platos -->
+
+        <div class="modal-actions">
+          <button class="btn-cancelar" (click)="cerrarModalComanda()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
