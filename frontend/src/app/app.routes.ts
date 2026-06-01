@@ -28,7 +28,7 @@ export const routes: Routes = [
             loadChildren: () => import('./features/mozo/mozo.routes').then(m => m.MOZO_ROUTES)
          },
          {
-            path: '', redirectTo: 'cocina', pathMatch: 'full'
+            path: '', redirectTo: 'gerente', pathMatch: 'full'  // ← CAMBIADO
          }
       ]
    },

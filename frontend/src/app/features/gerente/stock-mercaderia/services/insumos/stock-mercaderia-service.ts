@@ -8,7 +8,7 @@ import { Insumo } from '../../../../../core/models/insumos/insumo';
 })
 export class StockMercaderiaService{
   private api = inject(ApiService);
-  private endpoint = 'Insumo';
+  private endpoint = 'insumo';
 
 
   getById(id:number): Observable<Insumo> {
