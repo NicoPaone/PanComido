@@ -27,7 +27,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
       public async Task<DOM.MesaConPosiciones?> ObtenerPorIdAsync(int id, int restauranteId)
       {
          EF.Mesa mesaEF = await BaseQuery(restauranteId)
-            .AsNoTracking()
+            .AsNoTracking().Include(m => m.DimensionMesa)
             .FirstOrDefaultAsync(m => m.Id == id);
          return _mapper.paraDominioCompleto(mesaEF);
       }
