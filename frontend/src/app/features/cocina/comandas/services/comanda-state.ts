@@ -54,6 +54,20 @@ export class ComandaState {
 
 
   }
+  actualizarDesdeHub(comandaRecibida: Comanda): void {
+  this._comandas.update(listaActual => {
+    // Verificamos si la comanda ya está en la pantalla
+    const existe = listaActual.some(c => c.id === comandaRecibida.id);
+    
+    if (existe) {
+      // Reemplazamos la vieja por la nueva
+      return listaActual.map(c => c.id === comandaRecibida.id ? comandaRecibida : c);
+    } else {
+      // Es una comanda totalmente nueva, la agregamos al final (o al principio)
+      return [...listaActual, comandaRecibida];
+    }
+  });
+}
 
   cargarComandasActivas():void{
     this._cargando.set(true);
