@@ -1,0 +1,44 @@
+
+.stock-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px; /* Crea el efecto de filas separadas */
+}
+
+.stock-table th {
+  color: #334155;
+  font-size: 0.75rem;
+  padding: 10px;
+  text-transform: uppercase;
+}
+
+.stock-table tr {
+  background: #f8fafc; /* Color de fondo de la fila según la imagen */
+}
+
+.stock-table td {
+  padding: 15px 10px;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Redondeado de las filas */
+.stock-table td:first-child { border-left: 1px solid #e2e8f0; border-radius: 8px 0 0 8px; }
+.stock-table td:last-child { border-right: 1px solid #e2e8f0; border-radius: 0 8px 8px 0; }
+
+.stock-pill {
+  display: inline-block;
+  padding: 4px 20px;
+  border-radius: 4px;
+  color: white;
+  font-weight: bold;
+  min-width: 60px;
+}
+
+/* Colores de la imagen */
+.bg-critical { background-color: #be123c; } /* Rojo */
+.bg-warning { background-color: #facc15; color: #1e293b; } /* Amarillo */
+.bg-success { background-color: #22c55e; } /* Verde */
+
+.gray-text { color: #64748b; }
+.btn-icon { background: none; border: none; cursor: pointer; color: #1e293b; font-size: 1.2rem; }

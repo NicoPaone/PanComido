@@ -1,0 +1,43 @@
+
+/* La caja blanca del popup */
+.modal-dialog {
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 800px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  background-color: var(--color-cream);
+  /* PARA CENTRADO */
+  position: fixed;
+  inset: 0; /* Es un shorthand moderno para top:0, right:0, bottom:0, left:0 */
+  margin: auto;
+}
+
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--gray-200);
+ background-color: var(--color-cream);}
+
+.modal-header h3 {
+  margin: 0;
+  color: var(--gray-800);
+  font-size: 1.25rem;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--gray-500);
+}
+
+.modal-body {
+  padding: 24px;
+  background-color: var(--color-cream);
+}

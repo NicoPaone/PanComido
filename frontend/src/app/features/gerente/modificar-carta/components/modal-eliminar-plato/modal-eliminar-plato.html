@@ -1,0 +1,33 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-card shadow border p-4 text-center bg-white" (click)="$event.stopPropagation()">
+    <div class="modal-warning-icon mb-3">
+      <span class="material-symbols-outlined warning-icon">delete_forever</span>
+    </div>
+    
+    <h3 class="modal-title mb-2">¿Eliminar plato?</h3>
+    <p class="modal-text text-muted mb-4">
+      ¿Está seguro de que desea eliminar el plato <strong class="text-dark">{{ plato().nombre }}</strong>? Esta acción no se puede deshacer y el plato se retirará permanentemente de la carta.
+    </p>
+
+    <div class="row g-2">
+      <div class="col-6">
+        <app-boton 
+          label="CANCELAR" 
+          variante="outline" 
+          tamanio="md" 
+          (clicked)="onClose()"
+          class="w-100 cancel-btn">
+        </app-boton>
+      </div>
+      <div class="col-6">
+        <app-boton 
+          label="ELIMINAR" 
+          variante="danger" 
+          tamanio="md" 
+          (clicked)="onConfirm()"
+          class="w-100 delete-btn">
+        </app-boton>
+      </div>
+    </div>
+  </div>
+</div>

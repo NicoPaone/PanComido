@@ -1,0 +1,94 @@
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.proveedor-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+}
+
+.proveedor-table th {
+  color: #334155;
+  font-size: 0.75rem;
+  padding: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.proveedor-table tr {
+  background: #f8fafc;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.proveedor-table tbody tr {
+  cursor: pointer;
+}
+
+.proveedor-table tbody tr:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.selected-row {
+  background: rgba(2, 89, 108, 0.08) !important;
+}
+
+.proveedor-table td {
+  padding: 16px 10px;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.proveedor-table td:first-child {
+  border-left: 1px solid #e2e8f0;
+  border-radius: 10px 0 0 10px;
+}
+
+.proveedor-table td:last-child {
+  border-right: 1px solid #e2e8f0;
+  border-radius: 0 10px 10px 0;
+}
+
+.nombre-proveedor {
+  font-weight: 800;
+  color: #111827;
+}
+
+.detalle-proveedor,
+.fecha-pedido {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.acciones-cell {
+  width: 220px;
+}
+
+.acciones-grupo {
+  display: inline-flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.empty-row {
+  color: #64748b;
+  text-align: center;
+  padding: 24px 10px;
+}
+
+::ng-deep .acciones-grupo app-boton .btn {
+  min-width: 92px;
+}
+
+@media (max-width: 767.98px) {
+  .acciones-cell {
+    width: auto;
+  }
+
+  .acciones-grupo {
+    justify-content: flex-start;
+  }
+}
