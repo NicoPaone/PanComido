@@ -1,0 +1,28 @@
+<div class="mapa-readonly-wrapper">
+  @if (state.notificacion(); as notif) {
+    <div class="toast-notificacion" [class.error]="notif.tipo === 'error'" [class.exito]="notif.tipo === 'exito'">
+      {{ notif.mensaje }}
+    </div>
+  }
+
+  <div class="header-info">
+    <span class="info">Mesas: {{ state.mesas().length }}</span>
+    <span class="info">Disponibles: {{ state.mesasDisponibles().length }}</span>
+    <span class="info">Ocupadas: {{ state.mesasOcupadas().length }}</span>
+  </div>
+
+  <div class="plano-fondo" [style.height]="altura()" (click)="state.seleccionarMesa(null)">
+    @for (mesa of state.mesas(); track mesa.id) {
+      <app-mesa-item
+        [mesa]="mesa"
+        [isEditorMode]="false"
+        [isSeleccionada]="state.mesaSeleccionada() === mesa.id"
+        (clickMesa)="onMesaClick($event)"
+        (accionMenu)="ejecutarAccion(mesa.id, $event)"
+        style="position: absolute; display: block;"
+        [style.left.px]="mesa.posicionXInicio"
+        [style.top.px]="mesa.posicionYinicio">
+      </app-mesa-item>
+    }
+  </div>
+</div>

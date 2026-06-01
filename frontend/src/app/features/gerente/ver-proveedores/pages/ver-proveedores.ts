@@ -10,7 +10,7 @@ import { PageToolbar } from '../../../../shared/ui/page-toolbar/page-toolbar';
 import { PedidoProveedor, EstadoPedidoProveedor, Proveedor } from '../../../../core/models/proveedor';
 import { Router, RouterModule } from '@angular/router';
 import { ProveedorListComponent } from '../components/proveedor-list/proveedor-list';
-import { Insumo as ProductoStockMock } from '../../../../core/models/producto-stock';
+import { Insumo as ProductoStockMock } from '../../../../core/models/insumos/insumo';
 import { VerProveedoresStateService } from '../services/ver-proveedores.state';
 
 @Component({

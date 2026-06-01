@@ -10,6 +10,9 @@ import { Insumo } from '../../../../../core/models/insumos/insumo';
   templateUrl: './insumo-list.html',
   styleUrl: './insumo-list.css',
 })
+
+    
+
 export class InsumoList {
 
   productos = input.required<Insumo[]>();

@@ -35,7 +35,6 @@ export class ComandaState {
   modificarEstadoComanda(mesaId:number,tipoId:number):void { 
     this.api.modificarEstadoComanda(mesaId,tipoId).subscribe({
     next: (comandaActualizada) => {
-
       this._comandas.update(comandasPrevias =>
         comandasPrevias.map(comanda =>  
          comanda.id === comandaActualizada.id 
@@ -49,10 +48,17 @@ export class ComandaState {
     },error: (err) => {
         console.error('Error al modificar comanda', err);
       }
-  
    });
-
-
+  }
+  actualizarDesdeHub(comandaRecibida: Comanda): void{
+    this._comandas.update(listaActual => {
+      const existe = listaActual.some(comanda => comanda.id === comandaRecibida.id);
+      if(existe){
+        return listaActual.map(comanda => comanda.id === comandaRecibida.id ? comandaRecibida : comanda);
+      } else{ 
+        return [...listaActual, comandaRecibida];
+      }
+    })
   }
 
   cargarComandasActivas():void{

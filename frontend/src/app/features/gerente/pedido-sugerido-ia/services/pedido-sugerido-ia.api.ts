@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { ApiClient } from '../../../../core/services/api-client';
 
 import { Proveedor, SugerenciaPedidoItem, NuevoPedidoProveedor } from '../../../../core/models/proveedor';
-import { Insumo as ProductoStockMock } from '../../../../core/models/producto-stock';
+import { Insumo as ProductoStockMock } from '../../../../core/models/insumos/insumo';
 import { ProveedorService } from './proveedor-service';
 
 @Injectable({ providedIn: 'root' })

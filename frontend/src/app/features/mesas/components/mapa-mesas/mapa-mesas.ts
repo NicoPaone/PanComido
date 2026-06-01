@@ -2,8 +2,8 @@ import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { CdkDragEnd, DragDropModule } from '@angular/cdk/drag-drop';
 import { MesaStateService } from '../../services/mesa.state';
-import { MesaItem } from '../../components/mesa-item/mesa-item';
 import { EstadoMesa, FormaMesa } from '../../../../core/models/mesa.model';
+import { MesaItem } from '../../../../shared/components/mesa-item/mesa-item';
 
 @Component({
   selector: 'app-mapa-mesas',

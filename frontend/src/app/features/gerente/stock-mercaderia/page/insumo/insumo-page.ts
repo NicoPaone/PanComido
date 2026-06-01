@@ -10,6 +10,7 @@ import { StockMercaderiaState } from '../../services/insumos/stock-mercaderia-st
 import { BodegaState } from '../../services/bodegas/bodega-state';
 import { ProductoForm } from "../../components/producto-form/producto-form";
 import { Insumo } from '../../../../../core/models/insumos/insumo';
+import { CrearInsumoRequest } from '../../../../../core/models/insumos/crear-insumo-request';
 
 @Component({
   selector: 'app-insumo',
@@ -23,6 +24,7 @@ export class InsumoPage {
 
   protected state = inject(StockMercaderiaState);
   protected bodegaState = inject(BodegaState);
+  
 
   
   
@@ -39,12 +41,16 @@ export class InsumoPage {
 
 
 
-
-  productoSeleccionado = computed(() => {
-    const id = this.productoEditandoId();
-    return this.state.productos().find(p => p.id === id) || null;
+  categoriasFiltro = computed(() =>{
+    const nombres = this.state.categoriasInsumos().map(c => c.descripcion);
+    return [...nombres];
   })
 
+ productoSeleccionado = computed(() => {
+  const id = this.productoEditandoId();
+  if (!id) return null;
+  return this.state.productos().find(p => p.id === id) || null;
+});
  
   
   productosFiltrados = computed(() => {
@@ -68,7 +74,7 @@ export class InsumoPage {
       listaBase = listaBase.filter(p => p.nombre.toLowerCase().includes(busqueda));
     }
     if (cat && cat !== 'Categorías') {
-      listaBase = listaBase.filter(p => p.categoria === cat);
+      listaBase = listaBase.filter(p => p.categoriaIngrediente?.descripcion === cat);
     }
     
     return listaBase;
@@ -89,7 +95,9 @@ export class InsumoPage {
 
   ngOnInit() {
     this.state.cargarMercaderia();
-    this.bodegaState.cargarBodegasConInsumos();  }
+    this.bodegaState.cargarBodegasConInsumos();
+    this.state.cargarCatalogos(); 
+  }
   
     abrirModalCrear(modal: Modal) { 
       this.productoEditandoId.set(null);
@@ -105,7 +113,7 @@ export class InsumoPage {
       this.productoEditandoId.set(null);
       this.modalAbierto.set(false);
     }
-    guardarCambios(datosProducto: any, modal:Modal){
+    guardarCambios(datosProducto: CrearInsumoRequest, modal:Modal){
       this.state.guardarProducto(datosProducto);
       modal.cerrar();
       this.limpiarEstadoModal();
