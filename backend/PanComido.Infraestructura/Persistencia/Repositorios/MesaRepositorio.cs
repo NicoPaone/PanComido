@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Infraestructura.Persistencia.Entidades;
@@ -23,12 +24,12 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
          return _ctx.Mesas
             .Where(m => m.Grilla.RestauranteId == restauranteId);
       }
-      public async Task<DOM.Mesa?> ObtenerPorIdAsync(int id, int restauranteId)
+      public async Task<DOM.MesaConPosiciones?> ObtenerPorIdAsync(int id, int restauranteId)
       {
          EF.Mesa mesaEF = await BaseQuery(restauranteId)
             .AsNoTracking()
             .FirstOrDefaultAsync(m => m.Id == id);
-         return _mapper.paraDominio(mesaEF);
+         return _mapper.paraDominioCompleto(mesaEF);
       }
       public async Task ActualizarAsync(DOM.Mesa mesaDominio)
       {
@@ -49,5 +50,13 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             .ToList();
       }
 
+      public async Task ActualizarEstadoAsync(int mesaId, DOM.Enums.EstadoMesa nuevoEstado)
+      {
+         var mesaEF = await _ctx.Mesas.FirstOrDefaultAsync( m => m.Id == mesaId );
+         if (mesaEF == null) return;
+
+         mesaEF.EstadoMesaId = (int)nuevoEstado;
+         await _ctx.SaveChangesAsync();
+      }
    }
 }
