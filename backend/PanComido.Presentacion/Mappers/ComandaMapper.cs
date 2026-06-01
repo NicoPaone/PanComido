@@ -1,4 +1,5 @@
-﻿using PanComido.Presentacion.DTOs;
+﻿using PanComido.Dominio.Entidades;
+using PanComido.Presentacion.DTOs;
 using DOM = PanComido.Dominio.Entidades;
 using EF = PanComido.Infraestructura.Persistencia.Entidades;
 
@@ -19,13 +20,17 @@ namespace PanComido.Presentacion.Mappers
                 HoraInicio = comanda.HoraInicio.ToString("dd/MM/yyyy HH:mm"),
                 HoraFin = comanda.HoraFin?.ToString("dd/MM/yyyy HH:mm"),
 
-                TiempoEstimadoTotal = comanda.Platos.Any()
-                ? comanda.Platos.Max ( p => p.TiempoPreparacionBase ) : 0,
+                TiempoEstimadoTotal = comanda.Items
+                    .Select(i => i.Articulo)
+                    .OfType<Plato>()
+                    .Select(plato => plato.TiempoPreparacionBase)
+                    .DefaultIfEmpty(0)
+                    .Max(),
 
-                Platos = comanda.Platos.Select(p => new PlatoDto
+                Platos = comanda.Items.Select(p => new PlatoDto
                 {
-                   
-                    Nombre = p.Nombre,
+
+                    Nombre = p.Articulo.Nombre,
                     Cantidad = p.Cantidad,
                     ObservacionesGenerales = p.ObservacionesGenerales,
                     ObservacionesIngredientes = p.ObservacionesIngredientes,
@@ -37,7 +42,7 @@ namespace PanComido.Presentacion.Mappers
 
         }
 
-     
+
         public List<ComandaResponseDto> ComandaResponseDtoList(List<DOM.Comanda> comandas)
         {
             return comandas.Select(c => ComandaResponseDto(c)).ToList();

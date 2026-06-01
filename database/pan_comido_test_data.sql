@@ -262,21 +262,33 @@ INSERT INTO ingrediente_preparado (id_ingrediente) VALUES
     (38), (39), (40), (41);
 
 -- Composición de ingredientes preparados
--- Salsa de tomate casera (38) = tomate(20) + cebolla(30) + ajo(31) + aceite(22) + sal(24) + albahaca(34)
-INSERT INTO ingrediente_ingrediente_preparado (ingrediente_id, ingrediente_preparado_id) VALUES
-    (20, 38), (30, 38), (31, 38), (22, 38), (24, 38), (34, 38);
+-- Salsa de tomate casera (38) = Rinde aprox 1.3 kg
+INSERT INTO ingrediente_ingrediente_preparado (ingrediente_id, ingrediente_preparado_id, cantidad) VALUES
+    (20, 38, 1.00), -- Tomate (1kg)
+    (30, 38, 0.20), -- Cebolla (200g)
+    (31, 38, 0.05), -- Ajo (50g)
+    (22, 38, 0.05), -- Aceite (50g)
+    (24, 38, 0.02), -- Sal (20g)
+    (34, 38, 0.02); -- Albahaca (20g)
 
--- Masa de pizza (39) = harina(18) + sal(24) + aceite(22)
-INSERT INTO ingrediente_ingrediente_preparado (ingrediente_id, ingrediente_preparado_id) VALUES
-    (18, 39), (24, 39), (22, 39);
+-- Masa de pizza (39) = Rinde aprox 1.1 kg
+INSERT INTO ingrediente_ingrediente_preparado (ingrediente_id, ingrediente_preparado_id, cantidad) VALUES
+    (18, 39, 1.00), -- Harina (1kg)
+    (24, 39, 0.02), -- Sal (20g)
+    (22, 39, 0.05); -- Aceite (50g)
 
--- Masa de empanada (40) = harina(18) + sal(24) + aceite(22)
-INSERT INTO ingrediente_ingrediente_preparado (ingrediente_id, ingrediente_preparado_id) VALUES
-    (18, 40), (24, 40), (22, 40);
+-- Masa de empanada (40) = Rinde aprox 1.1 kg
+INSERT INTO ingrediente_ingrediente_preparado (ingrediente_id, ingrediente_preparado_id, cantidad) VALUES
+    (18, 40, 1.00), -- Harina (1kg)
+    (24, 40, 0.02), -- Sal (20g)
+    (22, 40, 0.10); -- Aceite/Grasa (100g)
 
--- Salsa bechamel (41) = harina(18) + crema(23) + sal(24) + pimienta(25)
-INSERT INTO ingrediente_ingrediente_preparado (ingrediente_id, ingrediente_preparado_id) VALUES
-    (18, 41), (23, 41), (24, 41), (25, 41);
+-- Salsa bechamel (41) = Rinde aprox 1.1 kg
+INSERT INTO ingrediente_ingrediente_preparado (ingrediente_id, ingrediente_preparado_id, cantidad) VALUES
+    (18, 41, 0.10), -- Harina (100g)
+    (23, 41, 1.00), -- Leche/Crema (1L/1kg)
+    (24, 41, 0.01), -- Sal (10g)
+    (25, 41, 0.01); -- Pimienta/Nuez Moscada (10g)
 
 -- ============================================================
 -- RESTRICCIONES DE PLATOS
@@ -295,48 +307,92 @@ INSERT INTO restriccion_plato (restriccion_id, plato_id) VALUES
 -- ============================================================
 
 -- Pizza Muzzarella (1)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional) VALUES
-    (1, 39, FALSE), (1, 38, FALSE), (1, 19, FALSE), (1, 36, TRUE);
+INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
+    (1, 39, FALSE, 0.35), -- Masa de pizza (350g)
+    (1, 38, FALSE, 0.15), -- Salsa (150g)
+    (1, 19, FALSE, 0.25), -- Queso muzzarella (250g)
+    (1, 36, TRUE, 0.02);  -- Aceitunas/Orégano (20g)
 
 -- Pizza Napolitana (2)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional) VALUES
-    (2, 39, FALSE), (2, 38, FALSE), (2, 19, FALSE), (2, 31, FALSE), (2, 20, FALSE);
+INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
+    (2, 39, FALSE, 0.35),
+    (2, 38, FALSE, 0.15),
+    (2, 19, FALSE, 0.25),
+    (2, 31, FALSE, 0.01), -- Ajo (10g)
+    (2, 20, FALSE, 0.20); -- Tomate en rodajas (200g)
 
 -- Milanesa Napolitana (3)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional) VALUES
-    (3, 21, FALSE), (3, 27, FALSE), (3, 18, FALSE), (3, 37, FALSE), (3, 19, FALSE), (3, 38, FALSE);
+INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
+    (3, 21, FALSE, 0.25), -- Carne/Pollo (250g)
+    (3, 27, FALSE, 0.05), -- Huevo (50g)
+    (3, 18, FALSE, 0.10), -- Pan rallado (100g)
+    (3, 37, FALSE, 0.05), -- Jamón (50g)
+    (3, 19, FALSE, 0.10), -- Queso (100g)
+    (3, 38, FALSE, 0.10); -- Salsa (100g)
 
 -- Hamburguesa Clásica (4)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional) VALUES
-    (4, 28, FALSE), (4, 32, FALSE), (4, 26, FALSE), (4, 20, FALSE), (4, 30, TRUE);
+INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
+    (4, 28, FALSE, 0.20), -- Medallón de carne (200g)
+    (4, 32, FALSE, 0.10), -- Pan de hamburguesa (100g)
+    (4, 26, FALSE, 0.05), -- Lechuga (50g)
+    (4, 20, FALSE, 0.05), -- Tomate (50g)
+    (4, 30, TRUE, 0.05);  -- Cebolla (50g)
 
 -- Ensalada César (5)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional) VALUES
-    (5, 26, FALSE), (5, 21, FALSE), (5, 27, FALSE), (5, 22, FALSE), (5, 24, FALSE), (5, 25, TRUE);
+INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
+    (5, 26, FALSE, 0.20), -- Lechuga (200g)
+    (5, 21, FALSE, 0.15), -- Pollo (150g)
+    (5, 27, FALSE, 0.05), -- Huevo (50g)
+    (5, 22, FALSE, 0.03), -- Aderezo/Aceite (30g)
+    (5, 24, FALSE, 0.01), -- Sal (10g)
+    (5, 25, TRUE, 0.02);  -- Croutons/Pimienta (20g)
 
 -- Bife de Chorizo (6)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional) VALUES
-    (6, 28, FALSE), (6, 24, FALSE), (6, 25, FALSE), (6, 22, TRUE);
+INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
+    (6, 28, FALSE, 0.40), -- Bife (400g)
+    (6, 24, FALSE, 0.01), -- Sal (10g)
+    (6, 25, FALSE, 0.01), -- Pimienta (10g)
+    (6, 22, TRUE, 0.02);  -- Aceite (20g)
 
 -- Spaghetti Bolognesa (7)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional) VALUES
-    (7, 33, FALSE), (7, 38, FALSE), (7, 28, FALSE), (7, 30, FALSE), (7, 31, FALSE);
+INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
+    (7, 33, FALSE, 0.20), -- Pasta (200g)
+    (7, 38, FALSE, 0.15), -- Salsa de tomate (150g)
+    (7, 28, FALSE, 0.15), -- Carne picada (150g)
+    (7, 30, FALSE, 0.05), -- Cebolla (50g)
+    (7, 31, FALSE, 0.01); -- Ajo (10g)
 
--- Empanadas de Carne (8)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional) VALUES
-    (8, 40, FALSE), (8, 28, FALSE), (8, 30, FALSE), (8, 27, FALSE), (8, 35, TRUE);
+-- Empanadas de Carne (8) - Calculado para 1 porción (ej. 3 unidades)
+INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
+    (8, 40, FALSE, 0.10), -- Masa (100g)
+    (8, 28, FALSE, 0.15), -- Carne (150g)
+    (8, 30, FALSE, 0.08), -- Cebolla (80g)
+    (8, 27, FALSE, 0.05), -- Huevo duro (50g)
+    (8, 35, TRUE, 0.03);  -- Morrón (30g)
 
 -- Papas Fritas (9)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional) VALUES
-    (9, 29, FALSE), (9, 22, FALSE), (9, 24, FALSE);
+INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
+    (9, 29, FALSE, 0.30), -- Papas (300g)
+    (9, 22, FALSE, 0.05), -- Aceite para freír (50g consumidos)
+    (9, 24, FALSE, 0.01); -- Sal (10g)
 
 -- Ensalada Mixta (10)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional) VALUES
-    (10, 26, FALSE), (10, 20, FALSE), (10, 30, TRUE), (10, 27, FALSE), (10, 22, FALSE), (10, 24, FALSE);
+INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
+    (10, 26, FALSE, 0.15), -- Lechuga (150g)
+    (10, 20, FALSE, 0.10), -- Tomate (100g)
+    (10, 30, TRUE, 0.05),  -- Cebolla (50g)
+    (10, 27, FALSE, 0.05), -- Huevo (50g)
+    (10, 22, FALSE, 0.02), -- Aceite (20g)
+    (10, 24, FALSE, 0.01); -- Sal (10g)
 
 -- Wok de Pollo (11)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional) VALUES
-    (11, 21, FALSE), (11, 35, FALSE), (11, 30, FALSE), (11, 22, FALSE), (11, 24, FALSE), (11, 25, TRUE);
+INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
+    (11, 21, FALSE, 0.20), -- Pollo (200g)
+    (11, 35, FALSE, 0.05), -- Morrón (50g)
+    (11, 30, FALSE, 0.05), -- Cebolla (50g)
+    (11, 22, FALSE, 0.02), -- Aceite (20g)
+    (11, 24, FALSE, 0.01), -- Sal (10g)
+    (11, 25, TRUE, 0.01);  -- Pimienta/Especias (10g)
 
 -- ============================================================
 -- BODEGAS Y LOTES
