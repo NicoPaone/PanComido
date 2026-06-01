@@ -13,8 +13,8 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
     public class MesaEntityMapper
     {
         public DOM.Mesa? paraDominio(EF.Mesa mesaEF)
-        {
-            if (mesaEF == null)
+      {
+         if (mesaEF == null)
                 return null;
 
             return new DOM.Mesa
@@ -40,5 +40,24 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 Numero = mesaDominio.Numero
             };
         }
-    }
+      public DOM.MesaConPosiciones? paraDominioCompleto(EF.Mesa mesaEF)
+      {
+         if (mesaEF == null)
+            return null;
+
+         return new DOM.MesaConPosiciones
+         {
+            Id = mesaEF.Id,
+            Numero = mesaEF.Numero,
+            CantPersonasMax = mesaEF.CantPersonasMax,
+            EstadoMesa = (DOM.Enums.EstadoMesa)mesaEF.EstadoMesaId,
+            PosicionXInicio = mesaEF.PosicionXInicio,
+            PosicionXFin = mesaEF.PosicionXFin,
+            PosicionYInicio = mesaEF.PosicionYInicio,
+            PosicionYFin = mesaEF.PosicionYFin,
+            DimensionMesaId = mesaEF.DimensionMesaId,
+            Forma = mesaEF.DimensionMesa?.Forma ?? "cuadrada",
+         };
+      }
+   }
 }
