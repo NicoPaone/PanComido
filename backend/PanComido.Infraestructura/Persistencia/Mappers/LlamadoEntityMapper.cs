@@ -19,6 +19,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 MozoId = efLlamado.MozoId,
                 GerenteId = efLlamado.GerenteId,
                 CategoriaLlamadoId = efLlamado.CategoriaLlamadoId,
+                CategoriaDescripcion = efLlamado.CategoriaLlamado.Descripcion,
                 Descripcion = efLlamado.Descripcion,
                 Resuelto = efLlamado.Resuelto
             };

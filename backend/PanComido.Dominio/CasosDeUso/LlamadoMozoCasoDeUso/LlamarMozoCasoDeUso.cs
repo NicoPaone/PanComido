@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PanComido.Dominio.CasosDeUso.MozoCasoDeUso
+namespace PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso
 {
     public class LlamarMozoCasoDeUso
     {
@@ -27,7 +27,7 @@ namespace PanComido.Dominio.CasosDeUso.MozoCasoDeUso
             int mozoId = await _mozoRepositorio.ObtenerMozoAsignadoAMesaAsync(mesaId);
             if (mozoId == 0)
             {
-                throw new Exception("No hay un mozo asignado a esta mesa.");
+                throw new KeyNotFoundException("No se encontro un mozo asignado a esta mesa.");
             }
 
             var llamado = new DOM.Llamado
