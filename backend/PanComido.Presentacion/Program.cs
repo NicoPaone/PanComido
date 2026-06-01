@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.BodegaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
@@ -54,6 +55,7 @@ builder.Services.AddScoped<CategoriaInsumoMapper>();
 builder.Services.AddScoped<InsumoConsugerenciaMapper>();
 builder.Services.AddScoped<UnidadMedidaMapper>();
 builder.Services.AddScoped<LoteRecepcionMapper>();
+builder.Services.AddScoped<LoteMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -84,6 +86,8 @@ builder.Services.AddScoped<OcuparMesaCasoDeUso>();
 builder.Services.AddScoped<EnviarPedidoProveedorCasoDeUso>();
 builder.Services.AddScoped<GenerarSugerenciasRecepcionCasoDeUso>();
 builder.Services.AddScoped<RecibirPedidoProveedorCasoDeUso>();
+builder.Services.AddScoped<ListarInsumosConStockCriticoCasoDeUso>();
+builder.Services.AddScoped<ListarInsumosConVencimientoProximoCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();

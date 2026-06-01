@@ -11,19 +11,19 @@ using System.Threading.Tasks;
 
 namespace PanComido.Dominio.CasosDeUso.AvisosCasosDeUso
 {
-    public class ListarInsumosConVencimientoProximo
+    public class ListarInsumosConVencimientoProximoCasoDeUso
     {
         private readonly IInsumoRepositorio _insumoRepositorio;
         private readonly ILoteRepositorio _loteRepositorio;
 
-        public ListarInsumosConVencimientoProximo(IInsumoRepositorio insumoRepositorio,
+        public ListarInsumosConVencimientoProximoCasoDeUso(IInsumoRepositorio insumoRepositorio,
                                                     ILoteRepositorio loteRepositorio)
         {
             _insumoRepositorio = insumoRepositorio;
             _loteRepositorio = loteRepositorio;
         }
 
-        public async Task<Dictionary<int, List<Lote>>> Ejecutar(int restauranteId)
+        public async Task<Dictionary<int, List<Lote>>> EjecutarAsync(int restauranteId)
         {
             List<Insumo> insumosConLotes = await _insumoRepositorio.ObtenerInsumosConLotesAsync(restauranteId);
             
