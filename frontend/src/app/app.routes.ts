@@ -9,6 +9,7 @@ export const routes: Routes = [
       path: 'staff',
       loadComponent: () =>
          import('./layouts/staff-layout/staff-layout').then(m => m.StaffLayout),
+      import('./layouts/staff-layout/staff-layout').then(m => m.StaffLayout),
 
       children: [
          {
@@ -31,8 +32,17 @@ export const routes: Routes = [
          },
          {
             path: '', redirectTo: 'cocina', pathMatch: 'full'
+            path: '', redirectTo: 'cocina', pathMatch: 'full'
          }
       ]
+   },
+
+   /* COMENSAL */
+
+   {
+      path: 'comensal',
+      loadChildren: () => import('./features/comensal/comensal.routes').then(m => m.COMENSAL_ROUTES)
+
    },
    {
       path: '', redirectTo: DEFAULT_ROUTE, pathMatch: 'full'
