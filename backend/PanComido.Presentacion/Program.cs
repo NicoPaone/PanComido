@@ -54,6 +54,7 @@ builder.Services.AddScoped<CategoriaInsumoMapper>();
 builder.Services.AddScoped<InsumoConsugerenciaMapper>();
 builder.Services.AddScoped<UnidadMedidaMapper>();
 builder.Services.AddScoped<LoteRecepcionMapper>();
+builder.Services.AddScoped<MesaMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -84,6 +85,8 @@ builder.Services.AddScoped<OcuparMesaCasoDeUso>();
 builder.Services.AddScoped<EnviarPedidoProveedorCasoDeUso>();
 builder.Services.AddScoped<GenerarSugerenciasRecepcionCasoDeUso>();
 builder.Services.AddScoped<RecibirPedidoProveedorCasoDeUso>();
+builder.Services.AddScoped<ListarMesasCasoDeUso>();
+
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();

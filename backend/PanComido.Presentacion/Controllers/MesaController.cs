@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
 using PanComido.Presentacion.DTOs.Mesas;
+using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.SesionMock;
 
 namespace PanComido.Presentacion.Controllers
@@ -10,15 +11,26 @@ namespace PanComido.Presentacion.Controllers
     [ApiController]
     public class MesaController : ControllerBase
     {
-        private readonly OcuparMesaCasoDeUso _ocuparMesaCasoDeUso;
+      private readonly OcuparMesaCasoDeUso _ocuparMesaCasoDeUso;
+      private readonly ListarMesasCasoDeUso _listarMesas;
+      private readonly MesaMapper _mapper;
+      public MesaController(OcuparMesaCasoDeUso ocuparMesaCasoDeUso, ListarMesasCasoDeUso listar, MesaMapper mapper)
+      {
+         _ocuparMesaCasoDeUso = ocuparMesaCasoDeUso;
+         _listarMesas = listar; 
+         _mapper = mapper;
+      }
+
+      [HttpGet]
+      public async Task<ActionResult<List<MesaResponseDto>>> ObtenerTodas()
+      {
+         int restauranteId = HttpContext.ObtenerRestauranteId();
+         var mesas = await _listarMesas.EjecutarAsync(restauranteId);
+         return Ok(_mapper.aListaDto(mesas));
+      }
 
 
-        public MesaController(OcuparMesaCasoDeUso ocuparMesaCasoDeUso)
-        {
-            _ocuparMesaCasoDeUso = ocuparMesaCasoDeUso;
-        }
-
-        [HttpPost("{id}/ocupar")]
+      [HttpPost("{id}/ocupar")]
         public async Task<IActionResult> Ocupar(int id, [FromBody] OcuparMesaRequestDto request)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
