@@ -1,0 +1,81 @@
+<div class="detalle-overlay" (click)="onCerrar()">
+  <div class="modal-comanda" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div class="header-info">
+        <span class="mesa-label">MESA N° {{ comanda().mesaId }}</span>
+        @if (comanda().horaUltimoCambioEstado) {
+          <span class="tiempo-label">
+            Hace <app-kds-contador-tiempo [fechaInicio]="comanda().horaUltimoCambioEstado!" />
+          </span>
+        }
+      </div>
+      <button class="btn-cerrar" (click)="onCerrar()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      @if (itemsNoEntregados().length > 0) {
+        <label class="select-all-row">
+          <input
+            type="checkbox"
+            [checked]="todosSeleccionados()"
+            (change)="toggleTodos()" />
+          <span>Seleccionar todos</span>
+        </label>
+      }
+
+      <ul class="items-list">
+        @for (item of comanda().items; track item.id; let last = $last) {
+          <li class="item-row"
+              [class.entregado]="item.entregado"
+              [class.seleccionado]="isSelected(item.id)"
+              [class.clickable]="!item.entregado"
+              [class.no-border]="last"
+              (click)="!item.entregado && toggleItem(item.id)">
+
+            @if (!item.entregado) {
+              <input
+                type="checkbox"
+                class="item-checkbox"
+                [checked]="isSelected(item.id)"
+                (click)="$event.stopPropagation()"
+                (change)="toggleItem(item.id)" />
+            }
+
+            <div class="item-content">
+              <div class="item-main">
+                <span class="item-cantidad">{{ item.cantidad }}x</span>
+                <span class="item-nombre">{{ item.articulo.nombre }}</span>
+              </div>
+              @if (item.observacionesGenerales) {
+                <div class="item-obs">- {{ item.observacionesGenerales }}</div>
+              }
+              @if (item.observacionesIngredientes) {
+                <div class="item-obs item-obs-ing">- {{ item.observacionesIngredientes }}</div>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <div class="modal-footer-info">
+      <span>Tiempo estimado: {{ comanda().tiempoEstimadoTotal }}'</span>
+    </div>
+
+    <div class="modal-botonera">
+      <button class="btn-agregar">Agregar plato</button>
+      <button class="btn-mover">Mover a otra mesa</button>
+
+      @if (haySeleccion()) {
+        <div class="seleccion-info">{{ seleccionados().size }} item(s) para entregar</div>
+      }
+
+      <div class="botonera-entrega">
+        <button class="btn-cancelar" [disabled]="!haySeleccion()" (click)="cancelar()">CANCELAR</button>
+        <button class="btn-aplicar" [disabled]="!haySeleccion()" (click)="aplicar()">APLICAR</button>
+      </div>
+    </div>
+
+  </div>
+</div>

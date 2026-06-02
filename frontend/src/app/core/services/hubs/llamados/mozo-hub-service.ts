@@ -10,6 +10,7 @@ import { Llamado } from '../../../models/llamados/llamado';
 export class MozoHubService {
   private conexion = inject(SignalRConexionService);
   llamadoRecibido = signal<Llamado | null>(null);
+  
   public async conectarYUnirseGrupo(restauranteId:number, mozoId:number, ): Promise<void> {
     await this.conexion.iniciar();
     await this.conexion.hub.invoke("UnirseMozo", restauranteId, mozoId);
@@ -17,6 +18,12 @@ export class MozoHubService {
     
     this.conexion.hub.on('LlamadoMozo', (llamado: Llamado) => {
       console.log("Llamado recibido en el hub: ", llamado);
+      this.llamadoRecibido.set(llamado);
+    });
+
+    //VERIFICAR
+    this.conexion.hub.on('LlamadoCocina', (llamado: Llamado) => {
+      console.log("Llamado  cocina recibido en el hub: ", llamado); console.log("Llamado recibido en el hub: ", llamado);
       this.llamadoRecibido.set(llamado);
     });
   }

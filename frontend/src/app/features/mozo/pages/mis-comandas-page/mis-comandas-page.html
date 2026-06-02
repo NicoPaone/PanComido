@@ -1,0 +1,63 @@
+<div class="mozo-container">
+
+  @if (state.cargando()) {
+    <p class="loading">Cargando comandas...</p>
+  }
+
+  @if (state.comandasNuevas().length > 0) {
+    <details class="mozo-section" open>
+      <summary class="section-header bg-nueva">
+        NUEVAS ({{ state.comandasNuevas().length }})
+      </summary>
+      <div class="cards-grid">
+        @for (comanda of state.comandasNuevas(); track comanda.id) {
+          <app-comanda-mozo-card
+            [comanda]="comanda"
+            (ver)="abrirDetalle($event)">
+          </app-comanda-mozo-card>
+        }
+      </div>
+    </details>
+  }
+
+  @if (state.comandasEnPreparacion().length > 0) {
+    <details class="mozo-section" open>
+      <summary class="section-header bg-preparacion">
+        EN PREPARACIÓN ({{ state.comandasEnPreparacion().length }})
+      </summary>
+      <div class="cards-grid">
+        @for (comanda of state.comandasEnPreparacion(); track comanda.id) {
+          <app-comanda-mozo-card
+            [comanda]="comanda"
+            (ver)="abrirDetalle($event)">
+          </app-comanda-mozo-card>
+        }
+      </div>
+    </details>
+  }
+
+  @if (state.comandasEnEspera().length > 0) {
+    <details class="mozo-section" open>
+      <summary class="section-header bg-espera">
+        EN ESPERA ({{ state.comandasEnEspera().length }})
+      </summary>
+      <div class="cards-grid">
+        @for (comanda of state.comandasEnEspera(); track comanda.id) {
+          <app-comanda-mozo-card
+            [comanda]="comanda"
+            (ver)="abrirDetalle($event)">
+          </app-comanda-mozo-card>
+        }
+      </div>
+    </details>
+  }
+
+  @if (comandaSeleccionada()) {
+    <app-comanda-mozo-detalle
+      [comanda]="comandaSeleccionada()!"
+      (cerrar)="cerrarDetalle()"
+      >
+    </app-comanda-mozo-detalle>
+  }
+
+</div>
