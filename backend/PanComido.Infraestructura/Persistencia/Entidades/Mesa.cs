@@ -59,6 +59,9 @@ public partial class Mesa
     public virtual Grilla Grilla { get; set; } = null!;
 
     [InverseProperty("Mesa")]
+    public virtual ICollection<Llamado> Llamados { get; set; } = new List<Llamado>();
+
+    [InverseProperty("Mesa")]
     public virtual ICollection<Reserva> Reservas { get; set; } = new List<Reserva>();
 
     [ForeignKey("MesaId")]
