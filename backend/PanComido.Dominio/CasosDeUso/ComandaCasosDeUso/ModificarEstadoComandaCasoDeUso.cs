@@ -22,7 +22,7 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
 
         public async Task<Comanda?> EjecutarAsync(int mesaId, int estadoId)
         {
-            Console.Write("Llego????");
+            
             await _comandaRepositorio.ModificarEstadoComandaAsync(mesaId, estadoId);
             Comanda comanda = await _comandaRepositorio.ObtenerComandaPorIdMesaAsync(mesaId);
             await _comandaNotificador.NotificarEstadoModificadoAsync(comanda);

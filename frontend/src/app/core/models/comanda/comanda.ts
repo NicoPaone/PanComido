@@ -1,16 +1,33 @@
-
 export type EstadoComanda = 'Nueva' | 'EnPreparacion' | 'EnEspera' | 'Finalizada';
+
 export enum EstadoComandaId {
   Nueva = 1,
   EnPreparacion = 2,
   EnEspera = 3,
-  Finalizada = 4
+  Finalizada = 4,
+  Abierta = 5,
 }
 
+// Mapa para convertir string → number
+export const ESTADO_COMANDA_MAP: Record<EstadoComanda, EstadoComandaId> = {
+  'Nueva': EstadoComandaId.Nueva,
+  'EnPreparacion': EstadoComandaId.EnPreparacion,
+  'EnEspera': EstadoComandaId.EnEspera,
+  'Finalizada': EstadoComandaId.Finalizada,
+};
+
+
 export interface PlatoComanda {
-  nombre: string;
+  id: number;
+  entregado: boolean;
   cantidad: number;
-  observaciones: string | null;
+  observacionesGenerales: string | null;
+  observacionesIngredientes: string | null;
+  articulo: {
+    id: number;
+    nombre: string;
+    urlImagen: string | null;
+  };
 }
 
 export interface Comanda {
@@ -18,9 +35,9 @@ export interface Comanda {
   mesaId: number;
   cantComensales: number;
   estado: EstadoComanda;
-  estadoId: EstadoComandaId;
-  horaInicio: string; 
+  horaInicio: string;
   horaFin: string | null;
+  horaUltimoCambioEstado: string | null;
   tiempoEstimadoTotal: number;
-  platos: PlatoComanda[];
+  items: PlatoComanda[];
 }

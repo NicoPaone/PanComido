@@ -1,0 +1,21 @@
+<div class="container-fluid p-4 bg-light min-vh-100">
+  <!-- Top Bar -->
+  <div class="row mb-4 align-items-center">
+    <div class="col-md-6 mb-3 mb-md-0">
+    <app-buscador placeholder="Buscar plato" (busquedaCambiada)="onSearch($event)"></app-buscador>
+    </div>
+    <div class="col-md-6 d-flex justify-content-start justify-content-md-end flex-wrap gap-3">
+      <app-boton-categorias></app-boton-categorias>
+      <app-boton variant="orange">
+        <span class="material-symbols-outlined fw-bold">add</span>
+        Nuevo plato
+      </app-boton>
+    </div>
+  </div>
+
+  <!-- Lista de Platos Encapsulada -->
+  <app-lista-platos 
+    [platos]="filteredPlatos" 
+    (toggleVisible)="toggleVisibility($event)">
+  </app-lista-platos>
+</div>

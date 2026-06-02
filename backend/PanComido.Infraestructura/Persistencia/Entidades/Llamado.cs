@@ -28,6 +28,9 @@ public partial class Llamado
     [Column("resuelto")]
     public bool Resuelto { get; set; }
 
+    [Column("mesa_id")]
+    public int? MesaId { get; set; }
+
     [ForeignKey("CategoriaLlamadoId")]
     [InverseProperty("Llamados")]
     public virtual CategoriaLlamado CategoriaLlamado { get; set; } = null!;
@@ -35,6 +38,10 @@ public partial class Llamado
     [ForeignKey("GerenteId")]
     [InverseProperty("Llamados")]
     public virtual Gerente? Gerente { get; set; }
+
+    [ForeignKey("MesaId")]
+    [InverseProperty("Llamados")]
+    public virtual Mesa? Mesa { get; set; }
 
     [ForeignKey("MozoId")]
     [InverseProperty("Llamados")]

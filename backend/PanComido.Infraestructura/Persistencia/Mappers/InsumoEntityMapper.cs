@@ -13,69 +13,57 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
 {
     public class InsumoEntityMapper
     {
-        public DOM.Insumo paraDominio(EF.Articulo efArticulo, decimal stockActual = 0)
+        public DOM.Insumo CompletarMapeoDominio(EF.Articulo efArticulo)
         {
             if (efArticulo == null) return null;
 
-            // El scaffold genera: efArticulo.Insumo
-            EF.Insumo efInsumo = efArticulo.Insumo
-                ?? throw new InvalidOperationException("Articulo no es un insumo");
-
-            var insumoDominio = new DOM.Insumo
+            var domInsumo = new DOM.Insumo
             {
-                Id = efArticulo.Id,
-                Nombre = efArticulo.Nombre,
-                Descripcion = efArticulo.Descripcion,
-                StockActual = stockActual,
-                StockMinimo = efInsumo.StockMinimo,
-                Tipo = (TipoInsumo)efInsumo.CategoriaInsumo.TipoAplica,
-                Categoria = efInsumo.CategoriaInsumo.Descripcion,
-                UnidadMedida = efInsumo.UnidadMedida?.Nombre
+                StockMinimo = efArticulo.Insumo.StockMinimo,
+                Tipo = efArticulo.Insumo.CategoriaInsumo != null ? (TipoInsumo)efArticulo.Insumo.CategoriaInsumo.TipoAplica : default,
+                Categoria = efArticulo.Insumo.CategoriaInsumo?.Descripcion,
+                UnidadMedida = efArticulo.Insumo.UnidadMedida?.Nombre,
+                CategoriaId = efArticulo.Insumo.CategoriaInsumoId,
+                UnidadDeMedidaId = efArticulo.Insumo.UnidadMedidaId
             };
 
-            if (efInsumo.Lotes != null && efInsumo.Lotes.Any())
+            if (efArticulo.Insumo.Lotes != null && efArticulo.Insumo.Lotes.Any())
             {
-                insumoDominio.Lotes = efInsumo.Lotes.Select(l => new DOM.Lote
+                domInsumo.Lotes = efArticulo.Insumo.Lotes.Select(l => new DOM.Lote
                 {
                     Id = l.Id,
                     Cantidad = l.Cantidad,
                     FechaVencimiento = l.FechaVencimiento.GetValueOrDefault()
                 }).ToList();
+                
+                domInsumo.StockActual = domInsumo.Lotes.Sum(l => l.Cantidad);
             }
 
-            return insumoDominio;
+            return domInsumo;
         }
 
-        public EF.Articulo paraEntidad(DOM.Insumo insumoDominio)
+        public EF.Insumo CompletarMapeoAEntidad(DOM.Insumo insumoDominio)
         {
-            var efArticulo = new EF.Articulo
+            var efInsumo = new EF.Insumo
             {
-                RestauranteId = insumoDominio.RestauranteId,
-                Nombre = insumoDominio.Nombre,
-                Descripcion = insumoDominio.Descripcion,
-                PrecioVentaFinal = insumoDominio.PrecioVentaFinal,
+                CategoriaInsumoId = insumoDominio.CategoriaId,
+                UnidadMedidaId = insumoDominio.UnidadDeMedidaId,
+                StockMinimo = insumoDominio.StockMinimo,
 
-                Insumo = new EF.Insumo
+                Lotes = insumoDominio.Lotes?.Select(l => new EF.Lote
                 {
-                    CategoriaInsumoId = insumoDominio.CategoriaId,
-                    UnidadMedidaId = insumoDominio.UnidadDeMedidaId,
-                    StockMinimo = insumoDominio.StockMinimo,
-
-                    Lotes = insumoDominio.Lotes.Select(l => new EF.Lote
-                    {
-                        Nombre = l.Nombre,
-                        Cantidad = l.Cantidad,
-                        BodegaId = l.BodegaId,
-                        FechaAdquisicion = l.FechaAdquisicion,
-                        FechaVencimiento = l.FechaVencimiento
-                    }).ToList()
-                }
+                    Nombre = l.Nombre,
+                    Cantidad = l.Cantidad,
+                    BodegaId = l.BodegaId,
+                    FechaAdquisicion = l.FechaAdquisicion,
+                    FechaVencimiento = l.FechaVencimiento
+                }).ToList() ?? new List<EF.Lote>()
             };
 
             if (insumoDominio.Tipo == TipoInsumo.Ingrediente)
-                efArticulo.Insumo.Ingrediente = new EF.Ingrediente();
+                efInsumo.Ingrediente = new EF.Ingrediente();
 
-            return efArticulo;
+            return efInsumo;
         }
     }
 }

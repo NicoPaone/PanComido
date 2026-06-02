@@ -28,16 +28,20 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPost("generar-llamado")]
-        public async Task<ActionResult<LlamarMozoRequestDto>> CrearLlamado([FromBody] LlamarMozoRequestDto request)
+        public async Task<ActionResult<LlamadoResponseDto>> CrearLlamado([FromBody] LlamarMozoRequestDto request)
         {
-            var restauranteId = HttpContext.ObtenerRestauranteId();
-            await _llamarMozoCasoDeUSo.EjecutarAsync(request.MesaId, request.CategoriaLlamadoId, request.Descripcion);
-            return StatusCode(201, new { mensaje = "Llamado creado correctamente." });
+            var restauranteId = HttpContext.ObtenerMozoId();
+            var llamadoGuardado = await _llamarMozoCasoDeUSo.EjecutarAsync(restauranteId, 
+                request.MesaId, request.CategoriaLlamadoId, request.Descripcion);
+
+            var dto = _llamadoMapper.aDto(llamadoGuardado);
+            return StatusCode(201, dto);
         }
 
-        [HttpGet("ver-pendientes/{mozoId}")]
-        public async Task<ActionResult<List<LlamadoResponseDto>>> ObtenerLlamadosPendientes(int mozoId)
+        [HttpGet("ver-pendientes")]
+        public async Task<ActionResult<List<LlamadoResponseDto>>> ObtenerLlamadosPendientes()
         {
+            var mozoId = HttpContext.ObtenerMozoId();
             var llamados = await _listarLlamadosPendientesCasoDeUso.EjecutarAsync(mozoId);
 
             var dtos = _llamadoMapper.aListaDto(llamados);

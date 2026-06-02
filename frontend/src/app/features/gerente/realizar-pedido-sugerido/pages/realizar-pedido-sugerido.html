@@ -1,0 +1,126 @@
+<div class="pedido-sugerido-page p-4 bg-light min-vh-100">
+  <div class="header-container mb-4">
+    <div class="d-flex align-items-center gap-3">
+      <button class="btn-back border-0 bg-transparent text-secondary d-flex align-items-center justify-content-center" (click)="volver()" aria-label="Volver">
+        <span class="material-symbols-outlined fs-2">arrow_back</span>
+      </button>
+      <div>
+        <h1 class="page-title mb-1">Realizar pedido sugerido</h1>
+        <p class="page-subtitle text-muted mb-0">Revisa los insumos que conviene reponer y crea pedidos por proveedor.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="provider-search-panel mb-4">
+    <app-buscador
+      [placeholder]="'Buscar proveedor'"
+      [valor]="busquedaProveedor()"
+      (busquedaCambiada)="onSearchChanged($event)">
+    </app-buscador>
+  </div>
+
+  <div class="info-banner mb-4">
+    <div class="info-banner-icon">
+      <span class="material-symbols-outlined">inventory_2</span>
+    </div>
+    <div>
+      <h2>Sugerencia de reabastecimiento</h2>
+      <p>Estos son los insumos que necesitan reposicion. Revisa las cantidades, agrega una observacion si hace falta y crea el pedido para cada proveedor.</p>
+    </div>
+  </div>
+
+  @if (mensajeError()) {
+    <div class="alert alert-danger py-2 small fw-semibold">
+      {{ mensajeError() }}
+    </div>
+  }
+
+  @if (proveedoresFiltrados().length > 0) {
+    <div class="provider-order-list">
+      @for (prov of proveedoresFiltrados(); track prov.id) {
+        <section class="provider-order-card">
+          <header class="provider-order-header">
+            <div>
+              <p class="detail-kicker mb-1">Proveedor</p>
+              <h2>{{ prov.nombre }}</h2>
+              <p class="provider-meta mb-0">
+                @if (prov.telefono) {
+                  <span>{{ prov.telefono }}</span>
+                }
+                @if (prov.categorias?.length) {
+                  <span>{{ prov.categorias?.join(', ') }}</span>
+                }
+              </p>
+            </div>
+            <span class="counter-pill">{{ itemsProveedor(prov.id).length }} items</span>
+          </header>
+
+          <div class="suggested-items">
+            @for (item of itemsProveedor(prov.id); track item.productoId) {
+              <article class="suggested-item">
+                <div class="suggested-item-main">
+                  <strong>{{ item.nombre }}</strong>
+                  <span>{{ item.stockActual }} {{ nombreUnidad(item.unidadMedida) }} disponibles · {{ item.estadoStock || 'A reponer' }}</span>
+                </div>
+
+                <label class="suggested-qty">
+                  <span>Cantidad</span>
+                  <input
+                    type="number"
+                    class="form-control form-control-sm"
+                    min="1"
+                    [ngModel]="item.cantidadSugerida"
+                    (ngModelChange)="onCantidadCambiada(prov.id, item, $event)">
+                </label>
+
+                <div class="suggested-subtotal">
+                  <span>Subtotal</span>
+                  <strong>$ {{ (item.precioUnitario * item.cantidadSugerida) | number:'1.0-0' }}</strong>
+                </div>
+
+                <button class="btn-delete" type="button" (click)="eliminarItem(prov.id, item.productoId)" aria-label="Quitar insumo">
+                  <span class="material-symbols-outlined">delete</span>
+                </button>
+              </article>
+            } @empty {
+              <div class="empty-provider-items">No quedan insumos seleccionados para este proveedor.</div>
+            }
+          </div>
+
+          <div class="provider-order-footer">
+            <div class="estimated-summary-box">
+              <span>Monto</span>
+              <strong>$ {{ montoProveedor(prov.id) | number:'1.0-0' }}</strong>
+            </div>
+
+            <label class="provider-observation">
+              <span>Observaciones del pedido</span>
+              <textarea
+                class="form-control custom-textarea"
+                rows="3"
+                placeholder="Ej. Entregar por la mañana"
+                [ngModel]="observacionProveedor(prov.id)"
+                (ngModelChange)="setObservacionProveedor(prov.id, $event)">
+              </textarea>
+            </label>
+
+            <div class="provider-actions">
+              <app-boton
+                label="Crear pedido"
+                variante="secondary"
+                tamanio="md"
+                [disabled]="itemsProveedor(prov.id).length === 0"
+                (clicked)="enviarPedido(prov)">
+              </app-boton>
+            </div>
+          </div>
+        </section>
+      }
+    </div>
+  } @else {
+    <div class="panel-card shadow-sm border p-4 bg-white rounded-3">
+      <h3 class="section-title mb-2">Sin sugerencias para mostrar</h3>
+      <p class="text-muted mb-0">No encontramos proveedores con insumos para reponer.</p>
+    </div>
+  }
+</div>

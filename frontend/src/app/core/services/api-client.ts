@@ -21,10 +21,10 @@ export class ApiClient {
   }
 
   put<T>(endpoint: string, body: any): Observable<T> {
-    return this.http.put<T>(`${this.baseUrl}${endpoint}`, body);
+    return this.http.put<T>(`${this.baseUrl}/${endpoint}`, body);
   }
 
   delete<T>(endpoint: string): Observable<T> {
-    return this.http.delete<T>(`${this.baseUrl}${endpoint}`);
+    return this.http.delete<T>(`${this.baseUrl}/${endpoint}`);
   }
 }

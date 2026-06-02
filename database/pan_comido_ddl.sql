@@ -242,6 +242,7 @@ CREATE TABLE llamado (
     id                      SERIAL PRIMARY KEY,
     mozo_id                 INTEGER REFERENCES mozo(id_empleado),
     gerente_id              INTEGER REFERENCES gerente(id_empleado),
+    mesa_id                 INTEGER REFERENCES mesa(id),
     categoria_llamado_id    INTEGER NOT NULL REFERENCES categoria_llamado(id),
     descripcion             TEXT,
     resuelto                BOOLEAN NOT NULL DEFAULT FALSE
@@ -315,6 +316,7 @@ CREATE TABLE ingrediente_preparado (
 CREATE TABLE ingrediente_ingrediente_preparado (
     ingrediente_id          INTEGER NOT NULL REFERENCES ingrediente(id_insumo),
     ingrediente_preparado_id INTEGER NOT NULL REFERENCES ingrediente_preparado(id_ingrediente),
+    cantidad        DECIMAL NOT NULL, -- por ahora siempre en kg
     PRIMARY KEY (ingrediente_id, ingrediente_preparado_id)
 );
 
@@ -330,6 +332,7 @@ CREATE TABLE plato_ingrediente (
     plato_id        INTEGER NOT NULL REFERENCES plato(id_articulo),
     ingrediente_id  INTEGER NOT NULL REFERENCES ingrediente(id_insumo),
     opcional        BOOLEAN NOT NULL DEFAULT FALSE,
+    cantidad        DECIMAL NOT NULL, -- por ahora siempre en kg
     PRIMARY KEY (plato_id, ingrediente_id)
 );
 

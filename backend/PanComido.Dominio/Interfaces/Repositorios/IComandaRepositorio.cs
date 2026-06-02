@@ -9,10 +9,14 @@ namespace PanComido.Dominio.Interfaces.Repositorios
 {
     public interface IComandaRepositorio
     {
-        Task<List<Comanda>> ObtenerComandasActivasAsync(int restauranteId);
+        Task<List<Comanda>> ObtenerComandasActivasParaCocinaAsync(int restauranteId);
 
         Task<Comanda?> ObtenerComandaPorIdMesaAsync(int mesaId);
         Task<Comanda?> ModificarEstadoComandaAsync(int mesaId, int estadoId);
         Task CrearAsync(Comanda comanda);
+        Task<List<Comanda>> ObtenerComandasActivasPorMozoAsync(int restauranteId, int mozoId);  
+        Task<Comanda?> ObtenerComandaPorIdAsync(int comandaId);
+        Task MarcarItemEntregadoAsync(int comandaId, int articuloComandaId);
+
     }
 }

@@ -87,7 +87,7 @@ export class VencimientosApiService {
   }
 
   crearPedidoProveedor(proveedorId: string | number, pedido: NuevoPedidoProveedor): Observable<PedidoProveedor> {
-    return this.api.post<PedidoProveedor>(`Proveedor/${proveedorId}/crearPedido`, this.mapCrearPedidoRequest(pedido));
+    return this.api.post<PedidoProveedor>(`pedido-proveedor/${proveedorId}/crear-pedido`, this.mapCrearPedidoRequest(pedido));
   }
 
   private mapCrearPedidoRequest(pedido: NuevoPedidoProveedor): CrearPedidoRequestDto {

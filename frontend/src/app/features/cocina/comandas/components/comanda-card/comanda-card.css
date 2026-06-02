@@ -1,4 +1,3 @@
-
 .kds-card {
   background: #f8fafc;
   border: 2px solid #1e293b;
@@ -25,16 +24,40 @@
 .bg-warning { background-color: #facc15; color: #1e293b; }
 .bg-gray { background-color: #94a3b8; color: white; }
 
+/* ── Timer ── */
 .timer {
-  background: white;
-  color: black;
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: 2px solid #1e293b;
-  font-family: monospace;
-  font-size: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background-color: rgba(0, 0, 0, 0.15); /* Fondo oscuro sutil */
+  padding: 6px 14px;
+  border-radius: 8px; /* Aspecto de pastilla/pantalla */
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #ffffff; 
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); /* Relieve interno */
+  text-shadow: 1px 1px 0px rgba(0,0,0,0.3); /* Legibilidad del texto */
+
 }
 
+/* El punto "LED" que parpadea */
+.timer::before {
+  content: '';
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: currentColor;
+  box-shadow: 0 0 8px currentColor; /* Efecto brillo neón */
+  animation: parpadeo-led 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes parpadeo-led {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.2; transform: scale(0.75); }
+}
+/* ── Mesa ── */
 .mesa-info { font-size: 1.2rem; text-transform: uppercase; }
 
 .kds-body {
@@ -55,6 +78,11 @@
 }
 
 .plato-item:last-child { border-bottom: none; }
+
+.plato-item.entregado {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
 
 .plato-main {
   font-size: 1.1rem;

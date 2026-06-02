@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using PanComido.Dominio.CasosDeUso.ArticuloCasosDeUso;
 using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.BodegaCasosDeUso;
+using PanComido.Dominio.CasosDeUso.CartaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
+using PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
@@ -19,6 +22,8 @@ using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Servicios;
 using PanComido.Presentacion.SesionMock;
+using PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso;
+using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,7 +54,13 @@ builder.Services.AddScoped<CategoriaInsumoEntityMapper>();
 builder.Services.AddScoped<UnidadMedidaEntityMapper>();
 builder.Services.AddScoped<MesaEntityMapper>();
 builder.Services.AddScoped<LoteEntityMapper>();
+builder.Services.AddScoped<IngredientePreparadoEntityMapper>();
+builder.Services.AddScoped<FormularioParaCrearPlatoEntityMapper>();
+builder.Services.AddScoped<ArticuloEntityMapper>();
+builder.Services.AddScoped<PlatoEntityMapper>();
 builder.Services.AddScoped<LlamadoEntityMapper>();
+
+
 
 // Mappers de Presentacion (Dominio <-> DTOs)   
 builder.Services.AddScoped<InsumoMapper>();
@@ -61,8 +72,19 @@ builder.Services.AddScoped<CategoriaInsumoMapper>();
 builder.Services.AddScoped<InsumoConsugerenciaMapper>();
 builder.Services.AddScoped<UnidadMedidaMapper>();
 builder.Services.AddScoped<LoteRecepcionMapper>();
+builder.Services.AddScoped<MesaMapper>();
+
 builder.Services.AddScoped<LoteMapper>();
 builder.Services.AddScoped<LlamadoMapper>();
+builder.Services.AddScoped<CartaMapper>();
+builder.Services.AddScoped<FormularioParaCrearPlatoMapper>();
+builder.Services.AddScoped<PlatoMapper>();
+
+
+
+builder.Services.AddScoped<ArticuloMapper>();
+
+
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -74,8 +96,13 @@ builder.Services.AddScoped<IComandaRepositorio, ComandaRepositorio>();
 builder.Services.AddScoped<ICategoriaInsumoRepositorio, CategoriaInsumoRepositorio>();
 builder.Services.AddScoped<IUnidadMedidaRepositorio, UnidadMedidaRepositorio>();
 builder.Services.AddScoped<IMesaRepositorio, MesaRepositorio>();
+builder.Services.AddScoped<IArticuloRepositorio, ArticuloRepositorio>();
 builder.Services.AddScoped<ILlamadoRepositorio, LlamadoRepositorio>();
 builder.Services.AddScoped<IMozoRepositorio, MozoRepositorio>();
+builder.Services.AddScoped<IFormularioPlatoRepositorio, FormularioPlatoRepositorio>();
+builder.Services.AddScoped<IPlatoRepositorio, PlatoRepositorio>();
+
+
 
 // Casos de uso
 builder.Services.AddScoped<ListarInsumoCasoDeUso>();
@@ -95,14 +122,22 @@ builder.Services.AddScoped<OcuparMesaCasoDeUso>();
 builder.Services.AddScoped<EnviarPedidoProveedorCasoDeUso>();
 builder.Services.AddScoped<GenerarSugerenciasRecepcionCasoDeUso>();
 builder.Services.AddScoped<RecibirPedidoProveedorCasoDeUso>();
+builder.Services.AddScoped<ListarMesasCasoDeUso>();
+builder.Services.AddScoped<ObtenerDatosParaFormularioCrearPlato>();
+builder.Services.AddScoped<CrearPlatoCasoDeUso>();
+builder.Services.AddScoped<ObtenerCartaCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConStockCriticoCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConVencimientoProximoCasoDeUso>();
 builder.Services.AddScoped<LlamarMozoCasoDeUso>();
 builder.Services.AddScoped<ListarLlamadosPendientesCasoDeUso>();
 builder.Services.AddScoped<ResolverLlamadoCasoDeUso>();
+builder.Services.AddScoped<ListarComandasActivasMozoCasoDeUso>();
+builder.Services.AddScoped<ObtenerDetalleArticuloCasoDeUso>();
+builder.Services.AddScoped<MarcarItemEntregadoCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
+builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticuloServicio>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 

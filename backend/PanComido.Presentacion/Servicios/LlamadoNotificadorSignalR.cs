@@ -16,7 +16,7 @@ namespace PanComido.Presentacion.Servicios
 
         public async Task NotificarLlamadoAsync(Llamado llamado)
         {
-            await _hubContext.Clients.Group($"Mozos_{llamado.MozoId}").SendAsync("LlamadoMozo", llamado);
+            await _hubContext.Clients.Group($"Mozo_{llamado.MozoId}").SendAsync("LlamadoMozo", llamado);
         }
     }
 }

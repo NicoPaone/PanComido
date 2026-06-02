@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MapaMesasReadonly } from "../../../mesas/shared/mapa-mesas-readonly/mapa-mesas-readonly";
+import { MesaLecturaState } from '../../../mesas/shared/mesa-lectura-state';
 
 @Component({
   selector: 'app-mis-mesas',
@@ -8,6 +9,9 @@ import { MapaMesasReadonly } from "../../../mesas/shared/mapa-mesas-readonly/map
   styleUrl: './mis-mesas.css',
 })
 export class MisMesasPage {
+
+
+  private mesaState = inject(MesaLecturaState);
     // Modal de ocupar mesa
   mostrarModalOcupar = signal<boolean>(false);
   mesaSeleccionadaId = signal<number | null>(null);
@@ -23,6 +27,7 @@ export class MisMesasPage {
   }
 
   onOcuparMesa(mesaId: number) {
+    console.log('Ocupar mesa:', mesaId);
     this.mesaSeleccionadaId.set(mesaId);
     this.mostrarModalOcupar.set(true);
   }
@@ -33,8 +38,13 @@ export class MisMesasPage {
   }
 
   confirmarOcupar() {
-    console.log('Ocupar mesa:', this.mesaSeleccionadaId(), 'Comensales:', this.cantidadComensales());
-    // TODO: Llamar al backend para ocupar la mesa
+    const mesaId = this.mesaSeleccionadaId();
+    const cantidadComensales = this.cantidadComensales();
+    console.log('Confirmar ocupar mesa:', mesaId, 'para', cantidadComensales, 'comensales');
+    if( mesaId === null || cantidadComensales < 1) return;
+    this.mesaState.ocuparMesa(mesaId, cantidadComensales);
+    console.log(`Ocupando mesa ${mesaId} para ${cantidadComensales} comensales`);
+
     this.cerrarModalOcupar();
   }
 

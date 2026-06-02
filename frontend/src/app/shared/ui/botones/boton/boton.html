@@ -8,11 +8,7 @@
    'btn-add': variant === 'add'
   }"
   </button> -->
-<button
-  [type]="type()"
-  [disabled]="disabled()"
-  [class]="clasesCalculadas()"
-  (click)="manejarClick($event)">
+<button [type]="type()" [disabled]="disabled()" [class]="clasesCalculadas()" (click)="manejarClick($event)">
   {{ label() }}
   <ng-content></ng-content>
 </button>

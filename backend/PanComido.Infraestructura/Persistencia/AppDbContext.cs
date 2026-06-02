@@ -235,6 +235,7 @@ public partial class AppDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("comanda_pkey");
 
             entity.Property(e => e.HoraInicio).HasDefaultValueSql("now()");
+            entity.Property(e => e.HoraUltimoCambioEstado).HasDefaultValueSql("now()");
 
             entity.HasOne(d => d.EstadoComanda).WithMany(p => p.Comanda)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -407,6 +408,8 @@ public partial class AppDbContext : DbContext
 
             entity.HasOne(d => d.Gerente).WithMany(p => p.Llamados).HasConstraintName("llamado_gerente_id_fkey");
 
+            entity.HasOne(d => d.Mesa).WithMany(p => p.Llamados).HasConstraintName("llamado_mesa_id_fkey");
+
             entity.HasOne(d => d.Mozo).WithMany(p => p.Llamados).HasConstraintName("llamado_mozo_id_fkey");
         });
 
@@ -550,7 +553,6 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.IdArticulo).ValueGeneratedNever();
             entity.Property(e => e.Destacado).HasDefaultValue(false);
-            entity.Property(e => e.Sugerencia).HasDefaultValue(false);
 
             entity.HasOne(d => d.CategoriaPlato).WithMany(p => p.Platos)
                 .OnDelete(DeleteBehavior.ClientSetNull)

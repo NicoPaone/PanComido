@@ -18,7 +18,7 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
 
         public async Task<List<Entidades.Comanda>> Ejecutar(int restauranteId)
         {
-            return await _comandaRepositorio.ObtenerComandasActivasAsync(restauranteId);
+            return await _comandaRepositorio.ObtenerComandasActivasParaCocinaAsync(restauranteId);
         }
 
 

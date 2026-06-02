@@ -19,11 +19,14 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
         public async Task<int> ObtenerMozoAsignadoAMesaAsync(int mesaId)
         {
-            return await _ctx.Mesas
+            var mozo = await _ctx.Mesas
                 .Include(m => m.Mozos)
                 .Where(m => m.Id == mesaId)
-                .Select(m => m.Mozos.First().IdEmpleado)
+                .Select(m => m.Mozos.FirstOrDefault())
                 .FirstOrDefaultAsync();
+
+            return mozo?.IdEmpleado ?? 0;
         }
+
     }
 }

@@ -17,6 +17,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             {
                 Id = efLlamado.Id,
                 MozoId = efLlamado.MozoId,
+                MesaId = efLlamado.MesaId,
                 GerenteId = efLlamado.GerenteId,
                 CategoriaLlamadoId = efLlamado.CategoriaLlamadoId,
                 CategoriaDescripcion = efLlamado.CategoriaLlamado.Descripcion,
@@ -30,6 +31,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             return new EF.Llamado
             {
                 MozoId = llamado.MozoId,
+                MesaId = llamado.MesaId,
                 GerenteId = llamado.GerenteId,
                 CategoriaLlamadoId = llamado.CategoriaLlamadoId,
                 Descripcion = llamado.Descripcion,
