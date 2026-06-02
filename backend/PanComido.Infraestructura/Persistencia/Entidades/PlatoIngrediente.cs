@@ -21,7 +21,10 @@ public partial class PlatoIngrediente
     [Column("opcional")]
     public bool Opcional { get; set; }
 
-    [ForeignKey("IngredienteId")]
+   [Column("cantidad")]
+   public decimal Cantidad { get; set; }
+
+   [ForeignKey("IngredienteId")]
     [InverseProperty("PlatoIngredientes")]
     public virtual Ingrediente Ingrediente { get; set; } = null!;
 
