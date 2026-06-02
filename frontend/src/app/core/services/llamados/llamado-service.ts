@@ -18,7 +18,7 @@ export class LlamadoService {
     return this.api.get<Llamado[]>(`${this.endpoint}/ver-pendientes`);
   }
   resolver(llamadoId:number): Observable<{mensaje:string}>{
-    return this.api.post<{mensaje:string}>(`${this.endpoint}/resolver/${llamadoId}`, {});
+    return this.api.put<{mensaje:string}>(`${this.endpoint}/resolver/${llamadoId}`, {});
   }
 
 }

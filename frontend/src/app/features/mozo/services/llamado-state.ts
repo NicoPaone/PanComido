@@ -4,6 +4,7 @@ import { MozoHubService } from '../../../core/services/hubs/llamados/mozo-hub-se
 import { LlamadoService } from '../../../core/services/llamados/llamado-service';
 
 const MS_NUEVO = 5000;
+const MS_SALIDA = 400;
 
 @Injectable({
   providedIn: 'root',
@@ -16,6 +17,7 @@ export class LlamadoState {
   readonly #_cargando = signal<boolean>(true);
   readonly #_error = signal<string | null>(null);
   readonly #_resolviendoId = signal<number | null>(null);
+  readonly #_saliendoId = signal<number | null>(null);
   readonly #_hubConectado = signal<boolean>(false);
   readonly #_nuevos = signal<Set<number>>(new Set());
 
@@ -26,6 +28,7 @@ export class LlamadoState {
   readonly cargando = this.#_cargando.asReadonly();
   readonly error = this.#_error.asReadonly();
   readonly resolviendoId = this.#_resolviendoId.asReadonly();
+  readonly saliendoId = this.#_saliendoId.asReadonly();
   readonly hubConectado = this.#_hubConectado.asReadonly();
 
   readonly cantidadPendientes = computed<number>(() => this.#_llamados().length);
@@ -88,18 +91,22 @@ export class LlamadoState {
 
     this.#_resolviendoId.set(llamadoId);
 
-    this.#api
-      .resolver(llamadoId)
+    this.#api.resolver(llamadoId)
       .subscribe({
         next: () => {
-          this.#_llamados.update((lista) =>
-            lista.filter((l) => l.id !== llamadoId),
-          );
-          this.#_nuevos.update((set) => {
-            set.delete(llamadoId);
-            return new Set(set);
-          });
           this.#_resolviendoId.set(null);
+          this.#_saliendoId.set(llamadoId);
+
+          setTimeout(() => {
+            this.#_llamados.update((lista) =>
+              lista.filter((l) => l.id !== llamadoId),
+            );
+            this.#_nuevos.update((set) => {
+              set.delete(llamadoId);
+              return new Set(set);
+            });
+            this.#_saliendoId.set(null);
+          }, MS_SALIDA);
         },
         error: () => {
           this.#_resolviendoId.set(null);
