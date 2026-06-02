@@ -31,25 +31,31 @@ export class ComandaState {
   );
 
   
-
-  modificarEstadoComanda(mesaId:number,tipoId:number):void { 
-    this.api.modificarEstadoComanda(mesaId,tipoId).subscribe({
+modificarEstadoComanda(mesaId: number, tipoId: number): void {
+  this.api.modificarEstadoComanda(mesaId, tipoId).subscribe({
     next: (comandaActualizada) => {
-      this._comandas.update(comandasPrevias =>
-        comandasPrevias.map(comanda =>  
-         comanda.id === comandaActualizada.id 
-         ? { 
-            ...comanda,
-             estado: comandaActualizada.estado, 
-             estadoId: comandaActualizada.estadoId
-           } 
-           : comanda
-      ))
-    },error: (err) => {
-        console.error('Error al modificar comanda', err);
-      }
-   });
-  }
+      this._comandas.update(lista =>
+        lista.map(c => c.id === comandaActualizada.id 
+          ? comandaActualizada 
+          : c
+        )
+      );
+    },
+    error: (err) => console.error('Error al modificar comanda', err)
+  });
+}
+  marcarItemEntregado(comandaId: number, articuloComandaId: number): void {
+  this.api.marcarItemEntregado(comandaId, articuloComandaId).subscribe({
+    next: (comandaActualizada) => {
+      this._comandas.update(lista =>
+        lista.map(c => c.id === comandaActualizada.id ? comandaActualizada : c)
+      );
+    },
+    error: (err) => console.error('Error al marcar item', err)
+  });
+}
+
+
   actualizarDesdeHub(comandaRecibida: Comanda): void{
     this._comandas.update(listaActual => {
       const existe = listaActual.some(comanda => comanda.id === comandaRecibida.id);
