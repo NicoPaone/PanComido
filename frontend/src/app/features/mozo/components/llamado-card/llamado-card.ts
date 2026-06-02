@@ -29,10 +29,11 @@ export class LlamadoCard {
 
   
   
-  readonly titulo = computed<string>(
-    () => `Mesa ${this.llamado().mesaId ?? '?'}`,
-  );
-
+  readonly titulo = computed(() => {
+    const mesa = this.llamado().mesaId ? `Mesa ${this.llamado().mesaId}` : '';
+    const categoria = this.llamado().categoriaDescripcion || '';
+    return mesa ? `${mesa} — ${categoria}` : categoria;
+  });
   readonly clases = computed<Record<string, boolean>>(() => ({
     'llamado-card': true,
     'esta-resolviendo': this.resolviendo(),

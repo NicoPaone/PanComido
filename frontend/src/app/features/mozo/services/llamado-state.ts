@@ -32,6 +32,8 @@ export class LlamadoState {
   readonly #hubEffect = effect(() => {
     const nuevo = this.#hub.llamadoRecibido();
     if (!nuevo) return;
+   
+    
     console.log("Llamado recibido en el state: ", nuevo);
 
     this.#_llamados.update((lista) =>
@@ -46,11 +48,12 @@ export class LlamadoState {
 
     this.#_cargando.set(true);
     this.#api
-      .listarPendientesDelMozo(mozoId)
+      .listarPendientesDelMozo()
       .subscribe({
         next: (lista) => {
           this.#_llamados.set(lista);
           this.#_cargando.set(false);
+          console.log("Llamados pendientes cargados: ", lista);
         },
         error: () => {
           this.#_error.set('No pudimos cargar los llamados. Reintentá.');
@@ -75,9 +78,6 @@ export class LlamadoState {
     }
   }
 
-  /**
-   * Resuelve un llamado. Actualiza el estado localmente de forma optimista.
-   */
   resolver(llamadoId: number): void {
     if (!llamadoId || this.#_resolviendoId() !== null) return;
 
