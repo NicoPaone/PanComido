@@ -25,5 +25,7 @@ namespace PanComido.Dominio.Entidades
         public string Categoria { get; set; }
         public List<string> Restricciones { get; set; } = new List<string>();
 
+        public string TipoPlato { get; set; }
+
     }
 }

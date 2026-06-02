@@ -20,8 +20,8 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             var domInsumo = new DOM.Insumo
             {
                 StockMinimo = efArticulo.Insumo.StockMinimo,
-                Tipo = (TipoInsumo)efArticulo.Insumo.CategoriaInsumo.TipoAplica,
-                Categoria = efArticulo.Insumo.CategoriaInsumo.Descripcion,
+                Tipo = (TipoInsumo?)efArticulo.Insumo.CategoriaInsumo?.TipoAplica,
+                Categoria = efArticulo.Insumo.CategoriaInsumo?.Descripcion,
                 UnidadMedida = efArticulo.Insumo.UnidadMedida?.Nombre,
                 CategoriaId = efArticulo.Insumo.CategoriaInsumoId,
                 UnidadDeMedidaId = efArticulo.Insumo.UnidadMedidaId
@@ -36,7 +36,6 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                     FechaVencimiento = l.FechaVencimiento.GetValueOrDefault()
                 }).ToList();
                 
-                // Si querés que el stock se calcule solo en base a los lotes de la BD:
                 domInsumo.StockActual = domInsumo.Lotes.Sum(l => l.Cantidad);
             }
 
