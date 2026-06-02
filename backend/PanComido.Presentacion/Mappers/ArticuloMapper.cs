@@ -23,9 +23,9 @@
                     dto.TiempoPreparacionBase = plato.TiempoPreparacionBase;
                     dto.CategoriaPlato = plato.Categoria;
                     dto.TipoPlato = plato.TipoPlato;
-                    dto.Restricciones = plato.Restricciones;
+                dto.Restricciones = plato.Restricciones?.Select(r => r.Descripcion).ToList() ?? new List<string>();
 
-                    dto.IngredientesOpcionales = plato.Ingredientes
+                dto.IngredientesOpcionales = plato.Ingredientes
                         .Where(i => i.Opcional == true)
                         .Select(i => new IngredientePersonalizableDto
                         {
