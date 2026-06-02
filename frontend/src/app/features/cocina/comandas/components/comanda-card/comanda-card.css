@@ -56,6 +56,11 @@
 
 .plato-item:last-child { border-bottom: none; }
 
+.plato-item.entregado {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
 .plato-main {
   font-size: 1.1rem;
   font-weight: 700;

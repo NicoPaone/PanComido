@@ -1,19 +1,22 @@
 <div class="kds-card">
   <div class="kds-header" [class]="headerClass()">
-    <div class="timer">00:00:00</div> 
+    <div class="timer">00:00:00</div>
     <div class="mesa-info">MESA N° {{ comanda().mesaId }}</div>
   </div>
 
   <div class="kds-body">
     <ul class="platos-list">
-      @for (plato of comanda().platos; track $index) {
-        <li class="plato-item">
+      @for (item of comanda().items; track item.id) {
+        <li class="plato-item" [class.entregado]="item.entregado">
           <div class="plato-main">
-            <span class="cantidad">{{ plato.cantidad }} x</span>
-            <span class="nombre">{{ plato.nombre }}</span>
+            <span class="cantidad">{{ item.cantidad }} x</span>
+            <span class="nombre">{{ item.articulo.nombre }}</span>
           </div>
-          @if (plato.observaciones) {
-            <div class="observacion">"{{ plato.observaciones }}"</div>
+          @if (item.observacionesGenerales) {
+            <div class="observacion">"{{ item.observacionesGenerales }}"</div>
+          }
+          @if (item.observacionesIngredientes) {
+            <div class="observacion ingredientes">{{ item.observacionesIngredientes }}</div>
           }
         </li>
       }
@@ -21,7 +24,7 @@
   </div>
 
   <div class="kds-footer">
-    <button class="btn-accion" (click)="accion.emit(comanda().id)">
+    <button class="btn-accion" (click)="onAccion()">
       {{ textoBoton() }}
     </button>
     <div class="tiempo-est">Tiempo estimado: {{ comanda().tiempoEstimadoTotal }}'</div>
