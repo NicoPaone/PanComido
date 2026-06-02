@@ -1,10 +1,7 @@
 <div class="container-fluid p-3 bg-light min-vh-100">
 
   <!-- VOLVER -->
-  <div
-    class="d-flex align-items-center gap-2 mb-4 volver"
-    (click)="volver()"
-  >
+  <div class="d-flex align-items-center gap-2 mb-4 volver" (click)="volver()">
 
     <span class="material-symbols-outlined">
       arrow_back
@@ -20,10 +17,7 @@
   <div class="card border-0 shadow-sm rounded-4 p-3">
 
     <!-- IMAGEN -->
-    <img
-      [src]="plato?.plato?.imagen"
-      class="img-fluid rounded-4 mb-4 plato-img"
-    >
+    <img [src]="plato?.plato?.imagen" class="img-fluid rounded-4 mb-4 plato-img">
 
     <!-- TITULO -->
     <h2 class="fw-bold mb-2">
@@ -71,15 +65,18 @@
 
         @for (ingrediente of ingredientesRemover; track ingrediente) {
 
-          <div
-            class="chip remove"
-            [class.selected-remove]="
-              removidosSeleccionados.includes(ingrediente)
-            "
-            (click)="toggleRemover(ingrediente)"
-          >
-            {{ ingrediente }}
-          </div>
+        <div class="chip remove" [class.selected-remove]="removidosSeleccionados.includes(ingrediente)"
+          [style.background-color]="
+    removidosSeleccionados.includes(ingrediente)
+      ? configuracion.paleta.botonSecundario
+      : ''
+  " [style.color]="
+    removidosSeleccionados.includes(ingrediente)
+      ? configuracion.paleta.textoOscuro
+      : ''
+  " (click)="toggleRemover(ingrediente)">
+          {{ ingrediente }}
+        </div>
 
         }
 
@@ -94,23 +91,15 @@
         Observaciones
       </h5>
 
-      <textarea
-        class="form-control rounded-4"
-        rows="4"
-        placeholder="Ej: sin sal, bien cocido, etc."
-        [(ngModel)]="observaciones"
-      >
+      <textarea class="form-control rounded-4" rows="4" placeholder="Ej: sin sal, bien cocido, etc."
+        [(ngModel)]="observaciones">
       </textarea>
 
     </div>
 
     <!-- BOTON -->
-    <app-boton-comensal
-      [backgroundColor]="configuracion.paleta.botonPrimario"
-          [textColor]="configuracion.paleta.textoClaro"
-      class="w-100"
-      (click)="guardarCambios()"
-    >
+    <app-boton-comensal [backgroundColor]="configuracion.paleta.botonPrimario"
+      [textColor]="configuracion.paleta.textoClaro" class="w-100" (click)="guardarCambios()">
 
       Aplicar cambios
 
@@ -120,6 +109,5 @@
 
 </div>
 
-<app-llamar-al-mozo
-  [configuracion]="configuracion">
+<app-llamar-al-mozo [configuracion]="configuracion">
 </app-llamar-al-mozo>

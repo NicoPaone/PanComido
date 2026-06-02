@@ -29,6 +29,7 @@ import { PlatoService } from '../../../../core/services/plato.service';
 export class VerCarta {
   private router = inject(Router);
   private pedidoService = inject(PedidoService);
+  private platoService = inject(PlatoService);
 
   logoUrl = input<string>('assets/images/logo/logo_el_ferroviario.png');
 
@@ -245,6 +246,13 @@ export class VerCarta {
 
   ngOnInit(): void {
     this.cantidadPersonas.set(history.state?.cantidadPersonas ?? 1);
+    // Intentar cargar los platos desde la API; si falla, seguirá mostrando los mocks locales
+    this.platoService.getPlatos().subscribe(platos => {
+      if (platos && platos.length) {
+        this.platos.set(platos as Plato[]);
+        this.filteredPlatos.set([...platos as Plato[]]);
+      }
+    });
   }
 
   get cantidadTotalPedido(): number {

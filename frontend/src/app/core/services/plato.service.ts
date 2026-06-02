@@ -52,7 +52,7 @@ export class PlatoService {
     precioVenta: 16200,
     costo: 13160,
     visible: true,
-    imagen: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&q=80&w=200&h=150',
+   imagen: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKEGXoEhw1noD0K7RBypJC7RrtSX8V42ps2wJ8YgLjagQW_Rn9hnRMM4LFO1cUp0UWLnirJ_JWFHd07pehskFg0VSKOYcQ-ArTILAfLQ&s=10&w=200&h=150',
     receta: [
       { id: '6', nombre: 'Bife de Chorizo', cantidad: 1.5, unidadMedida: 'KG' },
       { id: '7', nombre: 'Huevos Blancos', cantidad: 6, unidadMedida: 'UN' },
@@ -152,7 +152,7 @@ export class PlatoService {
     precioVenta: 19500,
     costo: 8600,
     visible: true,
-    imagen: 'https://images.unsplash.com/photo-1565557612662-811c7504ee42?auto=format&fit=crop&q=80&w=200&h=150',
+     imagen: 'https://i.blogs.es/8c3360/pollo_curry/840_560.jpg?w=200&h=150',
     receta: [
       { id: '6', nombre: 'Bife de Chorizo', cantidad: 1, unidadMedida: 'KG' },
       { id: '3', nombre: 'Aceite de Girasol', cantidad: 0.5, unidadMedida: 'L' },
@@ -197,6 +197,20 @@ export class PlatoService {
       { id: '3', nombre: 'Aceite de Girasol', cantidad: 0.4, unidadMedida: 'L' },
       { id: '2', nombre: 'Cebolla', cantidad: 0.022, unidadMedida: 'KG' }
     ]
+  },
+  {
+      id: 9,
+      nombre: 'Ensalada César',
+      descripcion: 'Ensalada fresca con aderezo César',
+      platoDelDia: false,
+      tiempo: 15,
+      tipo: 'entrada',
+      bebida: '',
+      restriccion: '',
+      precioVenta: 8500,
+      costo: 4500,
+      visible: true,
+      imagen: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzTVx0Pj6aikqby8nSevw_-41TwqRSLlkAuit-lhp9e0juttc614KJXpTDBxHlZVBTbhIC0PPy3UfmxwDp-QNoL8hSK3oT-rZQqZhHjL3sgw&s=10?auto=format&fit=crop&q=80&w=200&h=150',
   }
 ]);
   // getPlatos(): Observable<Plato[]> {
@@ -205,7 +219,9 @@ export class PlatoService {
   // }
 
   getPlatos(): Observable<Plato[]> {
-  return this.api.get<Plato[]>('platos').pipe(
+  // En el backend la ruta que devuelve la carta es: /restaurante/{restauranteId}/carta
+  // Para desarrollo usamos restaurante 1 por defecto. Ajustar según contexto.
+  return this.api.get<Plato[]>('restaurante/1/carta').pipe(
     catchError(error => {
       console.warn('No se pudo obtener los platos desde la API, usando mocks.', error);
       return of(this.platosList());
