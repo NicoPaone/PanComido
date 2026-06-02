@@ -69,7 +69,9 @@ builder.Services.AddScoped<CategoriaInsumoMapper>();
 builder.Services.AddScoped<InsumoConsugerenciaMapper>();
 builder.Services.AddScoped<UnidadMedidaMapper>();
 builder.Services.AddScoped<LoteRecepcionMapper>();
-builder.Services.AddScoped<MesaMapper>();
+builder.Services.AddScoped<LoteMapper>();
+builder.Services.AddScoped<LlamadoMapper>();
+builder.Services.AddScoped<CartaMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -110,6 +112,7 @@ builder.Services.AddScoped<ListarMesasCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
+builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticuloServicio>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
