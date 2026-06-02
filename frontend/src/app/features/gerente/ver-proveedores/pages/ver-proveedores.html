@@ -8,6 +8,14 @@
 
     <app-boton
       acciones
+      label="Pedido sugerido"
+      variante="teal"
+      tamanio="md"
+      (clicked)="irARealizarPedidoSugeridoGeneral()">
+    </app-boton>
+
+    <app-boton
+      acciones
       label="Nuevo proveedor"
       variante="secondary"
       tamanio="md"
@@ -23,16 +31,40 @@
           <p class="page-subtitle mb-0">Gestiona pedidos y consulta el historial de cada proveedor</p>
         </div>
 
-        <span class="counter-pill">{{ proveedoresFiltrados().length }} proveedores</span>
+        <span class="counter-pill">{{ loading() ? 'Cargando' : (proveedoresFiltrados().length + ' proveedores') }}</span>
       </div>
 
-      <app-proveedor-list
-        [proveedores]="proveedoresFiltrados()"
-        [proveedorSeleccionadoId]="proveedorSeleccionadoId()"
-        (seleccionar)="seleccionarProveedor($event)"
-        (crearPedido)="abrirPedido($event)"
-        (verHistorial)="abrirHistorial($event)">
-      </app-proveedor-list>
+      @if (loading()) {
+        <div class="empty-state-panel compact-state">
+          <h2 class="detail-title mb-2">Cargando proveedores...</h2>
+          <p class="detail-text mb-0">Estamos consultando la información actual del restaurante.</p>
+        </div>
+      } @else if (error()) {
+        <div class="empty-state-panel compact-state error-state">
+          <h2 class="detail-title mb-2">No se pudieron cargar los proveedores</h2>
+          <p class="detail-text mb-3">{{ error() }}</p>
+          <app-boton label="Reintentar" variante="outline" tamanio="sm" (clicked)="reintentarCarga()"></app-boton>
+        </div>
+      } @else if (proveedoresFiltrados().length === 0) {
+        <div class="empty-state-panel compact-state">
+          <h2 class="detail-title mb-2">Sin proveedores para mostrar</h2>
+          <p class="detail-text mb-0">
+            @if (termino().trim()) {
+              No encontramos coincidencias para tu búsqueda.
+            } @else {
+              Todavía no hay proveedores cargados.
+            }
+          </p>
+        </div>
+      } @else {
+        <app-proveedor-list
+          [proveedores]="proveedoresFiltrados()"
+          [proveedorSeleccionadoId]="proveedorSeleccionadoId()"
+          (seleccionar)="seleccionarProveedor($event)"
+          (crearPedido)="abrirPedido($event)"
+          (verHistorial)="abrirHistorial($event)">
+        </app-proveedor-list>
+      }
     </section>
 
     <aside class="panel-card detail-panel">
@@ -60,14 +92,30 @@
 
           <article class="info-card">
             <span class="info-label">Contacto</span>
-            <strong>{{ proveedor.telefono }}</strong>
+            <strong>{{ proveedor.telefono || 'Sin contacto registrado' }}</strong>
           </article>
 
-          <article class="info-card">
-            <span class="info-label">Correo</span>
-            <strong>{{ proveedor.email }}</strong>
-          </article>
+          @if (proveedor.email) {
+            <article class="info-card">
+              <span class="info-label">Correo</span>
+              <strong>{{ proveedor.email }}</strong>
+            </article>
+          }
         </div>
+
+        @if (pedidosListosParaRecibir().length > 0) {
+          <div class="success-note receive-note">
+            <div>
+              Hay {{ pedidosListosParaRecibir().length }} pedido(s) enviado(s) listos para recibir.
+            </div>
+            <app-boton
+              label="Recibir pedido"
+              variante="success"
+              tamanio="sm"
+              (clicked)="abrirHistorial(proveedor)">
+            </app-boton>
+          </div>
+        }
 
         <div class="action-row">
           <app-boton
@@ -94,12 +142,6 @@
               </div>
 
               <div class="d-flex gap-2 align-items-center">
-                <app-boton
-                  label="Pedido sugerido por IA ✨"
-                  variante="teal"
-                  tamanio="sm"
-                  (clicked)="irAPedidoSugeridoIA(proveedor)">
-                </app-boton>
                 <app-boton
                   label="Ver historial"
                   variante="outline"
@@ -146,16 +188,20 @@
 
                 @if (productoTexto().trim().length > 0) {
                   <div class="predictive-list">
-                    @if (productosFiltrados().length > 0) {
+                    @if (loadingInsumos()) {
+                      <div class="predictive-empty">Cargando insumos...</div>
+                    } @else if (errorInsumos()) {
+                      <div class="predictive-empty">{{ errorInsumos() }}</div>
+                    } @else if (productosFiltrados().length > 0) {
                       @for (producto of productosFiltrados(); track producto.id) {
                         <button type="button" class="predictive-item" (click)="seleccionarProducto(producto)">
                           <div class="predictive-item-main">
                             <strong>{{ producto.nombre }}</strong>
-                            <span>{{ producto.categoriaIngrediente }}</span>
+                            <span>{{ nombreCategoria(producto.categoriaIngrediente) }}</span>
                           </div>
 
                           <div class="predictive-item-meta">
-                            <span>{{ producto.stockActual }} {{ producto.unidadMedida }}</span>
+                            <span>{{ producto.stockActual }} {{ nombreUnidad(producto.unidadMedida) }}</span>
                           </div>
                         </button>
                       }
@@ -180,7 +226,7 @@
 
               <!-- Cantidad -->
               <label class="field-group quantity-field">
-                <span>Cant. {{ productoBaseActual()?.unidadMedida ? '(' + productoBaseActual()!.unidadMedida + ')' : '' }}</span>
+                <span>Cant. {{ productoBaseActual()?.unidadMedida ? '(' + nombreUnidad(productoBaseActual()!.unidadMedida) + ')' : '' }}</span>
                 <input
                   type="number"
                   class="form-control custom-input"
@@ -189,6 +235,9 @@
                   [placeholder]="cantidadPlaceholderProducto"
                   [ngModel]="cantidadProducto()"
                   (ngModelChange)="cantidadProducto.set($event === null || $event === '' ? null : +$event)">
+                @if (equivalenciaCantidad(); as equivalencia) {
+                  <strong class="quantity-equivalence">{{ equivalencia }}</strong>
+                }
               </label>
 
               <!-- Confirmar -->
@@ -223,7 +272,7 @@
                         <div>
                           <strong>{{ item.nombre }}</strong>
                           <div class="ingredient-meta">
-                            {{ item.cantidad }} {{ item.unidadMedida }} 
+                            {{ item.cantidad }} {{ nombreUnidad(item.unidadMedida) }}
                             @if (item.precioUnitario) {
                               <span> • Est: ${{ item.precioUnitario | number:'1.0-0' }} c/u</span>
                             }
@@ -254,7 +303,15 @@
                 </div>
               } @else {
                 <div class="empty-ingredients-state">
-                  Todavía no agregaste ingredientes al pedido.
+                  @if (loadingInsumos()) {
+                    Cargando insumos disponibles...
+                  } @else if (errorInsumos()) {
+                    {{ errorInsumos() }}
+                  } @else if (productos().length === 0) {
+                    Este proveedor no tiene insumos asociados.
+                  } @else {
+                    Todavía no agregaste ingredientes al pedido.
+                  }
                 </div>
               }
             </div>
@@ -281,7 +338,7 @@
                 </app-boton>
 
                 <app-boton
-                  label="Enviar pedido"
+                  label="Crear pedido"
                   variante="secondary"
                   tamanio="md"
                   [disabled]="pedidoItems().length === 0"
@@ -297,8 +354,16 @@
         }
       } @else {
         <div class="empty-state-panel">
-          <h2 class="detail-title mb-2">Selecciona un proveedor</h2>
-          <p class="detail-text mb-0">El panel derecho mostrará sus datos, el historial y el formulario para crear pedidos.</p>
+          @if (loading()) {
+            <h2 class="detail-title mb-2">Cargando detalle...</h2>
+            <p class="detail-text mb-0">Apenas estén los datos, vas a poder crear pedidos y consultar historial.</p>
+          } @else if (error()) {
+            <h2 class="detail-title mb-2">Sin detalle disponible</h2>
+            <p class="detail-text mb-0">{{ error() }}</p>
+          } @else {
+            <h2 class="detail-title mb-2">Selecciona un proveedor</h2>
+            <p class="detail-text mb-0">El panel derecho mostrará sus datos, el historial y el formulario para crear pedidos.</p>
+          }
         </div>
       }
     </aside>
@@ -362,7 +427,7 @@
                   </div>
                 </div>
 
-                <span class="pedido-modal-quantity">{{ item.cantidad }} {{ item.unidadMedida }}</span>
+                <span class="pedido-modal-quantity">{{ item.cantidad }} {{ nombreUnidad(item.unidadMedida) }}</span>
               </div>
             }
           </div>

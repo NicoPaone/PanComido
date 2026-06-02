@@ -14,9 +14,8 @@ const DEFAULT_ROUTE = 'staff/cocina';
   providedIn: 'root'
 })
 export class AuthService {
-  currentRole = signal<string>('Mozo');
+  currentRole = signal<string>('Cocina');
 
-  // NOTE: El endpoint del back para validar credenciales de gerente debe conectarse aquí
   validateManagerCredentials(username: string, password: string): Observable<boolean> {
     const esValido = username.toLowerCase().trim() === 'gerente' && password === '123456';
     return of(esValido).pipe(delay(250));

@@ -18,10 +18,9 @@ export class MesaItem {
   clickMesa = output<number>();
   accionMenu = output<'ocupar' | 'detalles' | 'deshabilitar' | 'cerrar' | 'abrir'>();
 
-  ancho = computed(() => this.mesa().posicionXfin - this.mesa().posicionXInicio);
-  alto = computed(() => this.mesa().posicionYFin - this.mesa().posicionYinicio);
-
-  claseEstado = computed(() => `estado-${this.mesa().estadoMesa}`);
+  ancho = computed(() => this.mesa().posicionXFin - this.mesa().posicionXInicio);
+  alto = computed(() => this.mesa().posicionYFin - this.mesa().posicionYInicio);
+  claseEstado = computed(() => `estado-${this.mesa().estadoMesa.toLocaleLowerCase()}`);
   claseForma = computed(() => `forma-${this.mesa().dimensionMesa.forma}`);
 
   cambioNumero = output<{id: number, numero: number}>();

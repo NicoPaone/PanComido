@@ -88,7 +88,7 @@ export class AvisosStateService {
 
   crearPedido(id: string) {
     this._stockBajo.update(list => list.filter(a => a.id !== id));
-    this.mostrarMensaje('Pedido creado (mock)');
+    this.mostrarMensaje('Pedido creado');
   }
 
   agregarSugerenciaACarta(plato: Plato): void {

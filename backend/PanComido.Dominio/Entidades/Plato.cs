@@ -22,5 +22,11 @@ namespace PanComido.Dominio.Entidades
         public List<PlatoIngrediente> Ingredientes { get; set; } = new List<PlatoIngrediente>();
         public List<Restriccion> Restricciones { get; set; } = new List<Restriccion>();
 
+        // valores para la carta:
+        public string Categoria { get; set; }
+        public List<string> Restricciones { get; set; } = new List<string>();
+
+        public string TipoPlato { get; set; }
+
     }
 }

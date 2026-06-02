@@ -1,27 +1,25 @@
 <div class="mesa-container"
-     [ngClass]="[claseEstado(), claseForma()]"
+     [ngClass]="[claseEstado(), claseForma(), isSeleccionada() ? 'seleccionada' : '']"
      [style.width.px]="ancho()"
      [style.height.px]="alto()"
      (click)="manejarClickMesa($event)">
 
-
-   @if (!isEditorMode() && isSeleccionada()) {
+  @if (!isEditorMode() && isSeleccionada()) {
     <div class="popup-acciones" (click)="$event.stopPropagation()">
 
-        @if (mesa().estadoMesa === 'disponible') {
-          <button type="button" class="btn-accion" (click)="accionMenu.emit('ocupar')">Ocupar mesa</button>
-        } @else {
-          <button type="button" class="btn-accion" (click)="accionMenu.emit('detalles')">Ver detalles</button>
-        }
+      @if (mesa().estadoMesa === 'Disponible') {
+        <button type="button" class="btn-accion" (click)="$event.stopPropagation(); accionMenu.emit('ocupar')">Ocupar mesa</button>
+      } @else {
+        <button type="button" class="btn-accion" (click)="$event.stopPropagation(); accionMenu.emit('detalles')">Ver detalles</button>
+      }
 
-        <button type="button" class="btn-accion" (click)="accionMenu.emit('deshabilitar')">Deshabilitar</button>
-        <button type="button" class="btn-accion" (click)="accionMenu.emit('cerrar')">Cerrar mesa</button>
-
+      <button type="button" class="btn-accion" (click)="$event.stopPropagation(); accionMenu.emit('deshabilitar')">Deshabilitar</button>
+      <button type="button" class="btn-accion" (click)="$event.stopPropagation(); accionMenu.emit('cerrar')">Cerrar mesa</button>
     </div>
-
   }
+
   @if (isEditorMode()) {
-    <button class="btn-eliminar" (click)="eliminar.emit(mesa().id)">×</button>
+    <button class="btn-eliminar" (click)="$event.stopPropagation(); eliminar.emit(mesa().id)">×</button>
   }
 
   @if (isEditorMode()) {

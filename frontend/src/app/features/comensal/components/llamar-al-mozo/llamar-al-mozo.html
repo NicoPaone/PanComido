@@ -1,14 +1,61 @@
 <button
   class="btn shadow waiter-btn"
-  [style.background-color]="configuracion.paleta.botonPrimario"
-  [style.color]="configuracion.paleta.textoClaro">
-
-  <span class="material-symbols-outlined waiter-icon">
-    room_service
-  </span>
-
-  <span class="waiter-text">
-    Mozo
-  </span>
-
+  [style.background-color]="configuracion().paleta?.botonPrimario"
+  [style.color]="configuracion().paleta?.textoClaro"
+  (click)="abrirModal()">
+  <span class="material-symbols-outlined waiter-icon">room_service</span>
+  <span class="waiter-text">Mozo</span>
 </button>
+
+@if (modalAbierto()) {
+  <dialog id="modal-llamar-mozo" class="modal-dialogo" (close)="cerrarModal()">
+    @if (!enviado()) {
+      <div class="modal-header">
+        <h3>Seleccione un llamado</h3>
+        <button class="btn-close" (click)="cerrarModal()">X</button>
+      </div>
+    }
+    <div class="modal-body">
+      @if (enviado()) {
+        <div class="mensaje-exito">
+          <span class="material-symbols-outlined">check_circle</span>
+          <p>Tu llamado al mozo fue enviado</p>
+          <button class="btn-aceptar" (click)="aceptar()">Aceptar</button>
+        </div>
+      } @else {
+        <!-- Categorías -->
+        <div class="categorias">
+          @for (cat of categorias; track cat.id) {
+            <button
+              class="categoria-btn"
+              [class.seleccionada]="categoriaSeleccionada() === cat.id"
+              (click)="seleccionarCategoria(cat.id)">
+              <fa-icon [icon]="cat.icono" size="lg" />
+              <span>{{ cat.nombre }}</span>
+            </button>
+          }
+        </div>
+
+        <!-- Input descripción -->
+        <input
+          type="text"
+          class="input-descripcion"
+          placeholder="Indicaciones extra (opcional)"
+          [ngModel]="descripcion()"
+          (ngModelChange)="descripcion.set($event)" />
+
+        <!-- Botón enviar -->
+        <button
+          class="btn-llamar"
+          [disabled]="categoriaSeleccionada() === null || enviando()"
+          (click)="enviar()">
+          @if (enviando()) {
+            <span>Enviando...</span>
+          } @else {
+            Llamar al mozo
+          }
+        </button>
+      }
+    </div>
+  </dialog>
+}

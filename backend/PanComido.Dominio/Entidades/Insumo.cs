@@ -11,7 +11,7 @@ namespace PanComido.Dominio.Entidades
     public class Insumo : Articulo
     {
         public decimal StockMinimo { get; set; }
-        public TipoInsumo Tipo { get; set; }
+        public TipoInsumo? Tipo { get; set; }
         public string Categoria { get; set; }      
         public string UnidadMedida { get; set; }
         public List<Lote> Lotes { get; set; } = new List<Lote>();
