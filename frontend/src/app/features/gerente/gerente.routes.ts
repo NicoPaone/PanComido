@@ -6,9 +6,9 @@ export const GERENTE_ROUTES: Routes = [
     loadComponent: () => import('./stock-mercaderia/page/insumo/insumo-page').then(m => m.InsumoPage)
 
 
-    },
-    {
-   path: 'mapa-de-mesas',
+  },
+  {
+    path: 'mapa-de-mesas',
     loadComponent: () => import('../mesas/components/mapa-mesas/mapa-mesas').then(m => m.MapaMesas)
   },
   {
@@ -32,8 +32,12 @@ export const GERENTE_ROUTES: Routes = [
     loadComponent: () => import('./crear-plato/pages/crear-plato').then(m => m.CrearPlatoComponent)
   },
   {
-    path: 'pedido-sugerido-ia/:id',
-    loadComponent: () => import('./pedido-sugerido-ia/pages/pedido-sugerido-ia').then(m => m.PedidoSugeridoIAComponent)
+    path: 'realizar-pedido-sugerido',
+    loadComponent: () => import('./realizar-pedido-sugerido/pages/realizar-pedido-sugerido').then(m => m.RealizarPedidoSugeridoComponent)
+  },
+  {
+    path: 'realizar-pedido-sugerido/:id',
+    loadComponent: () => import('./realizar-pedido-sugerido/pages/realizar-pedido-sugerido').then(m => m.RealizarPedidoSugeridoComponent)
   },
   {
     path: 'avisos',

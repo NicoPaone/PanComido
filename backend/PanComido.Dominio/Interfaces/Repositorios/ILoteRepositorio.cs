@@ -17,7 +17,7 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         // y no pegarle a la base de datos por cada insumo que tenga las bodegas
         Task<Dictionary<(int insumoId, int bodegaId), decimal>> ObtenerStocksPorBodega(int restauranteId);
         Task<Dictionary<(int insumoId, int bodegaId), DateOnly?>> ObtenerVencimientosPorBodega(int restauranteId);
-        Task<Dictionary<int, decimal>> ObtenerStockTotalDeInsumos(int restauranteId);
+        Task<Dictionary<int, decimal>> ObtenerStockTotalDeInsumosDisponible(int restauranteId, DateOnly fechaYHora);
 
         Task CrearLotesAsync(List<DOM.Lote> lotes);
         Task<int> ContarLotesConNombreBaseAsync(string nombreBase);

@@ -131,4 +131,9 @@ export class AvisosPage implements OnInit {
     // Si necesitas lógica específica por tipo de unidad, usas el nombre o el ID
     return unidad.nombre === 'Unidad' ? 1 : 1; 
   }
+
+  nombreUnidad(unidadMedida: UnidadMedida | string | null | undefined): string {
+    if (!unidadMedida) return '';
+    return typeof unidadMedida === 'string' ? unidadMedida : unidadMedida.nombre;
+  }
 }

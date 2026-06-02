@@ -73,6 +73,7 @@ builder.Services.AddScoped<MesaMapper>();
 
 builder.Services.AddScoped<LoteMapper>();
 builder.Services.AddScoped<LlamadoMapper>();
+builder.Services.AddScoped<CartaMapper>();
 builder.Services.AddScoped<FormularioParaCrearPlatoMapper>();
 
 
@@ -125,6 +126,7 @@ builder.Services.AddScoped<ResolverLlamadoCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
+builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticuloServicio>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 

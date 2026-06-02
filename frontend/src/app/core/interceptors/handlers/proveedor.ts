@@ -145,7 +145,7 @@ export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandler
 
       if (index !== -1) {
         const historialPedidos = (dbProveedores[index].historialPedidos ?? []).map(pedido =>
-          pedido.id.toString() === pedidoId ? { ...pedido, estado: 'Confirmado' as const } : pedido
+          pedido.id.toString() === pedidoId ? { ...pedido, estado: 'Enviado' as const } : pedido
         );
 
         dbProveedores[index] = {

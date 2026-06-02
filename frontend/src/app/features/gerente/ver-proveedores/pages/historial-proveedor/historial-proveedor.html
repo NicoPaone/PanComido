@@ -25,6 +25,13 @@
       </div>
     }
 
+    @if (mensajeAccion()) {
+      <div class="historial-success-note" role="status">
+        <span class="material-symbols-outlined">check_circle</span>
+        <strong>{{ mensajeAccion() }}</strong>
+      </div>
+    }
+
     <div class="panel-card history-panel">
       <div class="history-panel-header">
         <div>
@@ -48,6 +55,12 @@
               <div class="skeleton skeleton-subtitle"></div>
             </div>
           }
+        </div>
+      } @else if (errorHistorial()) {
+        <div class="empty-state-panel">
+          <h3 class="detail-title mb-2">No se pudo cargar el historial</h3>
+          <p class="detail-text mb-3">{{ errorHistorial() }}</p>
+          <app-boton label="Reintentar" variante="outline" tamanio="sm" (clicked)="reintentarHistorial()"></app-boton>
         </div>
       } @else if (historialProveedor().length === 0) {
         <div class="empty-state-panel">
@@ -76,6 +89,12 @@
                 <div class="history-actions">
                   <app-boton variante="success" tamanio="sm" (clicked)="confirmarPedido($event, pedido)">
                     <span class="fw-bold text-dark">Confirmar pedido</span>
+                  </app-boton>
+                </div>
+              } @else if (pedido.estado === 'Enviado') {
+                <div class="history-actions">
+                  <app-boton variante="secondary" tamanio="sm" (clicked)="previsualizarRecepcion($event, pedido)">
+                    <span class="fw-bold">Recibir pedido</span>
                   </app-boton>
                 </div>
               }
@@ -143,7 +162,7 @@
                 }
               </div>
             </div>
-            <span class="pedido-modal-quantity">{{ item.cantidad }} {{ item.unidadMedida }}</span>
+            <span class="pedido-modal-quantity">{{ cantidadItemPedido(item.cantidad, item.id, item.unidadMedida) }}</span>
           </div>
         }
       </div>
@@ -151,76 +170,174 @@
       @if (pedido.estado === 'Pendiente') {
         <div class="pedido-modal-actions">
           <app-boton variante="outline" tamanio="md" (clicked)="agregarIngredientes()">
-            <span class="fw-bold">Agregar ingredientes</span>
+            <span class="fw-bold">{{ isAgregarIngredientesOpen() ? 'Ocultar ingredientes' : 'Agregar ingredientes' }}</span>
           </app-boton>
           <app-boton variante="success" tamanio="md" (clicked)="confirmarPedido($event, pedido)">
             <span class="fw-bold text-dark">Confirmar pedido</span>
           </app-boton>
         </div>
+
+        @if (isAgregarIngredientesOpen()) {
+          <section class="inline-ingredient-panel" aria-labelledby="inline-ingredient-title">
+            <div class="inline-ingredient-header">
+              <div>
+                <p class="detail-kicker mb-1">Agregar al pedido</p>
+                <h4 id="inline-ingredient-title" class="section-title mb-0">Ingredientes disponibles</h4>
+              </div>
+              <button type="button" class="inline-close-btn" aria-label="Cerrar agregar ingrediente" (click)="cerrarAgregarIngredientes()">
+                <fa-icon [icon]="faXmark"></fa-icon>
+              </button>
+            </div>
+
+            <input
+              type="search"
+              class="form-control inline-ingredient-search"
+              placeholder="Buscar ingrediente"
+              [value]="busquedaIngrediente()"
+              (input)="onBusquedaIngrediente($event)">
+
+            <div class="inline-ingredient-list">
+              @for (item of ingredientesParaAgregar(); track item.id) {
+                <button
+                  type="button"
+                  class="inline-ingredient-item"
+                  [class.selected]="productoSeleccionadoId() === item.id"
+                  (click)="seleccionarIngrediente(item.producto)">
+                  <span>
+                    <strong>{{ item.nombre }}</strong>
+                    <small>{{ item.stock }}</small>
+                  </span>
+                  @if (item.vencimiento) {
+                    <small>{{ item.vencimiento | date:'dd/MM/yyyy' }}</small>
+                  }
+                </button>
+              } @empty {
+                <div class="inline-ingredient-empty">No hay ingredientes disponibles para agregar.</div>
+              }
+            </div>
+
+            @if (productoSeleccionado(); as producto) {
+              <div class="inline-ingredient-selection">
+                <div>
+                  <span class="info-label">Seleccionado</span>
+                  <strong>{{ producto.nombre }}</strong>
+                  <small>{{ producto.stockActual }} {{ nombreUnidad(producto.unidadMedida) }} disponibles</small>
+                </div>
+
+                <label>
+                  <span>Cantidad ({{ nombreUnidad(producto.unidadMedida) }})</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    [value]="cantidadIngrediente()"
+                    [min]="cantidadIngredienteMinima"
+                    [step]="cantidadIngredientePaso"
+                    [placeholder]="cantidadIngredientePlaceholder"
+                    (input)="updateCantidadIngrediente($event)">
+                  @if (equivalenciaIngrediente(); as equivalencia) {
+                    <strong class="quantity-equivalence">{{ equivalencia }}</strong>
+                  }
+                </label>
+              </div>
+            } @else {
+              <div class="inline-ingredient-help">Selecciona un ingrediente para indicar la cantidad.</div>
+            }
+
+            <div class="inline-ingredient-actions">
+              <button type="button" class="modal-action-btn modal-action-btn-outline" (click)="cerrarAgregarIngredientes()">Cancelar</button>
+              <button type="button" class="modal-action-btn modal-action-btn-primary" [disabled]="!productoSeleccionadoId()" (click)="confirmarAgregarIngrediente(pedido)">Agregar ingrediente</button>
+            </div>
+          </section>
+        }
+      } @else if (pedido.estado === 'Enviado') {
+        <div class="pedido-modal-actions">
+          <app-boton variante="secondary" tamanio="md" (clicked)="previsualizarRecepcion($event, pedido)">
+            <span class="fw-bold">Recibir pedido</span>
+          </app-boton>
+        </div>
       }
     </aside>
+  }
 
-    @if (isAgregarIngredientesOpen && pedido.estado === 'Pendiente') {
-      <div class="pedido-modal-overlay" (click)="cerrarAgregarIngredientes()">
+  @if (recepcionPedido(); as pedidoRecepcion) {
+    <div class="pedido-modal-overlay" (click)="cerrarRecepcion()">
       <div
         class="pedido-modal-card"
         tabindex="0"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="agregar-ingrediente-title"
+        aria-labelledby="recepcion-title"
         (click)="$event.stopPropagation()"
-        (keydown.escape)="cerrarAgregarIngredientes()">
+        (keydown.escape)="cerrarRecepcion()">
 
         <div class="pedido-modal-header">
           <div>
-            <p class="detail-kicker mb-1">Agregar al pedido</p>
-            <h3 id="agregar-ingrediente-title" class="pedido-modal-title mb-0">Ingredientes sugeridos</h3>
+            <p class="detail-kicker mb-1">Recepcion del pedido</p>
+            <h3 id="recepcion-title" class="pedido-modal-title mb-0">Previsualizar confirmacion</h3>
           </div>
-          <button type="button" class="pedido-modal-close" aria-label="Cerrar" (click)="cerrarAgregarIngredientes()">
+          <button type="button" class="pedido-modal-close" aria-label="Cerrar" (click)="cerrarRecepcion()">
             <fa-icon [icon]="faXmark"></fa-icon>
           </button>
         </div>
 
-        <div class="ingredient-search">
-          <input
-            type="search"
-            class="form-control"
-            placeholder="Buscar ingrediente"
-            [value]="busquedaIngrediente"
-            (input)="onBusquedaIngrediente($event)">
-        </div>
+        <div class="pedido-modal-items">
+          @if (recepcionItems().length === 0) {
+            <div class="empty-state-panel">
+              <p class="detail-text mb-0">Cargando datos de recepcion...</p>
+            </div>
+          } @else {
+            @for (item of recepcionItems(); track item.insumoId) {
+              <div class="pedido-modal-item recepcion-item">
+                <div>
+                  <strong>{{ item.nombreInsumo }}</strong>
+                  <div class="history-date">Lote: {{ item.nombreLote }}</div>
+                </div>
 
-        <div class="ingredient-list">
-          @for (producto of productosParaAgregar(); track producto.id) {
-            <button
-              type="button"
-              class="ingredient-option"
-              [class.selected]="productoSeleccionadoId === producto.id.toString()"
-              (click)="seleccionarIngrediente(producto)">
-              <span>
-                <strong>{{ producto.nombre }}</strong>
-                <span>{{ producto.stockActual }} {{ producto.unidadMedida }} disponibles</span>
-              </span>
-              <span>{{ producto.vencimiento | date:'dd/MM/yyyy' }}</span>
-            </button>
+                <label class="field-group">
+                  <span>Cantidad</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    min="0.01"
+                    step="0.01"
+                    [ngModel]="item.cantidad"
+                    (ngModelChange)="actualizarCantidadRecepcion(item.insumoId, $event)">
+                </label>
+
+                <label class="field-group">
+                  <span>Vencimiento</span>
+                  <input
+                    type="date"
+                    class="form-control"
+                    [ngModel]="item.fechaVencimiento"
+                    (ngModelChange)="actualizarFechaRecepcion(item.insumoId, $event)">
+                </label>
+
+                <label class="field-group">
+                  <span>Bodega</span>
+                  <select
+                    class="form-select"
+                    [ngModel]="item.bodegaId"
+                    (ngModelChange)="actualizarBodegaRecepcion(item.insumoId, $event)">
+                    @for (bodega of bodegas(); track bodega.id) {
+                      <option [ngValue]="bodega.id">{{ bodega.nombre }}</option>
+                    }
+                  </select>
+                </label>
+              </div>
+            }
           }
         </div>
 
-        <div class="ingredient-quantity">
-          <label class="form-label fw-medium small text-muted">Cantidad</label>
-          <input type="number" class="form-control" [value]="cantidadIngrediente" min="0.1" step="0.1" (input)="updateCantidadIngrediente($event)">
-        </div>
-
         <div class="pedido-modal-actions">
-          <app-boton variante="outline" tamanio="md" (clicked)="cerrarAgregarIngredientes()">
+          <app-boton variante="outline" tamanio="md" (clicked)="cerrarRecepcion()">
             <span class="fw-bold">Cancelar</span>
           </app-boton>
-          <app-boton variante="success" tamanio="md" [disabled]="!productoSeleccionadoId" (clicked)="confirmarAgregarIngrediente(pedido)">
-            <span class="fw-bold text-dark">Agregar ingrediente</span>
+          <app-boton variante="success" tamanio="md" [disabled]="recepcionItems().length === 0" (clicked)="recibirPedido()">
+            <span class="fw-bold text-dark">Confirmar recepcion</span>
           </app-boton>
         </div>
       </div>
     </div>
-    }
   }
 </div>

@@ -2,14 +2,14 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
-import { PedidoSugeridoIAComponent } from './pedido-sugerido-ia';
-import { ProveedorService } from '../services/proveedor-service';
+import { RealizarPedidoSugeridoComponent } from './realizar-pedido-sugerido';
+import { RealizarPedidoSugeridoApiService } from '../services/realizar-pedido-sugerido.api';
 import { Proveedor, SugerenciaPedidoItem } from '../../../../core/models/proveedor';
 import { Insumo as ProductoStockMock } from '../../../../core/models/producto-stock';
 
-describe('PedidoSugeridoIAComponent', () => {
-  let component: PedidoSugeridoIAComponent;
-  let fixture: ComponentFixture<PedidoSugeridoIAComponent>;
+describe('RealizarPedidoSugeridoComponent', () => {
+  let component: RealizarPedidoSugeridoComponent;
+  let fixture: ComponentFixture<RealizarPedidoSugeridoComponent>;
   let routerMock: any;
   let routeIdParam: string | null;
   let activatedRouteMock: any;
@@ -35,8 +35,7 @@ describe('PedidoSugeridoIAComponent', () => {
       unidadMedida: 'KG',
       stockActual: 12,
       stockMinimo: 5,
-      consumoEstimado30Dias: 15,
-      cantidadSugerida: 10,
+            cantidadSugerida: 10,
       precioUnitario: 1100
     }
   ];
@@ -96,8 +95,9 @@ describe('PedidoSugeridoIAComponent', () => {
     };
 
     proveedorServiceMock = {
+      getProveedores: vi.fn().mockReturnValue(of([mockProveedor])),
       getProveedorById: vi.fn().mockReturnValue(of(mockProveedor)),
-      getPedidoSugeridoIA: vi.fn().mockReturnValue(of(mockSugerencias)),
+      getInsumosAReponer: vi.fn().mockReturnValue(of(mockSugerencias)),
       getProductosDisponibles: vi.fn().mockReturnValue(of(mockProductos)),
       crearPedidoProveedor: vi.fn().mockReturnValue(of(mockProveedor))
     };
@@ -105,15 +105,15 @@ describe('PedidoSugeridoIAComponent', () => {
 
   async function createComponent() {
     await TestBed.configureTestingModule({
-      imports: [PedidoSugeridoIAComponent],
+      imports: [RealizarPedidoSugeridoComponent],
       providers: [
         { provide: Router, useValue: routerMock },
         { provide: ActivatedRoute, useValue: activatedRouteMock },
-        { provide: ProveedorService, useValue: proveedorServiceMock }
+        { provide: RealizarPedidoSugeridoApiService, useValue: proveedorServiceMock }
       ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(PedidoSugeridoIAComponent);
+    fixture = TestBed.createComponent(RealizarPedidoSugeridoComponent);
     component = fixture.componentInstance;
   }
 
@@ -157,8 +157,7 @@ describe('PedidoSugeridoIAComponent', () => {
         unidadMedida: 'KG',
         stockActual: 30,
         stockMinimo: 10,
-        consumoEstimado30Dias: 30,
-        cantidadSugerida: 2,
+                cantidadSugerida: 2,
         precioUnitario: 7500
       }
     ]);
@@ -256,7 +255,7 @@ describe('PedidoSugeridoIAComponent', () => {
       1,
       expect.objectContaining({
         proveedorId: 1,
-        concepto: 'Pedido Sugerido por IA',
+        concepto: 'Pedido sugerido',
         monto: 11000,
         observacion: 'Observación personalizada',
         items: [
@@ -273,7 +272,7 @@ describe('PedidoSugeridoIAComponent', () => {
 
     expect(routerMock.navigate).toHaveBeenCalledWith(
       ['/staff', 'gerente', 'ver-proveedores'],
-      { state: { created: true, message: 'Pedido sugerido por IA enviado correctamente' } }
+      { state: { created: true, message: 'Pedido sugerido enviado correctamente' } }
     );
   });
 

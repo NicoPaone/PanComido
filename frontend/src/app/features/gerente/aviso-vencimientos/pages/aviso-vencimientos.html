@@ -22,7 +22,7 @@
                 Vence: {{ ing.fechaVencimiento }}
               </div>
               <div class="mb-4 text-muted">
-                Stock Disponible: <span class="fw-bold text-dark">{{ ing.stockDisponible }} {{ ing.unidadMedida }}</span>
+                Stock Disponible: <span class="fw-bold text-dark">{{ ing.stockDisponible }} {{ nombreUnidad(ing.unidadMedida) }}</span>
               </div>
               
               <div class="mt-auto d-flex flex-column gap-2">

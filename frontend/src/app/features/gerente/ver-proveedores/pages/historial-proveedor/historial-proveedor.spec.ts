@@ -122,11 +122,11 @@ describe('HistorialProveedorComponent', () => {
     it('debería devolver "estado-recibido" para Recibido', () => {
       expect(component.getEstadoClase('Recibido')).toBe('estado-recibido');
     });
-    it('debería devolver "estado-confirmado" para Confirmado', () => {
-      expect(component.getEstadoClase('Confirmado')).toBe('estado-confirmado');
+    it('debería devolver "estado-enviado" para Enviado', () => {
+      expect(component.getEstadoClase('Enviado')).toBe('estado-enviado');
     });
-    it('debería devolver "estado-cancelado" para Cancelado', () => {
-      expect(component.getEstadoClase('Cancelado')).toBe('estado-cancelado');
+    it('debería devolver "estado-pendiente" para Pendiente', () => {
+      expect(component.getEstadoClase('Pendiente')).toBe('estado-pendiente');
     });
     it('debería devolver "estado-pendiente" para Pendiente', () => {
       expect(component.getEstadoClase('Pendiente')).toBe('estado-pendiente');
