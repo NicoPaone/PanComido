@@ -12,7 +12,7 @@ export type BotonTamanio = 'sm' | 'md' | 'lg';
 })
 export class Boton {
   //@Input() variant: 'teal' | 'orange' | 'edit' | 'add' | 'delete' = 'teal';
-  
+
   label = input<string>();
   variante = input<BotonVariante>('primary');
   color = input<string>();
@@ -24,7 +24,7 @@ export class Boton {
 
   clicked = output<MouseEvent>();
 
-  
+
   clasesCalculadas = computed(() => {
     const baseClasses = `btn btn-${this.tamanio()} btn-${this.variante()}`;
     return this.activo() ? `${baseClasses} active` : baseClasses;

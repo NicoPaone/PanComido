@@ -1,18 +1,23 @@
 import { Injectable, inject } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { catchError, forkJoin, map, Observable, of } from 'rxjs';
 import { ApiClient } from '../../../../core/services/api-client';
 
 // Modelos de Dominio
-import { Proveedor, PedidoProveedor, NuevoPedidoProveedor } from '../../../../core/models/proveedor';
+import { Proveedor, PedidoProveedor, NuevoPedidoProveedor, PreRecepcionPedidoItem } from '../../../../core/models/proveedor';
 import { Insumo } from '../../../../core/models/insumos/insumo';
 import { CategoriaInsumo } from '../../../../core/models/insumos/categorias/categoria-insumo';
 import { UnidadMedida } from '../../../../core/models/unidad-medida';
+import { Bodega } from '../../../../core/models/bodega/bodega';
 
 // DTOs (Lo que escupe la red)
 interface ProveedorResponseDto {
   id: number;
   nombre: string | null;
   numeroTelefonoWsp: string | null;
+  numeroTelefonoWSP?: string | null;
+  telefono?: string | null;
+  email?: string | null;
+  correo?: string | null;
   fechaUltimoPedido: string | null;
   categorias: string[] | null;
 }
@@ -43,6 +48,20 @@ interface CrearPedidoRequestDto {
     cantidad: number;
     precioCompra: number;
   }[];
+}
+
+interface ConfirmarPedidoResponseDto {
+  pedidoConfirmado: PedidoResponseDto;
+  linkWpp: string;
+}
+
+interface PreRecepcionItemResponseDto {
+  insumoId: number;
+  nombreInsumo: string | null;
+  cantidad: number;
+  nombreLote: string | null;
+  bodegaIdSug: number;
+  fechaVencimientoSug: string | null;
 }
 
 interface InsumoResponseDto {
@@ -80,18 +99,35 @@ export class VerProveedoresApiService {
   }
 
   getInsumosProveedor(id: number | string): Observable<Insumo[]> {
-    return this.api.get<InsumoResponseDto[]>(`Proveedor/${id}/insumos`).pipe(
-      map(insumos => insumos.map(dto => this.mapInsumo(dto)))
+    return forkJoin({
+      proveedor: this.api.get<InsumoResponseDto[]>(`Proveedor/${id}/insumos`),
+      todos: this.api.get<InsumoResponseDto[]>('Insumo').pipe(
+        catchError(() => of([] as InsumoResponseDto[]))
+      )
+    }).pipe(
+      map(({ proveedor, todos }) => {
+        const stockPorInsumo = new Map(todos.map(insumo => [insumo.id, insumo]));
+
+        return proveedor.map(dto => {
+          const insumoConStock = stockPorInsumo.get(dto.id);
+          const stockActual = dto.stockActual || insumoConStock?.stockActual || 0;
+
+          return this.mapInsumo({
+            ...dto,
+            stockActual,
+            vencimiento: dto.vencimiento || insumoConStock?.vencimiento || null,
+            estadoStock: dto.estadoStock || insumoConStock?.estadoStock || null
+          });
+        });
+      })
     );
   }
 
   crearPedidoProveedor(id: number | string, pedido: NuevoPedidoProveedor): Observable<PedidoProveedor> {
-    const payload = this.mapCrearPedidoRequest(pedido);
-    return this.api.post<CrearPedidoResponseDto>(`Proveedor/${id}/crearPedido`, payload).pipe(
+    return this.api.post<CrearPedidoResponseDto>(`pedido-proveedor/${id}/crear-pedido`, this.mapCrearPedidoRequest(pedido)).pipe(
       map(response => this.mapPedido(response))
     );
   }
-
 
   private mapProveedor(dto: ProveedorResponseDto): Proveedor {
     return {
@@ -99,12 +135,56 @@ export class VerProveedoresApiService {
       nombre: dto.nombre ?? 'Sin Nombre',
       contacto: dto.nombre ?? 'Sin Contacto',
       telefono: dto.numeroTelefonoWsp ?? '',
-      email: '',
+      email: dto.email ?? dto.correo ?? '',
       direccion: '', 
       activo: true,
       fechaUltimoPedido: this.normalizarFecha(dto.fechaUltimoPedido),
       categorias: dto.categorias ?? []
     };
+  }
+
+  confirmarPedido(pedido: PedidoProveedor): Observable<{ pedido: PedidoProveedor; linkWpp: string }> {
+    return this.api.put<ConfirmarPedidoResponseDto>(`/pedido-proveedor/${pedido.id}/confirmar`, {
+      listaInsumosPedido: pedido.items.map(item => ({
+        insumoId: Number(item.id),
+        cantidad: item.cantidad,
+        precioCompra: item.precioUnitario ?? 1
+      }))
+    }).pipe(
+      map(response => ({
+        pedido: this.mapPedido(response.pedidoConfirmado),
+        linkWpp: response.linkWpp
+      }))
+    );
+  }
+
+  previsualizarConfirmacion(pedidoId: number | string): Observable<PreRecepcionPedidoItem[]> {
+    return this.api.get<PreRecepcionItemResponseDto[]>(`pedido-proveedor/${pedidoId}/previsualizar-confirmacion`).pipe(
+      map(items => items.map(item => ({
+        insumoId: item.insumoId,
+        nombreInsumo: item.nombreInsumo ?? '',
+        cantidad: item.cantidad,
+        nombreLote: item.nombreLote ?? '',
+        bodegaId: item.bodegaIdSug,
+        fechaVencimiento: this.normalizarFecha(item.fechaVencimientoSug) ?? ''
+      })))
+    );
+  }
+
+  recibirPedido(pedidoId: number | string, items: PreRecepcionPedidoItem[]): Observable<unknown> {
+    return this.api.put<unknown>(`/pedido-proveedor/${pedidoId}/recibir`, {
+      itemsPedidoRecibido: items.map(item => ({
+        insumoId: item.insumoId,
+        nombreLote: item.nombreLote,
+        bodegaId: item.bodegaId,
+        cantidad: item.cantidad,
+        fechaVencimiento: item.fechaVencimiento
+      }))
+    });
+  }
+
+  getBodegas(): Observable<Bodega[]> {
+    return this.api.get<Bodega[]>('Bodega');
   }
 
   private mapCrearPedidoRequest(pedido: NuevoPedidoProveedor): CrearPedidoRequestDto {
@@ -146,7 +226,7 @@ export class VerProveedoresApiService {
       id: dto.id,
       nombre: dto.nombre ?? 'Sin Nombre',
       stockActual: dto.stockActual,
-      vencimiento: dto.vencimiento ?? '',
+      vencimiento: this.normalizarFecha(dto.vencimiento) ?? '',
       stockMinimo: dto.stockMinimo,
       
       unidadMedida: { 
@@ -163,8 +243,10 @@ export class VerProveedoresApiService {
   }
 
   private mapEstado(estado: string | null): PedidoProveedor['estado'] {
-    const estadosValidos = ['Confirmado', 'Recibido', 'Cancelado'];
-    return estadosValidos.includes(estado as string) ? (estado as PedidoProveedor['estado']) : 'Pendiente';
+    const normalizado = (estado ?? '').toLowerCase();
+    if (normalizado === 'enviado') return 'Enviado';
+    if (normalizado === 'recibido') return 'Recibido';
+    return 'Pendiente';
   }
 
 
