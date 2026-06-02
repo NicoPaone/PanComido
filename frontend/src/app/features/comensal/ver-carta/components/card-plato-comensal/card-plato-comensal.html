@@ -1,0 +1,108 @@
+<div class="card border-0 shadow-sm rounded-4 p-2 dish-card">
+
+  <div class="row g-0 align-items-center">
+
+    <!-- Imagen -->
+    <div class="col-4">
+
+      <img [src]="plato.imagen" class="img-fluid rounded-4 object-fit-cover dish-img" [alt]="plato.nombre">
+
+    </div>
+
+    <!-- Info -->
+    <div class="col-8 ps-3 d-flex flex-column justify-content-between">
+
+      <div>
+
+        <!-- NOMBRE -->
+        <h5 class="fw-bold mb-1 text-dark">
+
+          {{ plato.nombre }}
+
+        </h5>
+
+        <!-- PLATO DEL DIA -->
+        @if (plato.platoDelDia) {
+        <span class="badge mb-2" [style.background-color]="configuracion.paleta.botonPrimario"
+          [style.color]="configuracion.paleta.textoClaro">
+
+          Plato del día
+
+        </span>
+
+        }
+
+        <!-- TIEMPO -->
+        <p class="mb-1 text-muted small">
+
+          ⏱ {{ plato.tiempo }} min
+
+        </p>
+
+        <!-- PRECIO-->
+
+
+        <!-- PRECIO -->
+        <p class="mb-0 fw-bold text-dark fs-5">
+
+          $ {{ plato.precioVenta | number }}
+
+        </p>
+
+
+
+
+
+      </div>
+      <div class="d-flex
+          justify-content-between
+          align-items-end gap-2">
+          
+        <!-- BOTON -->
+        <app-boton-comensal class="w-100" [backgroundColor]="configuracion.paleta.botonSecundario"
+          [textColor]="configuracion.paleta.textoOscuro" (clicked)="agregar()">
+
+          <span class="material-symbols-outlined">
+            add
+          </span>
+
+          <span>
+            Agregar
+          </span>
+
+        </app-boton-comensal>
+
+        <!-- CONTADOR -->
+        <div class="d-flex flex-column align-items-center">
+
+          <p class="small text-muted mb-1">
+
+            Porciones:
+
+          </p>
+
+          <div class="d-flex align-items-center
+              border rounded-pill px-2 py-1">
+
+            <button class="btn btn-sm p-0" (click)="decrementar()">
+              -
+            </button>
+
+            <span class="mx-2 fw-bold">
+
+              {{ cantidad }}
+
+            </span>
+
+            <button class="btn btn-sm p-0" (click)="incrementar()">
+              +
+            </button>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

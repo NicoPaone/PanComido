@@ -17,13 +17,12 @@ public partial class Ingrediente
     [InverseProperty("Ingrediente")]
     public virtual Insumo IdInsumoNavigation { get; set; } = null!;
 
+    [InverseProperty("Ingrediente")]
+    public virtual ICollection<IngredienteIngredientePreparado> IngredienteIngredientePreparados { get; set; } = new List<IngredienteIngredientePreparado>();
+
     [InverseProperty("IdIngredienteNavigation")]
     public virtual IngredientePreparado? IngredientePreparado { get; set; }
 
     [InverseProperty("Ingrediente")]
     public virtual ICollection<PlatoIngrediente> PlatoIngredientes { get; set; } = new List<PlatoIngrediente>();
-
-    [ForeignKey("IngredienteId")]
-    [InverseProperty("Ingredientes")]
-    public virtual ICollection<IngredientePreparado> IngredientePreparados { get; set; } = new List<IngredientePreparado>();
 }

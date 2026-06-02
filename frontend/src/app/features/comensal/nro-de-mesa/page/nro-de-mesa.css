@@ -1,0 +1,86 @@
+
+
+.mesa-card {
+
+  width: 100%;
+
+  max-width: 420px;
+
+margin-top: 50px;
+
+  border-radius: 28px;
+
+  padding: 32px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 24px;
+
+  text-align: center;
+
+}
+
+.mesa-title {
+
+  font-size: 32px;
+
+  font-weight: 700;
+
+}
+
+.mesa-text {
+
+  font-size: 20px;
+
+  margin: 0;
+
+}
+
+.mesa-number {
+
+  width: 120px;
+
+  height: 120px;
+
+  border: 4px solid black;
+
+  border-radius: 50%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 48px;
+
+  font-weight: 700;
+
+}
+
+
+
+.mesa-buttons button {
+
+  flex: 1;
+
+  padding: 12px;
+
+  font-size: 18px;
+
+  border-radius: 14px;
+
+}
+
+.mesa-buttons{
+
+  display: flex;
+ justify-content: center;
+ align-items: center;
+  gap: 16px;
+
+}

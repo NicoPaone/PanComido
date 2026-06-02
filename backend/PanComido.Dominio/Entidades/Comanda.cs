@@ -18,9 +18,7 @@ namespace PanComido.Dominio.Entidades
         public DateTime? HoraFin { get; set; }
         public  EstadoComanda Estado { get; set; }
 
-        public List<Plato> Platos { get; set; }
-
-
-
+        //public List<Plato> Platos { get; set; }
+        public List<ArticuloComanda> Items { get; set; } = new List<ArticuloComanda>();
     }
 }

@@ -4,12 +4,14 @@ import { roleGuard } from './core/guards/role.guard';
 const DEFAULT_ROUTE = 'staff/gerente';
 
 export const routes: Routes = [
+
    {
       path: 'staff',
-      loadComponent: () => 
-          import('./layouts/staff-layout/staff-layout').then(m => m.StaffLayout),
+      loadComponent: () =>
+         import('./layouts/staff-layout/staff-layout').then(m => m.StaffLayout),
+
       children: [
-          {
+         {
             path: 'gerente',
             canActivate: [roleGuard],
             data: { roles: ['Gerente'] },
@@ -21,6 +23,7 @@ export const routes: Routes = [
             data: { roles: ['Cocina'] },
             loadChildren: () => import('./features/cocina/cocina.routes').then(m => m.COCINA_ROUTES)
          },
+
          {
             path: 'mozo',
             canActivate: [roleGuard],
@@ -28,9 +31,18 @@ export const routes: Routes = [
             loadChildren: () => import('./features/mozo/mozo.routes').then(m => m.MOZO_ROUTES)
          },
          {
-            path: '',redirectTo: 'cocina', pathMatch: 'full'
+            path: '', redirectTo: 'cocina', pathMatch: 'full'
          }
+
       ]
+   },
+
+   /* COMENSAL */
+
+   {
+      path: 'comensal',
+      loadChildren: () => import('./features/comensal/comensal.routes').then(m => m.COMENSAL_ROUTES)
+
    },
    {
       path: '', redirectTo: DEFAULT_ROUTE, pathMatch: 'full'

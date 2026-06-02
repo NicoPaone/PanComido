@@ -9,6 +9,12 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
 {
     public class ComandaEntityMapper
     {
+        private readonly ArticuloEntityMapper _articuloMapper;
+        public ComandaEntityMapper(ArticuloEntityMapper articuloMapper)
+        {
+            _articuloMapper = articuloMapper;
+        }
+
         public DOM.Comanda ParaDominio(EF.Comandum efComanda)
         {
             if (efComanda == null) return null;
@@ -24,34 +30,29 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 HoraFin = efComanda.HoraFin,
                 Estado = (EstadoComanda)efComanda.EstadoComandaId,
 
-                Platos = new List<DOM.Plato>()
+                Items = new List<DOM.ArticuloComanda>()
             };
 
-          
-            foreach (var relacion in efComanda.ArticuloComanda)
+            if (efComanda.ArticuloComanda != null)
             {
-                if (relacion.Articulo != null && relacion.Articulo.Plato != null)
+                foreach (var relacion in efComanda.ArticuloComanda)
                 {
-                   
-                    comandaDominio.Platos.Add(new DOM.Plato
+                    if (relacion.Articulo != null && relacion.Articulo.Plato != null)
                     {
-                        Id = relacion.Articulo.Id,
-                        Nombre = relacion.Articulo.Nombre,
-                        TiempoPreparacionBase = relacion.Articulo.Plato.TiempoPreparacionBase,
-                       
-                        Cantidad = relacion.Cantidad,
-                        ObservacionesGenerales = relacion.ObservacionesGenerales,
-                        ObservacionesIngredientes = relacion.ObservacionesIngrediente,
-                        Entregado = relacion.Entregado
+                        comandaDominio.Items.Add(new DOM.ArticuloComanda
+                        {
+                            Id = relacion.Id,
+                            Cantidad = relacion.Cantidad,
+                            ObservacionesGenerales = relacion.ObservacionesGenerales,
+                            ObservacionesIngredientes = relacion.ObservacionesIngrediente,
+                            Entregado = relacion.Entregado,
 
-                     
-
-
-                    });
+                            Articulo = _articuloMapper.paraDominio(relacion.Articulo)
+                        });
+                    }
                 }
             }
 
-        
             return comandaDominio;
         }
 
