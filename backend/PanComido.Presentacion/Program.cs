@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using PanComido.Dominio.CasosDeUso.ArticuloCasosDeUso;
 using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.BodegaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.CartaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
+using PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
@@ -20,7 +22,6 @@ using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Servicios;
 using PanComido.Presentacion.SesionMock;
-using PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,6 +76,7 @@ builder.Services.AddScoped<LoteMapper>();
 builder.Services.AddScoped<LlamadoMapper>();
 builder.Services.AddScoped<CartaMapper>();
 builder.Services.AddScoped<FormularioParaCrearPlatoMapper>();
+builder.Services.AddScoped<ArticuloMapper>();
 
 
 // Repositorios
@@ -116,7 +118,6 @@ builder.Services.AddScoped<ListarMesasCasoDeUso>();
 
 
 builder.Services.AddScoped<ObtenerDatosParaFormularioCrearPlato>();
-
 builder.Services.AddScoped<ObtenerCartaCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConStockCriticoCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConVencimientoProximoCasoDeUso>();
@@ -124,6 +125,7 @@ builder.Services.AddScoped<LlamarMozoCasoDeUso>();
 builder.Services.AddScoped<ListarLlamadosPendientesCasoDeUso>();
 builder.Services.AddScoped<ResolverLlamadoCasoDeUso>();
 builder.Services.AddScoped<ListarComandasActivasMozoCasoDeUso>();
+builder.Services.AddScoped<ObtenerDetalleArticuloCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
