@@ -2,166 +2,107 @@ import { App } from './../../../app';
 import { Injectable, inject, signal } from '@angular/core';
 import { MesaService } from '../../../core/services/mesa.service';
 import { Mesa, EstadoMesa, FormaMesa } from '../../../core/models/mesa.model';
+import { MesaLecturaState } from '../shared/mesa-lectura-state';
 
 @Injectable({ providedIn: 'root' })
 export class MesaStateService {
-  private api = inject(MesaService);
+  private lectura = inject(MesaLecturaState);
 
-  private _mesas = signal<Mesa[]>([]);
-  private _loading = signal<boolean>(false);
+  // Expone lo que ya tiene MesaLecturaState
+  mesas = this.lectura.mesas;
+  mesaSeleccionada = this.lectura.mesaSeleccionada;
+  notificacion = this.lectura.notificacion;
+
+  // Estado de edición (solo gerente)
   private _isEditorMode = signal<boolean>(false);
   private _mesasBackup: Mesa[] = [];
-  private _notificacion = signal<{mensaje: string, tipo: 'exito' | 'error'} | null>(null);
-  private _mesaSeleccionada = signal<number | null>(null);
-
-  mesas = this._mesas.asReadonly();
-  loading = this._loading.asReadonly();
   isEditorMode = this._isEditorMode.asReadonly();
-  notificacion = this._notificacion.asReadonly();
-  mesaSeleccionada = this._mesaSeleccionada.asReadonly();
 
-  cargarMesas(): void {
-    this._loading.set(true);
-    this.api.getMesas().subscribe({
-      next: (data) => {
-        this._mesas.set(data);
-        this._loading.set(false);
-      },
-      error: () => this._loading.set(false)
-    });
-  }
+  // Métodos que delega a MesaLecturaState
+  cargarMesas(): void { this.lectura.cargarMesas(); }
+  seleccionarMesa(id: number | null): void { this.lectura.seleccionarMesa(id); }
+  ocuparMesa(mesaId: number, comensales: number): void { this.lectura.ocuparMesa(mesaId, comensales); }
+  cambiarEstadoMesa(id: number, estado: EstadoMesa): void { this.lectura.cambiarEstadoMesa(id, estado); }
 
-  mostrarNotificacion(mensaje: string, tipo: 'exito' | 'error'): void {
-    this._notificacion.set({ mensaje, tipo });
-
-    setTimeout(() => {
-      this._notificacion.set(null);
-    }, 3000);
-  }
-
+  // Métodos de EDICIÓN (solo gerente)
   toggleEditorMode(): void {
-    const isEditor = this._isEditorMode();
-    if (!isEditor) {
-      this._mesasBackup = JSON.parse(JSON.stringify(this._mesas()));
+    if (!this._isEditorMode()) {
+      this._mesasBackup = JSON.parse(JSON.stringify(this.lectura.mesas()));
     }
-    this._mesaSeleccionada.set(null); // <-- Limpiamos menús abiertos
-    this._isEditorMode.set(!isEditor);
+    this.lectura.seleccionarMesa(null);
+    this._isEditorMode.set(!this._isEditorMode());
   }
 
   cancelarEdicion(): void {
-    this._mesas.set(JSON.parse(JSON.stringify(this._mesasBackup)));
+    this.lectura['_mesas'].set(JSON.parse(JSON.stringify(this._mesasBackup)));
     this._isEditorMode.set(false);
   }
 
   moverMesa(id: number, deltaX: number, deltaY: number): void {
-    const mesaActual = this._mesas().find(m => m.id === id);
-    if (!mesaActual) return;
+    const mesas = this.lectura.mesas();
+    const mesa = mesas.find(m => m.id === id);
+    if (!mesa) return;
 
-    const nuevosDatos: Partial<Mesa> = {
-      posicionXInicio: mesaActual.posicionXInicio + deltaX,
-      posicionXfin: mesaActual.posicionXfin + deltaX,
-      posicionYinicio: mesaActual.posicionYinicio + deltaY,
-      posicionYFin: mesaActual.posicionYFin + deltaY
-    };
-
-
-    this._mesas.update(mesas =>
-      mesas.map(m => m.id === id ? { ...m, ...nuevosDatos } : m)
+    this.lectura['_mesas'].update(mesas =>
+      mesas.map(m => m.id === id ? {
+        ...m,
+        posicionXInicio: m.posicionXInicio + deltaX,
+        posicionXFin: m.posicionXFin + deltaX,
+        posicionYInicio: m.posicionYInicio + deltaY,
+        posicionYFin: m.posicionYFin + deltaY
+      } : m)
     );
   }
-  seleccionarMesa(id: number | null): void {
-    if (this._isEditorMode()) return;
 
-    this._mesaSeleccionada.update(actual => actual === id ? null : id);
-  }
   agregarMesa(forma: FormaMesa): void {
-    const mesas = this._mesas();
+    const mesas = this.lectura.mesas();
     const proximoNumero = mesas.length > 0 ? Math.max(...mesas.map(m => m.numeroMesa)) + 1 : 1;
 
-    let ancho = 90;
-    let alto = 90;
-
-    switch (forma) {
-      case FormaMesa.HorizontalLarga:
-        ancho = 150;
-        alto = 75;
-        break;
-      case FormaMesa.HorizontalAlta:
-        ancho = 75;
-        alto = 150;
-        break;
-      case FormaMesa.Redonda:
-      case FormaMesa.Cuadrada:
-      default:
-        ancho = 90;
-        alto = 90;
-        break;
-    }
+    let ancho = 90, alto = 90;
+    if (forma === FormaMesa.HorizontalLarga) { ancho = 150; alto = 75; }
+    else if (forma === FormaMesa.HorizontalAlta) { ancho = 75; alto = 150; }
 
     const nuevaMesa: Mesa = {
-      id: Date.now(),
-      codigoInvitacion: `MESA-TEMP`,
-      numeroMesa: proximoNumero,
-      cantidadPersonasMax: 4,
-      estadoMesa: EstadoMesa.Disponible,
-      dimensionMesa: { id: 0, forma, imagen: '' },
-      posicionXInicio: 15,
-      posicionXfin: 15 + ancho,
-      posicionYinicio: 15,
-      posicionYFin: 15 + alto
+      id: Date.now(), codigoInvitacion: '', numeroMesa: proximoNumero,
+      cantidadPersonasMax: 4, estadoMesa: EstadoMesa.Disponible,
+      dimensionMesa: { id: 0, forma },
+      posicionXInicio: 15, posicionXFin: 15 + ancho,
+      posicionYInicio: 15, posicionYFin: 15 + alto
     };
 
-    this._mesas.update(m => [...m, nuevaMesa]);
+    this.lectura['_mesas'].update(m => [...m, nuevaMesa]);
   }
 
   eliminarMesa(id: number): void {
-    this._mesas.update(mesas => mesas.filter(m => m.id !== id));
-  }
-
-  cambiarEstadoMesa(id: number, nuevoEstado: EstadoMesa): void {
-    this._mesas.update(mesas =>
-      mesas.map(m => m.id === id ? { ...m, estadoMesa: nuevoEstado } : m)
-    );
-
-    this._mesaSeleccionada.set(null);
+    this.lectura['_mesas'].update(mesas => mesas.filter(m => m.id !== id));
   }
 
   actualizarNumero(id: number, nuevoNumero: number): void {
-    this._mesas.update(mesas =>
+    this.lectura['_mesas'].update(mesas =>
       mesas.map(m => m.id === id ? { ...m, numeroMesa: nuevoNumero } : m)
     );
   }
 
   guardarConfiguracion(): void {
-    const mesas = this._mesas();
+    const mesas = this.lectura.mesas();
+    const posiciones = mesas
+      .filter(m => m.id < 1000000000)
+      .map(m => ({
+        mesaId: m.id,
+        posicionXInicio: m.posicionXInicio,
+        posicionXFin: m.posicionXFin,
+        posicionYInicio: m.posicionYInicio,
+        posicionYFin: m.posicionYFin
+      }));
 
-    const numeros = mesas.map(m => m.numeroMesa);
-    if (new Set(numeros).size !== numeros.length) {
-      this.mostrarNotificacion('Hay mesas con números duplicados. Corregilo antes de guardar.', 'error');
-      return;
+    if (posiciones.length > 0) {
+      inject(MesaService).guardarPosiciones(posiciones).subscribe({
+        next: () => {
+          this._isEditorMode.set(false);
+          this.lectura.mostrarNotificacion('Mapa guardado con éxito', 'exito');
+        },
+        error: () => this.lectura.mostrarNotificacion('Error al guardar', 'error')
+      });
     }
-
-    for (let i = 0; i < mesas.length; i++) {
-      for (let j = i + 1; j < mesas.length; j++) {
-        const mesaA = mesas[i];
-        const mesaB = mesas[j];
-
-        const seSolapan = !(
-          mesaA.posicionXfin <= mesaB.posicionXInicio ||
-          mesaA.posicionXInicio >= mesaB.posicionXfin ||
-          mesaA.posicionYFin <= mesaB.posicionYinicio ||
-          mesaA.posicionYinicio >= mesaB.posicionYFin
-        );
-
-        if (seSolapan) {
-          this.mostrarNotificacion(`Las mesas ${mesaA.numeroMesa} y ${mesaB.numeroMesa} se están tocando.`, 'error');
-          return;
-        }
-      }
-    }
-
-    console.log('JSON LISTO PARA MANDAR AL BACKEND CON PUT:', mesas);
-    this._isEditorMode.set(false);
-    this.mostrarNotificacion('Mapa guardado con éxito', 'exito');
   }
 }

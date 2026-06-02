@@ -22,25 +22,26 @@ namespace PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso
             _llamadoNotificador = llamadoNotificador;
         }
 
-        public async Task EjecutarAsync(int mesaId, int categoriaLlamadoId, string? descripcion)
-        {
-            int mozoId = await _mozoRepositorio.ObtenerMozoAsignadoAMesaAsync(mesaId);
-            if (mozoId == 0)
-            {
-                throw new KeyNotFoundException("No se encontro un mozo asignado a esta mesa.");
-            }
+      public async Task<DOM.Llamado> EjecutarAsync(int mesaId, int categoriaLlamadoId, string? descripcion)
+      {
+         int mozoId = await _mozoRepositorio.ObtenerMozoAsignadoAMesaAsync(mesaId);
+         if (mozoId == 0)
+            throw new KeyNotFoundException("No se encontro un mozo asignado a esta mesa.");
 
-            var llamado = new DOM.Llamado
-            {
-                MozoId = mozoId,
-                CategoriaLlamadoId = categoriaLlamadoId,
-                Descripcion = descripcion,
-                Resuelto = false
-            };
+         var llamado = new DOM.Llamado
+         {
+            MozoId = mozoId,
+            MesaId = mesaId,               
+            CategoriaLlamadoId = categoriaLlamadoId,
+            Descripcion = descripcion,
+            Resuelto = false
+         };
 
-            await _llamadoRepositorio.crearLlamadoAsync(llamado);
-            await _llamadoNotificador.NotificarLlamadoAsync(llamado);
-        }
+         var llamadoGuardado = await _llamadoRepositorio.crearLlamadoAsync(llamado);
 
-    }
+         await _llamadoNotificador.NotificarLlamadoAsync(llamadoGuardado);
+         return llamadoGuardado;
+      }
+
+   }
 }

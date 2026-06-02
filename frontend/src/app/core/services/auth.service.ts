@@ -16,7 +16,6 @@ const DEFAULT_ROUTE = 'staff/cocina';
 export class AuthService {
   currentRole = signal<string>('Gerente');
 
-  // NOTE: El endpoint del back para validar credenciales de gerente debe conectarse aquí
   validateManagerCredentials(username: string, password: string): Observable<boolean> {
     const esValido = username.toLowerCase().trim() === 'gerente' && password === '123456';
     return of(esValido).pipe(delay(250));

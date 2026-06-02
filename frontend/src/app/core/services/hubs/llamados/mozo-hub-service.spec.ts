@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { SignalRConexionService } from './base-hub-service';
 
+import { MozoHubService } from './mozo-hub-service';
 
-describe('BaseHubService', () => {
-  let service: SignalRConexionService;
+describe('MozoHubService', () => {
+  let service: MozoHubService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(SignalRConexionService);
+    service = TestBed.inject(MozoHubService);
   });
 
   it('should be created', () => {

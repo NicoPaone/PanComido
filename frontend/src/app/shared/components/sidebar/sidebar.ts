@@ -102,7 +102,7 @@ export class SidebarComponent {
     Mozo: [
       { label: 'Mesas', icon: 'faTableCells', route: 'mozo/mesas', roles: ['Mozo'] },
       { label: 'Comandas', icon: 'faListCheck', route: 'mozo/comandas', roles: ['Mozo'] },
-      { label: 'Llamados', icon: 'faBell', route: 'mozo/llamado', roles: ['Mozo'] }
+      { label: 'Llamados', icon: 'faBell', route: 'mozo/llamados', roles: ['Mozo'] }
     ],
     Cocina: [
       { label: 'Comandas', icon: 'faListCheck', route: 'cocina/comandas', roles: ['Cocina'] },
