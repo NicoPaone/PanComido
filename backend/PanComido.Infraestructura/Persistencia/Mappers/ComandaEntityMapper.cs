@@ -37,7 +37,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             {
                 foreach (var relacion in efComanda.ArticuloComanda)
                 {
-                    if (relacion.Articulo != null && relacion.Articulo.Plato != null)
+                    if (relacion.Articulo != null)
                     {
                         comandaDominio.Items.Add(new DOM.ArticuloComanda
                         {
@@ -52,7 +52,6 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                     }
                 }
             }
-
             return comandaDominio;
         }
 

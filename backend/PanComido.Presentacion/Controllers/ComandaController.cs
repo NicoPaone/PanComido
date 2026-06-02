@@ -1,23 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
 using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.Mappers;
-using PanComido.Presentacion.SesionMock;
 
 namespace PanComido.Presentacion.Controllers
 {
-   [Route("api/[controller]")]
+   [Route("comanda")]
    [ApiController]
    public class ComandaController : ControllerBase
    {
-      private readonly ListarComandaActivaCocinaCasoDeUso listarComandasActivasCasoDeUso;
-      private readonly ModificarEstadoComandaCasoDeUso modificarEstadoComandaCasoDeUso;
+      private readonly ListarComandaActivaCocinaCasoDeUso _listarComandasActivasCocinaCasoDeUso;
+      private readonly ModificarEstadoComandaCasoDeUso _modificarEstadoComandaCasoDeUso;
       private readonly ComandaMapper _mapper;
       public ComandaController(ListarComandaActivaCocinaCasoDeUso listarComandaActivasCasoDeUso, ModificarEstadoComandaCasoDeUso modificar, ComandaMapper mapper)
       {
-         listarComandasActivasCasoDeUso = listarComandaActivasCasoDeUso;
-         modificarEstadoComandaCasoDeUso = modificar;
+         _listarComandasActivasCocinaCasoDeUso = listarComandaActivasCasoDeUso;
+         _modificarEstadoComandaCasoDeUso = modificar;
          _mapper = mapper;
       
       }
@@ -25,7 +23,7 @@ namespace PanComido.Presentacion.Controllers
       public async Task<ActionResult<List<ComandaResponseDto>>> ObtenerComandasActivas()
       {
          int restauranteId = 1;
-         var comandas = await listarComandasActivasCasoDeUso.Ejecutar(restauranteId);
+         var comandas = await _listarComandasActivasCocinaCasoDeUso.Ejecutar(restauranteId);
          var comandasDto = _mapper.ComandaResponseDtoList(comandas);
          return Ok(comandasDto);
 
@@ -33,10 +31,9 @@ namespace PanComido.Presentacion.Controllers
       [HttpPut("activas/{mesaId}/{estadoId}")]
       public async Task<ActionResult<ComandaResponseDto>> ModificarEstadoDeComanda(int mesaId, int estadoId)
       {
-         var comanda = await modificarEstadoComandaCasoDeUso.EjecutarAsync(mesaId, estadoId);
+         var comanda = await _modificarEstadoComandaCasoDeUso.EjecutarAsync(mesaId, estadoId);
          var comandaDto = _mapper.ComandaResponseDto(comanda);
          return Ok(comandaDto);
-
       }
 
 

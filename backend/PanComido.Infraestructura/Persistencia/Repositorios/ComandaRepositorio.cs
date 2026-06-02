@@ -2,6 +2,7 @@
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Infraestructura.Persistencia.Entidades;
 using PanComido.Infraestructura.Persistencia.Mappers;
 using DOM = PanComido.Dominio.Entidades;
 using EF = PanComido.Infraestructura.Persistencia.Entidades;
@@ -55,33 +56,38 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         }
 
 
-      public async Task<List<Comanda>> ObtenerComandasActivasParaCocinaAsync(int restauranteId)
-      {
-         var efList = await  _ctx.Comanda
-            .Include(c => c.EstadoComanda)
-            .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.Plato != null))
-                .ThenInclude(ac => ac.Articulo)
-                    .ThenInclude(a => a.Plato)
-            .Where(c => c.RestauranteId == restauranteId)
-            .Where(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada
-                        && c.EstadoComandaId != (int)EstadoComanda.Abierta)
-            .ToListAsync();
-         return  efList.Select(C=> _mapper.ParaDominio(C)).ToList();
-      }
-
-        public async Task<List<Comanda>> ObtenerComandasActivasPorMozoAsync(int mozoId)
+        public async Task<List<Comanda>> ObtenerComandasActivasParaCocinaAsync(int restauranteId)
         {
-             var efList = await _ctx.Comanda
-                .Include(c => c.EstadoComanda)
-                .Include(c => c.ArticuloComanda)
-                .ThenInclude(ac => ac.Articulo)
-                .Where(c => _ctx.Mozos
-                    .Where(m => m.IdEmpleado == mozoId)
-                    .SelectMany(m => m.Mesas)
-                    .Any(mesa => mesa.Id == c.MesaId))
-                .Where(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada
-                            && c.EstadoComandaId != (int)EstadoComanda.Abierta)
-                .ToListAsync();
+            var efList = await _ctx.Comanda
+               .Include(c => c.EstadoComanda)
+               .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.Plato != null))
+                   .ThenInclude(ac => ac.Articulo)
+                       .ThenInclude(a => a.Plato)
+               .Where(c => c.RestauranteId == restauranteId)
+               .Where(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada
+                           && c.EstadoComandaId != (int)EstadoComanda.Abierta)
+               .ToListAsync();
+            return efList.Select(C => _mapper.ParaDominio(C)).ToList();
+        }
+
+        public async Task<List<Comanda>> ObtenerComandasActivasPorMozoAsync(int restauranteId, int mozoId)
+        {
+            var efList = await _ctx.Comanda
+               .Include(c => c.EstadoComanda)
+               .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.ConfiguracionArticulos.Any(ca => ca.Id == 1)))
+                   .ThenInclude(ac => ac.Articulo)
+                      .ThenInclude(a => a.Plato)
+               .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.ConfiguracionArticulos.Any(ca => ca.Id == 1)))
+                  .ThenInclude(ac => ac.Articulo)
+                      .ThenInclude(a => a.Insumo)
+               .Where(c => c.RestauranteId == restauranteId)
+               .Where(c => _ctx.Mozos
+                   .Where(m => m.IdEmpleado == mozoId)
+                   .SelectMany(m => m.Mesas)
+                   .Any(mesa => mesa.Id == c.MesaId))
+               .Where(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada
+                           && c.EstadoComandaId != (int)EstadoComanda.Abierta)
+               .ToListAsync();
             return efList.Select(C => _mapper.ParaDominio(C)).ToList();
         }
     }
