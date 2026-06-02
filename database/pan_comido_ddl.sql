@@ -242,6 +242,7 @@ CREATE TABLE llamado (
     id                      SERIAL PRIMARY KEY,
     mozo_id                 INTEGER REFERENCES mozo(id_empleado),
     gerente_id              INTEGER REFERENCES gerente(id_empleado),
+    mesa_id                 INTEGER REFERENCES mesa(id),
     categoria_llamado_id    INTEGER NOT NULL REFERENCES categoria_llamado(id),
     descripcion             TEXT,
     resuelto                BOOLEAN NOT NULL DEFAULT FALSE
