@@ -23,8 +23,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task CrearAsync(DOM.Comanda comandaDominio)
         {
             EF.Comandum comandaEF = _mapper.paraEntidad(comandaDominio);
+           comandaEF.HoraUltimoCambioEstado = DateTime.Now;
 
-            await _ctx.Comanda.AddAsync(comandaEF);
+         await _ctx.Comanda.AddAsync(comandaEF);
 
             await _ctx.SaveChangesAsync();
         }
@@ -43,8 +44,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 return null;
             // esto deberia hacerlo el dominio
             efComanda.EstadoComandaId = estadoId;
+            efComanda.HoraUltimoCambioEstado = DateTime.Now;
 
-            await _ctx.SaveChangesAsync();
+         await _ctx.SaveChangesAsync();
 
             return _mapper.ParaDominio(efComanda);
         }

@@ -1,6 +1,14 @@
 <div class="kds-card">
   <div class="kds-header" [class]="headerClass()">
-    <div class="timer">00:00:00</div>
+
+    <div class="timer"></div>
+    @if (comanda().horaUltimoCambioEstado) {
+      <app-kds-contador-tiempo [fechaInicio]="comanda().horaUltimoCambioEstado!">
+
+      </app-kds-contador-tiempo>
+      
+    }
+    
     <div class="mesa-info">MESA N° {{ comanda().mesaId }}</div>
   </div>
 

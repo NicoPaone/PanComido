@@ -1,9 +1,10 @@
 import { Component, computed, input, output } from '@angular/core';
 import { Comanda, EstadoComandaId } from '../../../../../core/models/comanda/comanda';
+import { KdsContadorTiempo } from '../../../../../shared/ui/kds-contador-tiempo/kds-contador-tiempo';
 
 @Component({
   selector: 'app-comanda-card',
-  imports: [],
+  imports: [KdsContadorTiempo],
   templateUrl: './comanda-card.html',
   styleUrl: './comanda-card.css',
 })

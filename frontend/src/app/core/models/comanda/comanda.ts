@@ -37,6 +37,7 @@ export interface Comanda {
   estado: EstadoComanda;
   horaInicio: string;
   horaFin: string | null;
+  horaUltimoCambioEstado: string | null;
   tiempoEstimadoTotal: number;
   items: PlatoComanda[];
 }
