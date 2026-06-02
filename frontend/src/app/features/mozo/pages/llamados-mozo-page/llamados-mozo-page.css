@@ -31,7 +31,7 @@
   flex-direction: column;
 }
 
-/* Estados (cargando / error / vacío) */
+/* ── Estados (cargando / error / vacío) ── */
 .estado {
   padding: 32px 16px;
   text-align: center;
@@ -69,6 +69,7 @@
   font-size: 0.95rem;
   cursor: pointer;
   font-weight: 600;
+  transition: background-color 0.2s ease;
 }
 
 .btn-reintentar:hover {

@@ -32,6 +32,7 @@
         <app-llamado-card
           [llamado]="llamado"
           [resolviendo]="resolviendoId() === llamado.id"
+          [nuevo]="esNuevo(llamado.id!)"
           (resolver)="resolverLlamado($event)">
         </app-llamado-card>
       }
