@@ -79,9 +79,21 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .CountAsync();
         }
 
-        public Task<Dictionary<int, decimal>> ObtenerStockTotalDeInsumos(int restauranteId)
+        public async Task<Dictionary<int, decimal>> ObtenerStockTotalDeInsumosDisponible(int restauranteId, DateOnly fechaLimite)
         {
-            throw new NotImplementedException();
+            var diccionarioStock = await _ctx.Lotes
+                .AsNoTracking()
+                .Where(l => l.Insumo.IdArticuloNavigation.RestauranteId == restauranteId)
+                .Where(l => l.FechaVencimiento == null || l.FechaVencimiento >= fechaLimite)
+                .GroupBy(l => l.InsumoId)
+                .Select(grupo => new
+                {
+                    InsumoId = grupo.Key,
+                    TotalStock = grupo.Sum(l => l.Cantidad)
+                })
+                .ToDictionaryAsync(k => k.InsumoId, v => v.TotalStock);
+
+            return diccionarioStock;
         }
     }
 }
