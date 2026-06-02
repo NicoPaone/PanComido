@@ -1,0 +1,13 @@
+﻿namespace PanComido.Presentacion.DTOs.Carta
+{
+    public class ArticuloCartaResponseDto
+    {
+        public int ArticuloId { get; set; }
+        public string Nombre { get; set; }
+        public string UrlImagen { get; set; }
+        public decimal PrecioVentaFinal { get; set; }
+        public decimal Costo { get; set; }
+        public bool VisibleEnCarta { get; set; }
+        public string TipoArticulo { get; set; }
+    }
+}

@@ -38,7 +38,15 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 
                 domInsumo.StockActual = domInsumo.Lotes.Sum(l => l.Cantidad);
             }
-
+            if (efArticulo.Insumo.PedidoInsumos != null && efArticulo.Insumo.PedidoInsumos.Any())
+            {
+                domInsumo.PedidoInsumos = efArticulo.Insumo.PedidoInsumos.Select(pi => new DOM.PedidoInsumo
+                {
+                    InsumoId = pi.InsumoId,
+                    Cantidad = pi.Cantidad,
+                    PrecioCompra = pi.PrecioCompra
+                }).ToList();
+            }
             return domInsumo;
         }
 
