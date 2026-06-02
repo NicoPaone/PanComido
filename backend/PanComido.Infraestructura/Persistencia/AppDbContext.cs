@@ -403,6 +403,8 @@ public partial class AppDbContext : DbContext
 
             entity.HasOne(d => d.Gerente).WithMany(p => p.Llamados).HasConstraintName("llamado_gerente_id_fkey");
 
+            entity.HasOne(d => d.Mesa).WithMany(p => p.Llamados).HasConstraintName("llamado_mesa_id_fkey");
+
             entity.HasOne(d => d.Mozo).WithMany(p => p.Llamados).HasConstraintName("llamado_mozo_id_fkey");
         });
 
