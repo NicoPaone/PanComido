@@ -9,7 +9,7 @@ export const routes: Routes = [
       path: 'staff',
       loadComponent: () =>
          import('./layouts/staff-layout/staff-layout').then(m => m.StaffLayout),
-      import('./layouts/staff-layout/staff-layout').then(m => m.StaffLayout),
+
 
       children: [
          {
@@ -31,8 +31,9 @@ export const routes: Routes = [
             loadChildren: () => import('./features/mozo/mozo.routes').then(m => m.MOZO_ROUTES)
          },
          {
-            path: '', redirectTo: 'cocina', pathMatch: 'full'
-            path: '', redirectTo: 'cocina', pathMatch: 'full'
+            path: '',
+            redirectTo: 'cocina',
+            pathMatch: 'full'
          }
       ]
    },

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Buscador } from '../../../../shared/ui/buscador/buscador';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
+
 import { Plato } from '../../../../core/models/plato';
 import { ListaPlatosComponent } from '../components/lista-platos/lista-platos';
 import { BotonCategoriasComponent } from '../../../../shared/ui/botones/boton-categorias/boton-categorias';
@@ -27,6 +28,7 @@ export class ModificarCartaComponent implements OnInit {
   bebida: '',
   restriccion: '',
       visible: true,
+      platoDelDia: false,
       imagen: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&q=80&w=200&h=150'
     },
     {
@@ -40,6 +42,7 @@ export class ModificarCartaComponent implements OnInit {
   bebida: '',
   restriccion: '',
       visible: true,
+      platoDelDia: false,
       imagen: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&q=80&w=200&h=150'
     },
     {
@@ -53,6 +56,7 @@ export class ModificarCartaComponent implements OnInit {
   bebida: '',
   restriccion: '',
       visible: true,
+      platoDelDia: false,
       imagen: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&q=80&w=200&h=150'
     },
     {
@@ -66,6 +70,7 @@ export class ModificarCartaComponent implements OnInit {
   bebida: '',
   restriccion: '',
       visible: true,
+      platoDelDia: false,
       imagen: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=200&h=150'
     },
     {
@@ -79,6 +84,7 @@ export class ModificarCartaComponent implements OnInit {
   bebida: '',
   restriccion: '',
       visible: true,
+      platoDelDia: false,
       imagen: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=200&h=150'
     },
     {
@@ -92,6 +98,7 @@ export class ModificarCartaComponent implements OnInit {
   bebida: '',
   restriccion: '',
       visible: true,
+      platoDelDia: false,
       imagen: 'https://images.unsplash.com/photo-1565557612662-811c7504ee42?auto=format&fit=crop&q=80&w=200&h=150'
     },
     {
@@ -105,6 +112,7 @@ export class ModificarCartaComponent implements OnInit {
   bebida: '',
   restriccion: '',
       visible: false,
+      platoDelDia: false,
       imagen: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=200&h=150'
     },
     {
@@ -118,6 +126,7 @@ export class ModificarCartaComponent implements OnInit {
   bebida: '',
   restriccion: '',
       visible: false,
+      platoDelDia: false,
       imagen: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&q=80&w=200&h=150'
     }
   ];

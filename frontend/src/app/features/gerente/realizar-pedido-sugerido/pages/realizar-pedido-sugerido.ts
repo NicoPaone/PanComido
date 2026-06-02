@@ -89,7 +89,7 @@ export class RealizarPedidoSugeridoComponent implements OnInit {
 
   enviarPedido(proveedor: Proveedor): void {
     this.state.enviarPedido(proveedor, () => {
-      this.router.navigate(['/staff', 'gerente', 'ver-proveedores'], {
+      this.router.navigate(['/staff', 'gerente', 'ver-proveedores', proveedor.id, 'historial'], {
         state: { created: true, message: 'Pedido creado correctamente. Quedó pendiente en el historial.' }
       });
     });
