@@ -16,9 +16,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
     public class InsumoRepositorio : IInsumoRepositorio
     {
         private readonly AppDbContext _ctx;
-        private readonly InsumoEntityMapper _mapper;
+        private readonly ArticuloEntityMapper _mapper;
 
-        public InsumoRepositorio(AppDbContext context, InsumoEntityMapper mapper)
+        public InsumoRepositorio(AppDbContext context, ArticuloEntityMapper mapper)
         {
             _ctx = context;
             _mapper = mapper;
@@ -40,7 +40,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<List<DOM.Insumo>> ObtenerInsumosAsync(int restauranteId)
         {
             var efLista = await BaseQuery(restauranteId).ToListAsync();
-            return efLista.Select(a => _mapper.paraDominio(a)).ToList();
+            return efLista.Select(a => (DOM.Insumo)_mapper.paraDominio(a)).ToList();
         }
 
         public async Task<List<DOM.Insumo>> ObtenerInsumosConLotesAsync(int restauranteId)
@@ -49,7 +49,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                                 .Include(a => a.Insumo)
                                     .ThenInclude(i => i.Lotes).ToListAsync();
 
-            return efLista.Select(a => _mapper.paraDominio(a)).ToList();
+            return efLista.Select(a => (DOM.Insumo)_mapper.paraDominio(a)).ToList();
         }
 
         public async Task<List<DOM.Insumo>> ObtenerInsumosDelProveedorAsync(int proveedorId, int restauranteId)
@@ -60,7 +60,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     && (a.Insumo.Ingrediente == null || a.Insumo.Ingrediente.IngredientePreparado == null))
                 .ToListAsync();
 
-            return efLista.Select(a => _mapper.paraDominio(a)).ToList();
+            return efLista.Select(a => (DOM.Insumo)_mapper.paraDominio(a)).ToList();
         }
 
         public async Task<DOM.Insumo> CrearAsync(DOM.Insumo insumoDominio)

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.BodegaCasosDeUso;
+using PanComido.Dominio.CasosDeUso.CartaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso;
@@ -19,6 +20,7 @@ using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Servicios;
 using PanComido.Presentacion.SesionMock;
+using PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,7 +51,13 @@ builder.Services.AddScoped<CategoriaInsumoEntityMapper>();
 builder.Services.AddScoped<UnidadMedidaEntityMapper>();
 builder.Services.AddScoped<MesaEntityMapper>();
 builder.Services.AddScoped<LoteEntityMapper>();
+builder.Services.AddScoped<IngredientePreparadoEntityMapper>();
+builder.Services.AddScoped<FormularioParaCrearPlatoEntityMapper>();
+builder.Services.AddScoped<ArticuloEntityMapper>();
+builder.Services.AddScoped<PlatoEntityMapper>();
 builder.Services.AddScoped<LlamadoEntityMapper>();
+
+
 
 // Mappers de Presentacion (Dominio <-> DTOs)   
 builder.Services.AddScoped<InsumoMapper>();
@@ -62,6 +70,9 @@ builder.Services.AddScoped<InsumoConsugerenciaMapper>();
 builder.Services.AddScoped<UnidadMedidaMapper>();
 builder.Services.AddScoped<LoteRecepcionMapper>();
 builder.Services.AddScoped<LoteMapper>();
+builder.Services.AddScoped<LlamadoMapper>();
+builder.Services.AddScoped<FormularioParaCrearPlatoMapper>();
+
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -73,8 +84,11 @@ builder.Services.AddScoped<IComandaRepositorio, ComandaRepositorio>();
 builder.Services.AddScoped<ICategoriaInsumoRepositorio, CategoriaInsumoRepositorio>();
 builder.Services.AddScoped<IUnidadMedidaRepositorio, UnidadMedidaRepositorio>();
 builder.Services.AddScoped<IMesaRepositorio, MesaRepositorio>();
+builder.Services.AddScoped<IArticuloRepositorio, ArticuloRepositorio>();
 builder.Services.AddScoped<ILlamadoRepositorio, LlamadoRepositorio>();
 builder.Services.AddScoped<IMozoRepositorio, MozoRepositorio>();
+builder.Services.AddScoped<IFormularioPlatoRepositorio, FormularioPlatoRepositorio>();
+
 
 // Casos de uso
 builder.Services.AddScoped<ListarInsumoCasoDeUso>();
@@ -94,8 +108,14 @@ builder.Services.AddScoped<OcuparMesaCasoDeUso>();
 builder.Services.AddScoped<EnviarPedidoProveedorCasoDeUso>();
 builder.Services.AddScoped<GenerarSugerenciasRecepcionCasoDeUso>();
 builder.Services.AddScoped<RecibirPedidoProveedorCasoDeUso>();
+builder.Services.AddScoped<ObtenerDatosParaFormularioCrearPlato>();
+
+builder.Services.AddScoped<ObtenerCartaCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConStockCriticoCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConVencimientoProximoCasoDeUso>();
+builder.Services.AddScoped<LlamarMozoCasoDeUso>();
+builder.Services.AddScoped<ListarLlamadosPendientesCasoDeUso>();
+builder.Services.AddScoped<ResolverLlamadoCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();

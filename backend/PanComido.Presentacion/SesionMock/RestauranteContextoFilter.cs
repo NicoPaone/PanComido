@@ -9,6 +9,7 @@ namespace PanComido.Presentacion.SesionMock
             // obtener id
             // Por ahora hardcodeado, luego de dinamico
             context.HttpContext.Items["restauranteId"] = 1;
+            context.HttpContext.Items["mozoId"] = 3;
         }
 
         public void OnActionExecuted(ActionExecutedContext context) { }

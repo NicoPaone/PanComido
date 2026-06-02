@@ -6,29 +6,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PanComido.Infraestructura.Persistencia.Entidades;
 
-[PrimaryKey("PlatoId", "IngredienteId")]
-[Table("plato_ingrediente")]
-public partial class PlatoIngrediente
+[PrimaryKey("IngredienteId", "IngredientePreparadoId")]
+[Table("ingrediente_ingrediente_preparado")]
+public partial class IngredienteIngredientePreparado
 {
-    [Key]
-    [Column("plato_id")]
-    public int PlatoId { get; set; }
-
     [Key]
     [Column("ingrediente_id")]
     public int IngredienteId { get; set; }
 
-    [Column("opcional")]
-    public bool Opcional { get; set; }
+    [Key]
+    [Column("ingrediente_preparado_id")]
+    public int IngredientePreparadoId { get; set; }
 
     [Column("cantidad")]
     public decimal Cantidad { get; set; }
 
     [ForeignKey("IngredienteId")]
-    [InverseProperty("PlatoIngredientes")]
+    [InverseProperty("IngredienteIngredientePreparados")]
     public virtual Ingrediente Ingrediente { get; set; } = null!;
 
-    [ForeignKey("PlatoId")]
-    [InverseProperty("PlatoIngredientes")]
-    public virtual Plato Plato { get; set; } = null!;
+    [ForeignKey("IngredientePreparadoId")]
+    [InverseProperty("IngredienteIngredientePreparados")]
+    public virtual IngredientePreparado IngredientePreparado { get; set; } = null!;
 }
