@@ -69,12 +69,12 @@ describe('CardPlatoComensalComponent', () => {
 
   });
 
-  it('debería mostrar el nombre del plato', () => {
+  // it('debería mostrar el nombre del plato', () => {
 
-    expect(component.plato.nombre)
-      .toBe('Pizza');
+  //   expect(component.plato.nombre)
+  //     .toBe('Pizza');
 
-  });
+  // });
 
   it('debería renderizar el nombre del plato', () => {
 

@@ -1,56 +1,45 @@
-<div class="container-fluid p-3 bg-light min-vh-100">
+<div class="carta-container">
 
-  <!-- HEADER -->
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <div class="d-flex align-items-center gap-2">
-      <div class="logo">
-        <img [src]="logoUrl()" alt="Logo" />
-      </div>
+  <div class="header-top">
+    <div class="logo-container">
+      <img [src]="logoUrl()" alt="Logo" class="logo-img" />
     </div>
-    <div class="d-flex align-items-center gap-3">
-      <div class="d-flex align-items-center gap-1">
+    <div class="mesa-info-container">
+      <div class="badge-info">
         <span class="material-symbols-outlined">person</span>
-        <span class="fw-semibold">{{ cantidadPersonas() }}</span>
+        <span>{{ cantidadPersonas() }}</span>
       </div>
-      <div class="fw-semibold">Mesa: 12</div>
+      <div class="badge-info">Mesa: 12</div>
     </div>
   </div>
 
-  <!-- BUSCADOR -->
-  <div class="d-flex gap-2 mb-4">
-    <div class="flex-grow-1">
-      <app-buscador placeholder="Buscar plato" (busquedaCambiada)="onSearch($event)" />
+  <div class="search-row">
+    <div class="buscador-wrapper">
+      <app-buscador placeholder="Buscar en EL FERROVIARIO" (busquedaCambiada)="onSearch($event)" />
     </div>
-    <button
-      class="btn filtro-btn shadow-sm rounded-3 px-3"
-      [style.background-color]="configuracion.paleta.botonPrimario"
-      [style.color]="configuracion.paleta.textoClaro"
-      (click)="mostrarFiltros.set(true)">
-      <fa-icon [icon]="faFilter" />
+    <button class="btn-filtro-icono" (click)="mostrarFiltros.set(true)">
+      <span class="material-symbols-outlined">filter_alt</span>
     </button>
   </div>
 
-  <!-- BOTONES -->
-  <div class="d-flex mb-4 justify-content-between align-items-center gap-3">
-    <div>
+  <div class="actions-row">
+    <div class="action-btn-wrapper">
       <app-boton-comensal
-        [backgroundColor]="configuracion.paleta.botonPrimario"
-        [textColor]="configuracion.paleta.textoClaro"
+        [backgroundColor]="'#2E7D32'" 
+        [textColor]="'#FFFFFF'"
         (clicked)="irAPedido()">
-        <span class="d-flex align-items-center gap-2">
-          <span class="material-symbols-outlined">edit_note</span>
+        <span class="d-flex align-items-center justify-content-center gap-2 font-weight-bold">
+          <span class="material-symbols-outlined">edit_document</span>
           <span>Pedido ({{ cantidadTotalPedido }})</span>
         </span>
       </app-boton-comensal>
     </div>
-    <div>
+    
+    <div class="action-btn-wrapper">
       <select
-        class="custom-select"
-        [style.background-color]="configuracion.paleta.botonPrimario"
-        [style.color]="configuracion.paleta.textoClaro"
+        class="custom-select-ordenar"
         (change)="ordenar($any($event.target).value)">
-        <option value="">Ordenar por</option>
-        <option value="default">Predeterminado</option>
+        <option value="">Ordenar</option>
         <option value="precio-menor">Menor precio</option>
         <option value="precio-mayor">Mayor precio</option>
         <option value="tiempo">Más rápidos</option>
@@ -59,82 +48,21 @@
     </div>
   </div>
 
-  <!-- FILTROS ACTIVOS -->
-  @if (tiposSeleccionados().length > 0 || bebidasSeleccionadas().length > 0 || restriccionesSeleccionadas().length > 0) {
-    <div class="d-flex flex-wrap gap-2 mb-3">
-      @for (tipo of tiposSeleccionados(); track tipo) {
-        <div class="filtro-chip">{{ tipo }}</div>
-      }
-      @for (bebida of bebidasSeleccionadas(); track bebida) {
-        <div class="filtro-chip">{{ bebida }}</div>
-      }
-      @for (restriccion of restriccionesSeleccionadas(); track restriccion) {
-        <div class="filtro-chip">{{ restriccion }}</div>
-      }
-    </div>
-  }
-
-  <!-- LISTA -->
-  <app-lista-platos-comensal [platos]="filteredPlatos()" (agregarPedido)="agregarAlPedido($event)" />
+  <div class="platos-lista-container">
+    @if (state.cargando()) {
+      <p class="text-center text-muted py-5">Cargando carta...</p>
+    } @else {
+      <app-lista-platos-comensal
+        [platos]="state.itemsFiltrados()"
+        (agregarPedido)="agregarAlPedido($event)" />
+    }
+  </div>
 
 </div>
 
-<!-- MODAL FILTROS -->
 @if (mostrarFiltros()) {
   <div class="filtros-overlay">
-
-    <!-- HEADER -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h3 class="fw-bold mb-0">Filtros</h3>
-      <span class="material-symbols-outlined" style="cursor:pointer;" (click)="mostrarFiltros.set(false)">close</span>
     </div>
-
-    <!-- TIPO -->
-    <div class="mb-4">
-      <div class="d-flex flex-column gap-2 mb-4">
-        <label>
-          <input type="checkbox" (change)="mostrarTodos($event)">
-          Mostrar todo
-        </label>
-      </div>
-      <h5 class="fw-semibold mb-3">Tipo de plato</h5>
-      <div class="d-flex flex-column gap-2">
-        <label><input type="checkbox" value="entrada" (change)="toggleFiltro($event, tiposSeleccionados())"> Entrada</label>
-        <label><input type="checkbox" value="principal" (change)="toggleFiltro($event, tiposSeleccionados())"> Principal</label>
-        <label><input type="checkbox" value="postre" (change)="toggleFiltro($event, tiposSeleccionados())"> Postre</label>
-        <label><input type="checkbox" value="plato-del-dia" (change)="toggleFiltro($event, tiposSeleccionados())"> Plato del día</label>
-      </div>
-    </div>
-
-    <!-- BEBIDAS -->
-    <div class="mb-4">
-      <h5 class="fw-semibold mb-3">Bebidas</h5>
-      <div class="d-flex flex-column gap-2">
-        <label><input type="checkbox" value="sin-alcohol" (change)="toggleFiltro($event, bebidasSeleccionadas())"> Sin alcohol</label>
-        <label><input type="checkbox" value="con-alcohol" (change)="toggleFiltro($event, bebidasSeleccionadas())"> Con alcohol</label>
-      </div>
-    </div>
-
-    <!-- RESTRICCIONES -->
-    <div class="mb-4">
-      <h5 class="fw-semibold mb-3">Restricciones</h5>
-      <div class="d-flex flex-column gap-2">
-        <label><input type="checkbox" value="vegano" (change)="toggleFiltro($event, restriccionesSeleccionadas())"> Vegano</label>
-        <label><input type="checkbox" value="vegetariano" (change)="toggleFiltro($event, restriccionesSeleccionadas())"> Vegetariano</label>
-        <label><input type="checkbox" value="celiaco" (change)="toggleFiltro($event, restriccionesSeleccionadas())"> Celíaco</label>
-      </div>
-    </div>
-
-    <!-- BOTON -->
-    <app-boton-comensal
-      [backgroundColor]="configuracion.paleta.botonSecundario"
-      [textColor]="configuracion.paleta.textoOscuro"
-      customClass="w-100"
-      (clicked)="aplicarFiltros()">
-      Aplicar filtros
-    </app-boton-comensal>
-
-  </div>
 }
 
 <app-llamar-al-mozo [configuracion]="configuracion" />

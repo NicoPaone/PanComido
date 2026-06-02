@@ -1,65 +1,42 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Plato } from '../../../../../core/models/plato';
-import { Boton } from '../../../../../../app/shared/ui/botones/boton/boton';
+import { Component, EventEmitter, input, Input, output, Output, signal } from '@angular/core';
+
 import { ItemPedido } from '../../../../../core/models/item-pedido';
 import { BotonComensal } from '../../../../../shared/ui/botones/boton-comensal/boton-comensal';
 import { configuracionRestauranteMock } from '../../../../../core/interceptors/handlers/configuracion-restaurante.mock';
+import { CartaItem } from '../../../../../core/models/carta-item';
 
 
-@Component({
+
+ @Component({
   selector: 'app-card-plato-comensal',
   standalone: true,
-  imports: [CommonModule, Boton, BotonComensal],
+  imports: [BotonComensal],
   templateUrl: './card-plato-comensal.html',
   styleUrls: ['./card-plato-comensal.css'],
 })
 export class CardPlatoComensalComponent {
 
-  @Input({ required: true }) plato!: Plato;
+  plato = input.required<CartaItem>();
+  agregarPedido = output<ItemPedido>();
 
-  @Output()
-agregarPedido =
-  new EventEmitter<ItemPedido>();
+  configuracion = configuracionRestauranteMock;
+  cantidad = signal(1);
 
-configuracion = configuracionRestauranteMock;
-
-// agregar() {
-
-//  this.agregarPedido.emit({
-//   plato: this.plato,
-//   cantidad: this.cantidad
-// });
-
-// }
-
-agregar() {
-
-  console.log('CLICK EN:', this.plato.nombre);
-
-  this.agregarPedido.emit({
-    plato: this.plato,
-    cantidad: this.cantidad
-  });
-
-}
-
-  cantidad = 1;
-
-incrementar() {
-
-  this.cantidad++;
-
-}
-
-decrementar() {
-
-  if (this.cantidad > 1) {
-
-    this.cantidad--;
-
+  incrementar(): void {
+    this.cantidad.update(c => c + 1);
   }
 
-}
+  decrementar(): void {
+    if (this.cantidad() > 1) {
+      this.cantidad.update(c => c - 1);
+    }
+  }
+
+  agregar(): void {
+    this.agregarPedido.emit({
+      plato: this.plato(),
+      cantidad: this.cantidad(),
+    });
+  }
 
 }
