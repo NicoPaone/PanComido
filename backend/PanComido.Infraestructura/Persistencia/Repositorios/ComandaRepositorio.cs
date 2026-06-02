@@ -52,7 +52,11 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         }
         public async Task<DOM.Comanda?> ObtenerComandaPorIdMesaAsync(int mesaId)
         {
-            var efComanda = await _ctx.Comanda.FirstOrDefaultAsync(m => m.MesaId == mesaId);
+         var efComanda = await _ctx.Comanda
+         .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.Plato != null))
+         .ThenInclude(ac => ac.Articulo)
+         .ThenInclude(a => a.Plato).FirstOrDefaultAsync(m => m.MesaId == mesaId);
+            ;
 
             return efComanda == null ? null : _mapper.ParaDominio(efComanda);
         }
