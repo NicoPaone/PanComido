@@ -43,7 +43,8 @@
       (accionMenu)="ejecutarAccion(mesa.id, $event)"
       style="position: absolute; display: block;"
       [style.left.px]="mesa.posicionXInicio"
-      [style.top.px]="mesa.posicionYinicio">
+      [style.top.px]="mesa.posicionYInicio"
+      [style.z-index]="state.mesaSeleccionada() === mesa.id ? 1000 : 1">
     </app-mesa-item>
   }
 </div>

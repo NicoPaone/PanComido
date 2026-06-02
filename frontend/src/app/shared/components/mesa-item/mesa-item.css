@@ -1,5 +1,6 @@
 .mesa-container {
-  /* position: absolute; */ /* ELIMINAR ESTA LÍNEA, el absoluto va al padre */
+  position:relative;
+  z-index: 1; 
   display: flex;
   align-items: center;
   justify-content: center;
@@ -7,17 +8,23 @@
   color: white; /* Base text color for green/red/black states */
   font-size: 1.2rem;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  transition: filter 0.2s;
+  transition: filter 0.2s, z-index 0s;
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
+}
+
+.mesa-container.seleccionada {
+  z-index: 1000;        
 }
 
 /* Cuando el usuario mantiene presionado el click */
 .mesa-container:active {
   cursor: grabbing;
 }
-
+::ng-deep .mesa-container.seleccionada .popup-acciones {
+  z-index: 9999;
+}
 /* Hover separado */
 .mesa-container:hover {
   filter: brightness(1.1);

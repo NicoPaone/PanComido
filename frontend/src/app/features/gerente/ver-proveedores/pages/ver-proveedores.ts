@@ -12,6 +12,8 @@ import { Router, RouterModule } from '@angular/router';
 import { ProveedorListComponent } from '../components/proveedor-list/proveedor-list';
 import { Insumo as ProductoStockMock } from '../../../../core/models/insumos/insumo';
 import { VerProveedoresStateService } from '../services/ver-proveedores.state';
+import { UnidadMedida } from '../../../../core/models/unidad-medida';
+import { CategoriaInsumo } from '../../../../core/models/insumos/categorias/categoria-insumo';
 
 @Component({
   selector: 'app-ver-proveedores',
@@ -48,6 +50,13 @@ export class VerProveedoresComponent implements OnInit {
   productosFiltrados = this.state.productosFiltrados;
   proveedorSeleccionado = this.state.proveedorSeleccionado;
   productoBaseActual = this.state.productoBaseActual;
+  pedidosListosParaRecibir = this.state.pedidosListosParaRecibir;
+  loading = this.state.loading;
+  loadingHistorial = this.state.loadingHistorial;
+  loadingInsumos = this.state.loadingInsumos;
+  error = this.state.error;
+  errorHistorial = this.state.errorHistorial;
+  errorInsumos = this.state.errorInsumos;
 
   faCheck = faCheck;
   faXmark = faXmark;
@@ -66,8 +75,12 @@ export class VerProveedoresComponent implements OnInit {
     this.router.navigate(['/staff', 'gerente', 'nuevo-proveedor']);
   }
 
-  irAPedidoSugeridoIA(proveedor: Proveedor): void {
-    this.router.navigate(['/staff', 'gerente', 'pedido-sugerido-ia', proveedor.id]);
+  irARealizarPedidoSugeridoGeneral(): void {
+    this.router.navigate(['/staff', 'gerente', 'realizar-pedido-sugerido']);
+  }
+
+  irARealizarPedidoSugerido(proveedor: Proveedor): void {
+    this.router.navigate(['/staff', 'gerente', 'realizar-pedido-sugerido', proveedor.id]);
   }
 
   seleccionarProveedor(proveedor: Proveedor): void {
@@ -137,14 +150,23 @@ export class VerProveedoresComponent implements OnInit {
     this.state.enviarPedido();
   }
 
+  reintentarCarga(): void {
+    this.state.cargarDatos();
+  }
+
+  reintentarProveedor(): void {
+    const proveedorId = this.proveedorSeleccionadoId();
+    if (proveedorId === null) return;
+    this.state.cargarHistorial(proveedorId);
+    this.state.cargarInsumosProveedor(proveedorId);
+  }
+
   getEstadoClase(estado: EstadoPedidoProveedor): string {
     switch (estado) {
       case 'Recibido':
         return 'estado-recibido';
-      case 'Confirmado':
-        return 'estado-confirmado';
-      case 'Cancelado':
-        return 'estado-cancelado';
+      case 'Enviado':
+        return 'estado-enviado';
       default:
         return 'estado-pendiente';
     }
@@ -176,5 +198,41 @@ export class VerProveedoresComponent implements OnInit {
 
   get cantidadPlaceholderProducto(): string {
     return this.state.cantidadPlaceholderProducto();
+  }
+
+  nombreUnidad(unidadMedida: UnidadMedida | string | null | undefined): string {
+    if (!unidadMedida) return '';
+    return typeof unidadMedida === 'string' ? unidadMedida : unidadMedida.nombre;
+  }
+
+  nombreCategoria(categoria: CategoriaInsumo | string | null | undefined): string {
+    if (!categoria) return '';
+    return typeof categoria === 'string' ? categoria : categoria.descripcion;
+  }
+
+  equivalenciaCantidad(): string | null {
+    const cantidad = this.cantidadProducto();
+    const producto = this.productoBaseActual();
+    if (!cantidad || cantidad <= 0 || !producto?.unidadMedida) return null;
+
+    const unidad = this.nombreUnidad(producto.unidadMedida).trim().toUpperCase();
+    if (['KG', 'KILO', 'KILOS'].includes(unidad)) {
+      return `Equivale a ${this.formatearEquivalencia(cantidad, 'kg', 'g', 1000)}`;
+    }
+
+    if (['L', 'LT', 'LITRO', 'LITROS'].includes(unidad)) {
+      return `Equivale a ${this.formatearEquivalencia(cantidad, 'l', 'ml', 1000)}`;
+    }
+
+    return null;
+  }
+
+  private formatearEquivalencia(cantidad: number, unidadMayor: string, unidadMenor: string, factor: number): string {
+    const enteros = Math.trunc(cantidad);
+    const menores = Math.round((cantidad - enteros) * factor);
+
+    if (enteros > 0 && menores > 0) return `${enteros} ${unidadMayor} ${menores} ${unidadMenor}`;
+    if (enteros > 0) return `${enteros} ${unidadMayor}`;
+    return `${Math.round(cantidad * factor)} ${unidadMenor}`;
   }
 }

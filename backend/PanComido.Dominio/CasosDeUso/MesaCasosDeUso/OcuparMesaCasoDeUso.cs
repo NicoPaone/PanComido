@@ -20,9 +20,9 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
             _comandaRepositorio = comandaRepositorio;
         }
 
-        public async Task EjecutarAsync(int restauranteId, int mesaId, int cantComensales)
+        public async Task<MesaConPosiciones> EjecutarAsync(int restauranteId, int mesaId, int cantComensales)
         {
-            Mesa mesa = await _mesaRepositorio.ObtenerPorIdAsync(mesaId, restauranteId);
+            MesaConPosiciones mesa = await _mesaRepositorio.ObtenerPorIdAsync(mesaId, restauranteId);
 
             if (mesa == null)
                 throw new ArgumentException("La mesa no existe o no pertenece al restaurante.");
@@ -32,7 +32,7 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
                 throw new InvalidOperationException("La cantidad de comensales excede la capacidad máxima de la mesa.");
 
             mesa.EstadoMesa = EstadoMesa.Ocupada;
-            await _mesaRepositorio.ActualizarAsync(mesa);
+            await _mesaRepositorio.ActualizarEstadoAsync(mesaId,EstadoMesa.Ocupada);
 
             Comanda nuevaComanda = new Comanda
             {
@@ -44,6 +44,7 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
             };
 
             await _comandaRepositorio.CrearAsync(nuevaComanda);
+            return mesa;
 
         }
     }

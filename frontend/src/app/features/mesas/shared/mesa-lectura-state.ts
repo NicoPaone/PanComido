@@ -6,19 +6,18 @@ import { MesaService } from '../../../core/services/mesa.service';
   providedIn: 'root',
 })
 export class MesaLecturaState {
-   private api = inject(MesaService);
+    private api = inject(MesaService);
 
   private _mesas = signal<Mesa[]>([]);
   private _loading = signal<boolean>(false);
   private _mesaSeleccionada = signal<number | null>(null);
-  private _notificacion = signal<{mensaje: string, tipo: 'exito' | 'error'} | null>(null);
+  private _notificacion = signal<{ mensaje: string; tipo: 'exito' | 'error' } | null>(null);
 
   mesas = this._mesas.asReadonly();
   loading = this._loading.asReadonly();
   mesaSeleccionada = this._mesaSeleccionada.asReadonly();
   notificacion = this._notificacion.asReadonly();
 
-  // Computed: mesas del mozo (filtrar por asignación)
   mesasDisponibles = computed(() =>
     this._mesas().filter(m => m.estadoMesa === EstadoMesa.Disponible)
   );
@@ -37,6 +36,16 @@ export class MesaLecturaState {
 
   seleccionarMesa(id: number | null): void {
     this._mesaSeleccionada.update(actual => actual === id ? null : id);
+  }
+  ocuparMesa(mesaId:number,cantidadComensales:number):void{
+    this.api.ocuparMesa(mesaId, cantidadComensales).subscribe({
+      next: (mesaActualizada) => {
+        this._mesas.update(mesas => mesas.map(m => m.id === mesaId ? mesaActualizada : m));
+        this._mesaSeleccionada.set(null);
+        this.mostrarNotificacion('Mesa ocupada exitosamente', 'exito');
+      },
+      error: () => this.mostrarNotificacion('Error al ocupar la mesa', 'error')
+    });
   }
 
   cambiarEstadoMesa(id: number, nuevoEstado: EstadoMesa): void {

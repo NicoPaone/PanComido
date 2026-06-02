@@ -10,19 +10,11 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
       return next(req);
    }
    const url = req.url;
-   if(url.includes('/mesas')){
-      return handleMesasMock(req, next);
-   }
+   // if(url.includes('/mesas')){
+   //    return handleMesasMock(req, next);
+   // }
    if (url.includes('/stock-mercaderia')) {
     return handleStockMock(req, next);
    }
-   if (url.includes('/platos')) {
-    return handlePlatoMock(req, next);
-   }
-
-   if (url.includes('/Proveedor') || url.includes('/proveedores')) {
-    return handleProveedorMock(req, next);
-   }
    return next(req);
 }
-

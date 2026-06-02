@@ -244,7 +244,7 @@
         @if (pedidoState.ingredienteSeleccionado(); as ingrediente) {
           <div class="alert alert-warning border-0 rounded-3 mb-4">
             <div class="fw-bold">{{ ingrediente.nombre }}</div>
-            <div class="small">Stock actual: {{ ingrediente.stockDisponible }} {{ ingrediente.unidadMedida }}</div>
+            <div class="small">Stock actual: {{ ingrediente.stockDisponible }} {{ nombreUnidad(ingrediente.unidadMedida) }}</div>
           </div>
 
           <div class="mb-3">
@@ -272,7 +272,7 @@
               }
 
               <div class="mb-4 mt-3">
-                <label class="form-label fw-medium small text-muted">Cantidad ({{ ingrediente.unidadMedida }})</label>
+                <label class="form-label fw-medium small text-muted">Cantidad ({{ nombreUnidad(ingrediente.unidadMedida) }})</label>
                 <input type="number" class="form-control" [value]="cantidadAgregar" (input)="updateCantidad($event)" min="1">
               </div>
 
