@@ -13,7 +13,6 @@ namespace PanComido.Dominio.Entidades
         public bool Entregado { get; set; }
         public string? ObservacionesIngredientes { get; set; }
         public string? ObservacionesGenerales { get; set; }
-
         public Articulo Articulo { get; set; }
     }
 }
