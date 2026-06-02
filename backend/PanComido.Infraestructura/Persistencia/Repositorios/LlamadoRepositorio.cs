@@ -34,6 +34,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             return await _ctx.Llamados
                 .Include(l => l.CategoriaLlamado)
+                .Include(l => l.Mozo).ThenInclude(m => m.Mesas)
                 .Where(l => l.MozoId == mozoId && !l.Resuelto)
                 .Select(l => _llamadoMapper.paraDominio(l))
                 .ToListAsync();

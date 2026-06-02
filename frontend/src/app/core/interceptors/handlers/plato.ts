@@ -21,7 +21,13 @@ let dbPlatos: Plato[] = [
       { id: '5', nombre: 'Tomate Perita', cantidad: 0.5, unidadMedida: 'KG' },
       { id: '1', nombre: 'Ajo', cantidad: 0.03, unidadMedida: 'KG' },
       { id: '8', nombre: 'Sal Fina', cantidad: 0.01, unidadMedida: 'KG' }
-    ]
+    ],
+    tiempo: 0,
+    tipo: "",
+    bebida: "",
+    restriccion: "",
+    descripcion: "",
+    platoDelDia: false
   },
   {
     id: 2,
@@ -36,7 +42,13 @@ let dbPlatos: Plato[] = [
     receta: [
       { id: '9', nombre: 'Papa Negra', cantidad: 8, unidadMedida: 'KG' },
       { id: '3', nombre: 'Aceite de Girasol', cantidad: 0.4, unidadMedida: 'L' }
-    ]
+    ],
+    tiempo: 0,
+    tipo: "",
+    bebida: "",
+    restriccion: "",
+    descripcion: "",
+    platoDelDia: false
   },
   {
     id: 3,
@@ -53,7 +65,13 @@ let dbPlatos: Plato[] = [
       { id: '7', nombre: 'Huevos Blancos', cantidad: 10, unidadMedida: 'UN' },
       { id: '3', nombre: 'Aceite de Girasol', cantidad: 0.5, unidadMedida: 'L' },
       { id: '1', nombre: 'Ajo', cantidad: 4.625, unidadMedida: 'KG' }
-    ]
+    ],
+    tiempo: 0,
+    tipo: "",
+    bebida: "",
+    restriccion: "",
+    descripcion: "",
+    platoDelDia: false
   },
   {
     id: 4,
@@ -70,7 +88,13 @@ let dbPlatos: Plato[] = [
       { id: '5', nombre: 'Tomate Perita', cantidad: 2, unidadMedida: 'KG' },
       { id: '3', nombre: 'Aceite de Girasol', cantidad: 1, unidadMedida: 'L' },
       { id: '2', nombre: 'Cebolla', cantidad: 3.888, unidadMedida: 'KG' }
-    ]
+    ],
+    tiempo: 0,
+    tipo: "",
+    bebida: "",
+    restriccion: "",
+    descripcion: "",
+    platoDelDia: false
   },
   {
     id: 5,
@@ -87,7 +111,13 @@ let dbPlatos: Plato[] = [
       { id: '6', nombre: 'Bife de Chorizo', cantidad: 0.7, unidadMedida: 'KG' },
       { id: '2', nombre: 'Cebolla', cantidad: 0.07, unidadMedida: 'KG' },
       { id: '8', nombre: 'Sal Fina', cantidad: 0.0233, unidadMedida: 'KG' }
-    ]
+    ],
+    tiempo: 0,
+    tipo: "",
+    bebida: "",
+    restriccion: "",
+    descripcion: "",
+    platoDelDia: false
   },
   {
     id: 6,
@@ -103,7 +133,13 @@ let dbPlatos: Plato[] = [
       { id: '6', nombre: 'Bife de Chorizo', cantidad: 1, unidadMedida: 'KG' },
       { id: '3', nombre: 'Aceite de Girasol', cantidad: 0.5, unidadMedida: 'L' },
       { id: '2', nombre: 'Cebolla', cantidad: 0.388, unidadMedida: 'KG' }
-    ]
+    ],
+    tiempo: 0,
+    tipo: "",
+    bebida: "",
+    restriccion: "",
+    descripcion: "",
+    platoDelDia: false
   },
   {
     id: 7,
@@ -119,7 +155,13 @@ let dbPlatos: Plato[] = [
       { id: '6', nombre: 'Bife de Chorizo', cantidad: 1.2, unidadMedida: 'KG' },
       { id: '2', nombre: 'Cebolla', cantidad: 1.1, unidadMedida: 'KG' },
       { id: '1', nombre: 'Ajo', cantidad: 0.108, unidadMedida: 'KG' }
-    ]
+    ],
+    tiempo: 0,
+    tipo: "",
+    bebida: "",
+    restriccion: "",
+    descripcion: "",
+    platoDelDia: false
   },
   {
     id: 8,
@@ -136,7 +178,13 @@ let dbPlatos: Plato[] = [
       { id: '6', nombre: 'Bife de Chorizo', cantidad: 2.2, unidadMedida: 'KG' },
       { id: '3', nombre: 'Aceite de Girasol', cantidad: 0.4, unidadMedida: 'L' },
       { id: '2', nombre: 'Cebolla', cantidad: 0.022, unidadMedida: 'KG' }
-    ]
+    ],
+    tiempo: 0,
+    tipo: "",
+    bebida: "",
+    restriccion: "",
+    descripcion: "",
+    platoDelDia: false
   },
   {
     id: 9,
@@ -148,7 +196,13 @@ let dbPlatos: Plato[] = [
     ventas: 500,
     categoria: 'Bebidas',
     imagen: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=800&h=600',
-    receta: []
+    receta: [],
+    tiempo: 0,
+    tipo: "",
+    bebida: "",
+    restriccion: "",
+    descripcion: "",
+    platoDelDia: false
   }
 ];
 
