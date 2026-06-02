@@ -21,6 +21,7 @@ using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Servicios;
 using PanComido.Presentacion.SesionMock;
 using PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso;
+using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,6 +73,11 @@ builder.Services.AddScoped<LoteRecepcionMapper>();
 builder.Services.AddScoped<LoteMapper>();
 builder.Services.AddScoped<LlamadoMapper>();
 builder.Services.AddScoped<FormularioParaCrearPlatoMapper>();
+builder.Services.AddScoped<PlatoMapper>();
+
+
+
+
 
 
 // Repositorios
@@ -88,6 +94,8 @@ builder.Services.AddScoped<IArticuloRepositorio, ArticuloRepositorio>();
 builder.Services.AddScoped<ILlamadoRepositorio, LlamadoRepositorio>();
 builder.Services.AddScoped<IMozoRepositorio, MozoRepositorio>();
 builder.Services.AddScoped<IFormularioPlatoRepositorio, FormularioPlatoRepositorio>();
+builder.Services.AddScoped<IPlatoRepositorio, PlatoRepositorio>();
+
 
 
 // Casos de uso
@@ -109,7 +117,7 @@ builder.Services.AddScoped<EnviarPedidoProveedorCasoDeUso>();
 builder.Services.AddScoped<GenerarSugerenciasRecepcionCasoDeUso>();
 builder.Services.AddScoped<RecibirPedidoProveedorCasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosParaFormularioCrearPlato>();
-
+builder.Services.AddScoped<CrearPlatoCasoDeUso>();
 builder.Services.AddScoped<ObtenerCartaCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConStockCriticoCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConVencimientoProximoCasoDeUso>();
