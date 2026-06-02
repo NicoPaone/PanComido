@@ -14,6 +14,7 @@ import { ComandaHubService } from '../../../../../core/services/hubs/comanda/com
 })
 export class ComandaPage {
   state = inject(ComandaState);
+  
   vozService = inject(ComandoVozService);
 
   hub = inject(ComandaHubService);
@@ -44,7 +45,7 @@ export class ComandaPage {
     this.hub.detener();
   }
 
-  procesarAccion(comandaId: number) {
-    console.log('Disparando acción para comanda:', comandaId);
-  }
+  procesarAccion(evento: { mesaId: number; estadoId: number }): void {
+  this.state.modificarEstadoComanda(evento.mesaId, evento.estadoId);
+}
 }

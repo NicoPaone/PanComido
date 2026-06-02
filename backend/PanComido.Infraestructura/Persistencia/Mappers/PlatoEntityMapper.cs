@@ -38,8 +38,11 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 TipoPlato = efArticulo.Plato.TipoPlato?.Descripcion,
 
                 Restricciones = efArticulo.Plato.Restriccions?
-                    .Select(rp => rp.Descripcion)
-                    .ToList() ?? new List<string>(),
+                    .Select(rp => new DOM.Restriccion
+                    {
+                        Descripcion = rp.Descripcion
+                    })
+                    .ToList() ?? new List<DOM.Restriccion>() , 
             };
         }
 

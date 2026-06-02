@@ -9,13 +9,15 @@ import { Observable } from 'rxjs';
 export class ComandaService {
 
   private api = inject(ApiService)
-  private endpoint = 'api/Comanda';
+  private endpoint = 'comanda';
 
   obtenerComandasActivas():Observable<Comanda[]>{
     return this.api.get<Comanda[]>(`${this.endpoint}/activas`);
     
   }
-
+  marcarItemEntregado(comandaId:number, articuloComandaId:number):Observable<Comanda>{
+    return this.api.put<Comanda>(`${this.endpoint}/${comandaId}/item/${articuloComandaId}/entregar`);
+  }
 
   //https://localhost:7204/api/Comanda/4/3 ejemplo
   modificarEstadoComanda(mesaId:number, tipoId: number):Observable<Comanda>{

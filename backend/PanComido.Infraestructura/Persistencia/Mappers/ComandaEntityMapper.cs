@@ -28,7 +28,8 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 CantComensales = efComanda.CantComensales,
                 HoraInicio = efComanda.HoraInicio,
                 HoraFin = efComanda.HoraFin,
-                Estado = (EstadoComanda)efComanda.EstadoComandaId,
+                HoraUltimoCambioEstado = efComanda.HoraUltimoCambioEstado,    
+               Estado = (EstadoComanda)efComanda.EstadoComandaId,
 
                 Items = new List<DOM.ArticuloComanda>()
             };
@@ -66,7 +67,8 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 CantComensales = comandaDominio.CantComensales,
                 HoraInicio = comandaDominio.HoraInicio,
                 HoraFin = comandaDominio.HoraFin,
-                PagoId = comandaDominio.PagoID,
+               HoraUltimoCambioEstado = comandaDominio.HoraUltimoCambioEstado,
+               PagoId = comandaDominio.PagoID,
             };
         }
     }

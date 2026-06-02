@@ -20,7 +20,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             var domInsumo = new DOM.Insumo
             {
                 StockMinimo = efArticulo.Insumo.StockMinimo,
-                Tipo = (TipoInsumo?)efArticulo.Insumo.CategoriaInsumo?.TipoAplica,
+                Tipo = efArticulo.Insumo.CategoriaInsumo != null ? (TipoInsumo)efArticulo.Insumo.CategoriaInsumo.TipoAplica : default,
                 Categoria = efArticulo.Insumo.CategoriaInsumo?.Descripcion,
                 UnidadMedida = efArticulo.Insumo.UnidadMedida?.Nombre,
                 CategoriaId = efArticulo.Insumo.CategoriaInsumoId,

@@ -1,6 +1,6 @@
 ﻿using PanComido.Dominio.Entidades;
-using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.DTOs.Articulo;
+using PanComido.Presentacion.DTOs.Comanda;
 using DOM = PanComido.Dominio.Entidades;
 
 namespace PanComido.Presentacion.Mappers
@@ -18,8 +18,9 @@ namespace PanComido.Presentacion.Mappers
                 Estado = comanda.Estado.ToString(),
                 HoraInicio = comanda.HoraInicio.ToString("dd/MM/yyyy HH:mm"),
                 HoraFin = comanda.HoraFin?.ToString("dd/MM/yyyy HH:mm"),
+                  HoraUltimoCambioEstado = comanda.HoraUltimoCambioEstado?.ToString("O"),
 
-                TiempoEstimadoTotal = comanda.Items
+               TiempoEstimadoTotal = comanda.Items
                     .Select(i => i.Articulo)
                     .OfType<Plato>()
                     .Select(plato => plato.TiempoPreparacionBase)
