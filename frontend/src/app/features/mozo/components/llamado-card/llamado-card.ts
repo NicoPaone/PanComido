@@ -15,6 +15,7 @@ export class LlamadoCard {
   llamado = input.required<Llamado>();
   resolver = output<number>();
   resolviendo = input<boolean>(false);
+  saliendo = input<boolean>(false);
   nuevo = input<boolean>(false);
 
   readonly iconoLlamada: IconProp = faBell;
@@ -27,12 +28,14 @@ export class LlamadoCard {
 
   readonly titulo = computed(() => {
     const mesa = this.llamado().mesaId ? `Mesa ${this.llamado().mesaId}` : '';
-    return mesa;
+    const categoria = this.llamado().categoriaDescripcion || '';
+    return mesa ? `${mesa} — ${categoria}` : categoria;
   });
 
   readonly clases = computed<Record<string, boolean>>(() => ({
     'llamado-card': true,
     'esta-resolviendo': this.resolviendo(),
+    'esta-saliendo': this.saliendo(),
     'es-nuevo': this.nuevo(),
   }));
 }
