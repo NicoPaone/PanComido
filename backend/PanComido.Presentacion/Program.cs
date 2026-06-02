@@ -123,6 +123,7 @@ builder.Services.AddScoped<ListarInsumosConVencimientoProximoCasoDeUso>();
 builder.Services.AddScoped<LlamarMozoCasoDeUso>();
 builder.Services.AddScoped<ListarLlamadosPendientesCasoDeUso>();
 builder.Services.AddScoped<ResolverLlamadoCasoDeUso>();
+builder.Services.AddScoped<ListarComandasActivasMozoCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();

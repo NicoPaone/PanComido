@@ -1,13 +1,12 @@
 ﻿using PanComido.Dominio.Entidades;
 using PanComido.Presentacion.DTOs;
+using PanComido.Presentacion.DTOs.Articulo;
 using DOM = PanComido.Dominio.Entidades;
-using EF = PanComido.Infraestructura.Persistencia.Entidades;
 
 namespace PanComido.Presentacion.Mappers
 {
     public class ComandaMapper
     {
-
         //Para una sola comanda 
         public ComandaResponseDto ComandaResponseDto(DOM.Comanda comanda)
         {
@@ -15,7 +14,7 @@ namespace PanComido.Presentacion.Mappers
             {
                 Id = comanda.Id,
                 MesaId = comanda.MesaId,
-                cantComensales = comanda.CantComensales,
+                CantComensales = comanda.CantComensales,
                 Estado = comanda.Estado.ToString(),
                 HoraInicio = comanda.HoraInicio.ToString("dd/MM/yyyy HH:mm"),
                 HoraFin = comanda.HoraFin?.ToString("dd/MM/yyyy HH:mm"),
@@ -27,27 +26,25 @@ namespace PanComido.Presentacion.Mappers
                     .DefaultIfEmpty(0)
                     .Max(),
 
-                Platos = comanda.Items.Select(p => new PlatoDto
+                Items = comanda.Items.Select(ac => new ArticuloComandaResponseDto
                 {
-
-                    Nombre = p.Articulo.Nombre,
-                    Cantidad = p.Cantidad,
-                    ObservacionesGenerales = p.ObservacionesGenerales,
-                    ObservacionesIngredientes = p.ObservacionesIngredientes,
-
+                    Id = ac.Id,
+                    Entregado = ac.Entregado,
+                    Cantidad = ac.Cantidad,
+                    ObservacionesGenerales = ac.ObservacionesGenerales,
+                    ObservacionesIngredientes = ac.ObservacionesIngredientes,
+                    Articulo = new ArticuloResponseDto
+                    {
+                        Id = ac.Articulo.Id,
+                        Nombre = ac.Articulo.Nombre,
+                    }
                 }).ToList()
-
-
             };
-
         }
-
 
         public List<ComandaResponseDto> ComandaResponseDtoList(List<DOM.Comanda> comandas)
         {
             return comandas.Select(c => ComandaResponseDto(c)).ToList();
-
-
         }
 
 
