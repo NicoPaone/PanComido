@@ -3,7 +3,7 @@ import { environment } from "../../../environments/environment.development";
 import { handleStockMock } from "./handlers/producto-stock";
 
 export const mockInterceptor: HttpInterceptorFn = (req, next) => {
-   if(!environment.useMock){
+   if (!environment.useMock) {
       return next(req);
    }
    const url = req.url;
@@ -11,7 +11,7 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
    //    return handleMesasMock(req, next);
    // }
    if (url.includes('/stock-mercaderia')) {
-    return handleStockMock(req, next);
+      return handleStockMock(req, next);
    }
    return next(req);
 }

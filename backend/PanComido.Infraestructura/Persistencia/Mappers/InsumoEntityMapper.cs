@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Infraestructura.Persistencia.Entidades;
 using System;
