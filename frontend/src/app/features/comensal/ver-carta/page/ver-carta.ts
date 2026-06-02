@@ -1,18 +1,12 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
-
+import { Component, inject, input, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { Plato } from '../../../../../app/core/models/plato';
 import { Buscador } from '../../../../../app/shared/ui/buscador/buscador';
-import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
 import { ListaPlatosComensalComponent } from '../components/lista-platos-comensal/lista-platos-comensal';
-
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
-
-import { Router } from '@angular/router';
 import { PedidoService } from '../../../../../app/core/services/pedido.service';
-import { FormsModule } from '@angular/forms';
 import { ItemPedido } from '../../../../core/models/item-pedido';
 import { configuracionRestauranteMock } from '../../../../../app/core/interceptors/handlers/configuracion-restaurante.mock';
 import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
@@ -21,41 +15,31 @@ import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
   selector: 'app-ver-carta',
   standalone: true,
   imports: [
-    CommonModule,
     ListaPlatosComensalComponent,
     Buscador,
-    Boton,
-      BotonComensal,
+    BotonComensal,
     FontAwesomeModule,
-    FormsModule,
     LlamarAlMozo
   ],
   templateUrl: './ver-carta.html',
   styleUrls: ['./ver-carta.css'],
-
 })
 export class VerCarta {
+  private router = inject(Router);
+  private pedidoService = inject(PedidoService);
 
-  constructor(
-    private router: Router,
-    private pedidoService: PedidoService
-    
-  ) { 
-    
-  }
+  logoUrl = input<string>('assets/images/logo/logo_el_ferroviario.png');
 
-  mostrarFiltros = false;
-  tiposSeleccionados: string[] = [];
-  bebidasSeleccionadas: string[] = [];
-  restriccionesSeleccionadas: string[] = [];
+  mostrarFiltros = signal(false);
+  tiposSeleccionados = signal<string[]>([]);
+  bebidasSeleccionadas = signal<string[]>([]);
+  restriccionesSeleccionadas = signal<string[]>([]);
   faFilter = faFilter;
-  tipoOrden: string = '';
-  cantidadPersonas: number = 1;
+  tipoOrden = signal('');
+  cantidadPersonas = signal(1);
   configuracion = configuracionRestauranteMock;
-
-  @Input() logoUrl: string = 'assets/images/logo/logo_el_ferroviario.png';
-
-  platos: Plato[] = [
+  filteredPlatos = signal<Plato[]>([]);
+  platos = signal<Plato[]>([
     {
       id: 1,
       nombre: 'Milanesa napolitana',
@@ -138,7 +122,7 @@ export class VerCarta {
       bebida: '',
       restriccion: '',
       visible: true,
-    imagen: 'https://i.blogs.es/8c3360/pollo_curry/840_560.jpg?w=200&h=150'
+      imagen: 'https://i.blogs.es/8c3360/pollo_curry/840_560.jpg?w=200&h=150'
     },
     {
       id: 7,
@@ -168,204 +152,103 @@ export class VerCarta {
       visible: false,
       imagen: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&q=80&w=200&h=150'
     }
-  ];
+  ]);
 
-  filteredPlatos: Plato[] = this.platos;
-
-  onSearch(valor: string) {
-
-    this.filteredPlatos = this.platos.filter(plato =>
-      plato.nombre.toLowerCase().includes(valor.toLowerCase())
-    );
-
+  constructor() {
+    this.filteredPlatos.set([...this.platos()]);
   }
 
-  irAPedido() {
+  onSearch(valor: string): void {
+    this.filteredPlatos.set(
+      this.platos().filter(plato =>
+        plato.nombre.toLowerCase().includes(valor.toLowerCase())
+      )
+    );
+  }
+
+  irAPedido(): void {
     this.router.navigate(['/comensal/pedido']);
   }
 
-  agregarAlPedido(item: ItemPedido) {
-
+  agregarAlPedido(item: ItemPedido): void {
     this.pedidoService.agregarPedido(item);
-
-    console.log('Pedido agregado:', item.plato);
-
   }
 
-ordenActual = 'default';
-
-ordenar(tipo: string) {
-
-  this.tipoOrden = tipo;
-
-  this.aplicarFiltros();
-
-}
-
-
-aplicarFiltros() {
-
-  console.log(this.tiposSeleccionados);
-  console.log(this.bebidasSeleccionadas);
-  console.log(this.restriccionesSeleccionadas);
-
-  this.filteredPlatos = this.platos.filter(plato => {
-
-    const filtroPlatoDelDia =
-      this.tiposSeleccionados.includes(
-        'plato-del-dia'
-      );
-
-    const tiposNormales =
-      this.tiposSeleccionados.filter(
-        tipo => tipo !== 'plato-del-dia'
-      );
-
-    const cumpleTipo =
-
-      tiposNormales.length === 0 ||
-
-      tiposNormales.includes(plato.tipo);
-
-    const cumplePlatoDelDia =
-
-      !filtroPlatoDelDia ||
-
-      plato.platoDelDia;
-
-    const cumpleBebida =
-
-      this.bebidasSeleccionadas.length === 0 ||
-
-      this.bebidasSeleccionadas.includes(
-        plato.bebida
-      );
-
-    const cumpleRestriccion =
-
-      this.restriccionesSeleccionadas.length === 0 ||
-
-      this.restriccionesSeleccionadas.includes(
-        plato.restriccion
-      );
-
-    return (
-      cumpleTipo &&
-      cumplePlatoDelDia &&
-      cumpleBebida &&
-      cumpleRestriccion
-    );
-
-  });
-
-  // ORDENAR DESPUÉS DE FILTRAR
-
-  switch (this.tipoOrden) {
-
-    case 'precio-menor':
-
-      this.filteredPlatos.sort(
-        (a, b) => a.precioVenta - b.precioVenta
-      );
-
-      break;
-
-    case 'precio-mayor':
-
-      this.filteredPlatos.sort(
-        (a, b) => b.precioVenta - a.precioVenta
-      );
-
-      break;
-
-    case 'tiempo':
-
-      this.filteredPlatos.sort(
-        (a, b) => a.tiempo - b.tiempo
-      );
-
-      break;
-
-    case 'nombre':
-
-      this.filteredPlatos.sort(
-        (a, b) => a.nombre.localeCompare(b.nombre)
-      );
-
-      break;
-
-    case 'default':
-
-    default:
-
-      this.filteredPlatos = [
-        ...this.filteredPlatos
-      ];
-
-      break;
-
+  ordenar(tipo: string): void {
+    this.tipoOrden.set(tipo);
+    this.aplicarFiltros();
   }
 
-  this.mostrarFiltros = false;
+  aplicarFiltros(): void {
+    const filtrados = this.platos().filter(plato => {
+      const tipos = this.tiposSeleccionados();
+      const bebidas = this.bebidasSeleccionadas();
+      const restricciones = this.restriccionesSeleccionadas();
 
-}
-  toggleFiltro(
-    event: Event,
-    lista: string[]
-  ) {
+      const filtroPlatoDelDia = tipos.includes('plato-del-dia');
+      const tiposNormales = tipos.filter(t => t !== 'plato-del-dia');
 
-    const checkbox = event.target as HTMLInputElement;
+      const cumpleTipo = tiposNormales.length === 0 || tiposNormales.includes(plato.tipo);
+      const cumplePlatoDelDia = !filtroPlatoDelDia || plato.platoDelDia;
+      const cumpleBebida = bebidas.length === 0 || bebidas.includes(plato.bebida);
+      const cumpleRestriccion = restricciones.length === 0 || restricciones.includes(plato.restriccion);
 
-    if (checkbox.checked) {
+      return cumpleTipo && cumplePlatoDelDia && cumpleBebida && cumpleRestriccion;
+    });
 
-      if (!Array.isArray(lista)) {
-        return;
-      }
-
-      lista.push(checkbox.value);
-
-    } else {
-
-      const index = lista.indexOf(checkbox.value);
-
-      if (index > -1) {
-
-        lista.splice(index, 1);
-
-      }
-
+    const orden = this.tipoOrden();
+    switch (orden) {
+      case 'precio-menor':
+        filtrados.sort((a, b) => a.precioVenta - b.precioVenta);
+        break;
+      case 'precio-mayor':
+        filtrados.sort((a, b) => b.precioVenta - a.precioVenta);
+        break;
+      case 'tiempo':
+        filtrados.sort((a, b) => a.tiempo - b.tiempo);
+        break;
+      case 'nombre':
+        filtrados.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        break;
+      default:
+        break;
     }
 
+    this.filteredPlatos.set(filtrados);
+    this.mostrarFiltros.set(false);
   }
 
- mostrarTodos(event: any) {
-
-  if (event.target.checked) {
-
-    this.tiposSeleccionados = [];
-
-    this.bebidasSeleccionadas = [];
-
-    this.restriccionesSeleccionadas = [];
-
-    this.tipoOrden = 'default';
-
-    this.filteredPlatos = [
-      ...this.platos
-    ];
-
+  toggleFiltro(event: Event, lista: string[]): void {
+    const checkbox = event.target as HTMLInputElement;
+    if (checkbox.checked) {
+      lista.push(checkbox.value);
+    } else {
+      const index = lista.indexOf(checkbox.value);
+      if (index > -1) {
+        lista.splice(index, 1);
+      }
+    }
   }
 
-}
+  mostrarTodos(event: Event): void {
+    const checkbox = event.target as HTMLInputElement;
+    if (checkbox.checked) {
+      this.tiposSeleccionados.set([]);
+      this.bebidasSeleccionadas.set([]);
+      this.restriccionesSeleccionadas.set([]);
+      this.tipoOrden.set('default');
+      this.filteredPlatos.set([...this.platos()]);
+    }
+  }
 
-ngOnInit() {
-  this.cantidadPersonas = history.state?.cantidadPersonas ?? 1;
-}
+  ngOnInit(): void {
+    this.cantidadPersonas.set(history.state?.cantidadPersonas ?? 1);
+  }
 
-get cantidadTotalPedido(): number {
-  return this.pedidoService.obtenerPedidos().reduce(
-    (total, item) => total + item.cantidad,
-    0
-  );
-}
+  get cantidadTotalPedido(): number {
+    return this.pedidoService.obtenerPedidos().reduce(
+      (total, item) => total + item.cantidad,
+      0
+    );
+  }
 }

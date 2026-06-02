@@ -1,11 +1,9 @@
-
-import { CommonModule } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
 import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
 import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
 import { PedidoService } from '../../../../core/services/pedido.service';
-import { Component, OnInit } from '@angular/core';
 
 interface PedidoItem {
   plato: {
@@ -18,40 +16,37 @@ interface PedidoItem {
 @Component({
   selector: 'app-detalle-pedido',
   standalone: true,
-  imports: [CommonModule, BotonComensal, LlamarAlMozo],
+  imports: [BotonComensal, LlamarAlMozo],
   templateUrl: './detalle-pedido.html',
-    styleUrls: ['./detalle-pedido.css']
+  styleUrls: ['./detalle-pedido.css']
 })
-export class DetallePedido  implements OnInit{
+export class DetallePedido {
+  private router = inject(Router);
+  private pedidoService = inject(PedidoService);
 
-configuracion = configuracionRestauranteMock;
+  configuracion = configuracionRestauranteMock;
+  pedidos = signal<PedidoItem[]>([]);
 
- pedidos: PedidoItem[] = [];
-  constructor(private router: Router, private pedidoService: PedidoService) {}
+  constructor() {
+    this.pedidos.set(this.pedidoService.obtenerPedidos());
+  }
 
   get total(): number {
-    return this.pedidos.reduce(
+    return this.pedidos().reduce(
       (acc, item) => acc + item.plato.precioVenta * item.cantidad,
       0
     );
   }
 
-ngOnInit() {
-  this.pedidos = this.pedidoService.obtenerPedidos();
-}
-
-  volver() {
+  volver(): void {
     this.router.navigate(['/comensal/pedido']);
   }
 
-  editar(item: PedidoItem) {
-    console.log('editar item:', item);
-    // acá después podés navegar a personalizar-plato
+  editar(item: PedidoItem): void {
     this.router.navigate(['/comensal/personalizar-plato']);
   }
 
-  confirmarPedido() {
-    console.log('pedido confirmado:', this.pedidos);
+  confirmarPedido(): void {
     alert('Pedido confirmado');
   }
 }

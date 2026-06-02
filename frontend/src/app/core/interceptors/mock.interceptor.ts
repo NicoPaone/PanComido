@@ -1,8 +1,6 @@
 import { HttpInterceptorFn } from "@angular/common/http";
 import { environment } from "../../../environments/environment.development";
 import { handleStockMock } from "./handlers/producto-stock";
-import { handlePlatoMock } from "./handlers/plato";
-import { handleProveedorMock } from "./handlers/proveedor";
 
 export const mockInterceptor: HttpInterceptorFn = (req, next) => {
    if (!environment.useMock) {
