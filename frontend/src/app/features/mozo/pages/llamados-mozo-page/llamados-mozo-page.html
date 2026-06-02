@@ -1,10 +1,11 @@
 <div class="llamados-container">
   <div class="header">
     <h2>Llamados Activos</h2>
-    @if( pendientes().length > 0) {
-      <span class="subtitulo">Tenés {{ pendientes().length }} llamado(s) pendiente(s).</span>
+    @if (cantidadPendientes() > 0) {
+      <span class="contador">{{ cantidadPendientes() }}</span>
     }
   </div>
+
 
   @if (cargando()) {
     <div class="estado estado-info">
