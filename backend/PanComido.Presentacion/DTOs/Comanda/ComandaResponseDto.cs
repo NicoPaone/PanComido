@@ -1,6 +1,6 @@
 ﻿using PanComido.Presentacion.DTOs.Articulo;
 
-namespace PanComido.Presentacion.DTOs
+namespace PanComido.Presentacion.DTOs.Comanda
 {
     public class ComandaResponseDto
     {

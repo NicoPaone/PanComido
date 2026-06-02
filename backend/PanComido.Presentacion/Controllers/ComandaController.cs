@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
-using PanComido.Presentacion.DTOs;
+using PanComido.Presentacion.DTOs.Comanda;
 using PanComido.Presentacion.Mappers;
 
 namespace PanComido.Presentacion.Controllers
@@ -44,10 +44,10 @@ namespace PanComido.Presentacion.Controllers
             return Ok(comandaDto);
         }
 
-        [HttpPut("{comandaId}/item/{articuloComandaId}/entregar")]
-        public async Task<ActionResult<ComandaResponseDto>> MarcarItemComandaEntregado(int comandaId, int articuloComandaId)
+        [HttpPut("{comandaId}/entregar-items")]
+        public async Task<ActionResult<ComandaResponseDto>> MarcarItemComandaEntregado(int comandaId, [FromBody] List<int> itemsEntregados)
         {
-            var comanda = await _marcarItemEntregadoCasoDeUso.EjecutarAsync(comandaId, articuloComandaId);
+            var comanda = await _marcarItemEntregadoCasoDeUso.EjecutarAsync(comandaId, itemsEntregados);
             var comandaDto = _mapper.ComandaResponseDto(comanda);
             return Ok(comandaDto);
         } 

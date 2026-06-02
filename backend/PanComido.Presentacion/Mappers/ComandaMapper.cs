@@ -1,6 +1,6 @@
 ﻿using PanComido.Dominio.Entidades;
-using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.DTOs.Articulo;
+using PanComido.Presentacion.DTOs.Comanda;
 using DOM = PanComido.Dominio.Entidades;
 
 namespace PanComido.Presentacion.Mappers

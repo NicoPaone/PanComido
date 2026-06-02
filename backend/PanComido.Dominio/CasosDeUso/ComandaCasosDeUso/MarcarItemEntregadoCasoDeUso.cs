@@ -18,24 +18,25 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
             _comandaRepositorio = comandaRepositorio;
         }
 
-        public async Task<Comanda> EjecutarAsync(int comandaId, int articuloComandaId)
+        public async Task<Comanda> EjecutarAsync(int comandaId, List<int> articuloComandaIds)
         {
             Comanda comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
             if (comanda == null) throw new KeyNotFoundException("Comanda no encontrada");
 
+            foreach(int articuloComandaId in articuloComandaIds)
+            {
+                if (!comanda.Items.Any(ac => ac.Id == articuloComandaId))
+                    throw new KeyNotFoundException("Artículo de comanda no encontrado en la comanda especificada.");
 
-            if (!comanda.Items.Any(ac => ac.Id == articuloComandaId))
-                throw new KeyNotFoundException("Artículo de comanda no encontrado en la comanda especificada.");
-
-            var item = comanda.Items.First(ac => ac.Id == articuloComandaId);
-            if (item.Entregado)
-                throw new InvalidOperationException("El ítem ya fue entregado.");
+                var item = comanda.Items.First(ac => ac.Id == articuloComandaId);
+                if (item.Entregado)
+                    throw new InvalidOperationException("El ítem ya fue entregado.");
+            }
 
             if (comanda.Estado == EstadoComanda.Finalizada)
                 throw new InvalidOperationException("La comanda ya está finalizada.");
 
-            await _comandaRepositorio.MarcarItemEntregadoAsync(comandaId, articuloComandaId);
-
+            await _comandaRepositorio.MarcarItemsEntregadosAsync(comandaId, articuloComandaIds);
             return await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
         }
     }
