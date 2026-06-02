@@ -133,7 +133,6 @@ builder.Services.AddScoped<ResolverLlamadoCasoDeUso>();
 builder.Services.AddScoped<ListarComandasActivasMozoCasoDeUso>();
 builder.Services.AddScoped<ObtenerDetalleArticuloCasoDeUso>();
 builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
-builder.Services.AddScoped<MarcarItemEntregadoCasoDeUso>();
 builder.Services.AddScoped<ObtenerArticulosParaCrearCartaCasoDeUso>();
 
 // Servicios
