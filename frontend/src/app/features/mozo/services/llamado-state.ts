@@ -3,10 +3,12 @@ import { Llamado } from '../../../core/models/llamados/llamado';
 import { MozoHubService } from '../../../core/services/hubs/llamados/mozo-hub-service';
 import { LlamadoService } from '../../../core/services/llamados/llamado-service';
 
+const MS_NUEVO = 5000;
+
 @Injectable({
   providedIn: 'root',
 })
-export class LlamadoState { 
+export class LlamadoState {
   readonly #api = inject(LlamadoService);
   readonly #hub = inject(MozoHubService);
 
@@ -15,6 +17,7 @@ export class LlamadoState {
   readonly #_error = signal<string | null>(null);
   readonly #_resolviendoId = signal<number | null>(null);
   readonly #_hubConectado = signal<boolean>(false);
+  readonly #_nuevos = signal<Set<number>>(new Set());
 
   #mozoId: number | null = null;
   #restauranteId: number | null = null;
@@ -28,17 +31,20 @@ export class LlamadoState {
   readonly cantidadPendientes = computed<number>(() => this.#_llamados().length);
   readonly hayLlamados = computed<boolean>(() => this.#_llamados().length > 0);
 
- 
+  esNuevo(id: number): boolean {
+    return this.#_nuevos().has(id);
+  }
+
   readonly #hubEffect = effect(() => {
     const nuevo = this.#hub.llamadoRecibido();
     if (!nuevo) return;
-   
-    
-    console.log("Llamado recibido en el state: ", nuevo);
 
-    this.#_llamados.update((lista) =>
-      lista.some((l) => l.id === nuevo.id) ? lista : [nuevo, ...lista],
-    );
+    this.#_llamados.update((lista) => {
+      if (lista.some((l) => l.id === nuevo.id)) return lista;
+      return [nuevo, ...lista];
+    });
+
+    this.#marcarNuevo(nuevo.id);
   });
 
   cargar(mozoId: number, restauranteId: number): void {
@@ -51,9 +57,9 @@ export class LlamadoState {
       .listarPendientesDelMozo()
       .subscribe({
         next: (lista) => {
-          this.#_llamados.set(lista);
+          const ordenados = [...lista].sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
+          this.#_llamados.set(ordenados);
           this.#_cargando.set(false);
-          console.log("Llamados pendientes cargados: ", lista);
         },
         error: () => {
           this.#_error.set('No pudimos cargar los llamados. Reintentá.');
@@ -71,7 +77,6 @@ export class LlamadoState {
     try {
       await this.#hub.conectarYUnirseGrupo(this.#restauranteId, this.#mozoId);
       this.#_hubConectado.set(true);
-      console.log("Conectado al hub de llamados para mozoId=", this.#mozoId, " restauranteId=", this.#restauranteId);
     } catch {
       this.#_hubConectado.set(false);
       this.#_error.set('No pudimos conectar al sistema de notificaciones.');
@@ -90,6 +95,10 @@ export class LlamadoState {
           this.#_llamados.update((lista) =>
             lista.filter((l) => l.id !== llamadoId),
           );
+          this.#_nuevos.update((set) => {
+            set.delete(llamadoId);
+            return new Set(set);
+          });
           this.#_resolviendoId.set(null);
         },
         error: () => {
@@ -103,5 +112,15 @@ export class LlamadoState {
     if (this.#mozoId !== null && this.#restauranteId !== null) {
       this.cargar(this.#mozoId, this.#restauranteId);
     }
+  }
+
+  #marcarNuevo(id: number): void {
+    this.#_nuevos.update((set) => new Set(set).add(id));
+    setTimeout(() => {
+      this.#_nuevos.update((set) => {
+        set.delete(id);
+        return new Set(set);
+      });
+    }, MS_NUEVO);
   }
 }

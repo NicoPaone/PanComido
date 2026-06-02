@@ -15,13 +15,24 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Variante mientras se está resolviendo */
-.llamado-card.esta-resolviendo {
-  opacity: 0.6;
-  pointer-events: none;   /* bloquea clicks mientras resuelve */
+/* ── Card nueva ── */
+.llamado-card.es-nuevo {
+  border-left: 4px solid #70c143;
+  animation: fadeIn 0.3s ease-out;
 }
 
-/* Icon-box: cuadradito verde izquierdo */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Variante mientras se está resolviendo ── */
+.llamado-card.esta-resolviendo {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ── Icon-box: cuadradito verde izquierdo ── */
 .icon-box {
   background-color: #70c143;
   width: 80px;
@@ -39,15 +50,22 @@
   color: white;
 }
 
-/* Contenido central */
+/* ── Contenido central ── */
 .content-box {
   flex-grow: 1;
   padding: 0 16px;
   min-width: 0;
 }
 
+.titulo-fila {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
 .content-box h3 {
-  margin: 0 0 4px 0;
+  margin: 0;
   font-size: 1.2rem;
   font-weight: 700;
 }
@@ -59,7 +77,19 @@
   word-wrap: break-word;
 }
 
-/* Badge de categoría */
+/* ── Badge NUEVO ── */
+.badge-nuevo {
+  display: inline-block;
+  background-color: #70c143;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+/* ── Badge de categoría ── */
 .badge-categoria {
   display: inline-block;
   background-color: #f0f7ff;
@@ -71,7 +101,7 @@
   margin-bottom: 4px;
 }
 
-/* Botón derecho */
+/* ── Botón derecho ── */
 .action-box {
   padding-right: 16px;
   flex-shrink: 0;

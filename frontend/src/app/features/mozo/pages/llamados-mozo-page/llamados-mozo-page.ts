@@ -10,7 +10,7 @@ import { LlamadoState } from '../../services/llamado-state';
   styleUrl: './llamados-mozo-page.css',
 })
 export class LlamadosMozoPage {
- readonly #state = inject(LlamadoState);
+  readonly #state = inject(LlamadoState);
 
   readonly #mozoId = 3;
   readonly #restauranteId = 1;
@@ -26,6 +26,10 @@ export class LlamadosMozoPage {
   ngOnInit(): void {
     this.#state.cargar(this.#mozoId, this.#restauranteId);
     void this.#state.conectarHub();
+  }
+
+  esNuevo(id: number): boolean {
+    return this.#state.esNuevo(id);
   }
 
   resolverLlamado(llamadoId: number): void {

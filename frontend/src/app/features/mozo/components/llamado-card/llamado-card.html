@@ -5,7 +5,12 @@
 
   <!-- Contenido central -->
   <div class="content-box">
-    <h3>{{ titulo() }}</h3>
+    <div class="titulo-fila">
+      <h3>{{ titulo() }}</h3>
+      @if (nuevo()) {
+        <span class="badge-nuevo">NUEVO</span>
+      }
+    </div>
 
     @if (llamado().categoriaDescripcion) {
       <span class="badge-categoria">{{ llamado().categoriaDescripcion }}</span>
@@ -15,15 +20,15 @@
   </div>
 
   <div class="action-box">
-   <button
-  class="btn-resolver"
-  [disabled]="resolviendo()"
-  (click)="resolver.emit(llamado().id)"
-  [attr.aria-label]="'Marcar como resuelto'">
-  <fa-icon 
-    [icon]="iconoAccion()" 
-    [class.fa-spin]="resolviendo()">
-  </fa-icon>
-</button>
+    <button
+      class="btn-resolver"
+      [disabled]="resolviendo()"
+      (click)="resolver.emit(llamado().id)"
+      [attr.aria-label]="'Marcar como resuelto'">
+      <fa-icon
+        [icon]="iconoAccion()"
+        [class.fa-spin]="resolviendo()">
+      </fa-icon>
+    </button>
   </div>
 </div>
