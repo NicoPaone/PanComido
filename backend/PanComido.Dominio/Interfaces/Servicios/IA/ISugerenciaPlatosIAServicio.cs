@@ -10,8 +10,10 @@ namespace PanComido.Dominio.Interfaces.Servicios.IA
 {
     public interface ISugerenciaPlatosIAServicio
     {
-        Task<SugerenciaIA> GenerarSugerenciasAsync(List<Insumo> insumosDisponibles,
+        Task<SugerenciaIA> GenerarSugerenciasAsync(int restauranteId,
+                                                    List<Insumo> insumosDisponibles,
                                                     Dictionary<int, List<Lote>> vencimientosProximos,
+                                                    List<string> platosExistentes,
                                                     int cantidadPlatos);
     }
 }

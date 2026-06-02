@@ -17,17 +17,20 @@ namespace PanComido.Dominio.CasosDeUso.AvisosCasosDeUso.IA
         private readonly IInsumoRepositorio _insumoRepositorio;
         private readonly ListarInsumosConVencimientoProximoCasoDeUso _listarInsumosConVencimientoProximoCasoDeUso;
         private readonly ISugerenciaPlatosIAServicio _sugerenciaPlatosIAServicio;
+        private readonly IArticuloRepositorio _articulosRepositorio;
 
         public GenerarSugerenciasPlatoIACasoDeUso(
         ISugerenciaIARepositorio sugerenciaIARepositorio,
         IInsumoRepositorio insumoRepositorio,
         ListarInsumosConVencimientoProximoCasoDeUso listarInsumosConVencimientoProximoCasoDeUso,
-        ISugerenciaPlatosIAServicio sugerenciaPlatosIAServicio)
+        ISugerenciaPlatosIAServicio sugerenciaPlatosIAServicio,
+        IArticuloRepositorio articulosRepositorio)
         {
             _sugerenciaIARepositorio = sugerenciaIARepositorio;
             _insumoRepositorio = insumoRepositorio;
             _listarInsumosConVencimientoProximoCasoDeUso = listarInsumosConVencimientoProximoCasoDeUso;
             _sugerenciaPlatosIAServicio = sugerenciaPlatosIAServicio;
+            _articulosRepositorio = articulosRepositorio;
         }
 
         public async Task<SugerenciaIA> EjecutarAsync(int restauranteId)
@@ -44,7 +47,13 @@ namespace PanComido.Dominio.CasosDeUso.AvisosCasosDeUso.IA
 
             Dictionary<int, List<Lote>> vencimientosProximos = await _listarInsumosConVencimientoProximoCasoDeUso.EjecutarAsync(restauranteId);
 
-            SugerenciaIA nuevaSugerencia = await _sugerenciaPlatosIAServicio.GenerarSugerenciasAsync(insumosDisponibles, vencimientosProximos, 5);
+            List<Articulo> articulos = await _articulosRepositorio.ObtenerArticulosEnCartaConIngredientesAsync(restauranteId);
+
+            List<string> nombresPlatosExistenes = articulos.OfType<Plato>()
+                                                        .Select(p => p.Nombre)
+                                                        .ToList();
+
+            SugerenciaIA nuevaSugerencia = await _sugerenciaPlatosIAServicio.GenerarSugerenciasAsync(restauranteId, insumosDisponibles, vencimientosProximos, nombresPlatosExistenes , 5);
 
             nuevaSugerencia.FechaSugerencia = DateTime.Now;
 

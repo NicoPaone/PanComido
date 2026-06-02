@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.BodegaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.CartaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
+using PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
@@ -11,16 +13,18 @@ using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.CasosDeUso.UnidadMedidaCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
+using PanComido.Dominio.Interfaces.Servicios.IA;
 using PanComido.Dominio.Servicios;
+using PanComido.Dominio.Servicios.IA;
 using PanComido.Infraestructura.Persistencia;
 using PanComido.Infraestructura.Persistencia.Mappers;
 using PanComido.Infraestructura.Persistencia.Repositorios;
+using PanComido.Infraestructura.ServiciosExternos.Gemini;
 using PanComido.Presentacion;
 using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Servicios;
 using PanComido.Presentacion.SesionMock;
-using PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -121,12 +125,16 @@ builder.Services.AddScoped<ResolverLlamadoCasoDeUso>();
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
 builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticuloServicio>();
+builder.Services.AddScoped<ISugerenciaPlatosIAServicio, GeminiSugerenciaPlatosIAServicio >();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 //Servicios externos
 builder.Services.AddScoped<IComandaNotificador, ComandaNotificadorSignalR>();
 builder.Services.AddScoped<ILlamadoNotificador, LlamadoNotificadorSignalR>();
+builder.Services.Configure<GeminiConfiguracion>(builder.Configuration.GetSection("Gemini"));
+
+builder.Services.AddHttpClient();
 
 var allowedOrigins = builder.Configuration.GetSection("CorsSettings:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
 
