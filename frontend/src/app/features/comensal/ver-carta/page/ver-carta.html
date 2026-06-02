@@ -35,17 +35,31 @@
       </app-boton-comensal>
     </div>
     
-    <div class="action-btn-wrapper">
-      <select
-        class="custom-select-ordenar"
-        (change)="ordenar($any($event.target).value)">
-        <option value="">Ordenar</option>
-        <option value="precio-menor">Menor precio</option>
-        <option value="precio-mayor">Mayor precio</option>
-        <option value="tiempo">Más rápidos</option>
-        <option value="nombre">A-Z</option>
-      </select>
-    </div>
+   <div class="action-btn-wrapper">
+  <div class="dropdown-ordenar">
+    <button class="dropdown-trigger" (click)="toggleMenuOrdenar()">
+      <span class="material-symbols-outlined">sort</span>
+      <span>{{ ordenSeleccionado() || 'Ordenar' }}</span>
+    </button>
+
+    @if (menuOrdenarAbierto()) {
+      <div class="dropdown-menu">
+        <button class="dropdown-item" (click)="seleccionarOrden('precio-menor', 'Menor precio')">
+          Menor precio
+        </button>
+        <button class="dropdown-item" (click)="seleccionarOrden('precio-mayor', 'Mayor precio')">
+          Mayor precio
+        </button>
+        <button class="dropdown-item" (click)="seleccionarOrden('tiempo', 'Más rápidos')">
+          Más rápidos
+        </button>
+        <button class="dropdown-item" (click)="seleccionarOrden('nombre', 'A-Z')">
+          A-Z
+        </button>
+      </div>
+    }
+  </div>
+</div>
   </div>
 
   <div class="platos-lista-container">

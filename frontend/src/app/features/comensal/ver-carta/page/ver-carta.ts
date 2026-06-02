@@ -1,4 +1,4 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, HostListener, inject, input, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Buscador } from '../../../../../app/shared/ui/buscador/buscador';
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
@@ -10,6 +10,7 @@ import { ItemPedido } from '../../../../core/models/item-pedido';
 import { configuracionRestauranteMock } from '../../../../../app/core/interceptors/handlers/configuracion-restaurante.mock';
 import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
 import { CartaState } from '../service/carta-state';
+
 
 @Component({
   selector: 'app-ver-carta',
@@ -37,6 +38,25 @@ export class VerCarta {
   faFilter = faFilter;
   configuracion = configuracionRestauranteMock;
   cantidadPersonas = signal(1);
+
+  menuOrdenarAbierto =signal(false);
+  ordenSeleccionado = signal('');
+  @HostListener('document:click', ['$event'])
+  onClickOutSide(event: Event) {
+    const target = event.target as HTMLElement;
+    if(!target.closest('.dropdown-ordenar')){
+      this.menuOrdenarAbierto.set(false);
+    }
+  }
+  toggleMenuOrdenar(): void {
+  this.menuOrdenarAbierto.update(v => !v);
+}
+
+seleccionarOrden(criterio: string, label: string): void {
+  this.ordenSeleccionado.set(label);
+  this.state.setOrdenar(criterio);
+  this.menuOrdenarAbierto.set(false);
+}
 
   ngOnInit(): void {
     this.cantidadPersonas.set(history.state?.cantidadPersonas ?? 1);
