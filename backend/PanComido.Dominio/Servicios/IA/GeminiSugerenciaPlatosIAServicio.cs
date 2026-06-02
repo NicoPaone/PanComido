@@ -11,9 +11,29 @@ namespace PanComido.Dominio.Servicios.IA
 {
     public class GeminiSugerenciaPlatosIAServicio : ISugerenciaPlatosIAServicio
     {
-        public Task<SugerenciaIA> GenerarSugerenciasAsync(List<Insumo> insumosDisponibles, Dictionary<int, List<Lote>> vencimientosProximos, int cantidadPlatos)
+        private readonly HttpClient _httpClient;
+
+        public GeminiSugerenciaPlatosIAServicio(HttpClient httpClient)
         {
+            _httpClient = httpClient;
+        }
+
+        public async Task<SugerenciaIA> GenerarSugerenciasAsync(List<Insumo> insumosDisponibles, 
+                                                                Dictionary<int, List<Lote>> vencimientosProximos, 
+                                                                int cantidadPlatos)
+        {
+            string prompt = ConstruirPrompt(insumosDisponibles,
+                                            vencimientosProximos,
+                                            cantidadPlatos);
+            
             throw new NotImplementedException();
+        }
+
+        private string ConstruirPrompt(List<Insumo> insumosDisponibles, 
+                                        Dictionary<int, List<Lote>> vencimientosProximos, 
+                                        int cantidadPlatos)
+        {
+            return null;
         }
     }
 }
