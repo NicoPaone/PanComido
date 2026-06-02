@@ -6,6 +6,11 @@
   <!-- Contenido central -->
   <div class="content-box">
     <h3>{{ titulo() }}</h3>
+
+    @if (llamado().categoriaDescripcion) {
+      <span class="badge-categoria">{{ llamado().categoriaDescripcion }}</span>
+    }
+
     <p>{{ llamado().descripcion || 'Sin descripción' }}</p>
   </div>
 

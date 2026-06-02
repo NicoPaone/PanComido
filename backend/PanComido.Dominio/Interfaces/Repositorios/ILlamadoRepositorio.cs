@@ -9,7 +9,7 @@ namespace PanComido.Dominio.Interfaces.Repositorios
 {
     public interface ILlamadoRepositorio
     {
-        Task crearLlamadoAsync(Llamado llamado);
+        Task<Llamado> crearLlamadoAsync(Llamado llamado);
 
         Task<bool> ResolverLlamadoAsync(int llamadoId);
         Task<List<Llamado>> ObtenerLlamadosPendientesPorMozoAsync(int llamadoId);

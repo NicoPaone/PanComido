@@ -22,13 +22,26 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             _llamadoMapper = llamadoMapper;
         }
 
-        public async Task crearLlamadoAsync(DOM.Llamado llamado)
+        public async Task<DOM.Llamado> crearLlamadoAsync(DOM.Llamado llamado)
         {
-            EF.Llamado efLlamado = _llamadoMapper.paraEntidad(llamado);
-            await _ctx.Llamados.AddAsync(efLlamado);
+         EF.Llamado efLlamado = _llamadoMapper.paraEntidad(llamado);
+         await _ctx.Llamados.AddAsync(efLlamado);
+         await _ctx.SaveChangesAsync();
 
-            await _ctx.SaveChangesAsync();
-        }
+         var completo = await _ctx.Llamados
+           .Include(l => l.CategoriaLlamado)
+           .Include(l => l.Mozo)
+               .ThenInclude(m => m.Mesas)
+           .FirstAsync(l => l.Id == efLlamado.Id);
+
+         var dominioCompleto = _llamadoMapper.paraDominio(completo);
+         if (llamado.MesaId.HasValue)
+         {
+            dominioCompleto.MesaId = llamado.MesaId;
+         }
+         return dominioCompleto;
+
+      }
 
         public async Task<List<DOM.Llamado>> ObtenerLlamadosPendientesPorMozoAsync(int mozoId)
         {
