@@ -26,7 +26,7 @@ public partial class Plato
     public bool Destacado { get; set; }
 
     [Column("sugerencia")]
-    public bool? Sugerencia { get; set; }
+    public bool Sugerencia { get; set; }
 
     [ForeignKey("CategoriaPlatoId")]
     [InverseProperty("Platos")]
