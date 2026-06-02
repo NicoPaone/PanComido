@@ -174,7 +174,7 @@
 
 .picker-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) 96px 88px 80px;
+  grid-template-columns: minmax(0, 1.2fr) 96px 120px 72px;
   gap: 0.65rem;
   margin-top: 1rem;
 }
@@ -189,6 +189,7 @@
 }
 
 .product-field {
+  align-self: start;
   min-width: 0;
   position: relative;
 }
@@ -266,6 +267,13 @@
 
 .quantity-field input {
   text-align: center;
+}
+
+.quantity-equivalence {
+  color: #0f2f64;
+  font-size: 0.78rem;
+  line-height: 1.15;
+  white-space: nowrap;
 }
 
 .selector-row {
@@ -452,7 +460,7 @@
   color: #15803d;
 }
 
-.estado-confirmado {
+.estado-enviado {
   background: rgba(2, 132, 199, 0.14);
   color: #0369a1;
 }
@@ -460,11 +468,6 @@
 .estado-pendiente {
   background: rgba(234, 179, 8, 0.18);
   color: #a16207;
-}
-
-.estado-cancelado {
-  background: rgba(239, 68, 68, 0.14);
-  color: #b91c1c;
 }
 
 .success-note {
@@ -476,12 +479,31 @@
   padding: 0.85rem 1rem;
 }
 
+.receive-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
 .empty-state-panel {
   min-height: 420px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
+}
+
+.compact-state {
+  min-height: 220px;
+  margin-top: 1rem;
+}
+
+.error-state {
+  border: 1px solid rgba(185, 28, 28, 0.16);
+  border-radius: 8px;
+  background: rgba(254, 242, 242, 0.72);
+  padding: 1rem;
 }
 
 .proveedor-form-grid {
