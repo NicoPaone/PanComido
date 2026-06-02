@@ -1,6 +1,6 @@
 import { UnidadMedida } from "./unidad-medida";
 
-export type EstadoPedidoProveedor = 'Pendiente' | 'Enviado' | 'Recibido';
+export type EstadoPedidoProveedor = 'Pendiente' | 'Enviado' | 'Recibido' | 'Confirmado' | 'Cancelado';
 
 export interface PedidoProveedor {
   id: string | number;
