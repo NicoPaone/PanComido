@@ -30,7 +30,8 @@ namespace PanComido.Presentacion.Controllers
         [HttpPost("generar-llamado")]
         public async Task<ActionResult<LlamadoResponseDto>> CrearLlamado([FromBody] LlamarMozoRequestDto request)
         {
-            var llamadoGuardado = await _llamarMozoCasoDeUSo.EjecutarAsync(
+            var restauranteId = HttpContext.ObtenerMozoId();
+            var llamadoGuardado = await _llamarMozoCasoDeUSo.EjecutarAsync(restauranteId, 
                 request.MesaId, request.CategoriaLlamadoId, request.Descripcion);
 
             var dto = _llamadoMapper.aDto(llamadoGuardado);

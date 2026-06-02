@@ -55,7 +55,6 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             return efComanda == null ? null : _mapper.ParaDominio(efComanda);
         }
 
-
         public async Task<List<Comanda>> ObtenerComandasActivasParaCocinaAsync(int restauranteId)
         {
             var efList = await _ctx.Comanda
@@ -70,16 +69,21 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             return efList.Select(C => _mapper.ParaDominio(C)).ToList();
         }
 
+        private IQueryable<EF.Comandum> BaseQueryMozo()
+        {
+            return _ctx.Comanda
+                .Include(c => c.EstadoComanda)
+                .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.ConfiguracionArticulos.Any(ca => ca.Id == 1)))
+                    .ThenInclude(ac => ac.Articulo)
+                        .ThenInclude(a => a.Plato)
+                .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.ConfiguracionArticulos.Any(ca => ca.Id == 1)))
+                    .ThenInclude(ac => ac.Articulo)
+                        .ThenInclude(a => a.Insumo);
+        }
+
         public async Task<List<Comanda>> ObtenerComandasActivasPorMozoAsync(int restauranteId, int mozoId)
         {
-            var efList = await _ctx.Comanda
-               .Include(c => c.EstadoComanda)
-               .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.ConfiguracionArticulos.Any(ca => ca.Id == 1)))
-                   .ThenInclude(ac => ac.Articulo)
-                      .ThenInclude(a => a.Plato)
-               .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.ConfiguracionArticulos.Any(ca => ca.Id == 1)))
-                  .ThenInclude(ac => ac.Articulo)
-                      .ThenInclude(a => a.Insumo)
+            var efList = await BaseQueryMozo()
                .Where(c => c.RestauranteId == restauranteId)
                .Where(c => _ctx.Mozos
                    .Where(m => m.IdEmpleado == mozoId)
@@ -88,7 +92,28 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                .Where(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada
                            && c.EstadoComandaId != (int)EstadoComanda.Abierta)
                .ToListAsync();
-            return efList.Select(C => _mapper.ParaDominio(C)).ToList();
+            return efList.Select(c => _mapper.ParaDominio(c)).ToList();
+        }
+
+
+
+        public async Task<DOM.Comanda?> ObtenerComandaPorIdAsync(int comandaId)
+        {
+            var efComanda = await BaseQueryMozo()
+                .FirstOrDefaultAsync(c => c.Id == comandaId);
+
+            return efComanda == null ? null : _mapper.ParaDominio(efComanda);
+        }
+
+        public async Task MarcarItemEntregadoAsync(int comandaId, int articuloComandaId)
+        {
+            var efItem = await _ctx.ArticuloComanda
+                .FirstOrDefaultAsync(ac => ac.Id == articuloComandaId && ac.ComandaId == comandaId);
+
+            if (efItem == null) return;
+
+            efItem.Entregado = true;
+            await _ctx.SaveChangesAsync();
         }
     }
 
