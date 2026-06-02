@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnInit, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { take } from 'rxjs';
@@ -13,6 +13,7 @@ import { Aviso } from '../../../../core/models/aviso.model';
 import { VencimientosStateService } from '../../aviso-vencimientos/services/vencimientos.state';
 import { AvisosStateService } from '../services/avisos.state';
 import { UnidadMedida } from '../../../../core/models/unidad-medida';
+import { RealizarPedidoSugeridoStateService } from '../../realizar-pedido-sugerido/services/realizar-pedido-sugerido.state';
 
 @Component({
   selector: 'app-avisos',
@@ -26,13 +27,43 @@ export class AvisosPage implements OnInit {
   
   state = inject(AvisosStateService);
   pedidoState = inject(VencimientosStateService);
+  pedidoSugeridoState = inject(RealizarPedidoSugeridoStateService);
   router = inject(Router);
   
   isPedidoOffcanvasOpen = false;
   cantidadAgregar = 1;
   stockAvisoSeleccionado: Aviso | null = null;
+  vencimientoSeleccionado: Aviso | null = null;
+  panelPreviewAbierto = signal<'sistema' | 'ia' | null>(null);
+  
+  isStockExpanded = signal(true);
+  isVencimientosExpanded = signal(true);
+
+  toggleStock() {
+    this.isStockExpanded.update(v => !v);
+  }
+
+  toggleVencimientos() {
+    this.isVencimientosExpanded.update(v => !v);
+  }
+
+  abrirPreviewSugerencia(tipo: 'sistema' | 'ia') {
+    if (this.panelPreviewAbierto() === tipo) {
+      this.panelPreviewAbierto.set(null);
+      return;
+    }
+    this.panelPreviewAbierto.set(tipo);
+    if (tipo === 'sistema') {
+      this.pedidoSugeridoState.cargarDatos();
+    }
+  }
+
+  irASugerenciasSistemaFull() {
+    this.router.navigate(['/staff/gerente/realizar-pedido-sugerido']);
+  }
 
   ngOnInit(): void {
+    this.state.cargarAvisos();
     this.state.cargarSugerenciasCocina();
   }
 
@@ -41,7 +72,15 @@ export class AvisosPage implements OnInit {
   }
 
   abrirAviso(aviso: Aviso) {
-    this.abrirVencimientos(aviso.id);
+    if (aviso.tipo === 'vencimiento') {
+      this.vencimientoSeleccionado = aviso;
+    } else {
+      this.abrirVencimientos(aviso.id);
+    }
+  }
+
+  cerrarModalVencimiento() {
+    this.vencimientoSeleccionado = null;
   }
 
   abrirVencimientos(avisoId: string) {
@@ -107,23 +146,27 @@ export class AvisosPage implements OnInit {
     this.router.navigate(['/staff', 'gerente', 'modificar-carta']);
   }
 
-  // ⚠️ DEUDA TÉCNICA: El modelo Aviso debería traer el 'stockActual' numérico puro.
-  // Parsear texto de la UI es peligroso.
+  // Usa el stock real del backend a través del payload
   private getStockDisponible(aviso: Aviso): number {
-    if (!aviso.subtitulo) return 0;
-    const match = aviso.subtitulo.match(/[\d.]+/);
-    return match ? Number(match[0]) : 0; // Cambiado a 0 por defecto, inventar un 1 falsea el stock.
+    if (aviso.payloadStock) {
+      return aviso.payloadStock.stockActual;
+    }
+    return 0;
   }
 
-  // 🔥 EL FIX: Devuelve el objeto completo macheando con los IDs de tu backend
+  // Devuelve la unidad desde el payload
   private getUnidadMedida(aviso: Aviso): UnidadMedida {
-    const subtitulo = aviso.subtitulo?.toUpperCase() || '';
+    const defaultUnidad: UnidadMedida = { id: 1, nombre: 'Kg' };
     
-    if (subtitulo.includes(' L'))  return { id: 3, nombre: 'Lt' };
-    if (subtitulo.includes(' UN')) return { id: 5, nombre: 'Unidad' };
-    if (subtitulo.includes(' GR')) return { id: 2, nombre: 'Gr' };
+    if (aviso.payloadStock) {
+      const u = aviso.payloadStock.unidadMedida.toUpperCase();
+      if (u === 'L' || u === 'LT') return { id: 3, nombre: 'Lt' };
+      if (u === 'UN' || u === 'UNIDAD') return { id: 5, nombre: 'Unidad' };
+      if (u === 'GR') return { id: 2, nombre: 'Gr' };
+      return { id: 1, nombre: aviso.payloadStock.unidadMedida };
+    }
     
-    return { id: 1, nombre: 'Kg' }; // Default
+    return defaultUnidad;
   }
 
   private getCantidadInicial(aviso: Aviso): number {

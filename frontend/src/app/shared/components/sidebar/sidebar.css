@@ -1,3 +1,9 @@
+:host {
+  display: block;
+  z-index: 9999;
+  position: relative;
+}
+
 .sidebar {
   display: flex;
   flex-direction: column;
@@ -9,7 +15,7 @@
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 1700;
+  z-index: 9999;
   font-family: var(--font-family, 'Nunito', sans-serif);
 }
 
@@ -246,11 +252,11 @@
 @media (max-width: 768px) {
   .sidebar {
     width: 280px;
-    transform: translateX(-100%);
+    transform: translateX(0);
   }
 
   .sidebar.collapsed {
-    transform: translateX(0);
     width: 80px;
+    transform: translateX(0);
   }
 }
