@@ -4,14 +4,7 @@ import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boto
 import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
 import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
 import { PedidoService } from '../../../../core/services/pedido.service';
-
-interface PedidoItem {
-  plato: {
-    nombre: string;
-    precioVenta: number;
-  };
-  cantidad: number;
-}
+import { ItemPedido } from '../../../../core/models/item-pedido';
 
 @Component({
   selector: 'app-detalle-pedido',
@@ -21,11 +14,11 @@ interface PedidoItem {
   styleUrls: ['./detalle-pedido.css']
 })
 export class DetallePedido {
-  private router = inject(Router);
+   private router = inject(Router);
   private pedidoService = inject(PedidoService);
 
   configuracion = configuracionRestauranteMock;
-  pedidos = signal<PedidoItem[]>([]);
+  pedidos = signal<ItemPedido[]>([]);
 
   constructor() {
     this.pedidos.set(this.pedidoService.obtenerPedidos());
@@ -33,17 +26,13 @@ export class DetallePedido {
 
   get total(): number {
     return this.pedidos().reduce(
-      (acc, item) => acc + item.plato.precioVenta * item.cantidad,
+      (acc, item) => acc + item.plato.precio * item.cantidad,
       0
     );
   }
 
   volver(): void {
     this.router.navigate(['/comensal/pedido']);
-  }
-
-  editar(item: PedidoItem): void {
-    this.router.navigate(['/comensal/personalizar-plato']);
   }
 
   confirmarPedido(): void {
