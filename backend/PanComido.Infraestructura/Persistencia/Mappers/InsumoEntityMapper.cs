@@ -21,7 +21,6 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             {
                 StockMinimo = efArticulo.Insumo.StockMinimo,
                 Tipo = efArticulo.Insumo.CategoriaInsumo != null ? (TipoInsumo)efArticulo.Insumo.CategoriaInsumo.TipoAplica : default,
-                Tipo = (TipoInsumo?)efArticulo.Insumo.CategoriaInsumo?.TipoAplica,
                 Categoria = efArticulo.Insumo.CategoriaInsumo?.Descripcion,
                 UnidadMedida = efArticulo.Insumo.UnidadMedida?.Nombre,
                 CategoriaId = efArticulo.Insumo.CategoriaInsumoId,
