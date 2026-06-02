@@ -111,14 +111,15 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             return efComanda == null ? null : _mapper.ParaDominio(efComanda);
         }
 
-        public async Task MarcarItemEntregadoAsync(int comandaId, int articuloComandaId)
+        public async Task MarcarItemsEntregadosAsync(int comandaId, List<int> articuloComandaIds)
         {
-            var efItem = await _ctx.ArticuloComanda
-                .FirstOrDefaultAsync(ac => ac.Id == articuloComandaId && ac.ComandaId == comandaId);
+            var efItems = await _ctx.ArticuloComanda
+                .Where(ac => ac.ComandaId == comandaId && articuloComandaIds.Contains(ac.Id))
+                .ToListAsync();
 
-            if (efItem == null) return;
+            foreach (var item in efItems)
+                item.Entregado = true;
 
-            efItem.Entregado = true;
             await _ctx.SaveChangesAsync();
         }
     }
