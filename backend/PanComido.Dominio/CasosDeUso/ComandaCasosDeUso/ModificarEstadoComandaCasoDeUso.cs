@@ -13,22 +13,27 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
    {
       private readonly IComandaRepositorio _comandaRepositorio;
         private readonly IComandaNotificador _comandaNotificador;
+        private readonly IMesaRepositorio _mesaRepositorio;
 
-        public ModificarEstadoComandaCasoDeUso(IComandaRepositorio comandaRepositorio, IComandaNotificador comandaNotificador)
-      {
-         _comandaRepositorio = comandaRepositorio;
-         _comandaNotificador = comandaNotificador;
+        public ModificarEstadoComandaCasoDeUso(
+            IComandaRepositorio comandaRepositorio,
+            IComandaNotificador comandaNotificador,
+            IMesaRepositorio mesaRepositorio)
+        {
+            _comandaRepositorio = comandaRepositorio;
+            _comandaNotificador = comandaNotificador;
+            _mesaRepositorio = mesaRepositorio;
         }
 
         public async Task<Comanda?> EjecutarAsync(int mesaId, int estadoId)
         {
-            Console.Write("Llego????");
-            await _comandaRepositorio.ModificarEstadoComandaAsync(mesaId, estadoId);
+            var resultado = await _comandaRepositorio.ModificarEstadoComandaAsync(mesaId, estadoId);
+            if (resultado == null) throw new KeyNotFoundException("No se encontró una comanda activa para esa mesa.");
             Comanda comanda = await _comandaRepositorio.ObtenerComandaPorIdMesaAsync(mesaId);
-            await _comandaNotificador.NotificarEstadoModificadoAsync(comanda);
+            var mozoId = await _mesaRepositorio.ObtenerMozoIdsPorMesaAsync(mesaId);
+            await _comandaNotificador.NotificarEstadoModificadoAsync(comanda, mozoId);
 
             return comanda;
-
         }
     }
 }

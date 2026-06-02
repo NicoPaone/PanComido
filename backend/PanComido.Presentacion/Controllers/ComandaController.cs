@@ -11,18 +11,18 @@ namespace PanComido.Presentacion.Controllers
     {
         private readonly ListarComandaActivaCocinaCasoDeUso _listarComandasActivasCocinaCasoDeUso;
         private readonly ModificarEstadoComandaCasoDeUso _modificarEstadoComandaCasoDeUso;
-        private readonly MarcarItemEntregadoCasoDeUso _marcarItemEntregadoCasoDeUso;
+        private readonly MarcarItemsEntregadosCasoDeUso _marcarItemsEntregadosCasoDeUso;
         private readonly ComandaMapper _mapper;
 
         public ComandaController(
             ListarComandaActivaCocinaCasoDeUso listarComandaActivasCasoDeUso,
             ModificarEstadoComandaCasoDeUso modificar,
-            MarcarItemEntregadoCasoDeUso marcarItemEntregadoCasoDeUso,
+            MarcarItemsEntregadosCasoDeUso marcarItemsEntregadosCasoDeUso,
             ComandaMapper mapper)
         {
             _listarComandasActivasCocinaCasoDeUso = listarComandaActivasCasoDeUso;
             _modificarEstadoComandaCasoDeUso = modificar;
-            _marcarItemEntregadoCasoDeUso = marcarItemEntregadoCasoDeUso;
+            _marcarItemsEntregadosCasoDeUso = marcarItemsEntregadosCasoDeUso;
             _mapper = mapper;
 
         }
@@ -47,7 +47,7 @@ namespace PanComido.Presentacion.Controllers
         [HttpPut("{comandaId}/entregar-items")]
         public async Task<ActionResult<ComandaResponseDto>> MarcarItemComandaEntregado(int comandaId, [FromBody] List<int> itemsEntregados)
         {
-            var comanda = await _marcarItemEntregadoCasoDeUso.EjecutarAsync(comandaId, itemsEntregados);
+            var comanda = await _marcarItemsEntregadosCasoDeUso.EjecutarAsync(comandaId, itemsEntregados);
             var comandaDto = _mapper.ComandaResponseDto(comanda);
             return Ok(comandaDto);
         } 

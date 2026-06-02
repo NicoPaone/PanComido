@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
 {
-    public class MarcarItemEntregadoCasoDeUso
+    public class MarcarItemsEntregadosCasoDeUso
     {
         private readonly IComandaRepositorio _comandaRepositorio;
 
-        public MarcarItemEntregadoCasoDeUso(IComandaRepositorio comandaRepositorio)
+        public MarcarItemsEntregadosCasoDeUso(IComandaRepositorio comandaRepositorio)
         {
             _comandaRepositorio = comandaRepositorio;
         }
@@ -37,7 +37,14 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
                 throw new InvalidOperationException("La comanda ya está finalizada.");
 
             await _comandaRepositorio.MarcarItemsEntregadosAsync(comandaId, articuloComandaIds);
-            return await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
+            Comanda comandaDespuesDeEntregados = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
+
+            if(comandaDespuesDeEntregados.Items.All(i => i.Entregado))
+            {
+                await _comandaRepositorio.ModificarEstadoComandaAsync(comandaDespuesDeEntregados.MesaId, (int)EstadoComanda.EnEspera);
+                return await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
+            }
+            return comandaDespuesDeEntregados;
         }
     }
 }
