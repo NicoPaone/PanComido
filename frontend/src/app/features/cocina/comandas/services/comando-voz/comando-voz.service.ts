@@ -1,10 +1,9 @@
 import { Injectable, signal } from '@angular/core';
-import { EstadoComandaId } from '../../../../../core/models/comanda/comanda';
 
 export interface ComandoVoz {
   comandaId: number;
   accion: 'aceptar' | 'finalizar';
-  nuevoEstadoId:EstadoComandaId
+  nuevoEstadoId:number
   timestamp: number;
 }
 
@@ -66,14 +65,14 @@ export class ComandoVozService {
       this.comandoDetectado.set({
         comandaId: Number(matchFinalizar[1]),
         accion: 'finalizar',
-        nuevoEstadoId: EstadoComandaId.Finalizada,
+        nuevoEstadoId: 3, // EstadoComandaId.Finalizada
         timestamp: Date.now(),
       });
     }else if(matchAceptar){
       this.comandoDetectado.set({
         comandaId: Number(matchAceptar[1]),
         accion: 'aceptar',
-        nuevoEstadoId: EstadoComandaId.EnPreparacion,
+        nuevoEstadoId: 2, // EstadoComandaId.EnPreparacion
         timestamp: Date.now(),
       })
     } 
