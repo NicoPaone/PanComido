@@ -36,7 +36,7 @@
     </p>
 
     <!-- EXTRAS -->
-    <div class="mb-4">
+    <!-- <div class="mb-4">
 
       <h5 class="fw-bold mb-3">
         Agregar extras
@@ -58,7 +58,7 @@
 
       </div>
 
-    </div>
+    </div> -->
 
     <!-- REMOVER -->
     <div class="mb-4">
@@ -105,15 +105,16 @@
     </div>
 
     <!-- BOTON -->
-    <app-boton
-      variante="success"
+    <app-boton-comensal
+      [backgroundColor]="configuracion.paleta.botonPrimario"
+          [textColor]="configuracion.paleta.textoClaro"
       class="w-100"
       (click)="guardarCambios()"
     >
 
-      Guardar cambios
+      Aplicar cambios
 
-    </app-boton>
+    </app-boton-comensal>
 
   </div>
 

@@ -5,6 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
+import { PedidoService } from '../../../../core/services/pedido.service';
+import { PlatoService } from '../../../../core/services/plato.service';
+import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
+
 
 @Component({
   selector: 'app-personalizar-plato',
@@ -13,7 +17,8 @@ import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
     CommonModule,
     Boton,
     FormsModule,
-    LlamarAlMozo
+    LlamarAlMozo,
+    BotonComensal
   ],
   templateUrl: './personalizar-plato.html',
   styleUrls: ['./personalizar-plato.css']
@@ -21,22 +26,11 @@ import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
 export class PersonalizarPlato implements OnInit {
 
   plato: any;
-   configuracion = configuracionRestauranteMock;
+  configuracion = configuracionRestauranteMock;
 
-  ingredientesExtra = [
-    'Queso extra',
-    'Panceta',
-    'Huevo',
-    'Palta',
-    'Salsa picante'
-  ];
+  
 
-  ingredientesRemover = [
-    'Cebolla',
-    'Tomate',
-    'Mostaza',
-    'Mayonesa'
-  ];
+  ingredientesRemover: string[] = [];
 
   extrasSeleccionados: string[] = [];
   removidosSeleccionados: string[] = [];
@@ -44,21 +38,24 @@ export class PersonalizarPlato implements OnInit {
   observaciones = '';
 
   constructor(
-    private router: Router
+    private router: Router,
+    private pedidoService: PedidoService,
+    private platoService: PlatoService
   ) {}
 
-  ngOnInit() {
+ngOnInit() {
 
-    this.plato = history.state?.plato;
+  this.plato = history.state?.plato;
 
-  }
+  console.log('PLATO:', this.plato);
+
+  this.ingredientesRemover =
+    this.plato?.plato?.receta?.map((i: any) => i.nombre) || [];
+
+}
 
   volver() {
-
-    this.router.navigate([
-      '/comensal/pedido'
-    ]);
-
+    this.router.navigate(['/comensal/pedido']);
   }
 
   toggleExtra(ingrediente: string) {
@@ -104,9 +101,7 @@ export class PersonalizarPlato implements OnInit {
       observaciones: this.observaciones
     });
 
-    this.router.navigate([
-      '/comensal/pedido'
-    ]);
+    this.router.navigate(['/comensal/pedido']);
 
   }
 

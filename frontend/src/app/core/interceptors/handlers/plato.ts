@@ -13,7 +13,7 @@ let dbPlatos: Plato[] = [
     recomendado: true,
     ventas: 150,
     categoria: 'Principales',
-    imagen: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&q=80&w=800&h=600',
+  imagen: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKEGXoEhw1noD0K7RBypJC7RrtSX8V42ps2wJ8YgLjagQW_Rn9hnRMM4LFO1cUp0UWLnirJ_JWFHd07pehskFg0VSKOYcQ-ArTILAfLQ&s=10&w=200&h=150',
     receta: [
       { id: '6', nombre: 'Bife de Chorizo', cantidad: 1.5, unidadMedida: 'KG' },
       { id: '7', nombre: 'Huevos Blancos', cantidad: 6, unidadMedida: 'UN' },
@@ -128,7 +128,7 @@ let dbPlatos: Plato[] = [
     recomendado: false,
     ventas: 50,
     categoria: 'Principales',
-    imagen: 'assets/pollo-al-curry.png',
+    imagen: 'https://i.blogs.es/8c3360/pollo_curry/840_560.jpg?w=200&h=150',
     receta: [
       { id: '6', nombre: 'Bife de Chorizo', cantidad: 1, unidadMedida: 'KG' },
       { id: '3', nombre: 'Aceite de Girasol', cantidad: 0.5, unidadMedida: 'L' },

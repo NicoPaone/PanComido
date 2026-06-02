@@ -1,7 +1,9 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { Plato, RecetaIngrediente } from '../models/plato';
-import { Observable, of, delay } from 'rxjs';
+import { Observable, of, delay, catchError } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { ApiClient } from './api-client';
+
 
 export const PLATO_ENDPOINTS = {
   base: `${environment.apiUrl}/platos`,
@@ -35,7 +37,9 @@ export function calcularCostoReceta(receta: RecetaIngrediente[]): number {
   providedIn: 'root'
 })
 export class PlatoService {
-private platosList = signal<Plato[]>([
+  private api = inject(ApiClient);
+
+  private platosList = signal<Plato[]>([
   {
     id: 1,
     nombre: 'Milanesa napolitana',
@@ -195,21 +199,44 @@ private platosList = signal<Plato[]>([
     ]
   }
 ]);
+  // getPlatos(): Observable<Plato[]> {
+  //   // Usar la misma API/mocks que el resto de la app para mantener las imágenes sincronizadas.
+  //   return this.api.get<Plato[]>('platos');
+  // }
+
   getPlatos(): Observable<Plato[]> {
-    // NOTE: El endpoint del back para listar platos debe conectarse aquí
-    return of(this.platosList()).pipe(delay(200));
-  }
+  return this.api.get<Plato[]>('platos').pipe(
+    catchError(error => {
+      console.warn('No se pudo obtener los platos desde la API, usando mocks.', error);
+      return of(this.platosList());
+    })
+  );
+}
+
+  // crearPlato(plato: Omit<Plato, 'id'>): Observable<Plato> {
+  //   const nuevoPlato: Plato = {
+  //     ...plato,
+  //     id: Date.now()
+  //   };
+  //   this.platosList.update(platos => [...platos, nuevoPlato]);
+  //   // NOTE: El endpoint del back para crear un plato nuevo debe conectarse aquí
+  //   return of(nuevoPlato).pipe(delay(200));
+  // }
 
   crearPlato(plato: Omit<Plato, 'id'>): Observable<Plato> {
-    const nuevoPlato: Plato = {
-      ...plato,
-      id: Date.now()
-    };
-    this.platosList.update(platos => [...platos, nuevoPlato]);
-    // NOTE: El endpoint del back para crear un plato nuevo debe conectarse aquí
-    return of(nuevoPlato).pipe(delay(200));
-  }
+  return this.api.post<Plato>('platos', plato).pipe(
+    catchError(() => {
+      const nuevoPlato: Plato = {
+        ...plato,
+        id: Date.now()
+      };
 
+      this.platosList.update(platos => [...platos, nuevoPlato]);
+
+      return of(nuevoPlato);
+    })
+  );
+}
   updatePlato(id: number, updatedData: Partial<Plato>): Observable<Plato> {
     this.platosList.update(platos =>
       platos.map(p => {
