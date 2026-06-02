@@ -19,7 +19,7 @@ namespace PanComido.Presentacion.Controllers
             _comandaMapper = comandaMapper;
         }
 
-        [HttpGet("/comandas")]
+        [HttpGet("/listar-comandas")]
         public async Task<ActionResult<List<ComandaResponseDto>>> ObtenerComandasActivas()
         {
             int restauranteId = HttpContext.ObtenerRestauranteId();
