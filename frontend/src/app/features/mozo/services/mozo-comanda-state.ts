@@ -38,16 +38,17 @@ export class MozoComandaState {
       }
     });
   }
-  // entregarItems(comandaId: number, articuloComandaIds: number[]): void {
-  //    if (articuloComandaIds.length === 0) return;
 
-  //   const peticiones = articuloComandaIds.map(id =>
-  //     this.api.marcarItemEntregado(comandaId, id)
-  //   );
+  entregarItems(comandaId: number, articuloComandaIds: number[]): void {
+    if (articuloComandaIds.length === 0) return;
 
-  //   forkJoin(peticiones).subscribe({
-  //     next: () => this.cargarComandas(),
-  //     error: (err) => console.error('Error al entregar items', err)
-  //   });
-  // }
+    this.api.entregarItems(comandaId, articuloComandaIds).subscribe({
+      next: (comandaActualizada) => {
+        this._comandas.update(lista =>
+          lista.map(c => c.id === comandaActualizada.id ? comandaActualizada : c)
+        );
+      },
+      error: (err) => console.error('Error al entregar items', err)
+    });
+  }
 }

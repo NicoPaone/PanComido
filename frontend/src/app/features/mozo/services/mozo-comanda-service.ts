@@ -14,6 +14,9 @@ export class MozoComandaService {
   listarComandas(): Observable<Comanda[]>{
     return this.api.get<Comanda[]>(`${this.endpoint}/listar-comandas`)
    }
+   entregarItems(comandaId: number, articuloComandaIds: number[]): Observable<Comanda>{
+    return this.api.put<Comanda>(`comanda/${comandaId}/entregar-items`, articuloComandaIds)
+   }
    
 
 

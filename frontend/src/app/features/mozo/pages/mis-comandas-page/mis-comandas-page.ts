@@ -41,8 +41,8 @@ export class MisComandasPage {
     this.comandaSeleccionada.set(null);
   }
 
-  // onEntregar(evento: { comandaId: number; articuloComandaIds: number[] }): void {
-  //   this.state.entregarItems(evento.comandaId, evento.articuloComandaIds);
-  //   this.comandaSeleccionada.set(null);
-  // }
+  onEntregar(evento: { comandaId: number; articuloComandaIds: number[] }): void {
+    this.state.entregarItems(evento.comandaId, evento.articuloComandaIds);
+    this.comandaSeleccionada.set(null);
+  }
 }

@@ -45,7 +45,8 @@
         @for (comanda of state.comandasEnEspera(); track comanda.id) {
           <app-comanda-mozo-card
             [comanda]="comanda"
-            (ver)="abrirDetalle($event)">
+            (ver)="abrirDetalle($event)"
+            >
           </app-comanda-mozo-card>
         }
       </div>
@@ -56,6 +57,7 @@
     <app-comanda-mozo-detalle
       [comanda]="comandaSeleccionada()!"
       (cerrar)="cerrarDetalle()"
+      (entregar)="onEntregar($event)"
       >
     </app-comanda-mozo-detalle>
   }
