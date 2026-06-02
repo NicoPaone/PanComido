@@ -26,7 +26,14 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                     InsumoId = pi.IngredienteId,
                     Opcional = pi.Opcional,
                     Cantidad = pi.Cantidad
-                }).ToList() ?? new List<DOM.PlatoIngrediente>()
+                }).ToList() ?? new List<DOM.PlatoIngrediente>(),
+
+                // para mostrar en carta
+                Categoria = efArticulo.Plato.CategoriaPlato?.Descripcion,
+
+                Restricciones = efArticulo.Plato.Restriccions?
+                    .Select(rp => rp.Descripcion)
+                    .ToList() ?? new List<string>(),
             };
         }
 
