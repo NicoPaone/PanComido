@@ -128,12 +128,15 @@ export class VerProveedoresStateService {
       });
   }
 
-  seleccionarProveedor(proveedorId: number | string): void {
-    this.proveedorSeleccionadoId.set(proveedorId);
-    this.mensajeAccion.set(null);
-    this.pedidoHistorialSeleccionado.set(null);
-    this._historialProveedor.set([]);
+  // Load insumos (productos) for a specific provider
+  cargarInsumosProveedor(proveedorId: number | string): void {
+    this.api.getInsumosProveedor(proveedorId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(prods => {
+        this.productos.set(prods);
+      });
   }
+
 
   cargarHistorial(id: number | string): void {
     this._loadingHistorial.set(true);
@@ -153,6 +156,7 @@ export class VerProveedoresStateService {
 
   abrirPedido(proveedorId: number | string): void {
     this.seleccionarProveedor(proveedorId);
+
     this.panelModo.set('pedido');
     this.mensajeAccion.set(null);
   }
@@ -172,7 +176,14 @@ export class VerProveedoresStateService {
 
   productosParaAgregar(busqueda: string): Insumo[] {
     const texto = busqueda.toLowerCase().trim();
-    const productos = [...this.productos()].sort((a, b) => {
+    // Filter by provider categories if a provider is selected
+    const proveedor = this.proveedorSeleccionado();
+    let productos = [...this.productos()];
+    if (proveedor && proveedor.categorias?.length) {
+      productos = productos.filter(p => proveedor.categorias?.includes(p.categoriaIngrediente));
+    }
+    // Prioritize suggested products then sort alphabetically
+    productos = productos.sort((a, b) => {
       const sugeridoA = this.esProductoSugerido(a) ? 0 : 1;
       const sugeridoB = this.esProductoSugerido(b) ? 0 : 1;
       return sugeridoA - sugeridoB || a.nombre.localeCompare(b.nombre);

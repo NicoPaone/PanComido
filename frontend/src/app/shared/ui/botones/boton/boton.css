@@ -1,8 +1,9 @@
-.btn-container{
-   gap: 8px;
+.btn-container {
+  gap: 8px;
 }
+
 .btn {
-   display: inline-flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
@@ -13,12 +14,23 @@
 }
 
 /* Tamaños */
-.btn-sm { padding: 6px 12px; font-size: 0.85rem; }
-.btn-md { padding: 8px 20px; font-size: 0.95rem; }
-.btn-lg { padding: 14px 28px; font-size: 1.15rem; }
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+
+.btn-md {
+  padding: 8px 20px;
+  font-size: 0.95rem;
+}
+
+.btn-lg {
+  padding: 14px 28px;
+  font-size: 1.15rem;
+}
 
 .btn-tab {
-   
+
   background-color: #ffffff;
   border: 1px solid var(--primary-teal);
   color: var(--gray-700);
@@ -32,12 +44,33 @@
   color: #ffffff;
 }
 
-/* === VARIANTES DE BOTONES NORMALES === */
-.btn-primary { background-color: var(--primary-red); color: white; }
-.btn-secondary { background-color: var(--primary-orange); color: white; }
-.btn-danger { background-color: var(--status-danger); color: white; }
-.btn-teal { background-color: var(--primary-teal); color: white; }
-.btn-warning { background-color: var(--primary-yellow, #ffea00); color: var(--gray-800, #333); }
-.btn-success { background-color: var(--status-success, #6abf3f); color: white; }
-.btn-outline { background-color: #ffffff; border: 1px solid var(--gray-300, #d1d5db); color: var(--gray-700, #374151); }
-.btn-outline:hover { background-color: var(--gray-100, #f3f4f6); }
+.btn-edit {
+  background-color: yellow;
+  color: black;
+}
+
+.btn-edit:hover {
+  background-color: #e6e600;
+  color: black;
+}
+
+.btn-delete {
+  background-color: var(--primary-red, #ea1d2c);
+}
+
+.btn-delete:hover {
+  background-color: #cc0000;
+}
+
+.btn-add {
+
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--status-success, #6ABF3F);
+  justify-content: center;
+}

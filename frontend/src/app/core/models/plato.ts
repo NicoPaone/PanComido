@@ -14,6 +14,7 @@ export interface Plato {
   costo: number;
   visible: boolean;
   imagen: string;
+  descripcion: string;
   receta?: RecetaIngrediente[];
   tiempoPreparacion?: number;
   categoria?: string;

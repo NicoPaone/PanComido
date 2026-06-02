@@ -1,0 +1,54 @@
+<div class="card border-0 shadow-sm rounded-4 p-2 dish-card">
+
+  <div class="row g-0 align-items-center">
+
+    <!-- Imagen -->
+    <div class="col-4">
+      <img 
+        [src]="plato.imagen"
+        class="img-fluid rounded-4 object-fit-cover dish-img"
+        [alt]="plato.nombre"
+      >
+    </div>
+
+    <!-- Info -->
+    <div class="col-8 ps-3 d-flex flex-column justify-content-between">
+
+      <div>
+
+        <h5 class="fw-bold mb-1 text-dark">
+          {{ plato.nombre }}
+        </h5>
+
+        <p class="mb-1 text-muted small">
+          <!-- ⏱ {{ plato.tiempoPreparacion }} min -->
+           ⏱ 25 min
+        </p>
+
+        <p class="mb-2 fw-bold text-danger fs-5">
+          $ {{ plato.precioVenta | number }}
+        </p>
+
+      </div>
+
+      <app-boton
+        variant="add"
+        class="w-100"
+        label="Agregar"
+         (click)="agregar()"
+      >
+
+        <span class="material-symbols-outlined">
+          add
+        </span>
+        <span>
+          Agregar
+        </span>        
+
+      </app-boton>
+
+    </div>
+
+  </div>
+
+</div>
