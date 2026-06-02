@@ -1,9 +1,7 @@
-import { Plato } from './plato';
+import { CartaItem } from './carta-item';
 
 export interface ItemPedido {
-
-  plato: Plato;
-
+ plato: CartaItem;
   cantidad: number;
 
 }

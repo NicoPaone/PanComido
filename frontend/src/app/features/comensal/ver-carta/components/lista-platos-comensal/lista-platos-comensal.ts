@@ -2,6 +2,7 @@ import { Component, input, output } from '@angular/core';
 import { Plato } from '../../../../../core/models/plato';
 import { CardPlatoComensalComponent } from '../card-plato-comensal/card-plato-comensal';
 import { ItemPedido } from '../../../../../core/models/item-pedido';
+import { CartaItem } from '../../../../../core/models/carta-item';
 
 @Component({
   selector: 'app-lista-platos-comensal',
@@ -10,7 +11,9 @@ import { ItemPedido } from '../../../../../core/models/item-pedido';
   templateUrl: './lista-platos-comensal.html',
 })
 export class ListaPlatosComensalComponent {
-  platos = input.required<Plato[]>();
+  
+
+  platos = input.required<CartaItem[]>();
   agregarPedido = output<ItemPedido>();
 
   onAgregarPedido(item: ItemPedido): void {

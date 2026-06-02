@@ -1,83 +1,159 @@
-.custom-select {
+.carta-container {
+  padding: 16px;
+  background-color: #F8F9FA; /* Fondo general limpio */
+  min-height: 100vh;
+  padding-bottom: 90px; /* Evita que el boton llamar al mozo tape los platos */
+}
 
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+/* Header */
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
 
-  background-color: #02596c;
-  color: white;
+.logo-img { 
+  height: 40px; 
+  width: 40px; 
+  border-radius: 50%; 
+}
 
+.mesa-info-container {
+  display: flex;
+  gap: 16px;
+}
+
+.badge-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  color: #212529;
+}
+
+/* Buscador */
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.buscador-wrapper {
+  flex: 1; /* Hace que tu app-buscador tome todo el ancho disponible */
+}
+
+.btn-filtro-icono {
+  background: none;
   border: none;
-  border-radius: 6px;
-
-  padding: 6px 40px 6px 12px;
-
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M1.5 5.5l6 6 6-6' stroke='white' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 16px;
-
+  color: #000;
+  padding: 0;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
-.custom-select option {
-
-  background-color: white;
-  color: black;
-
+.btn-filtro-icono .material-symbols-outlined {
+  font-size: 2.2rem;
 }
 
-.filtros-overlay {
+/* Botones Acción */
+.actions-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
 
-  position: fixed;
+.action-btn-wrapper {
+  flex: 1;
+}
 
-  top: 0;
-  left: 0;
-
+/* Magia CSS: Tu <select> convertido en el botón verde de la imagen */
+.custom-select-ordenar {
   width: 100%;
-  height: 100%;
-
-  background: white;
-
-  z-index: 9999;
-
-  padding: 24px;
-
-  overflow-y: auto;
-
+  appearance: none;
+  background-color: #2E7D32; 
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 11px 16px 11px 44px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 12px center;
+  background-size: 24px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.filtro-btn {
+.custom-select-ordenar option {
+  background-color: white;
+  color: #212529;
+}
 
-  background-color: #02596c;
-  border: none;
+.dropdown-ordenar {
+  position: relative;
+  width: 100%;
+}
 
-  color: white;
-
-  width: 48px;
-  height: 48px;
-
+.dropdown-trigger {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-
+  gap: 8px;
+  background-color: #2E7D32;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 11px 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-
-
-.logo img {
-  height: 35px;
-  width: 35px;
-  border-radius: 50%;
+.dropdown-trigger .material-symbols-outlined {
+  font-size: 1.2rem;
 }
 
-.filtro-chip {
-  background-color: #ffffff;
-  color: var(--status-success);
-  padding: 6px 12px;
-  border-radius: 20px;
-  border: 1px solid var(--status-success);
-  font-size: 14px;
-  font-weight: 500;
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  margin-top: 4px;
+  background-color: #F7F5EE;
+  border: 2px solid #2E7D32;
+  border-radius: 0 0 8px 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 100;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-item {
+  width: 100%;
+  background-color: #FFFFFF;
+  color: #2E7D32;
+  border: 2px solid #2E7D32;
+  border-radius: 6px;
+  padding: 10px 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.15s, opacity 0.15s;
+}
+
+.dropdown-item:hover {
+  background-color: #E8F5E9;
+}
+
+.dropdown-item:active {
+  opacity: 0.7;
 }
