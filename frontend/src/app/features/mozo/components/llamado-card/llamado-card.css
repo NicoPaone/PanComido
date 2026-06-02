@@ -32,6 +32,22 @@
   pointer-events: none;
 }
 
+/* ── Card saliendo: animación de salida ── */
+.llamado-card.esta-saliendo {
+  animation: slideOut 0.4s ease-in forwards;
+}
+
+@keyframes slideOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(60px) scale(0.95);
+  }
+}
+
 /* ── Icon-box: cuadradito verde izquierdo ── */
 .icon-box {
   background-color: #70c143;

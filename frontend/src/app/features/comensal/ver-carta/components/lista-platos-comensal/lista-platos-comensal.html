@@ -1,9 +1,7 @@
 <div class="d-flex flex-column gap-3">
-
-  <app-card-plato-comensal
-    *ngFor="let plato of platos"
-    [plato]="plato"
-    (agregarPedido)="onAgregarPedido($event)">
-  </app-card-plato-comensal>
-
+  @for (plato of platos(); track plato.id) {
+    <app-card-plato-comensal
+      [plato]="plato"
+      (agregarPedido)="onAgregarPedido($event)" />
+  }
 </div>

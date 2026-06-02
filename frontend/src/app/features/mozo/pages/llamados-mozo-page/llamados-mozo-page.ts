@@ -19,6 +19,7 @@ export class LlamadosMozoPage {
   readonly cargando = this.#state.cargando;
   readonly error = this.#state.error;
   readonly resolviendoId = this.#state.resolviendoId;
+  readonly saliendoId = this.#state.saliendoId;
   readonly hubConectado = this.#state.hubConectado;
   readonly cantidadPendientes = this.#state.cantidadPendientes;
   readonly hayLlamados = this.#state.hayLlamados;
@@ -30,6 +31,10 @@ export class LlamadosMozoPage {
 
   esNuevo(id: number): boolean {
     return this.#state.esNuevo(id);
+  }
+
+  esSaliendo(id: number): boolean {
+    return this.#state.saliendoId() === id;
   }
 
   resolverLlamado(llamadoId: number): void {
