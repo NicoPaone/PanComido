@@ -6,7 +6,6 @@
     }
   </div>
 
-
   @if (cargando()) {
     <div class="estado estado-info">
       <p>Cargando llamados...</p>
@@ -32,6 +31,7 @@
         <app-llamado-card
           [llamado]="llamado"
           [resolviendo]="resolviendoId() === llamado.id"
+          [saliendo]="esSaliendo(llamado.id!)"
           [nuevo]="esNuevo(llamado.id!)"
           (resolver)="resolverLlamado($event)">
         </app-llamado-card>
