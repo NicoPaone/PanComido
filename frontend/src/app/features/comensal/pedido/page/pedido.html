@@ -2,100 +2,58 @@
 
   <!-- VOLVER -->
   <div class="d-flex align-items-center gap-2 mb-4" (click)="volver()" style="cursor: pointer;">
-
-    <span class="material-symbols-outlined">
-      arrow_back
-    </span>
-
-    <span class="fw-semibold">
-      Volver a la carta
-    </span>
-
+    <span class="material-symbols-outlined">arrow_back</span>
+    <span class="fw-semibold">Volver a la carta</span>
   </div>
 
   <!-- TITULO -->
-  <h2 class="fw-bold mb-4">
-    Mi pedido
-  </h2>
+  <h2 class="fw-bold mb-4">Mi pedido</h2>
 
   <!-- CARD PLATOS -->
-  <div *ngFor="let item of pedidos; let i = index" class="card border-0 shadow-sm rounded-4 p-3 mb-4">
+  @for (item of pedidos(); track $index) {
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-4">
 
-    <!-- BOTON ELIMINAR -->
-    <div class="d-flex justify-content-end">
+      <!-- BOTON ELIMINAR -->
+      <div class="d-flex justify-content-end">
+        <span class="material-symbols-outlined text-dark" style="cursor: pointer;" (click)="eliminarPedido($index)">
+          close
+        </span>
+      </div>
 
-      <span class="material-symbols-outlined text-dark" style="cursor: pointer;" (click)="eliminarPedido(i)">
-        close
-      </span>
+      <!-- TITULO Y PRECIO -->
+      <div class="mb-3">
+        <h4 class="fw-bold mb-2">{{ item.plato.nombre }}</h4>
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="badge bg-dark">x{{ item.cantidad }}</span>
+          <span class="fw-bold fs-5">${{ item.plato.precioVenta * item.cantidad }}</span>
+        </div>
+      </div>
+
+      <!-- IMAGEN -->
+      <img [src]="item.plato.imagen" class="img-fluid rounded-4 mb-3" style="height: 220px; object-fit: cover;">
+
+      <!-- DESCRIPCION -->
+      <p class="text-muted mb-4">{{ item.plato.descripcion }}</p>
+
+      <!-- BOTONES -->
+      <div class="d-flex flex-column gap-2">
+        <app-boton-comensal class="w-100" [backgroundColor]="configuracion.paleta.botonPrimario"
+          [textColor]="configuracion.paleta.textoClaro" (clicked)="irAPersonalizar(item)">
+          <span class="material-symbols-outlined">edit</span>
+          <span>Personalizar</span>
+        </app-boton-comensal>
+      </div>
 
     </div>
+  }
 
-    <!-- TITULO Y PRECIO -->
-    <div class="mb-3">
-
-  <h4 class="fw-bold mb-2">
-    {{ item.plato.nombre }}
-  </h4>
-
-  <div class="d-flex justify-content-between align-items-center">
-
-    <span class="badge bg-dark">
-      x{{ item.cantidad }}
-    </span>
-
-    <span class="fw-bold fs-5">
-      ${{ item.plato.precioVenta * item.cantidad }}
-    </span>
-
-  </div>
-
-</div>
-
-    <!-- IMAGEN -->
-    <img [src]="item.plato.imagen" class="img-fluid rounded-4 mb-3" style="height: 220px; object-fit: cover;">
-
-    <!-- DESCRIPCION -->
-    <p class="text-muted mb-4">
-
-      {{ item.plato.descripcion }}
-
-    </p>
-
-    <!-- BOTONES -->
-    <div class="d-flex flex-column gap-2">
-
-
-      <app-boton-comensal class="w-100" [backgroundColor]="configuracion.paleta.botonPrimario"
-        [textColor]="configuracion.paleta.textoClaro" (clicked)="irAPersonalizar(item)">
-
-        <span class="material-symbols-outlined">
-          edit
-        </span>
-
-        <span>
-          Personalizar
-        </span>
-
-      </app-boton-comensal>
-
-    </div>
-
-  </div>
   <div class="mt-4">
     <app-boton-comensal class="w-100 btn-full" [backgroundColor]="configuracion.paleta.botonSecundario"
       [textColor]="configuracion.paleta.textoOscuro" (clicked)="irADetallePedido()">
-
-      <span class="material-symbols-outlined">
-        add
-      </span>
-
-      <span>
-        Agregar al pedido
-      </span>
-
+      <span class="material-symbols-outlined">add</span>
+      <span>Agregar al pedido</span>
     </app-boton-comensal>
   </div>
 </div>
 
-<app-llamar-al-mozo [configuracion]="configuracion">
-</app-llamar-al-mozo>
+<app-llamar-al-mozo [configuracion]="configuracion" />
