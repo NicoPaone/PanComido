@@ -96,7 +96,7 @@ namespace PanComido.Presentacion.Controllers
             int restauranteId = HttpContext.ObtenerRestauranteId();
             var lotes = _recepcionPedidoMapper.aListaDominio(request.ItemsPedidoRecibido);
             await _recibirPedidoProveedorCasoDeUso.EjecutarAsync(pedidoId, lotes, restauranteId);
-            return Ok(new { mensaje = "Pedido recibido y lotes creados correctamente." });
+            return Ok(new { mensaje = "Pedido recibido y lotes creados correctamente."});
         }
     }
 }
