@@ -1,5 +1,8 @@
 <button
   class="btn w-100"
+  [class.border]="tieneBorde()"
+  [class.border-2]="tieneBorde()"
+  [class.border-secondary]="tieneBorde()"
   [style.background-color]="backgroundColor()"
   [style.color]="textColor()"
   [disabled]="disabled()"

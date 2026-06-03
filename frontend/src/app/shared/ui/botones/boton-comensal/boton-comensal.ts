@@ -16,6 +16,7 @@ export class BotonComensal {
 
   backgroundColor = input<string>();
   textColor = input<string>();
+  tieneBorde = input<boolean>(false);
 
   clicked = output<MouseEvent>();
 }
