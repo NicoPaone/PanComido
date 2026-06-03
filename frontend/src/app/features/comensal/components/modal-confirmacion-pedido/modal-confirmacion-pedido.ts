@@ -21,8 +21,12 @@ export class ModalConfirmacionPedido {
     this.confirmarPedidoYActualizarEstado();
   }
 
-  ocultar(): void {
+ocultar(): void {
+    const huboExito = this.estadoPedido() !== null;
     this.isVisible.set(false);
+    if (huboExito) {
+      this.router.navigate(['/comensal/estado-pedido']);
+    }
   }
 
   private async confirmarPedidoYActualizarEstado(): Promise<void> {
