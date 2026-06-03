@@ -73,6 +73,16 @@
                     (ngModelChange)="onCantidadCambiada(prov.id, item, $event)">
                 </label>
 
+                <label class="suggested-qty">
+                  <span>Precio c/u</span>
+                  <input
+                    type="number"
+                    class="form-control form-control-sm"
+                    min="0"
+                    [ngModel]="item.precioUnitario"
+                    (ngModelChange)="onPrecioCambiado(prov.id, item, $event)">
+                </label>
+
                 <div class="suggested-subtotal">
                   <span>Subtotal</span>
                   <strong>$ {{ (item.precioUnitario * item.cantidadSugerida) | number:'1.0-0' }}</strong>
@@ -105,6 +115,13 @@
             </label>
 
             <div class="provider-actions">
+              <!-- TODO REFACTOR: botón "Agregar ingredientes" duplicado (03/06/2026) -->
+              <app-boton
+                label="Agregar ingredientes"
+                variante="outline"
+                tamanio="md"
+                (clicked)="abrirAgregarIngrediente(prov.id)">
+              </app-boton>
               <app-boton
                 label="Crear pedido"
                 variante="secondary"
@@ -117,6 +134,76 @@
         </section>
       }
     </div>
+
+    <!-- TODO REFACTOR: modal "Agregar ingredientes" duplicado (03/06/2026) -->
+    @if (proveedorAgregarIngredienteId() !== null) {
+      <div class="pedido-modal-overlay" (click)="cerrarAgregarIngrediente()">
+        <div class="pedido-modal-card" (click)="$event.stopPropagation()">
+          <div class="pedido-modal-header">
+            <div>
+              <p class="detail-kicker mb-1">Agregar al pedido</p>
+              <h3 class="pedido-modal-title mb-0">Ingredientes disponibles</h3>
+            </div>
+            <button type="button" class="pedido-modal-close" aria-label="Cerrar" (click)="cerrarAgregarIngrediente()">×</button>
+          </div>
+
+          <input
+            type="search"
+            class="form-control inline-ingredient-search mt-3"
+            placeholder="Buscar ingrediente"
+            [ngModel]="busquedaIngrediente()"
+            (ngModelChange)="busquedaIngrediente.set($event)">
+
+          <div class="inline-ingredient-list mt-3">
+            @for (item of ingredientesParaAgregar(); track item.productoId) {
+              <button
+                type="button"
+                class="inline-ingredient-item"
+                [class.selected]="productoExtraSeleccionadoId() === item.productoId.toString()"
+                (click)="seleccionarIngredienteExtra(item.productoId.toString())">
+                <span>
+                  <strong>{{ item.nombre }}</strong>
+                  <small>{{ item.stockActual }} {{ nombreUnidad(item.unidadMedida) }} disponibles</small>
+                </span>
+              </button>
+            } @empty {
+              <div class="inline-ingredient-empty">No hay ingredientes disponibles para agregar.</div>
+            }
+          </div>
+
+          @if (productoExtraSeleccionadoId()) {
+            <div class="inline-ingredient-selection mt-3">
+              <label>
+                <span>Cantidad</span>
+                <input
+                  type="number"
+                  class="form-control"
+                  min="0.1"
+                  step="0.1"
+                  [ngModel]="cantidadIngrediente()"
+                  (ngModelChange)="onCantidadIngredienteChange($event)">
+              </label>
+
+              <label>
+                <span>Precio c/u ($)</span>
+                <input
+                  type="number"
+                  class="form-control"
+                  min="0"
+                  placeholder="0"
+                  [ngModel]="precioIngrediente()"
+                  (ngModelChange)="onPrecioIngredienteChange($event)">
+              </label>
+            </div>
+          }
+
+          <div class="pedido-modal-actions">
+            <button type="button" class="modal-action-btn modal-action-btn-outline" (click)="cerrarAgregarIngrediente()">Cancelar</button>
+            <button type="button" class="modal-action-btn modal-action-btn-primary" [disabled]="!productoExtraSeleccionadoId()" (click)="confirmarAgregarIngrediente()">Agregar ingrediente</button>
+          </div>
+        </div>
+      </div>
+    }
   } @else {
     <div class="panel-card shadow-sm border p-4 bg-white rounded-3">
       <h3 class="section-title mb-2">Sin sugerencias para mostrar</h3>

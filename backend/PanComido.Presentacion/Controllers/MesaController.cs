@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
 using PanComido.Presentacion.DTOs.Mesas;
@@ -14,11 +14,18 @@ namespace PanComido.Presentacion.Controllers
       private readonly OcuparMesaCasoDeUso _ocuparMesaCasoDeUso;
       private readonly ListarMesasCasoDeUso _listarMesas;
       private readonly MesaMapper _mapper;
-      public MesaController(OcuparMesaCasoDeUso ocuparMesaCasoDeUso, ListarMesasCasoDeUso listar, MesaMapper mapper)
+      private readonly GuardarMapaCasoDeUso _guardarMapaCasoDeUso;
+
+      public MesaController(
+          OcuparMesaCasoDeUso ocuparMesaCasoDeUso, 
+          ListarMesasCasoDeUso listar, 
+          MesaMapper mapper,
+          GuardarMapaCasoDeUso guardarMapaCasoDeUso)
       {
          _ocuparMesaCasoDeUso = ocuparMesaCasoDeUso;
          _listarMesas = listar; 
          _mapper = mapper;
+         _guardarMapaCasoDeUso = guardarMapaCasoDeUso;
       }
 
       [HttpGet]
@@ -29,7 +36,17 @@ namespace PanComido.Presentacion.Controllers
          return Ok(_mapper.aListaDto(mesas));
       }
 
+      [HttpPut("mapa")]
+      public async Task<IActionResult> GuardarMapa([FromBody] List<GuardarMesaRequestDto> request)
+      {
+          int restauranteId = HttpContext.ObtenerRestauranteId();
 
+          var mesasDominio = _mapper.aListaDominio(request);
+
+          await _guardarMapaCasoDeUso.EjecutarAsync(restauranteId, mesasDominio);
+
+          return Ok(new { mensaje = "Mapa de mesas guardado correctamente." });
+      }
       [HttpPost("{id}/ocupar")]
         public async Task<IActionResult> Ocupar(int id, [FromBody] OcuparMesaRequestDto request)
         {
@@ -41,7 +58,12 @@ namespace PanComido.Presentacion.Controllers
 
                 var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, id, request.CantidadComensales.Value);
 
-                return StatusCode(201, _mapper.aDto(mesaConPosiciones) );
+                return StatusCode(201,
+                    new OcuparMesaResponseDto {
+                        Mesa = _mapper.aDto(mesaConPosiciones),
+                        IdComandaGenerada = mesaConPosiciones.idComanda.Value
+                    });
+
             }
             catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException)
             {

@@ -41,6 +41,7 @@ export class ComandaPage {
 
     this.hub.conectarYUnirseGrupo(this.restauranteId);
   }
+
   ngOnDestroy() {
     this.hub.detener();
   }

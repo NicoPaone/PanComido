@@ -14,7 +14,7 @@ public partial class Pago
     public int Id { get; set; }
 
     [Column("cierre_id")]
-    public int CierreId { get; set; }
+    public int? CierreId { get; set; }
 
     [Column("metodo_pago_id")]
     public int MetodoPagoId { get; set; }
@@ -24,7 +24,7 @@ public partial class Pago
 
     [ForeignKey("CierreId")]
     [InverseProperty("Pagos")]
-    public virtual Cierre Cierre { get; set; } = null!;
+    public virtual Cierre? Cierre { get; set; }
 
     [InverseProperty("Pago")]
     public virtual ICollection<Comandum> Comanda { get; set; } = new List<Comandum>();

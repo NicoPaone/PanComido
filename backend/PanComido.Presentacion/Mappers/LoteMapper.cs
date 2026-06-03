@@ -11,7 +11,10 @@ namespace PanComido.Presentacion.Mappers
             {
                 Id = lote.Id,
                 FechaVencimiento = lote.FechaVencimiento,
-                Cantidad = lote.Cantidad
+                Cantidad = lote.Cantidad,
+                Nombre = lote.Nombre,       
+                InsumoId = lote.InsumoId,   
+                BodegaId = lote.BodegaId,  
             };
         }
 

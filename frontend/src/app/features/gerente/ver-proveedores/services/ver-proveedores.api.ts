@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { catchError, forkJoin, map, Observable, of } from 'rxjs';
-import { ApiClient } from '../../../../core/services/api-client';
+import { ApiService } from '../../../../core/services/api-service';
 
 // Modelos de Dominio
 import { Proveedor, PedidoProveedor, NuevoPedidoProveedor, PreRecepcionPedidoItem } from '../../../../core/models/proveedor';
@@ -78,7 +78,7 @@ interface InsumoResponseDto {
 
 @Injectable({ providedIn: 'root' })
 export class VerProveedoresApiService {
-  private api = inject(ApiClient);
+  private api = inject(ApiService);
 
   getProveedores(): Observable<Proveedor[]> {
     return this.api.get<ProveedorResponseDto[]>('Proveedor').pipe(
@@ -144,7 +144,7 @@ export class VerProveedoresApiService {
   }
 
   confirmarPedido(pedido: PedidoProveedor): Observable<{ pedido: PedidoProveedor; linkWpp: string }> {
-    return this.api.put<ConfirmarPedidoResponseDto>(`/pedido-proveedor/${pedido.id}/confirmar`, {
+return this.api.put<ConfirmarPedidoResponseDto>(`pedido-proveedor/${pedido.id}/confirmar`, {
       listaInsumosPedido: pedido.items.map(item => ({
         insumoId: Number(item.id),
         cantidad: item.cantidad,
@@ -172,7 +172,7 @@ export class VerProveedoresApiService {
   }
 
   recibirPedido(pedidoId: number | string, items: PreRecepcionPedidoItem[]): Observable<unknown> {
-    return this.api.put<unknown>(`/pedido-proveedor/${pedidoId}/recibir`, {
+return this.api.put<unknown>(`pedido-proveedor/${pedidoId}/recibir`, {
       itemsPedidoRecibido: items.map(item => ({
         insumoId: item.insumoId,
         nombreLote: item.nombreLote,

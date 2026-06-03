@@ -10,7 +10,6 @@ export const MOZO_ROUTES: Routes = [
     loadComponent: () => import('./pages/mis-comandas-page/mis-comandas-page').then(m => m.MisComandasPage)
   },
   {
-
     path: 'llamados',
     loadComponent: () => import('./pages/llamados-mozo-page/llamados-mozo-page').then(m => m.LlamadosMozoPage)
   },

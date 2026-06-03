@@ -17,6 +17,26 @@
         <span class="info">Mesas Totales: {{ state.mesas().length }}</span>
       </div>
 
+      <!-- LEYENDA -->
+      <div class="leyenda-estados">
+        <div class="leyenda-item">
+          <span class="circulo-estado disponible"></span>
+          <span>Desocupada</span>
+        </div>
+        <div class="leyenda-item">
+          <span class="circulo-estado ocupada"></span>
+          <span>Ocupada</span>
+        </div>
+        <div class="leyenda-item">
+          <span class="circulo-estado reservada"></span>
+          <span>Reservada</span>
+        </div>
+        <div class="leyenda-item">
+          <span class="circulo-estado deshabilitada"></span>
+          <span>Deshabilitada</span>
+        </div>
+      </div>
+
       @if (state.isEditorMode()) {
         <div class="paleta-herramientas">
           <span>Agregar Mesa:</span>
@@ -27,7 +47,8 @@
         </div>
       }
 
-  <div class="plano-fondo" [class.modo-grilla]="state.isEditorMode()" (click)="state.seleccionarMesa(null)">
+  <!-- VISTA DESKTOP (PLANO) -->
+  <div class="plano-fondo d-none d-md-block" [class.modo-grilla]="state.isEditorMode()" (click)="state.seleccionarMesa(null)">
   @for (mesa of state.mesas(); track mesa.id) {
    <app-mesa-item
       [mesa]="mesa"
@@ -47,5 +68,20 @@
       [style.z-index]="state.mesaSeleccionada() === mesa.id ? 1000 : 1">
     </app-mesa-item>
   }
-</div>
+  </div>
+
+  <!-- VISTA MOBILE (GRILLA 3 COLUMNAS) -->
+  <div class="d-block d-md-none mobile-grid p-2">
+    <div class="row g-3">
+      <!-- Ordenamos las mesas por número para la grilla -->
+      @for (mesa of mesasOrdenadas(); track mesa.id) {
+        <div class="col-4">
+          <button class="btn w-100 mobile-mesa-btn" [ngClass]="getMobileClass(mesa.estadoMesa)">
+            {{ mesa.numeroMesa }}
+          </button>
+        </div>
+      }
     </div>
+  </div>
+
+</div>

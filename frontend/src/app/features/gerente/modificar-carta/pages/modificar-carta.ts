@@ -80,7 +80,6 @@ export class ModificarCartaComponent implements OnInit {
   }
 
   onCategoriaSeleccionada(categoria: string | null) {
-    console.log('Categoría seleccionada:', categoria);
     this.state.setCategoria(categoria);
   }
 

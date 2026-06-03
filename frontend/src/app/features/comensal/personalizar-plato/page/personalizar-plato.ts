@@ -1,9 +1,10 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { DecimalPipe } from '@angular/common';
 import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
-import { Boton } from '../../../../shared/ui/botones/boton/boton';
+import { PedidoService } from '../../../../core/services/pedido.service';
+import { ItemPedido } from '../../../../core/models/item-pedido';
 import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
 import { PedidoService } from '../../../../core/services/pedido.service';
 import { PlatoService } from '../../../../core/services/plato.service';
@@ -14,6 +15,7 @@ import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boto
 @Component({
   selector: 'app-personalizar-plato',
   standalone: true,
+<<<<<<< HEAD
   imports: [
     CommonModule,
     Boton,
@@ -21,12 +23,22 @@ import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boto
     LlamarAlMozo,
     BotonComensal
   ],
+=======
+  imports: [FormsModule, DecimalPipe, LlamarAlMozo],
+>>>>>>> 8ce2bf40f4a5cad7311dfe784aa30df3c8dad8f5
   templateUrl: './personalizar-plato.html',
   styleUrls: ['./personalizar-plato.css']
 })
 export class PersonalizarPlato implements OnInit {
+  private router = inject(Router);
+  private pedidoService = inject(PedidoService);
 
+<<<<<<< HEAD
   plato: any;
+=======
+  plato: ItemPedido | null = null;
+  itemIndex: number = -1;
+>>>>>>> 8ce2bf40f4a5cad7311dfe784aa30df3c8dad8f5
   configuracion = configuracionRestauranteMock;
 
   
@@ -35,9 +47,9 @@ export class PersonalizarPlato implements OnInit {
 
   extrasSeleccionados: string[] = [];
   removidosSeleccionados: string[] = [];
-
   observaciones = '';
 
+<<<<<<< HEAD
   constructor(
     private router: Router,
     private pedidoService: PedidoService,
@@ -63,6 +75,22 @@ ngOnInit() {
     }, err => {
       console.warn('No se pudo obtener detalle del artículo', err);
     });
+=======
+  ngOnInit() {
+    const state = history.state;
+    this.plato = state?.plato ?? null;
+    this.itemIndex = state?.index ?? -1;
+
+    // Precargar observaciones existentes
+    if (this.plato) {
+      this.observaciones = this.plato.observacionesGenerales ?? '';
+      if (this.plato.observacionesIngredientes) {
+        const parts = this.plato.observacionesIngredientes.split(', ').filter(Boolean);
+        this.extrasSeleccionados = parts.filter(p => p.startsWith('+ ')).map(p => p.slice(2));
+        this.removidosSeleccionados = parts.filter(p => p.startsWith('- ')).map(p => p.slice(2));
+      }
+    }
+>>>>>>> 8ce2bf40f4a5cad7311dfe784aa30df3c8dad8f5
   }
 
 }
@@ -72,50 +100,39 @@ ngOnInit() {
   }
 
   toggleExtra(ingrediente: string) {
-
     if (this.extrasSeleccionados.includes(ingrediente)) {
-
-      this.extrasSeleccionados =
-        this.extrasSeleccionados.filter(
-          item => item !== ingrediente
-        );
-
+      this.extrasSeleccionados = this.extrasSeleccionados.filter(i => i !== ingrediente);
     } else {
-
       this.extrasSeleccionados.push(ingrediente);
-
     }
-
   }
 
   toggleRemover(ingrediente: string) {
-
     if (this.removidosSeleccionados.includes(ingrediente)) {
-
-      this.removidosSeleccionados =
-        this.removidosSeleccionados.filter(
-          item => item !== ingrediente
-        );
-
+      this.removidosSeleccionados = this.removidosSeleccionados.filter(i => i !== ingrediente);
     } else {
-
       this.removidosSeleccionados.push(ingrediente);
-
     }
-
   }
 
   guardarCambios() {
+    if (this.itemIndex === -1) return;
 
-    console.log({
-      plato: this.plato,
-      extras: this.extrasSeleccionados,
-      remover: this.removidosSeleccionados,
-      observaciones: this.observaciones
-    });
+    const ingredientes = [
+      ...this.extrasSeleccionados.map(e => `+ ${e}`),
+      ...this.removidosSeleccionados.map(r => `- ${r}`)
+    ].join(', ');
+
+<<<<<<< HEAD
+    this.router.navigate(['/comensal/pedido']);
+=======
+    this.pedidoService.actualizarObservaciones(
+      this.itemIndex,
+      ingredientes,
+      this.observaciones
+    );
+>>>>>>> 8ce2bf40f4a5cad7311dfe784aa30df3c8dad8f5
 
     this.router.navigate(['/comensal/pedido']);
-
   }
-
 }

@@ -372,7 +372,7 @@ CREATE TABLE cierre (
 
 CREATE TABLE pago (
     id                  SERIAL PRIMARY KEY,
-    cierre_id           INTEGER NOT NULL REFERENCES cierre(id),
+    cierre_id           INTEGER REFERENCES cierre(id),
     metodo_pago_id      INTEGER NOT NULL REFERENCES metodo_de_pago(id),
     total               DECIMAL NOT NULL
 );
@@ -389,7 +389,8 @@ CREATE TABLE comanda (
     estado_comanda_id   INTEGER NOT NULL REFERENCES estado_comanda(id),
     cant_comensales     INTEGER NOT NULL,
     hora_inicio         TIMESTAMP NOT NULL DEFAULT NOW(),
-    hora_fin            TIMESTAMP
+    hora_fin            TIMESTAMP,
+    hora_ultimo_cambio_estado TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 -- Relación N:M Articulo <-> Comanda (con atributos de relación)

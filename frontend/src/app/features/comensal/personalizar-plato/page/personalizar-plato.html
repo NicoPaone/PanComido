@@ -1,21 +1,51 @@
-<div class="container-fluid p-3 bg-light min-vh-100">
+<div class="personalizar-container">
 
+<<<<<<< HEAD
   <!-- VOLVER -->
   <div class="d-flex align-items-center gap-2 mb-4 volver" (click)="volver()">
+=======
+  <!-- Header con botón volver -->
+  <header class="personalizar-header">
+    <button class="btn-volver" (click)="volver()">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <div class="header-info">
+      <div class="logo-container">
+        <img src="assets/images/logo/logo_el_ferroviario.png" alt="Logo" class="logo-img" />
+      </div>
+      <div class="badge-pedido">
+        <span class="material-symbols-outlined">edit_document</span>
+        <span>Pedido</span>
+      </div>
+    </div>
+  </header>
+>>>>>>> 8ce2bf40f4a5cad7311dfe784aa30df3c8dad8f5
 
-    <span class="material-symbols-outlined">
-      arrow_back
-    </span>
+  <!-- Content Card -->
+  <div class="content-card">
+    <!-- Título y precio -->
+    <div class="plato-header">
+      <h2 class="plato-nombre">{{ plato?.plato?.nombre }}</h2>
+      <span class="plato-precio">$ {{ plato?.plato?.precioVentaFinal | number:'1.0-0' }}</span>
+    </div>
 
-    <span class="fw-semibold">
-      Volver al pedido
-    </span>
-
+    <!-- Hero Image -->
+    <div class="plato-image-wrapper">
+      @if (plato?.plato?.urlImagen) {
+        <img [src]="plato?.plato?.urlImagen" class="plato-image" [alt]="plato?.plato?.nombre">
+      } @else {
+        <div class="plato-image-placeholder">
+          <span class="material-symbols-outlined">restaurant</span>
+        </div>
+      }
+    </div>
   </div>
 
-  <!-- CARD -->
-  <div class="card border-0 shadow-sm rounded-4 p-3">
+  <!-- SECCIÓN PERSONALIZAR -->
+  <div class="personalizar-section">
+    <h3>Personalizar plato</h3>
 
+<<<<<<< HEAD
     <!-- IMAGEN -->
     <img [src]="plato?.plato?.imagen" class="img-fluid rounded-4 mb-4 plato-img">
 
@@ -41,16 +71,22 @@
         @for (extra of ingredientesExtra; track extra) {
 
           <div
+=======
+    <!-- Extras -->
+    <div class="seccion-group">
+      <h4>Agregar ingredientes</h4>
+      <div class="chips-container">
+        @for (ing of ingredientesExtra; track ing) {
+          <button 
+>>>>>>> 8ce2bf40f4a5cad7311dfe784aa30df3c8dad8f5
             class="chip"
-            [class.selected]="extrasSeleccionados.includes(extra)"
-            (click)="toggleExtra(extra)"
-          >
-            {{ extra }}
-          </div>
-
+            [class.seleccionado]="extrasSeleccionados.includes(ing)"
+            (click)="toggleExtra(ing)">
+            + {{ ing }}
+          </button>
         }
-
       </div>
+<<<<<<< HEAD
 
     </div> -->
 
@@ -78,12 +114,26 @@
           {{ ingrediente }}
         </div>
 
-        }
-
-      </div>
-
+=======
     </div>
 
+    <!-- Remover -->
+    <div class="seccion-group">
+      <h4>Quitar ingredientes</h4>
+      <div class="chips-container">
+        @for (ing of ingredientesRemover; track ing) {
+          <button 
+            class="chip chip-remover"
+            [class.seleccionado]="removidosSeleccionados.includes(ing)"
+            (click)="toggleRemover(ing)">
+            - {{ ing }}
+          </button>
+>>>>>>> 8ce2bf40f4a5cad7311dfe784aa30df3c8dad8f5
+        }
+      </div>
+    </div>
+
+<<<<<<< HEAD
     <!-- OBSERVACIONES -->
     <div class="mb-4">
 
@@ -92,11 +142,21 @@
       </h5>
 
       <textarea class="form-control rounded-4" rows="4" placeholder="Ej: sin sal, bien cocido, etc."
+=======
+    <!-- Observaciones -->
+    <div class="seccion-group">
+      <h4>Otras indicaciones</h4>
+      <textarea 
+        class="observaciones-input"
+        placeholder="Ej: sin cebolla, poco cocido, etc."
+        rows="3"
+>>>>>>> 8ce2bf40f4a5cad7311dfe784aa30df3c8dad8f5
         [(ngModel)]="observaciones">
       </textarea>
-
     </div>
+  </div>
 
+<<<<<<< HEAD
     <!-- BOTON -->
     <app-boton-comensal [backgroundColor]="configuracion.paleta.botonPrimario"
       [textColor]="configuracion.paleta.textoClaro" class="w-100" (click)="guardarCambios()">
@@ -105,9 +165,20 @@
 
     </app-boton-comensal>
 
+=======
+  <!-- Botones de Acción -->
+  <div class="action-buttons">
+    <button class="btn-accion btn-agregar" (click)="guardarCambios()">
+      Guardar cambios
+    </button>
+>>>>>>> 8ce2bf40f4a5cad7311dfe784aa30df3c8dad8f5
   </div>
 
 </div>
 
+<<<<<<< HEAD
 <app-llamar-al-mozo [configuracion]="configuracion">
 </app-llamar-al-mozo>
+=======
+<app-llamar-al-mozo [configuracion]="configuracion" #llamarMozoRef />
+>>>>>>> 8ce2bf40f4a5cad7311dfe784aa30df3c8dad8f5

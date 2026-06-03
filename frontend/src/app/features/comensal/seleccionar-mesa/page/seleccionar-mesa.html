@@ -1,0 +1,41 @@
+<div class="container-fluid p-4 bg-light min-vh-100">
+  
+  <!-- HEADER -->
+  <div class="text-center mb-5">
+    <h1 class="fw-bold mb-2">Bienvenido</h1>
+    <p class="text-muted">Selecciona tu mesa para comenzar</p>
+  </div>
+
+  <!-- GRILLA DE MESAS -->
+  <div class="mesas-grid mb-4">
+    @for (mesa of mesas; track mesa.id) {
+      <div 
+        class="mesa-card"
+        [class.seleccionada]="mesaSeleccionada() === mesa.id"
+        (click)="seleccionarMesa(mesa.id)">
+        <span class="material-symbols-outlined mesa-icon">table_restaurant</span>
+        <span class="mesa-numero">Mesa {{ mesa.numero }}</span>
+      </div>
+    }
+  </div>
+
+  <!-- INFO -->
+  @if (!mesaSeleccionada()) {
+    <div class="alert alert-info text-center">
+      <span class="material-symbols-outlined">info</span>
+      Toca una mesa para seleccionarla
+    </div>
+  }
+
+  <!-- BOTON CONFIRMAR -->
+  @if (mesaSeleccionada()) {
+    <app-boton-comensal
+      class="w-100"
+      [backgroundColor]="configuracion.paleta.botonPrimario"
+      [textColor]="configuracion.paleta.textoClaro"
+      (clicked)="confirmarMesa()">
+      Confirmar mesa {{ mesaSeleccionada() }}
+    </app-boton-comensal>
+  }
+
+</div>

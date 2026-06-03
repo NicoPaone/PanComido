@@ -47,15 +47,32 @@ export class MapaMesas implements OnInit {
         this.state.cambiarEstadoMesa(id, EstadoMesa.Deshabilitada);
         break;
       case 'detalles':
-        // Por ahora lo dejamos vacío con un log, acá vamos a abrir el modal de la comanda después
         console.log('Próximamente: Abrir modal de detalles para la mesa', id);
-        this.state.seleccionarMesa(null); // Solo cerramos el menú
+        this.state.seleccionarMesa(null); 
         break;
     }
-  } onMesaClick(id: number) {
-    if (this.state.isEditorMode()) return; // En modo editor no abrimos modales
+  }
+  
+  onMesaClick(id: number) {
+    if (this.state.isEditorMode()) return; 
+    
+    // Próximamente: Llamar al backend para traer la comanda activa por MesaId
+    // Ej: GET /comanda/mesa/{id}/activa
+    console.log('Buscar comanda activa para mesa:', id);
+  }
 
+  mesasOrdenadas() {
+    return [...this.state.mesas()].sort((a, b) => a.numeroMesa - b.numeroMesa);
+  }
 
+  getMobileClass(estado: string): string {
+    switch (estado.toLowerCase()) {
+      case 'disponible': return 'disponible';
+      case 'ocupada': return 'ocupada';
+      case 'reservada': return 'reservada';
+      case 'deshabilitada': return 'deshabilitada';
+      default: return 'disponible';
+    }
   }
 
 
