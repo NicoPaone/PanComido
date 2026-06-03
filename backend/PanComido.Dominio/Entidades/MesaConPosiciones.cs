@@ -13,5 +13,8 @@
       public int DimensionMesaId { get; set; }
       public string Forma { get; set; } = string.Empty;
 
-   }
+      // para devolver comanda que se genera cuando se ocupa la mesa
+      public int? idComanda { get; set; }
+
+    }
 }

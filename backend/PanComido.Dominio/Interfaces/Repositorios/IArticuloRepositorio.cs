@@ -15,5 +15,7 @@ namespace PanComido.Dominio.Interfaces.Repositorios
 
         Task<List<Articulo>> ObtenerTodosLosArticulosParaCartaAsync();
 
+        Task ActualizarAsync(Articulo articulo);
+
     }
 }

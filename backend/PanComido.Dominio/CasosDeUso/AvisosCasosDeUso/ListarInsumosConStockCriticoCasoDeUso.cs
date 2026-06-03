@@ -32,8 +32,10 @@ namespace PanComido.Dominio.CasosDeUso.AvisosCasosDeUso
             List<Insumo> insumosConStockCritico = new List<Insumo>();
             foreach (var insumo in insumos)
             {
-                decimal stockActualInsumo = await _loteRepositorio.ObtenerStockTotalDeInsumo(insumo.Id);
-                if (_estadoStockInsumoServicio.CalcularEstadoStock(stockActualInsumo, insumo.StockMinimo) == EstadoStock.Critico)
+                insumo.StockActual = await _loteRepositorio.ObtenerStockTotalDeInsumo(insumo.Id);
+                insumo.Vencimiento = await _loteRepositorio.ObtenerFechaDeVencimientoMasProximaDeInsumo(insumo.Id);
+
+                if (_estadoStockInsumoServicio.CalcularEstadoStock(insumo.StockActual, insumo.StockMinimo) == EstadoStock.Critico)
                 {
                     insumo.EstadoStock = EstadoStock.Critico;
                     insumosConStockCritico.Add(insumo);
