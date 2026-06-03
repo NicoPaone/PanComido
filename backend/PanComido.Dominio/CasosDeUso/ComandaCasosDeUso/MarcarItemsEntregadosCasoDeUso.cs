@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
 {
-    public class MarcarItemEntregadoCasoDeUso
+    public class MarcarItemsEntregadosCasoDeUso
     {
         private readonly IComandaRepositorio _comandaRepositorio;
 
-        public MarcarItemEntregadoCasoDeUso(IComandaRepositorio comandaRepositorio)
+        public MarcarItemsEntregadosCasoDeUso(IComandaRepositorio comandaRepositorio)
         {
             _comandaRepositorio = comandaRepositorio;
         }

@@ -13,5 +13,6 @@ namespace PanComido.Dominio.Interfaces.Repositorios
 
         Task<bool> ResolverLlamadoAsync(int llamadoId);
         Task<List<Llamado>> ObtenerLlamadosPendientesPorMozoAsync(int llamadoId);
+        Task ResolverLlamadoPorMesaYCategoriaAsync(int mesaId, int categoriaLlamadoId);
     }
 }
