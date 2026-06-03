@@ -46,7 +46,7 @@ export class ComandaPage {
     this.hub.detener();
   }
 
-  procesarAccion(evento: { mesaId: number; estadoId: number }): void {
-  this.state.modificarEstadoComanda(evento.mesaId, evento.estadoId);
+  procesarAccion(evento: { comandaId: number; estadoId: number }): void {
+  this.state.modificarEstadoComanda(evento.comandaId, evento.estadoId);
 }
 }

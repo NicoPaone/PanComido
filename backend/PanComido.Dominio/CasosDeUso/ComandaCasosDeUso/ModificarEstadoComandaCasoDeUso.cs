@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,12 +25,12 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
             _mesaRepositorio = mesaRepositorio;
         }
 
-        public async Task<Comanda?> EjecutarAsync(int mesaId, int estadoId)
+        public async Task<Comanda?> EjecutarAsync(int comandaId, int estadoId)
         {
-            var resultado = await _comandaRepositorio.ModificarEstadoComandaAsync(mesaId, estadoId);
+            var resultado = await _comandaRepositorio.ModificarEstadoComandaAsync(comandaId, estadoId);
             if (resultado == null) throw new KeyNotFoundException("No se encontró una comanda activa para esa mesa.");
-            Comanda comanda = await _comandaRepositorio.ObtenerComandaPorIdMesaAsync(mesaId);
-            var mozoId = await _mesaRepositorio.ObtenerMozoIdsPorMesaAsync(mesaId);
+            Comanda comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
+            var mozoId = await _mesaRepositorio.ObtenerMozoIdsPorMesaAsync(comanda.MesaId);
             await _comandaNotificador.NotificarEstadoModificadoAsync(comanda, mozoId);
 
             return comanda;

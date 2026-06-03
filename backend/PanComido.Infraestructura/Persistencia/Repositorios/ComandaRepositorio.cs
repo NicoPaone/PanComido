@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
@@ -32,12 +32,12 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             return comandaEF.Id;
         }
 
-        public async Task<DOM.Comanda?> ModificarEstadoComandaAsync(int mesaId, int estadoId)
+        public async Task<DOM.Comanda?> ModificarEstadoComandaAsync(int comandaId, int estadoId)
         {
 
             Console.WriteLine("modificar en repoo");
             var efComanda = await _ctx.Comanda
-               .FirstOrDefaultAsync(m => m.MesaId == mesaId
+               .FirstOrDefaultAsync(m => m.Id == comandaId
                && m.EstadoComandaId != (int)EstadoComanda.Finalizada
                && m.EstadoComandaId != (int)EstadoComanda.Abierta);
             Console.WriteLine("El objeto: " + efComanda);
@@ -57,8 +57,10 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             var efComanda = await _ctx.Comanda
             .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.Plato != null))
             .ThenInclude(ac => ac.Articulo)
-            .ThenInclude(a => a.Plato).FirstOrDefaultAsync(m => m.MesaId == mesaId);
-            ;
+            .ThenInclude(a => a.Plato)
+            .FirstOrDefaultAsync(m => m.MesaId == mesaId 
+                                   && m.EstadoComandaId != (int)EstadoComanda.Finalizada
+                                   && m.EstadoComandaId != (int)EstadoComanda.Abierta);
 
             return efComanda == null ? null : _mapper.ParaDominio(efComanda);
         }

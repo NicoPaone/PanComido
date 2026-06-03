@@ -16,7 +16,7 @@
 
   <!-- TITULO -->
   <h1 class="fw-bold mb-1 text-dark">Pedido</h1>
-  <p class="text-secondary mb-4">{{ pedidos().length }} items</p>
+  <p class="text-secondary mb-4">{{ pedidos().length + (comandaState.estadoPedido()?.items?.length || 0) }} items</p>
 
   <!-- ALERTA: Sin comanda activa -->
   @if (!comandaState.tieneComandaActiva()) {
@@ -26,9 +26,42 @@
     </div>
   }
 
-  <!-- CAJA BLANCA: DETALLE -->
-  <div class="bg-white rounded-4 p-3 mb-4 shadow-sm" style="border: 1px solid #eaeaea;">
-    <h6 class="fw-bold mb-0 text-dark">Detalle del pedido</h6>
+  <!-- CAJA BLANCA: ITEMS CONFIRMADOS (Comanda) -->
+  @if (comandaState.estadoPedido()?.items?.length) {
+    <div class="bg-white rounded-4 p-3 mb-4 shadow-sm" style="border: 1px solid #eaeaea;">
+      <h6 class="fw-bold mb-0 text-dark">
+        <span class="material-symbols-outlined align-middle fs-5 me-1 text-success">check_circle</span>
+        En preparación
+      </h6>
+      <hr class="text-secondary my-2">
+
+      @for (item of comandaState.estadoPedido()!.items; track $index) {
+        <div class="mb-2 mt-2">
+          <div class="d-flex justify-content-between">
+            <span class="fw-semibold text-dark">{{ item.nombre }} x{{ item.cantidad }}</span>
+            <span class="text-dark">${{ item.subtotal }}</span>
+          </div>
+          <div class="d-flex justify-content-between text-muted small mt-1">
+            <span>Precio unitario</span>
+            <span>${{ item.precioUnitario }}</span>
+          </div>
+          @if (item.observacionesGenerales) {
+            <div class="text-muted small mt-1">
+              <span>Obs: {{ item.observacionesGenerales }}</span>
+            </div>
+          }
+        </div>
+        @if (!$last) {
+          <hr class="text-secondary my-2">
+        }
+      }
+    </div>
+  }
+
+  <!-- CAJA BLANCA: NUEVOS ITEMS (Carrito) -->
+  @if (pedidos().length > 0) {
+    <div class="bg-white rounded-4 p-3 mb-4 shadow-sm" style="border: 1px solid #eaeaea;">
+      <h6 class="fw-bold mb-0 text-dark">Nuevos items</h6>
     
     @if (pedidos().length > 0) {
       <hr class="text-secondary my-2">
@@ -55,6 +88,7 @@
       }
     }
   </div>
+  }
 
   <!-- TOTAL -->
   <div class="d-flex justify-content-between align-items-center fw-bold mb-3 px-1">
