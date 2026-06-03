@@ -27,7 +27,7 @@ const COSTOS_INGREDIENTES: Record<string, number> = {
 export function calcularCostoReceta(receta: RecetaIngrediente[]): number {
   return receta.reduce((total, ing) => {
     const costoUnitario = COSTOS_INGREDIENTES[ing.id] || 500;
-    return total + (costoUnitario * ing.cantidad);
+    return total + (costoUnitario * ing.cantidad / 50);
   }, 0);
 }
 
