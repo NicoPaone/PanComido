@@ -7,6 +7,7 @@ import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
 import { PedidoService } from '../../../../core/services/pedido.service';
 import { PlatoService } from '../../../../core/services/plato.service';
+import { ApiClient } from '../../../../core/services/api-client';
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
 
 
@@ -41,6 +42,7 @@ export class PersonalizarPlato implements OnInit {
     private router: Router,
     private pedidoService: PedidoService,
     private platoService: PlatoService
+    , private api: ApiClient
   ) {}
 
 ngOnInit() {
@@ -49,8 +51,19 @@ ngOnInit() {
 
   console.log('PLATO:', this.plato);
 
+  // Intentar obtener ingredientes desde el objeto (mocks) primero
   this.ingredientesRemover =
     this.plato?.plato?.receta?.map((i: any) => i.nombre) || [];
+
+  // Si no hay receta (por ejemplo cuando la carta viene desde la API), pedir detalle del artículo
+  if ((!this.ingredientesRemover || this.ingredientesRemover.length === 0) && this.plato?.plato?.id) {
+    this.api.get<any>(`articulo/${this.plato.plato.id}`).subscribe(det => {
+      const opciones = det?.ingredientesOpcionales ?? det?.IngredientesOpcionales ?? [];
+      this.ingredientesRemover = opciones.map((o: any) => o?.nombre ?? o?.Nombre ?? o?.nombreIngrediente ?? 'Ingrediente');
+    }, err => {
+      console.warn('No se pudo obtener detalle del artículo', err);
+    });
+  }
 
 }
 
