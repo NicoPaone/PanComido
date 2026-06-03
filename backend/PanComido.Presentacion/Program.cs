@@ -132,12 +132,14 @@ builder.Services.AddScoped<ListarLlamadosPendientesCasoDeUso>();
 builder.Services.AddScoped<ResolverLlamadoCasoDeUso>();
 builder.Services.AddScoped<ListarComandasActivasMozoCasoDeUso>();
 builder.Services.AddScoped<ObtenerDetalleArticuloCasoDeUso>();
+builder.Services.AddScoped<ConfirmarPedidoClienteAComandaCasoDeUso>();
 builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
 builder.Services.AddScoped<ObtenerArticulosParaCrearCartaCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
 builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticuloServicio>();
+builder.Services.AddScoped<IGestionStockServicio, GestionStockServicio>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
