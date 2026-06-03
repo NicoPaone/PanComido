@@ -8,13 +8,13 @@ const ROLE_ROUTES: Record<string, string> = {
   'Mozo': 'staff/mozo',
 };
 const DEFAULT_ROUTE = 'staff/cocina';
-
+const ROLE_KEY = 'rol';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  currentRole = signal<string>('Gerente');
+  currentRole = signal<string>(sessionStorage.getItem(ROLE_KEY) || 'Gerente');
 
   validateManagerCredentials(username: string, password: string): Observable<boolean> {
     const esValido = username.toLowerCase().trim() === 'gerente' && password === '123456';
@@ -27,6 +27,7 @@ export class AuthService {
 
   setRole(role: string): void {
     this.currentRole.set(role);
+    sessionStorage.setItem(ROLE_KEY, role);
   }
   getHomeRoute(): string {
     const role = this.currentRole();
