@@ -153,6 +153,8 @@ builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
 builder.Services.AddScoped<ObtenerArticulosParaCrearCartaCasoDeUso>();
 builder.Services.AddScoped<ModificarArticuloCasoDeUso>();
 builder.Services.AddScoped<LlamarMozoComandaCasoDeUso>();
+builder.Services.AddScoped<CambiarEstadoMesaCasoDeUso>();
+
 
 
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
@@ -207,13 +209,12 @@ app.UseCors("ProduccionCors");
 
 app.UseAuthorization();
 
+// para imagenes
+app.UseStaticFiles();
+
 app.MapControllers();
 
 //mapear el hub de SignalR
 app.MapHub<PanComidoHub>("/hubs/pancomido");
 
 app.Run();
-
-
-// para imagenes
-app.UseStaticFiles();

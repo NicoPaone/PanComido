@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
+using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.DTOs.Mesas;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.SesionMock;
@@ -15,17 +17,23 @@ namespace PanComido.Presentacion.Controllers
       private readonly ListarMesasCasoDeUso _listarMesas;
       private readonly MesaMapper _mapper;
       private readonly GuardarMapaCasoDeUso _guardarMapaCasoDeUso;
+      private readonly CambiarEstadoMesaCasoDeUso _cambiarEstadoMesaCasoDeUso;
+      private readonly IHubContext<PanComidoHub> _hubContext;
 
       public MesaController(
           OcuparMesaCasoDeUso ocuparMesaCasoDeUso, 
           ListarMesasCasoDeUso listar, 
           MesaMapper mapper,
-          GuardarMapaCasoDeUso guardarMapaCasoDeUso)
+          GuardarMapaCasoDeUso guardarMapaCasoDeUso,
+          CambiarEstadoMesaCasoDeUso cambiarEstadoMesaCasoDeUso,
+          IHubContext<PanComidoHub> hubContext)
       {
          _ocuparMesaCasoDeUso = ocuparMesaCasoDeUso;
          _listarMesas = listar; 
          _mapper = mapper;
          _guardarMapaCasoDeUso = guardarMapaCasoDeUso;
+         _cambiarEstadoMesaCasoDeUso = cambiarEstadoMesaCasoDeUso;
+         _hubContext = hubContext;
       }
 
       [HttpGet]
@@ -73,6 +81,24 @@ namespace PanComido.Presentacion.Controllers
             {
                 return StatusCode(500, new { error = "Error interno del servidor." });
             }
+        }
+
+        [HttpPatch("{id}/estado")]
+        public async Task<IActionResult> CambiarEstado(int id, [FromBody] CambiarEstadoMesaRequestDto request)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+            if (!Enum.TryParse<PanComido.Dominio.Entidades.Enums.EstadoMesa>(request.EstadoMesa, true, out var estado))
+            {
+                return BadRequest(new { error = "Estado de mesa inválido." });
+            }
+            
+            var mesaActualizada = await _cambiarEstadoMesaCasoDeUso.EjecutarAsync(restauranteId, id, estado);
+            var mesaDto = _mapper.aDto(mesaActualizada);
+
+            await _hubContext.Clients.Group($"Gerente_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
+            await _hubContext.Clients.Group($"Mozos_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
+
+            return Ok(mesaDto);
         }
     }
 }

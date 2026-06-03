@@ -24,6 +24,7 @@ export class MesaStateService {
   seleccionarMesa(id: number | null): void { this.lectura.seleccionarMesa(id); }
   ocuparMesa(mesaId: number, comensales: number): void { this.lectura.ocuparMesa(mesaId, comensales); }
   cambiarEstadoMesa(id: number, estado: EstadoMesa): void { this.lectura.cambiarEstadoMesa(id, estado); }
+  mostrarNotificacion(mensaje: string, tipo: 'exito' | 'error' | 'info'): void { this.lectura.mostrarNotificacion(mensaje, tipo); }
 
   // Métodos de EDICIÓN (solo gerente)
   toggleEditorMode(): void {
@@ -117,7 +118,7 @@ export class MesaStateService {
       for (let j = i + 1; j < mesas.length; j++) {
         const m1 = mesas[i];
         const m2 = mesas[j];
-        
+
         const superponenX = m1.posicionXInicio < m2.posicionXFin && m1.posicionXFin > m2.posicionXInicio;
         const superponenY = m1.posicionYInicio < m2.posicionYFin && m1.posicionYFin > m2.posicionYInicio;
 

@@ -5,6 +5,7 @@ import { Plato } from '../../../../core/models/plato';
 import { Insumo } from '../../../../core/models/insumos/insumo';
 import { UnidadMedida } from '../../../../core/models/unidad-medida';
 import { CategoriaInsumo } from '../../../../core/models/insumos/categorias/categoria-insumo';
+import { environment } from '../../../../../environments/environment.development';
 
 interface InsumoResponseDto {
   id: number;
@@ -29,9 +30,9 @@ export class ModificarCartaApiService {
         precioVenta: dto.precioVentaFinal,
         costo: dto.costo,
         visible: dto.visibleEnCarta,
-        imagen: dto.urlImagen,
+        imagen: dto.urlImagen ? environment.apiUrl + dto.urlImagen : '',
         tipo: dto.tipoArticulo,
-        categoria: dto.tipoArticulo
+        categoria: dto.categoria
       })))
     );
   }
@@ -67,10 +68,12 @@ export class ModificarCartaApiService {
           if (dto.precioVentaFinal !== undefined) result.precioVenta = dto.precioVentaFinal;
           if (dto.costo !== undefined) result.costo = dto.costo;
           if (dto.visibleEnCarta !== undefined) result.visible = dto.visibleEnCarta;
-          if (dto.urlImagen !== undefined) result.imagen = dto.urlImagen;
+          if (dto.urlImagen !== undefined) result.imagen = dto.urlImagen ? environment.apiUrl + dto.urlImagen : '';
           if (dto.tipoArticulo !== undefined) {
             result.tipo = dto.tipoArticulo;
-            result.categoria = dto.tipoArticulo;
+          }
+          if (dto.categoria !== undefined) {
+            result.categoria = dto.categoria;
           }
         }
         return result as Plato;

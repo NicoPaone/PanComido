@@ -31,16 +31,16 @@ export class ComandaState {
   );
 
   
-modificarEstadoComanda(mesaId: number, tipoId: number): void {
-  this.api.modificarEstadoComanda(mesaId, tipoId).subscribe({
-    next: (comandaActualizada) => {
-      this._comandas.update(lista =>
-        lista.map(c => c.id === comandaActualizada.id 
-          ? comandaActualizada 
-          : c
-        )
-      );
-    },
+  modificarEstadoComanda(comandaId: number, tipoId: number): void {
+    this.api.modificarEstadoComanda(comandaId, tipoId).subscribe({
+      next: (comandaActualizada) => {
+        this._comandas.update(lista =>
+          lista.map(c => c.id === comandaActualizada.id 
+            ? comandaActualizada 
+            : c
+          )
+        );
+      },
     error: (err) => console.error('Error al modificar comanda', err)
   });
 }

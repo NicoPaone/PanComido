@@ -28,10 +28,12 @@ export class DetallePedido {
 
   // Computed para el total
   total = computed(() => {
-    return this.pedidos().reduce(
+    const totalCarrito = this.pedidos().reduce(
       (acc, item) => acc + item.plato.precioVentaFinal * item.cantidad,
       0
     );
+    const totalConfirmado = this.comandaState.estadoPedido()?.totalAPagar || 0;
+    return totalCarrito + totalConfirmado;
   });
 
   volver(): void {

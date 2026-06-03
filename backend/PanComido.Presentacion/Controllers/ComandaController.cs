@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
@@ -53,10 +53,10 @@ namespace PanComido.Presentacion.Controllers
             return Ok(comandasDto);
 
         }
-        [HttpPut("activas/{mesaId}/{estadoId}")]
-        public async Task<ActionResult<ComandaResponseDto>> ModificarEstadoDeComanda(int mesaId, int estadoId)
+        [HttpPut("activas/{comandaId}/{estadoId}")]
+        public async Task<ActionResult<ComandaResponseDto>> ModificarEstadoDeComanda(int comandaId, int estadoId)
         {
-            var comanda = await _modificarEstadoComandaCasoDeUso.EjecutarAsync(mesaId, estadoId);
+            var comanda = await _modificarEstadoComandaCasoDeUso.EjecutarAsync(comandaId, estadoId);
             var comandaDto = _mapper.ComandaResponseDto(comanda);
             return Ok(comandaDto);
         }
