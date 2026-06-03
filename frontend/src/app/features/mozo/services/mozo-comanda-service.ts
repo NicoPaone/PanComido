@@ -18,6 +18,4 @@ export class MozoComandaService {
     return this.api.put<Comanda>(`comanda/${comandaId}/entregar-items`, articuloComandaIds)
    }
    
-
-
 }
