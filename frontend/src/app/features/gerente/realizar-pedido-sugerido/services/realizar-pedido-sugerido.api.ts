@@ -9,7 +9,7 @@ import { CategoriaInsumo } from '../../../../core/models/insumos/categorias/cate
 
 @Injectable({ providedIn: 'root' })
 export class RealizarPedidoSugeridoApiService {
-  
+
   private api = inject(ApiClient);
 
   getProveedores(): Observable<Proveedor[]> {
@@ -96,5 +96,17 @@ export class RealizarPedidoSugeridoApiService {
       return valor as CategoriaInsumo;
     }
     return { id: 0, descripcion: String(valor ?? 'Almacen'), tipoAplica: 'Ingrediente' };
+  }
+
+  getHistorialPedidos(id: number | string): Observable<{ items: { id: string | number; precioUnitario: number }[]; fecha: string }[]> {
+    return this.api.get<any[]>(`Proveedor/${id}/historial-pedidos`).pipe(
+      map(pedidos => pedidos.map(p => ({
+        fecha: p.fecha ?? '',
+        items: (p.itemsInsumo ?? []).map((item: any) => ({
+          id: item.insumoId,
+          precioUnitario: item.precioCompra ?? 0
+        }))
+      })))
+    );
   }
 }
