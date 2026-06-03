@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Mesa } from '../models/mesa.model';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment.development';
+import { Mesa, EstadoMesa } from '../models/mesa.model';
 import { MesaOcuparResponse } from '../models/mesa-ocupar-response';
 import { ApiService } from './api-service';
 
@@ -8,6 +10,7 @@ import { ApiService } from './api-service';
 export class MesaService {
 
   private api = inject(ApiService);
+  private http = inject(HttpClient);
   private endpoint = 'mesa';
   getMesas(): Observable<Mesa[]> {
     return this.api.get<Mesa[]>(this.endpoint);
@@ -23,5 +26,9 @@ export class MesaService {
 
   guardarMapa(mesas: Mesa[]): Observable<any> {
     return this.api.put(`${this.endpoint}/mapa`, mesas);
+  }
+
+  cambiarEstado(mesaId: number, estadoMesa: EstadoMesa): Observable<Mesa> {
+    return this.http.patch<Mesa>(`${environment.apiUrl}/${this.endpoint}/${mesaId}/estado`, { estadoMesa });
   }
 }

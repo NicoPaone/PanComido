@@ -50,14 +50,19 @@ export class MesaLecturaState {
   }
 
   cambiarEstadoMesa(id: number, nuevoEstado: EstadoMesa): void {
-    this._mesas.update(mesas =>
-      mesas.map(m => m.id === id ? { ...m, estadoMesa: nuevoEstado } : m)
-    );
-    this._mesaSeleccionada.set(null);
-    this.mostrarNotificacion(
-      `Mesa ${nuevoEstado === EstadoMesa.Ocupada ? 'ocupada' : 'cerrada'}`,
-      'exito'
-    );
+    this.api.cambiarEstado(id, nuevoEstado).subscribe({
+      next: (mesaActualizada: Mesa) => {
+        this._mesas.update(mesas =>
+          mesas.map(m => m.id === id ? mesaActualizada : m)
+        );
+        this._mesaSeleccionada.set(null);
+        this.mostrarNotificacion(
+          `Mesa ${nuevoEstado === EstadoMesa.Ocupada ? 'ocupada' : 'actualizada'}`,
+          'exito'
+        );
+      },
+      error: () => this.mostrarNotificacion('Error al cambiar el estado de la mesa', 'error')
+    });
   }
 
   mostrarNotificacion(mensaje: string, tipo: 'exito' | 'error'): void {
