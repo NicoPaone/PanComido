@@ -207,13 +207,12 @@ app.UseCors("ProduccionCors");
 
 app.UseAuthorization();
 
+// para imagenes
+app.UseStaticFiles();
+
 app.MapControllers();
 
 //mapear el hub de SignalR
 app.MapHub<PanComidoHub>("/hubs/pancomido");
 
 app.Run();
-
-
-// para imagenes
-app.UseStaticFiles();
