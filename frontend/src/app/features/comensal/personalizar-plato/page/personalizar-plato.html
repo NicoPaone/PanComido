@@ -21,39 +21,74 @@
     <!-- Título y precio -->
     <div class="plato-header">
       <h2 class="plato-nombre">{{ plato?.plato?.nombre }}</h2>
-      <span class="plato-precio">$ {{ plato?.plato?.precio | number:'1.0-0' }}</span>
+      <span class="plato-precio">$ {{ plato?.plato?.precioVentaFinal | number:'1.0-0' }}</span>
     </div>
 
     <!-- Hero Image -->
     <div class="plato-image-wrapper">
       @if (plato?.plato?.urlImagen) {
-        <img [src]="plato.plato.urlImagen" class="plato-image" [alt]="plato.plato.nombre">
+        <img [src]="plato?.plato?.urlImagen" class="plato-image" [alt]="plato?.plato?.nombre">
       } @else {
         <div class="plato-image-placeholder">
           <span class="material-symbols-outlined">restaurant</span>
         </div>
       }
     </div>
+  </div>
 
-    <!-- Descripción -->
-    <div class="plato-descripcion-box">
-      <p class="plato-descripcion">
-        {{ plato?.plato?.descripcion || 'Deliciosa preparación del chef.' }}
-      </p>
+  <!-- SECCIÓN PERSONALIZAR -->
+  <div class="personalizar-section">
+    <h3>Personalizar plato</h3>
+
+    <!-- Extras -->
+    <div class="seccion-group">
+      <h4>Agregar ingredientes</h4>
+      <div class="chips-container">
+        @for (ing of ingredientesExtra; track ing) {
+          <button 
+            class="chip"
+            [class.seleccionado]="extrasSeleccionados.includes(ing)"
+            (click)="toggleExtra(ing)">
+            + {{ ing }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Remover -->
+    <div class="seccion-group">
+      <h4>Quitar ingredientes</h4>
+      <div class="chips-container">
+        @for (ing of ingredientesRemover; track ing) {
+          <button 
+            class="chip chip-remover"
+            [class.seleccionado]="removidosSeleccionados.includes(ing)"
+            (click)="toggleRemover(ing)">
+            - {{ ing }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Observaciones -->
+    <div class="seccion-group">
+      <h4>Otras indicaciones</h4>
+      <textarea 
+        class="observaciones-input"
+        placeholder="Ej: sin cebolla, poco cocido, etc."
+        rows="3"
+        [(ngModel)]="observaciones">
+      </textarea>
     </div>
   </div>
 
   <!-- Botones de Acción -->
   <div class="action-buttons">
     <button class="btn-accion btn-agregar" (click)="guardarCambios()">
-      + Agregar al pedido
-    </button>
-    <button class="btn-accion btn-personalizar">
-      Personalizar
+      Guardar cambios
     </button>
   </div>
 
 </div>
-
 
 <app-llamar-al-mozo [configuracion]="configuracion" #llamarMozoRef />

@@ -40,9 +40,9 @@ export class Pedido {
     this.pedidoService.eliminarPedido(index);
   }
 
-  irAPersonalizar(item: ItemPedido): void {
+  irAPersonalizar(item: ItemPedido, index: number): void {
     this.router.navigate(['/comensal/personalizar-plato'], {
-      state: { plato: item }
+      state: { plato: item, index }
     });
   }
 }

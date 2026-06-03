@@ -8,6 +8,11 @@ export const COMENSAL_ROUTES: Routes = [
   },
 
   {
+    path: 'seleccionar-mesa',
+    loadComponent: () =>
+      import('./seleccionar-mesa/page/seleccionar-mesa').then(m => m.SeleccionarMesa)
+  },
+  {
     path: 'escanear-mesa',
     loadComponent: () =>
       import('./escanear-mesa/page/escanear-mesa').then(m => m.ScanQr)
@@ -44,6 +49,12 @@ export const COMENSAL_ROUTES: Routes = [
   loadComponent: () =>
     import('./detalle-pedido/page/detalle-pedido')
       .then(m => m.DetallePedido)
-}
+},
+  {
+    path: 'estado-pedido',
+    loadComponent: () =>
+      import('./estado-pedido/page/estado-pedido')
+        .then(m => m.EstadoPedido)
+  }
 ];
 

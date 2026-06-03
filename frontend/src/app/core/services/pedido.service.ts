@@ -40,6 +40,18 @@ export class PedidoService {
     return this.pedidosSignal();
   }
 
+  actualizarObservaciones(index: number, observacionesIngredientes: string, observacionesGenerales: string) {
+    this.pedidosSignal.update(pedidos => {
+      const nuevoPedidos = [...pedidos];
+      nuevoPedidos[index] = {
+        ...nuevoPedidos[index],
+        observacionesIngredientes,
+        observacionesGenerales
+      };
+      return nuevoPedidos;
+    });
+  }
+
   eliminarPedido(index: number) {
     this.pedidosSignal.update(pedidos => {
       const nuevoPedidos = [...pedidos];

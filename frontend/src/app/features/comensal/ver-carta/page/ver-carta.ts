@@ -39,6 +39,7 @@ export class VerCarta {
   mostrarFiltros = signal(false);
   faFilter = faFilter;
   configuracion = configuracionRestauranteMock;
+  mesaId = signal(1);
   cantidadPersonas = signal(1);
 
   menuOrdenarAbierto = signal(false);
@@ -67,6 +68,7 @@ export class VerCarta {
   }
 
   ngOnInit(): void {
+    this.mesaId.set(history.state?.mesaId ?? 1);
     this.cantidadPersonas.set(history.state?.cantidadPersonas ?? 1);
     this.state.cargarCarta();
   }
