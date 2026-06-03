@@ -13,7 +13,7 @@ namespace PanComido.Dominio.Interfaces.Repositorios
 
         Task<Comanda?> ObtenerComandaPorIdMesaAsync(int mesaId);
         Task<Comanda?> ModificarEstadoComandaAsync(int mesaId, int estadoId);
-        Task CrearAsync(Comanda comanda);
+        Task<int> CrearAsync(Comanda comanda);
         Task<List<Comanda>> ObtenerComandasActivasPorMozoAsync(int restauranteId, int mozoId);  
         Task<Comanda?> ObtenerComandaPorIdAsync(int comandaId);
         Task MarcarItemEntregadoAsync(int comandaId, int articuloComandaId);

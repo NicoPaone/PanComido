@@ -97,7 +97,8 @@ namespace PanComido.Presentacion.Mappers
                 EstadoComanda.Nueva => "Recibido",
                 EstadoComanda.EnPreparacion => "Preparación",
                 EstadoComanda.EnEspera => "Listo",
-                _ => "Recibido"
+                EstadoComanda.Abierta => "Esperando pedido",
+                _ => "Esperando pedido"
             };
         }
 

@@ -14,7 +14,7 @@
       public string CodigoInvitacion { get; set; } = string.Empty;
       public DimensionMesaDto DimensionMesa { get; set; } = null!;
 
-   }
+    }
    public class DimensionMesaDto
    {
       public int Id { get; set; }
