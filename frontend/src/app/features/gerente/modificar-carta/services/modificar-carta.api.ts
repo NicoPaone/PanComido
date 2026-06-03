@@ -65,20 +65,23 @@ export class ModificarCartaApiService {
       delete payload.imagen;
     }
 
-    // Since the API returns the updated DTO, map it back to Plato if necessary,
-    // or return the data so optimistic updates don't break.
     return this.api.patch<any>(`carta/articulos/${id}`, payload).pipe(
-      map(dto => ({
-        ...data, // Keep optimistic properties
-        id: dto.articuloId ?? id,
-        nombre: dto.nombre ?? data.nombre,
-        precioVenta: dto.precioVentaFinal ?? data.precioVenta,
-        costo: dto.costo ?? data.costo,
-        visible: dto.visibleEnCarta ?? data.visible,
-        imagen: dto.urlImagen ?? data.imagen,
-        tipo: dto.tipoArticulo ?? data.tipo,
-        categoria: dto.tipoArticulo ?? data.categoria
-      } as Plato))
+      map(dto => {
+        const result: Partial<Plato> = { ...data };
+        if (dto) {
+          if (dto.articuloId !== undefined) result.id = dto.articuloId;
+          if (dto.nombre !== undefined) result.nombre = dto.nombre;
+          if (dto.precioVentaFinal !== undefined) result.precioVenta = dto.precioVentaFinal;
+          if (dto.costo !== undefined) result.costo = dto.costo;
+          if (dto.visibleEnCarta !== undefined) result.visible = dto.visibleEnCarta;
+          if (dto.urlImagen !== undefined) result.imagen = dto.urlImagen;
+          if (dto.tipoArticulo !== undefined) {
+            result.tipo = dto.tipoArticulo;
+            result.categoria = dto.tipoArticulo;
+          }
+        }
+        return result as Plato;
+      })
     );
   }
 
