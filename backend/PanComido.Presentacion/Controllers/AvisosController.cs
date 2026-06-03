@@ -48,7 +48,7 @@ namespace PanComido.Presentacion.Controllers
             return Ok(response);
         }
 
-        [HttpPost]
+        [HttpPost("sugerencias-ia")]
         public async Task<ActionResult<SugerenciaIA>> Generar()
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();

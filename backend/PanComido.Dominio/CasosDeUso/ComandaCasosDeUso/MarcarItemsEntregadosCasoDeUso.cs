@@ -23,6 +23,7 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
             Comanda comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
             if (comanda == null) throw new KeyNotFoundException("Comanda no encontrada");
 
+
             foreach(int articuloComandaId in articuloComandaIds)
             {
                 if (!comanda.Items.Any(ac => ac.Id == articuloComandaId))

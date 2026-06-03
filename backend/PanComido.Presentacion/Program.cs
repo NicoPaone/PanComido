@@ -10,7 +10,9 @@ using PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
+using PanComido.Dominio.CasosDeUso.PagoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
+using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.CasosDeUso.UnidadMedidaCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
@@ -82,7 +84,6 @@ builder.Services.AddScoped<InsumoConsugerenciaMapper>();
 builder.Services.AddScoped<UnidadMedidaMapper>();
 builder.Services.AddScoped<LoteRecepcionMapper>();
 builder.Services.AddScoped<MesaMapper>();
-
 builder.Services.AddScoped<LoteMapper>();
 builder.Services.AddScoped<LlamadoMapper>();
 builder.Services.AddScoped<CartaMapper>();
@@ -92,8 +93,7 @@ builder.Services.AddScoped<ArticuloCartaMapper>();
 
 
 builder.Services.AddScoped<ArticuloMapper>();
-
-
+builder.Services.AddScoped<PagoMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -110,6 +110,7 @@ builder.Services.AddScoped<ILlamadoRepositorio, LlamadoRepositorio>();
 builder.Services.AddScoped<IMozoRepositorio, MozoRepositorio>();
 builder.Services.AddScoped<IFormularioPlatoRepositorio, FormularioPlatoRepositorio>();
 builder.Services.AddScoped<IPlatoRepositorio, PlatoRepositorio>();
+builder.Services.AddScoped<IPagoRepositorio, PagoRepositorio>();
 
 
 
@@ -142,6 +143,9 @@ builder.Services.AddScoped<ListarLlamadosPendientesCasoDeUso>();
 builder.Services.AddScoped<ResolverLlamadoCasoDeUso>();
 builder.Services.AddScoped<ListarComandasActivasMozoCasoDeUso>();
 builder.Services.AddScoped<ObtenerDetalleArticuloCasoDeUso>();
+builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
+builder.Services.AddScoped<SolicitarPagoEfectivoCasoDeUso>();
+builder.Services.AddScoped<ConfirmarPagoEfectivoCasoDeUso>();
 builder.Services.AddScoped<ConfirmarPedidoClienteAComandaCasoDeUso>();
 builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
 builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
