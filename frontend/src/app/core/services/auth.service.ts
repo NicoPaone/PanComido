@@ -4,8 +4,8 @@ import { Observable, of, delay } from 'rxjs';
 
 const ROLE_ROUTES: Record<string, string> = {
   'Gerente': 'staff/gerente',
-  'Cocina':  'staff/cocina',
-  'Mozo':    'staff/mozo',
+  'Cocina': 'staff/cocina',
+  'Mozo': 'staff/mozo',
 };
 const DEFAULT_ROUTE = 'staff/cocina';
 
@@ -14,7 +14,7 @@ const DEFAULT_ROUTE = 'staff/cocina';
   providedIn: 'root'
 })
 export class AuthService {
-  currentRole = signal<string>('Mozo');
+  currentRole = signal<string>('Gerente');
 
   validateManagerCredentials(username: string, password: string): Observable<boolean> {
     const esValido = username.toLowerCase().trim() === 'gerente' && password === '123456';
@@ -28,8 +28,8 @@ export class AuthService {
   setRole(role: string): void {
     this.currentRole.set(role);
   }
-  getHomeRoute():string{
+  getHomeRoute(): string {
     const role = this.currentRole();
-    return ROLE_ROUTES[role] ||DEFAULT_ROUTE;
+    return ROLE_ROUTES[role] || DEFAULT_ROUTE;
   }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,7 +24,7 @@ namespace PanComido.Dominio.Entidades
 
         // valores para la carta:
         public string Categoria { get; set; }
-        
+
 
         public string TipoPlato { get; set; }
 
