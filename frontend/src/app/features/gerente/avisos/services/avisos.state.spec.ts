@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+/*import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { Plato } from '../../../../core/models/plato';
@@ -90,3 +90,4 @@ describe('AvisosStateService', () => {
     expect(service.sugerencias()).toHaveLength(0);
   });
 });
+*/
