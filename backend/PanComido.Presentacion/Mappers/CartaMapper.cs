@@ -23,7 +23,8 @@ namespace PanComido.Presentacion.Mappers
                 dto.TiempoPreparacionBase = plato.TiempoPreparacionBase;
 
                 dto.CategoriaPlato = plato.Categoria;
-                dto.Restricciones = plato.Restricciones ?? new List<string>();
+                dto.TipoPlato = plato.TipoPlato;
+                dto.Restricciones = plato.Restricciones?.Select(r => r.Descripcion).ToList() ?? new List<string>();
             }
             else if (articuloDominio is Insumo bebida)
             {

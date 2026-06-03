@@ -1,32 +1,31 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.CartaCasosDeUso;
-using PanComido.Presentacion.DTOs.Articulos;
 using PanComido.Presentacion.Mappers;
+using System.Threading.Tasks;
 
 namespace PanComido.Presentacion.Controllers
 {
-    [Route("restaurante/{restauranteId}/carta")]
+    [Route("carta")]
     [ApiController]
     public class CartaController : ControllerBase
     {
-        private readonly ObtenerCartaCasoDeUso _obtenerCartaCasoDeUso;
-        private readonly CartaMapper _mapper;
+        private readonly ObtenerArticulosParaCrearCartaCasoDeUso _obtenerArticulosCasoDeUso;
+        private readonly ArticuloCartaMapper _mapper;
 
-        public CartaController(ObtenerCartaCasoDeUso obtenerCartaCasoDeUso, CartaMapper mapper)
+        public CartaController(ObtenerArticulosParaCrearCartaCasoDeUso obtenerArticulosCasoDeUso, ArticuloCartaMapper mapper)
         {
-            _obtenerCartaCasoDeUso = obtenerCartaCasoDeUso;
+            _obtenerArticulosCasoDeUso = obtenerArticulosCasoDeUso;
             _mapper = mapper;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> ObtenerCartaDisponible(int restauranteId)
+        [HttpGet("obtener-articulos")]
+        public async Task<IActionResult> ObtenerArticulosParaCarta()
         {
-            var articulosDisponibles = await _obtenerCartaCasoDeUso.EjecutarAsync(restauranteId);
+            // Ejecutamos el caso de uso que trae la lista y hace la matemática
+            var articulosDominio = await _obtenerArticulosCasoDeUso.EjecutarAsync();
 
-            var respuestaJson = _mapper.ParaDtoList(articulosDisponibles);
-
-            return Ok(respuestaJson);
+            // Usamos nuestro mapper para traducirlo al DTO de Angular y devolvemos 200 OK
+            return Ok(_mapper.aListaDto(articulosDominio));
         }
     }
 }

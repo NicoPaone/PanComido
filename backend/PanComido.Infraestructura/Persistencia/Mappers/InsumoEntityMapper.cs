@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Infraestructura.Persistencia.Entidades;
 using System;
@@ -13,6 +14,13 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
 {
     public class InsumoEntityMapper
     {
+        private LoteEntityMapper _loteEntityMapper;
+        
+        public InsumoEntityMapper(LoteEntityMapper loteEntityMapper)
+        {
+            _loteEntityMapper = loteEntityMapper;
+        }
+
         public DOM.Insumo CompletarMapeoDominio(EF.Articulo efArticulo)
         {
             if (efArticulo == null) return null;
@@ -20,8 +28,8 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             var domInsumo = new DOM.Insumo
             {
                 StockMinimo = efArticulo.Insumo.StockMinimo,
-                Tipo = (TipoInsumo)efArticulo.Insumo.CategoriaInsumo.TipoAplica,
-                Categoria = efArticulo.Insumo.CategoriaInsumo.Descripcion,
+                Tipo = efArticulo.Insumo.CategoriaInsumo != null ? (TipoInsumo)efArticulo.Insumo.CategoriaInsumo.TipoAplica : default,
+                Categoria = efArticulo.Insumo.CategoriaInsumo?.Descripcion,
                 UnidadMedida = efArticulo.Insumo.UnidadMedida?.Nombre,
                 CategoriaId = efArticulo.Insumo.CategoriaInsumoId,
                 UnidadDeMedidaId = efArticulo.Insumo.UnidadMedidaId
@@ -29,17 +37,22 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
 
             if (efArticulo.Insumo.Lotes != null && efArticulo.Insumo.Lotes.Any())
             {
-                domInsumo.Lotes = efArticulo.Insumo.Lotes.Select(l => new DOM.Lote
-                {
-                    Id = l.Id,
-                    Cantidad = l.Cantidad,
-                    FechaVencimiento = l.FechaVencimiento.GetValueOrDefault()
-                }).ToList();
-                
-                // Si querés que el stock se calcule solo en base a los lotes de la BD:
+                domInsumo.Lotes = efArticulo.Insumo.Lotes?
+                .Select(l => _loteEntityMapper.paraDominio(l))
+                .ToList() ?? new List<DOM.Lote>();
+
+
                 domInsumo.StockActual = domInsumo.Lotes.Sum(l => l.Cantidad);
             }
-
+            if (efArticulo.Insumo.PedidoInsumos != null && efArticulo.Insumo.PedidoInsumos.Any())
+            {
+                domInsumo.PedidoInsumos = efArticulo.Insumo.PedidoInsumos.Select(pi => new DOM.PedidoInsumo
+                {
+                    InsumoId = pi.InsumoId,
+                    Cantidad = pi.Cantidad,
+                    PrecioCompra = pi.PrecioCompra
+                }).ToList();
+            }
             return domInsumo;
         }
 
@@ -51,14 +64,9 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 UnidadMedidaId = insumoDominio.UnidadDeMedidaId,
                 StockMinimo = insumoDominio.StockMinimo,
 
-                Lotes = insumoDominio.Lotes?.Select(l => new EF.Lote
-                {
-                    Nombre = l.Nombre,
-                    Cantidad = l.Cantidad,
-                    BodegaId = l.BodegaId,
-                    FechaAdquisicion = l.FechaAdquisicion,
-                    FechaVencimiento = l.FechaVencimiento
-                }).ToList() ?? new List<EF.Lote>()
+                Lotes = insumoDominio.Lotes?
+                .Select(l => _loteEntityMapper.paraEntidad(l))
+                .ToList() ?? new List<EF.Lote>()
             };
 
             if (insumoDominio.Tipo == TipoInsumo.Ingrediente)

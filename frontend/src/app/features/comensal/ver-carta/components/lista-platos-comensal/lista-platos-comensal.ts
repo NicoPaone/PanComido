@@ -1,28 +1,22 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input, output } from '@angular/core';
 import { Plato } from '../../../../../core/models/plato';
 import { CardPlatoComensalComponent } from '../card-plato-comensal/card-plato-comensal';
 import { ItemPedido } from '../../../../../core/models/item-pedido';
+import { CartaItem } from '../../../../../core/models/carta-item';
 
 @Component({
   selector: 'app-lista-platos-comensal',
   standalone: true,
-  imports: [CommonModule, CardPlatoComensalComponent],
+  imports: [CardPlatoComensalComponent],
   templateUrl: './lista-platos-comensal.html',
 })
 export class ListaPlatosComensalComponent {
+  
 
-  @Input() platos: Plato[] = [];
+  platos = input.required<CartaItem[]>();
+  agregarPedido = output<ItemPedido>();
 
-@Output()
-agregarPedido =
-  new EventEmitter<ItemPedido>();
-
-onAgregarPedido(
-  item: ItemPedido
-) {
-
-  this.agregarPedido.emit(item);
-
-}
+  onAgregarPedido(item: ItemPedido): void {
+    this.agregarPedido.emit(item);
+  }
 }

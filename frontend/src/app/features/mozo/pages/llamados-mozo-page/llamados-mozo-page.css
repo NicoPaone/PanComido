@@ -1,0 +1,77 @@
+.llamados-container {
+  padding: 24px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.contador {
+  background-color: #70c143;
+  color: white;
+  border-radius: 12px;
+  padding: 2px 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.lista-llamados {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Estados (cargando / error / vacío) ── */
+.estado {
+  padding: 32px 16px;
+  text-align: center;
+  border-radius: 12px;
+  margin-top: 16px;
+}
+
+.estado p {
+  margin: 0 0 12px 0;
+  color: #555;
+}
+
+.estado-vacio {
+  background-color: #f5f5f5;
+}
+
+.estado-info {
+  background-color: #e3f2fd;
+}
+
+.estado-error {
+  background-color: #ffebee;
+}
+
+.estado-error p {
+  color: #c62828;
+}
+
+.btn-reintentar {
+  background-color: #70c143;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.btn-reintentar:hover {
+  background-color: #5ea834;
+}

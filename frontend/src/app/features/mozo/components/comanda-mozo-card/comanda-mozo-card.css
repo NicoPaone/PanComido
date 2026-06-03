@@ -1,0 +1,95 @@
+.mozo-card {
+  background: #f7f5ee;
+  border: 1.5px solid #1e293b;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+
+.mozo-header {
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  border-bottom: 1px solid #d1c9b8;
+}
+
+.bg-nueva { background-color: #dc2626; color: white; }
+.bg-preparacion { background-color: #6abf3f; color: #1e293b; }
+.bg-espera { background-color: #facc15; color: #1e293b; }
+
+.mesa-info {
+  font-size: 1.1rem;
+  text-transform: uppercase;
+}
+
+.tiempo-transcurrido {
+  font-size: 0.85rem;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+.mozo-body {
+  padding: 12px 16px;
+  flex-grow: 1;
+}
+
+.items-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item-row {
+  display: flex;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #e8e2d6;
+  font-size: 0.95rem;
+}
+
+.item-row:last-child {
+  border-bottom: none;
+}
+
+.item-cantidad {
+  font-weight: 700;
+  color: #1e293b;
+  min-width: 24px;
+}
+
+.item-nombre {
+  color: #334155;
+}
+
+.item-more {
+  padding: 4px 0;
+  font-size: 0.85rem;
+  color: #64748b;
+  font-style: italic;
+}
+
+.mozo-footer {
+  padding: 12px 16px;
+  border-top: 1px solid #d1c9b8;
+}
+
+.btn-ver {
+  width: 100%;
+  background-color: #1e293b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.btn-ver:hover {
+  background-color: #334155;
+}

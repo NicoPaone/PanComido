@@ -12,15 +12,24 @@ namespace PanComido.Dominio.Servicios
     {
         public bool VerificarDisponibilidad(Articulo articulo, Dictionary<int, decimal> stockDeInsumosActual)
         {
+            // reutiliza logica asumiendo que se necesita al menos 1 para mostrarlo
+            return VerificarDisponibilidad(articulo, 1, stockDeInsumosActual);
+        }
+
+        // con cantidad personalizable
+        public bool VerificarDisponibilidad(Articulo articulo, int cantidadPedida, Dictionary<int, decimal> stockDeInsumosActual)
+        {
             if (articulo is Plato plato)
             {
                 return plato.Ingredientes
                     .Where(i => !i.Opcional)
-                    .All(i => stockDeInsumosActual.TryGetValue(i.InsumoId, out decimal stock) && stock >= i.Cantidad);
+                    .All(i => stockDeInsumosActual.TryGetValue(i.InsumoId, out decimal stock)
+                              && stock >= (i.Cantidad * cantidadPedida));
             }
 
-            // es bebida por descarte
-            return stockDeInsumosActual.TryGetValue(articulo.Id, out decimal stock) && stock > 0;
+            // Es bebida por descarte
+            return stockDeInsumosActual.TryGetValue(articulo.Id, out decimal stockDisponible)
+                   && stockDisponible >= cantidadPedida;
         }
     }
 }

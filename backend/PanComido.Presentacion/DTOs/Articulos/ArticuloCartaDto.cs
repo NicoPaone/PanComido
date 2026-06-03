@@ -13,7 +13,8 @@
         public int? TiempoPreparacionBase { get; set; }
 
         public string CategoriaPlato { get; set; }
-        public string CategoriaBebida { get; set; }
+        public string TipoPlato { get; set; }
+        public string CategoriaBebida { get; set; } 
         public List<string> Restricciones { get; set; } = new List<string>();
     }
 }

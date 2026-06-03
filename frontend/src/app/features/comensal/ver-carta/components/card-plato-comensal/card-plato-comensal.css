@@ -1,21 +1,142 @@
-/* Tarjetas de Platos */
 .dish-card {
-  border-radius: 12px;
-   overflow:hidden;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  padding: 12px;
+  margin-bottom: 16px;
+  border: none;
 }
+
+.dish-layout {
+  display: flex;
+  gap: 16px;
+}
+
+/* Imagen */
+.dish-img-wrapper {
+  width: 130px;
+  flex-shrink: 0;
+}
+
 .dish-img {
   width: 100%;
-  height: 120px;
+  height: 130px;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 12px;
 }
 
+.dish-img-placeholder {
+  width: 100%;
+  height: 130px;
+  background-color: #e9ecef;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #adb5bd;
+}
 
+/* Info */
+.dish-info-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 
-@media (max-width: 576px){
+.dish-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #212529;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+}
 
-  .dish-img{
-    height:120px;
-  }
+.dish-badge {
+  background-color: #2E7D32;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
 
+.dish-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.dish-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 1rem;
+  color: #212529;
+  font-weight: 500;
+}
+
+.dish-time .material-symbols-outlined {
+  font-size: 1.1rem;
+}
+
+.dish-price {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #212529;
+}
+
+/* Controles */
+.dish-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.counter-pill {
+  display: flex;
+  align-items: center;
+  background-color: #F8F9FA;
+  border: 1.5px solid #E9ECEF;
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.btn-counter {
+  background: none;
+  border: none;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #495057;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+.counter-value {
+  font-weight: 700;
+  width: 20px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.add-btn-wrapper {
+  flex: 1;
+}
+
+/* Asegura que el boton comensal quite bordes nativos feos si los tiene */
+::ng-deep .add-btn-wrapper button {
+  border-radius: 8px !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.1s;
+}
+
+::ng-deep .add-btn-wrapper button:active {
+  transform: scale(0.97);
 }

@@ -1,41 +1,199 @@
+/* ── Botón flotante ── */
 .waiter-btn {
-
   position: fixed;
-
   bottom: 20px;
-
   right: 20px;
-
   width: 60px;
-
   height: 60px;
-
   border-radius: 50%;
-
   display: flex;
-
   flex-direction: column;
-
   align-items: center;
-
   justify-content: center;
-
   background-color: var(--primary-orange);
-
   z-index: 1000;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
 
+.waiter-btn:hover {
+  transform: scale(1.05);
 }
 
 .waiter-icon {
-
   font-size: 30px;
-
 }
 
 .waiter-text {
-
   font-size: 12px;
-
   font-weight: 600;
+}
 
+/* ── Modal ── */
+.modal-dialogo {
+  padding: 0;
+  border: none;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  background-color: white;
+  position: fixed;
+  inset: 0;
+  margin: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Categorías ── */
+.categorias {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.categoria-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border: 2px solid #d1d5db;
+  border-radius: 12px;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.categoria-btn:hover:not(.seleccionada) {
+  border-color: #9ca3af;
+  background-color: #f9fafb;
+}
+
+.categoria-btn.seleccionada {
+  border-color: #2e7d32;
+  background-color: #2e7d32;
+  color: white;
+}
+
+.categoria-btn fa-icon {
+  font-size: 1.2rem;
+}
+
+.categoria-btn span {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* ── Input descripción ── */
+.input-descripcion {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+  box-sizing: border-box;
+}
+
+.input-descripcion:focus {
+  border-color: #2e7d32;
+}
+
+.input-descripcion::placeholder {
+  color: #9ca3af;
+}
+
+/* ── Botón llamar ── */
+.btn-llamar {
+  width: 100%;
+  padding: 14px 24px;
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-llamar:hover:not(:disabled) {
+  background-color: #1b5e20;
+}
+
+.btn-llamar:disabled {
+  background-color: #d1d5db;
+  cursor: not-allowed;
+}
+
+/* ── Mensaje de éxito ── */
+.mensaje-exito {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+}
+
+.mensaje-exito .material-symbols-outlined {
+  font-size: 48px;
+  color: #2e7d32;
+}
+
+.mensaje-exito p {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+.btn-aceptar {
+  margin-top: 8px;
+  padding: 10px 32px;
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-aceptar:hover {
+  background-color: #1b5e20;
 }

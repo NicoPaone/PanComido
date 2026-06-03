@@ -14,10 +14,21 @@ namespace PanComido.Presentacion.Servicios
             _hubContext = hubContext;
         }
 
-        public async Task NotificarEstadoModificadoAsync(Comanda comanda)
+        public async Task NotificarEstadoModificadoAsync(Comanda comanda, List<int> mozoIds)
         {
            await _hubContext.Clients.Group($"Cocina_{comanda.RestauranteId}").SendAsync("EstadoComandaModificada", comanda);
-           await _hubContext.Clients.Group($"Mozos_{comanda.RestauranteId}").SendAsync("EstadoComandaModificada", comanda);
+            foreach(int mozoId in mozoIds)
+            {
+                await _hubContext.Clients.Group($"Mozo_{mozoId}").SendAsync("EstadoComandaModificada", comanda);
+            }
+        }
+
+        public async Task NotificarLlamadoCocinaAsync(Comanda comanda, List<int> mozoIds)
+        {
+            foreach (var mozoId in mozoIds)
+            {
+                await _hubContext.Clients.Group($"Mozo_{mozoId}").SendAsync("LlamadoCocina", comanda);
+            }
         }
     }
 }

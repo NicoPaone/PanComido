@@ -7,7 +7,7 @@
         public int InsumoId { get; set; }
         public decimal Cantidad { get; set; }
         public DateOnly FechaAdquisicion { get; set; }
-        public DateOnly FechaVencimiento { get; set; }
+        public DateOnly? FechaVencimiento { get; set; }
         public int BodegaId { get; set; }
     }
 }

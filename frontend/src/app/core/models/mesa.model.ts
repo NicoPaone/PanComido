@@ -7,26 +7,25 @@ export enum FormaMesa {
 
 export interface DimensionMesa {
   id: number;
-  forma: FormaMesa;
-  imagen: string;
+  forma: string;
+  imagen?: string;
 }
 
 export enum EstadoMesa {
-  Disponible = 'disponible',
-  Ocupada = 'ocupada',
-  Reservada = 'reservada',
-  Deshabilitada = 'deshabilitada'
+  Disponible = 'Disponible',
+  Ocupada = 'Ocupada',
+  Reservada = 'Reservada',
+  Deshabilitada = 'Deshabilitada'
 }
-
 export interface Mesa {
   id: number;
   codigoInvitacion: string;
   cantidadPersonasMax: number;
   numeroMesa: number;
+  posicionXInicio: number;  
+  posicionXFin: number;
+  posicionYInicio: number;
   posicionYFin: number;
-  posicionYinicio: number;
-  posicionXInicio: number;
-  posicionXfin: number;
   dimensionMesa: DimensionMesa;
-  estadoMesa: EstadoMesa;
+  estadoMesa: string;  
 }

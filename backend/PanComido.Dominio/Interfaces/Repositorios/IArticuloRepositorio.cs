@@ -10,5 +10,10 @@ namespace PanComido.Dominio.Interfaces.Repositorios
     public interface IArticuloRepositorio
     {
         Task<List<Articulo>> ObtenerArticulosEnCartaConIngredientesAsync(int restauranteId);
+
+        Task<Articulo> ObtenerDetalleAsync(int restauranteId, int articuloId);
+
+        Task<List<Articulo>> ObtenerTodosLosArticulosParaCartaAsync();
+
     }
 }

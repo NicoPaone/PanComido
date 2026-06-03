@@ -4,8 +4,8 @@ import { Observable, of, delay } from 'rxjs';
 
 const ROLE_ROUTES: Record<string, string> = {
   'Gerente': 'staff/gerente',
-  'Cocina':  'staff/cocina',
-  'Mozo':    'staff/mozo',
+  'Cocina': 'staff/cocina',
+  'Mozo': 'staff/mozo',
 };
 const DEFAULT_ROUTE = 'staff/cocina';
 
@@ -16,7 +16,6 @@ const DEFAULT_ROUTE = 'staff/cocina';
 export class AuthService {
   currentRole = signal<string>('Gerente');
 
-  // NOTE: El endpoint del back para validar credenciales de gerente debe conectarse aquí
   validateManagerCredentials(username: string, password: string): Observable<boolean> {
     const esValido = username.toLowerCase().trim() === 'gerente' && password === '123456';
     return of(esValido).pipe(delay(250));
@@ -29,8 +28,8 @@ export class AuthService {
   setRole(role: string): void {
     this.currentRole.set(role);
   }
-  getHomeRoute():string{
+  getHomeRoute(): string {
     const role = this.currentRole();
-    return ROLE_ROUTES[role] ||DEFAULT_ROUTE;
+    return ROLE_ROUTES[role] || DEFAULT_ROUTE;
   }
 }

@@ -9,11 +9,13 @@ namespace PanComido.Dominio.Entidades
     public class ArticuloComanda
     {
         public int Id { get; set; } // El ID de la tabla articulo_comanda
+        
+        public int ArticuloId { get; set; }
+
         public int Cantidad { get; set; }
         public bool Entregado { get; set; }
         public string? ObservacionesIngredientes { get; set; }
         public string? ObservacionesGenerales { get; set; }
-
         public Articulo Articulo { get; set; }
     }
 }
