@@ -39,7 +39,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 Cantidad = loteEF.Cantidad,
                 FechaAdquisicion = loteEF.FechaAdquisicion,
 
-                FechaVencimiento = loteEF.FechaVencimiento.GetValueOrDefault()
+                FechaVencimiento = loteEF.FechaVencimiento
             };
         }
     }
