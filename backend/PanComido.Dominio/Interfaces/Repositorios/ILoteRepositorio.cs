@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PanComido.Dominio.Entidades;
 
 namespace PanComido.Dominio.Interfaces.Repositorios
 {
@@ -21,6 +22,7 @@ namespace PanComido.Dominio.Interfaces.Repositorios
 
         Task CrearLotesAsync(List<DOM.Lote> lotes);
         Task<int> ContarLotesConNombreBaseAsync(string nombreBase);
-
+        Task<List<Lote>> ObtenerLotesPorFechaVencimientoAscendenteAsync(int restauranteId, int insumoId);
+        Task ActualizarLotesAsync(List<Lote> lotesModificados);
     }
 }

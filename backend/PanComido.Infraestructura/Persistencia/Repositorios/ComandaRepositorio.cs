@@ -106,6 +106,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<DOM.Comanda?> ObtenerComandaPorIdAsync(int comandaId)
         {
             var efComanda = await BaseQueryMozo()
+                .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == comandaId);
 
             return efComanda == null ? null : _mapper.ParaDominio(efComanda);
@@ -119,6 +120,13 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             if (efItem == null) return;
 
             efItem.Entregado = true;
+            await _ctx.SaveChangesAsync();
+        }
+
+        public async Task ActualizarAsync(Comanda comanda)
+        {
+            var efComanda = _mapper.paraEntidad(comanda);
+            _ctx.Comanda.Update(efComanda);
             await _ctx.SaveChangesAsync();
         }
     }
