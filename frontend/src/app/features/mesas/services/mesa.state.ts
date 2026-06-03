@@ -112,6 +112,22 @@ export class MesaStateService {
       return;
     }
 
+    // Validación de superposición
+    for (let i = 0; i < mesas.length; i++) {
+      for (let j = i + 1; j < mesas.length; j++) {
+        const m1 = mesas[i];
+        const m2 = mesas[j];
+        
+        const superponenX = m1.posicionXInicio < m2.posicionXFin && m1.posicionXFin > m2.posicionXInicio;
+        const superponenY = m1.posicionYInicio < m2.posicionYFin && m1.posicionYFin > m2.posicionYInicio;
+
+        if (superponenX && superponenY) {
+          this.lectura.mostrarNotificacion(`Las mesas ${m1.numeroMesa} y ${m2.numeroMesa} están superpuestas. Por favor separalas.`, 'error');
+          return;
+        }
+      }
+    }
+
     this.mesaService.guardarMapa(mesas).subscribe({
       next: () => {
         this._isEditorMode.set(false);
