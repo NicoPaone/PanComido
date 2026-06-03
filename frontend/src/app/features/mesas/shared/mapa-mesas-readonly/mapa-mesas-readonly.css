@@ -50,3 +50,30 @@
   from { top: -50px; opacity: 0; }
   to { top: 20px; opacity: 1; }
 }
+
+/* VISTA MOBILE */
+.mobile-grid {
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  min-height: 500px;
+}
+
+.mobile-mesa-btn {
+  color: white;
+  font-weight: bold;
+  font-size: 1.5rem;
+  padding: 20px 0;
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.1s;
+}
+
+.mobile-mesa-btn:active {
+  transform: scale(0.95);
+}
+
+.mobile-mesa-btn.disponible { background-color: #5cb85c; }
+.mobile-mesa-btn.ocupada { background-color: #c0392b; }
+.mobile-mesa-btn.reservada { background-color: #f1c40f; color: #333; }
+.mobile-mesa-btn.deshabilitada { background-color: #000000; color: white; }

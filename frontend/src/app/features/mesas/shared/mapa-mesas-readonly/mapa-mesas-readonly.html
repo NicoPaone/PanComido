@@ -11,7 +11,8 @@
     <span class="info">Ocupadas: {{ state.mesasOcupadas().length }}</span>
   </div>
 
-  <div class="plano-fondo" [style.height]="altura()" (click)="state.seleccionarMesa(null)">
+  <!-- VISTA DESKTOP (PLANO) -->
+  <div class="plano-fondo d-none d-md-block" [style.height]="altura()" (click)="state.seleccionarMesa(null)">
     @for (mesa of state.mesas(); track mesa.id) {
       <app-mesa-item
         [mesa]="mesa"
@@ -24,5 +25,18 @@
         [style.top.px]="mesa.posicionYInicio">
       </app-mesa-item>
     }
+  </div>
+
+  <!-- VISTA MOBILE (GRILLA 3 COLUMNAS) -->
+  <div class="d-block d-md-none mobile-grid p-2">
+    <div class="row g-3">
+      @for (mesa of mesasOrdenadas(); track mesa.id) {
+        <div class="col-4">
+          <button class="btn w-100 mobile-mesa-btn" [ngClass]="getMobileClass(mesa.estadoMesa)">
+            {{ mesa.numeroMesa }}
+          </button>
+        </div>
+      }
+    </div>
   </div>
 </div>

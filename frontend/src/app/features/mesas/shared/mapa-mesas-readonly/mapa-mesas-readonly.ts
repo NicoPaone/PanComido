@@ -1,11 +1,12 @@
 import { Component, inject, input, output } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MesaLecturaState } from '../mesa-lectura-state';
 import { MesaItem } from '../../../../shared/components/mesa-item/mesa-item';
 import { EstadoMesa } from '../../../../core/models/mesa.model';
 
 @Component({
   selector: 'app-mapa-mesas-readonly',
-  imports: [MesaItem],
+  imports: [CommonModule, MesaItem],
   templateUrl: './mapa-mesas-readonly.html',
   styleUrl: './mapa-mesas-readonly.css',
 })
@@ -43,6 +44,20 @@ export class MapaMesasReadonly {
       case 'deshabilitar':
         this.state.cambiarEstadoMesa(mesaId, EstadoMesa.Deshabilitada);
         break;
+    }
+  }
+
+  mesasOrdenadas() {
+    return [...this.state.mesas()].sort((a, b) => a.numeroMesa - b.numeroMesa);
+  }
+
+  getMobileClass(estado: string): string {
+    switch (estado.toLowerCase()) {
+      case 'disponible': return 'disponible';
+      case 'ocupada': return 'ocupada';
+      case 'reservada': return 'reservada';
+      case 'deshabilitada': return 'deshabilitada';
+      default: return 'disponible';
     }
   }
 
