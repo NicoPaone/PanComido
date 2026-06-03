@@ -11,8 +11,9 @@ export class ComandaStateService {
   private pedidoService = inject(PedidoService);
 
   // Signals de estado
-  private _comandaId = signal<number | null>(null);
-  private _mesaId = signal<number | null>(null);
+ // Signals de estado (inicializan desde sessionStorage si existe)
+  private _comandaId = signal<number | null>(this.leerNumeroDeStorage('comandaId'));
+  private _mesaId = signal<number | null>(this.leerNumeroDeStorage('mesaId'));
   private _mesaInfo = signal<Mesa | null>(null);
   private _estadoPedido = signal<ComandaClienteResponse | null>(null);
   private _cargando = signal(false);
@@ -33,7 +34,7 @@ export class ComandaStateService {
    * Ocupar mesa y crear comanda
    * Llamar DESPUÉS de que el usuario ingrese la cantidad de personas
    */
-  ocuparMesa(mesaId: number, cantidadComensales: number): Promise<void> {
+ocuparMesa(mesaId: number, cantidadComensales: number): Promise<void> {
     this._mesaId.set(mesaId);
     this._cargando.set(true);
     this._error.set(null);
@@ -43,6 +44,9 @@ export class ComandaStateService {
         next: (response) => {
           this._mesaInfo.set(response.mesa);
           this._comandaId.set(response.idComandaGenerada);
+          // Persistir para que sobreviva refresh / navegación directa
+          sessionStorage.setItem('comandaId', String(response.idComandaGenerada));
+          sessionStorage.setItem('mesaId', String(mesaId));
           this._cargando.set(false);
           resolve();
         },
@@ -130,12 +134,14 @@ export class ComandaStateService {
   /**
    * Limpiar estado (para nueva comanda)
    */
-  limpiarEstado(): void {
+limpiarEstado(): void {
     this._comandaId.set(null);
     this._mesaId.set(null);
     this._mesaInfo.set(null);
     this._estadoPedido.set(null);
     this._error.set(null);
+    sessionStorage.removeItem('comandaId');
+    sessionStorage.removeItem('mesaId');
   }
 
   /**
@@ -143,5 +149,12 @@ export class ComandaStateService {
    */
   limpiarError(): void {
     this._error.set(null);
+  }
+  
+  private leerNumeroDeStorage(key: string): number | null {
+    const val = sessionStorage.getItem(key);
+    if (val === null) return null;
+    const num = Number(val);
+    return Number.isFinite(num) ? num : null;
   }
 }
