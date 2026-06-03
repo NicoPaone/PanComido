@@ -1,0 +1,61 @@
+<div class="container-fluid p-4 bg-light min-vh-100 d-flex flex-column align-items-center pt-5">
+
+  <div class="d-flex justify-content-between w-100 mb-5 px-2">
+    <div class="badge bg-white text-dark border p-2 rounded-3">Pago Confirmado</div>
+    <div class="badge bg-white text-dark border p-2 rounded-3">Nro mesa: <span class="fw-bold">{{ mesaId() }}</span></div>
+  </div>
+
+  <!-- CHECK ANIMADO -->
+  <div class="success-checkmark mb-4">
+    <div class="check-icon">
+      <span class="icon-line line-tip"></span>
+      <span class="icon-line line-long"></span>
+      <div class="icon-circle"></div>
+      <div class="icon-fix"></div>
+    </div>
+  </div>
+
+  <div class="card border border-2 shadow-sm rounded-4 w-100 mb-4">
+    <div class="card-body p-4 text-center">
+      <p class="mb-1 text-dark fs-5">¡Gracias por tu visita!</p>
+      <p class="mb-0 text-dark fs-5">Tu pago fue procesado con éxito.</p>
+    </div>
+  </div>
+
+  <div class="w-100 mb-5 px-2">
+    <h5 class="fw-bold mb-3">Resumen</h5>
+    <hr class="border-2 border-dark opacity-100 mb-3">
+    
+    <div class="d-flex justify-content-between py-2">
+      <span class="fs-5">Items:</span>
+      <span class="fs-5">{{ estado()?.items?.length || 0 }}</span>
+    </div>
+    <div class="d-flex justify-content-between py-2 mb-2">
+      <span class="fs-5">Total Pagado:</span>
+      <span class="fs-5">${{ (estado()?.totalAPagar || 0) | number:'1.0-0' }}</span>
+    </div>
+
+    <hr class="border-2 border-dark opacity-100 mt-2">
+  </div>
+
+  <p class="mb-4 fs-5 text-center">¿Cómo estuvo tu experiencia?</p>
+
+  <div class="w-100 d-flex flex-column gap-3">
+    <app-boton-comensal
+      class="w-100"
+      [backgroundColor]="configuracion.paleta.botonPrimario"
+      [textColor]="configuracion.paleta.textoClaro"
+      (clicked)="puntuarPlatos()">
+      Puntuar platos
+    </app-boton-comensal>
+
+    <app-boton-comensal
+      class="w-100"
+      backgroundColor="#f8f9fa"
+      [textColor]="configuracion.paleta.textoOscuro"
+      [tieneBorde]="true"
+      (clicked)="volverInicio()">
+      Volver a inicio
+    </app-boton-comensal>
+  </div>
+</div>
