@@ -1,0 +1,19 @@
+<footer class="comensal-footer">
+  <div class="footer-content">
+    
+    <button class="cart-pill-btn" (click)="verPedido.emit()" [disabled]="cantidadItems() === 0">
+      <div class="cart-pill-left">
+        <div class="cart-count-badge">
+          {{ cantidadItems() }}
+        </div>
+        <span class="cart-label">Ver pedido</span>
+      </div>
+      <span class="cart-total">$ {{ total() | number:'1.0-0' }}</span>
+    </button>
+
+    <div class="mozo-wrapper">
+      <app-llamar-al-mozo [configuracion]="configuracion()" #llamarMozoRef />
+    </div>
+
+  </div>
+</footer>

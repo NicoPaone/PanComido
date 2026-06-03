@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiClient } from '../../../../core/services/api-client';
+import { ApiService } from '../../../../core/services/api-service';
 import { Plato } from '../../../../core/models/plato';
 import { AvisosResponseDto } from '../../../../core/models/aviso.model';
 import { Insumo } from '../../../../core/models/insumos/insumo';
@@ -8,7 +8,7 @@ import { SugerenciaIA } from '../../../../core/models/sugerencia-ia.model';
 
 @Injectable({ providedIn: 'root' })
 export class AvisosApiService {
-  private api = inject(ApiClient);
+  private api = inject(ApiService);
 
   getAvisos(): Observable<AvisosResponseDto> {
     return this.api.get<AvisosResponseDto>('avisos');

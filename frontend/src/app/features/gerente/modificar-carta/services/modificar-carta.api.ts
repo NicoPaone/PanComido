@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { ApiClient } from '../../../../core/services/api-client';
+import { ApiService } from '../../../../core/services/api-service';
 import { Plato } from '../../../../core/models/plato';
 import { Insumo } from '../../../../core/models/insumos/insumo';
 import { UnidadMedida } from '../../../../core/models/unidad-medida';
@@ -19,7 +19,7 @@ interface InsumoResponseDto {
 
 @Injectable({ providedIn: 'root' })
 export class ModificarCartaApiService {
-  private api = inject(ApiClient);
+  private api = inject(ApiService);
 
   getPlatos(): Observable<Plato[]> {
     return this.api.get<any[]>('carta/obtener-articulos').pipe(

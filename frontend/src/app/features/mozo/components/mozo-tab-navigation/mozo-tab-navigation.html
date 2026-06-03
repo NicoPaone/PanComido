@@ -1,0 +1,11 @@
+<nav class="mozo-tabs">
+  @for (tab of tabs; track tab.route) {
+    <a
+      [routerLink]="['/staff/mozo', tab.route]"
+      routerLinkActive="active"
+      class="tab-item"
+      [class.active]="isActive(tab.route)">
+      {{ tab.label }}
+    </a>
+  }
+</nav>

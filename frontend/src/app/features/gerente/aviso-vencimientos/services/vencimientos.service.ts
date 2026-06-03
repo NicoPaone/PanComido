@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map, switchMap, of } from 'rxjs';
-import { ApiClient } from '../../../../core/services/api-client';
+import { ApiService } from '../../../../core/services/api-service';
 import { IngredienteVencimiento, VencimientoProveedor, VencimientoPedidoActivo } from '../../../../core/models/vencimientos.model';
 import { Insumo } from '../../../../core/models/insumos/insumo';
 import { NuevoPedidoProveedor, PedidoProveedor } from '../../../../core/models/proveedor';
@@ -37,7 +37,7 @@ interface CrearPedidoRequestDto {
 
 @Injectable({ providedIn: 'root' })
 export class VencimientosApiService {
-  private api = inject(ApiClient);
+  private api = inject(ApiService);
 
   getIngredientesProximosVencer(): Observable<IngredienteVencimiento[]> {
     return this.api.get<InsumoResponseDto[]>('Insumo').pipe(

@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { ApiClient } from './api-client';
+import { ApiService } from './api-service';
 import { UnidadMedida } from '../models/unidad-medida';
 import { Observable } from 'rxjs';
 
@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class UnidadMedidaService {
 
-  private api = inject(ApiClient);
+  private api = inject(ApiService);
 
   private endpoint = 'unidad-medida'
 
