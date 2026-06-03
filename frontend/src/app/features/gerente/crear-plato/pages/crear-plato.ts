@@ -76,6 +76,28 @@ export class CrearPlatoComponent {
         this.platoForm.get('costo')?.markAsTouched();
       }
     });
+
+    const nav = this.router.getCurrentNavigation();
+    const extras = nav?.extras?.state;
+
+    if (extras?.['desde_ia']) {
+      this.platoForm.patchValue({
+        nombre: extras['nombre'] ?? '',
+        descripcion: extras['descripcion'] ?? '',
+        tiempoPreparacion: extras['tiempoPreparacion'] ?? 15,
+        costo: 0,
+        precioVenta: 0,
+      });
+
+      const ingredientes: RecetaIngrediente[] = (extras['ingredientes'] ?? []).map((ing: any) => ({
+        id: ing.insumoId,
+        nombre: ing.nombre,
+        cantidad: ing.cantidad,
+        unidadMedida: 'GR',
+      }));
+
+      this.state.updateReceta(ingredientes);
+    }
   }
 
   toggleTag(tag: 'vegano' | 'vegetariano' | 'celiaco') {
@@ -102,20 +124,24 @@ export class CrearPlatoComponent {
     this.state.seleccionarImagen(url);
   }
 
-  guardar() {
-    if (this.platoForm.invalid) {
-      return;
-    }
-
-    const formVal = this.platoForm.value;
-    const platoData = {
-      nombre: formVal.nombre!,
-      costo: formVal.costo!,
-      precioVenta: formVal.precioVenta!
-    };
-
-    this.state.guardarPlato(platoData, () => {});
+guardar() {
+  if (this.platoForm.invalid) {
+    this.platoForm.markAllAsTouched();
+    return;
   }
+
+  const formVal = this.platoForm.value;
+  const platoData = {
+    nombre: formVal.nombre!,
+    costo: formVal.costo!,
+    precioVenta: formVal.precioVenta!,
+    tiempoPreparacion: formVal.tiempoPreparacion!,
+    tipoPlato: formVal.tipoPlato!,
+    descripcion: formVal.descripcion!,
+  };
+
+  this.state.guardarPlato(platoData, () => {});
+}
 
   cerrarExito() {
     this.state.setMostrarExito(false);

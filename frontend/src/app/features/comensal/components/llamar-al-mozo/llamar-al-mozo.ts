@@ -12,6 +12,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { LlamadoService } from '../../../../core/services/llamados/llamado-service';
 import { LlamarMozoRequest } from '../../../../core/models/llamados/llamado';
+import { ComandaStateService } from '../../services/comanda-state.service';
 
 
 interface CategoriaLlamado {
@@ -38,6 +39,7 @@ const CATEGORIAS: CategoriaLlamado[] = [
 })
 export class LlamarAlMozo {
   readonly #api = inject(LlamadoService);
+  readonly #comandaState = inject(ComandaStateService);
 
   configuracion = input.required<any>();
 
@@ -47,13 +49,17 @@ export class LlamarAlMozo {
   readonly enviando = signal(false);
   readonly modalAbierto = signal(false);
   readonly enviado = signal(false);
+  readonly error = signal('');
 
-  mesaId = 1;
+  get mesaId(): number {
+    return this.#comandaState.mesaId() ?? 0;
+  }
 
   abrirModal(): void {
     this.categoriaSeleccionada.set(null);
     this.descripcion.set('');
     this.enviando.set(false);
+    this.error.set('');
     this.modalAbierto.set(true);
 
     setTimeout(() => {
@@ -94,8 +100,9 @@ export class LlamarAlMozo {
         this.enviando.set(false);
         this.enviado.set(true);
       },
-      error: () => {
+      error: (err) => {
         this.enviando.set(false);
+        this.error.set(err.error?.error ?? 'No se pudo enviar el llamado. Intenta nuevamente.');
       },
     });
   }

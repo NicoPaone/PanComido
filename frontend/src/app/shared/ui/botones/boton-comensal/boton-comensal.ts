@@ -12,6 +12,7 @@ export type BotonTamanio = 'sm' | 'md' | 'lg';
 })
 export class BotonComensal {
    label = input<string>();
+   disabled = input<boolean>(false);
 
   backgroundColor = input<string>();
   textColor = input<string>();

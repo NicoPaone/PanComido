@@ -14,20 +14,10 @@
     <div class="dish-info-wrapper">
       <div class="dish-header-info">
         <h5 class="dish-title">{{ plato().nombre }}</h5>
-
-        @if (plato().esDestacado) {
-          <div class="dish-badge">Plato del día</div>
-        }
       </div>
 
       <div class="dish-meta">
-        @if (plato().tiempoPreparacionBase) {
-          <span class="dish-time">
-            <span class="material-symbols-outlined">schedule</span>
-            {{ plato().tiempoPreparacionBase }}'
-          </span>
-        }
-        <span class="dish-price">$ {{ plato().precio }}</span>
+        <span class="dish-price">$ {{ plato().precioVentaFinal }}</span>
       </div>
 
       <div class="dish-controls">

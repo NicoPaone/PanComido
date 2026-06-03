@@ -68,8 +68,17 @@ namespace PanComido.Infraestructura.ServiciosExternos.Gemini.Servicio
                                                     .Contenido
                                                     .Partes
                                                     .FirstOrDefault()?
-                                                    .Texto 
+                                                    .Texto
                                                     ?? throw new Exception("Gemini no devolvió contenido.");
+
+            // Gemini a veces envuelve el JSON en ```json ... ``` aunque se le pida que no
+            textoRespuesta = textoRespuesta.Trim();
+            if (textoRespuesta.StartsWith("```"))
+            {
+                int inicio = textoRespuesta.IndexOf('\n') + 1;
+                int fin = textoRespuesta.LastIndexOf("```");
+                textoRespuesta = textoRespuesta[inicio..fin].Trim();
+            }
 
             GeminiResponseDto? sugerenciaDto = JsonSerializer.Deserialize<GeminiResponseDto>(textoRespuesta);
 

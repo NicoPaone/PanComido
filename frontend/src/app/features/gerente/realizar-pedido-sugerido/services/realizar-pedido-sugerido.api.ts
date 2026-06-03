@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { ApiClient } from '../../../../core/services/api-client';
+import { ApiService } from '../../../../core/services/api-service';
 
 import { Proveedor, SugerenciaPedidoItem, NuevoPedidoProveedor } from '../../../../core/models/proveedor';
 import { Insumo } from '../../../../core/models/insumos/insumo';
@@ -9,8 +9,8 @@ import { CategoriaInsumo } from '../../../../core/models/insumos/categorias/cate
 
 @Injectable({ providedIn: 'root' })
 export class RealizarPedidoSugeridoApiService {
-  
-  private api = inject(ApiClient);
+
+  private api = inject(ApiService);
 
   getProveedores(): Observable<Proveedor[]> {
     return this.api.get<any[]>('Proveedor').pipe(
@@ -96,5 +96,17 @@ export class RealizarPedidoSugeridoApiService {
       return valor as CategoriaInsumo;
     }
     return { id: 0, descripcion: String(valor ?? 'Almacen'), tipoAplica: 'Ingrediente' };
+  }
+
+  getHistorialPedidos(id: number | string): Observable<{ items: { id: string | number; precioUnitario: number }[]; fecha: string }[]> {
+    return this.api.get<any[]>(`Proveedor/${id}/historial-pedidos`).pipe(
+      map(pedidos => pedidos.map(p => ({
+        fecha: p.fecha ?? '',
+        items: (p.itemsInsumo ?? []).map((item: any) => ({
+          id: item.insumoId,
+          precioUnitario: item.precioCompra ?? 0
+        }))
+      })))
+    );
   }
 }

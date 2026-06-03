@@ -22,6 +22,7 @@ export class MesaItem {
   alto = computed(() => this.mesa().posicionYFin - this.mesa().posicionYInicio);
   claseEstado = computed(() => `estado-${this.mesa().estadoMesa.toLocaleLowerCase()}`);
   claseForma = computed(() => `forma-${this.mesa().dimensionMesa.forma}`);
+  abrirHaciaArriba = computed(() => this.mesa().posicionYInicio > 450);
 
   cambioNumero = output<{id: number, numero: number}>();
   eliminar = output<number>();

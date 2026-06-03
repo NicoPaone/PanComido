@@ -1,12 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiClient } from '../../../../core/services/api-client';
+import { ApiService } from '../../../../core/services/api-service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { NuevoProveedor, Proveedor } from '../../../../core/models/proveedor';
 
 @Injectable({ providedIn: 'root' })
 export class NuevoProveedorApiService {
-  private api = inject(ApiClient);
+  private api = inject(ApiService);
   private authService = inject(AuthService);
 
   validateManagerCredentials(user: string, pass: string): Observable<boolean> {

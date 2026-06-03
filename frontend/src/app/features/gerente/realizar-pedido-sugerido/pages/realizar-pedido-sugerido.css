@@ -79,10 +79,6 @@
   padding: 1.25rem;
 }
 
-.provider-order-card + .provider-order-card {
-  border-top: 3px solid #eef2f7;
-}
-
 .provider-order-header {
   display: flex;
   align-items: flex-start;
@@ -123,7 +119,7 @@
 
 .suggested-item {
   display: grid;
-  grid-template-columns: minmax(180px, 1fr) 150px 140px 40px;
+  grid-template-columns: minmax(180px, 1fr) 110px 110px 110px 40px;
   gap: 0.85rem;
   align-items: center;
   border: 1px solid #e2e8f0;
@@ -188,49 +184,7 @@
 .provider-actions {
   display: flex;
   justify-content: flex-end;
-}
-
-/* Legacy alert styles kept for older route snapshots */
-.ia-alert-card {
-  background: linear-gradient(135deg, rgba(20, 184, 166, 0.08) 0%, rgba(14, 116, 144, 0.06) 100%);
-  border: 1px solid rgba(20, 184, 166, 0.2);
-  position: relative;
-  overflow: hidden;
-}
-
-.ia-alert-card::before {
-  content: '';
-  position: absolute;
-  top: -50px;
-  right: -50px;
-  width: 150px;
-  height: 150px;
-  background: radial-gradient(circle, rgba(20, 184, 166, 0.15) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.ia-icon-wrapper {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%);
-  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
-}
-
-.ia-sparkle-icon {
-  color: #fff;
-  font-size: 24px;
-}
-
-/* Card panel base */
-.panel-card {
-  border: 1px solid #e2e8f0;
-  background-color: #fff;
-}
-
-.section-title {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #1e293b;
+  gap: 0.5rem;
 }
 
 .counter-pill {
@@ -243,79 +197,33 @@
   border: 1px solid #e2e8f0;
 }
 
-/* Suggested table styling */
-.suggested-table th {
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #64748b;
-  letter-spacing: 0.05em;
-  padding: 12px 16px;
-  border-bottom: 2px solid #edf2f7;
-}
-
-.suggested-table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.small-text {
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-
-.qty-input-wrapper {
+.estimated-summary-box {
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
   display: flex;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  padding: 2px 8px;
-  background-color: #fff;
-  width: fit-content;
+  flex-direction: column;
+  gap: 0.15rem;
 }
 
-.quantity-input-field {
-  border: none;
-  padding: 0;
-  width: 50px;
-  font-weight: 700;
-  color: #1e293b;
-  background-color: transparent;
+.estimated-summary-box strong {
+  color: #0f172a;
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1.35rem;
+  font-weight: 900;
 }
 
-.quantity-input-field:focus {
-  outline: none;
-  box-shadow: none;
+.custom-textarea {
+  resize: vertical;
+  border-radius: 8px;
+  border-color: #cbd5e1;
+  padding: 10px;
 }
 
-.qty-unit {
-  font-weight: 600;
-  pointer-events: none;
-}
-
-.badge-warning {
-  background-color: #fef3c7;
-  color: #d97706;
-  border: 1px solid #fde68a;
-  border-radius: 6px;
-  padding: 3px 6px;
-  font-weight: 600;
-}
-
-.badge.bg-teal-subtle {
-  background-color: rgba(20, 184, 166, 0.1);
-  color: #0f766e;
-  border: 1px solid rgba(20, 184, 166, 0.2);
-  padding: 5px 10px;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 0.75rem;
-}
-
-.font-monospace {
-  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-size: 0.9rem;
+.custom-textarea:focus {
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
 }
 
 .btn-delete {
@@ -334,87 +242,15 @@
   transform: scale(1.1);
 }
 
-/* Manual search auto-suggest list */
-.sugerencias-dropdown-ia {
-  top: 100%;
-  left: 0;
-  z-index: 1000;
-  max-height: 250px;
-  overflow-y: auto;
+.panel-card {
+  border: 1px solid #e2e8f0;
   background-color: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  margin-top: 4px;
 }
 
-.sugerencia-item-ia {
-  transition: background-color 0.15s ease;
-  cursor: pointer;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.sugerencia-item-ia:last-child {
-  border-bottom: none;
-}
-
-.sugerencia-item-ia:hover {
-  background-color: #f8fafc;
-}
-
-.sugerencia-item-ia strong {
-  color: #334155;
-}
-
-.text-teal {
-  color: #0d9488 !important;
-}
-
-/* Provider sidebar card info */
-.provider-info-card {
-  background-color: #f8fafc;
-  border: 1px solid #edf2f7;
-}
-
-.provider-info-card h4 {
-  font-size: 1.1rem;
+.section-title {
+  font-size: 1.2rem;
   font-weight: 700;
-}
-
-.provider-info-card p {
-  display: flex;
-  align-items: center;
-}
-
-/* Observation and totals */
-.custom-textarea {
-  resize: vertical;
-  border-radius: 8px;
-  border-color: #cbd5e1;
-  padding: 10px;
-}
-
-.custom-textarea:focus {
-  border-color: #14b8a6;
-  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
-}
-
-.estimated-summary-box {
-  background-color: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 0.85rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.summary-label {
-  font-size: 0.9rem;
-}
-
-.summary-amount {
-  font-size: 1.35rem;
-  font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #1e293b;
 }
 
 @media (max-width: 900px) {
@@ -427,3 +263,144 @@
     justify-content: stretch;
   }
 }
+
+/* TODO REFACTOR: estilos del panel "Agregar ingredientes" copiados de historial-proveedor.css (03/06/2026) */
+.inline-ingredient-search {
+  min-height: 42px;
+  border-color: #cbd5e1;
+  border-radius: 6px;
+}
+
+.inline-ingredient-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.inline-ingredient-item {
+  width: 100%;
+  min-height: 58px;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111827;
+  padding: 0.7rem 0.8rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.inline-ingredient-item.selected {
+  border-color: #02596c;
+  background: rgba(2, 89, 108, 0.05);
+}
+
+.inline-ingredient-item small {
+  display: block;
+  color: #6b7280;
+  font-size: 0.86rem;
+}
+
+.inline-ingredient-empty {
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  color: #64748b;
+  padding: 1rem;
+  text-align: center;
+}
+
+.inline-ingredient-selection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  align-items: end;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0.9rem;
+}
+
+.inline-ingredient-selection label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.modal-action-btn {
+  min-height: 40px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  padding: 0.55rem 1rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.modal-action-btn-outline {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+.modal-action-btn-primary {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: #0f172a;
+}
+
+.modal-action-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.pedido-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.56);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 1100;
+}
+
+.pedido-modal-card {
+  width: min(640px, 100%);
+  max-height: min(85vh, 720px);
+  overflow: auto;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.24);
+  padding: 1.25rem;
+}
+
+.pedido-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.pedido-modal-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.pedido-modal-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #374151;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.pedido-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eef2f7;
+}
+/* FIN TODO REFACTOR */

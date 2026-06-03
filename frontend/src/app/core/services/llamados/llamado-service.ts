@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { ApiClient } from '../api-client';
+import { ApiService } from '../api-service';
 import { Llamado, LlamarMozoRequest } from '../../models/llamados/llamado';
 import { Observable } from 'rxjs';
 
@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class LlamadoService {
 
-  private api = inject(ApiClient)
+  private api = inject(ApiService)
   private endpoint = 'llamado'
 
   crearLlamado(request: LlamarMozoRequest): Observable<Llamado> {

@@ -23,6 +23,11 @@
           <button class="btn-aceptar" (click)="aceptar()">Aceptar</button>
         </div>
       } @else {
+        <!-- Error -->
+        @if (error()) {
+          <div class="alert-error">{{ error() }}</div>
+        }
+
         <!-- Categorías -->
         <div class="categorias">
           @for (cat of categorias; track cat.id) {

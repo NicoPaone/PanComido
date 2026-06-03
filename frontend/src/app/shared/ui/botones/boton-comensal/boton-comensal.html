@@ -2,6 +2,7 @@
   class="btn w-100"
   [style.background-color]="backgroundColor()"
   [style.color]="textColor()"
+  [disabled]="disabled()"
   (click)="clicked.emit($event)">
   {{ label() }}
   <ng-content></ng-content>

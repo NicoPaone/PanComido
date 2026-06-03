@@ -32,7 +32,15 @@ export class RealizarPedidoSugeridoComponent implements OnInit {
   mensajeError = this.state.mensajeError;
 
   montoEstimado = this.state.montoEstimado;
-  proveedoresFiltrados = this.state.proveedoresFiltrados;
+proveedoresFiltrados = this.state.proveedoresFiltrados;
+
+  // TODO REFACTOR: panel "Agregar ingredientes" duplicado de historial-proveedor (03/06/2026)
+  proveedorAgregarIngredienteId = this.state.proveedorAgregarIngredienteId;
+  busquedaIngrediente = this.state.busquedaIngrediente;
+  productoExtraSeleccionadoId = this.state.productoExtraSeleccionadoId;
+  cantidadIngrediente = this.state.cantidadIngrediente;
+  precioIngrediente = this.state.precioIngrediente;
+  ingredientesParaAgregar = this.state.ingredientesParaAgregar;
 
   constructor() {
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -78,6 +86,10 @@ export class RealizarPedidoSugeridoComponent implements OnInit {
     this.state.onCantidadCambiada(proveedorId, item, val);
   }
 
+  onPrecioCambiado(proveedorId: string | number, item: SugerenciaPedidoItem, val: number | null): void {
+    this.state.onPrecioCambiado(proveedorId, item, val);
+  }
+
   nombreUnidad(unidadMedida: UnidadMedida | string | null | undefined): string {
     if (!unidadMedida) return '';
     return typeof unidadMedida === 'string' ? unidadMedida : unidadMedida.nombre;
@@ -93,5 +105,30 @@ export class RealizarPedidoSugeridoComponent implements OnInit {
         state: { created: true, message: 'Pedido creado correctamente. Quedó pendiente en el historial.' }
       });
     });
+  }
+
+  // TODO REFACTOR: panel "Agregar ingredientes" duplicado de historial-proveedor (03/06/2026)
+  abrirAgregarIngrediente(proveedorId: number | string): void {
+    this.state.abrirAgregarIngrediente(proveedorId);
+  }
+
+  cerrarAgregarIngrediente(): void {
+    this.state.cerrarAgregarIngrediente();
+  }
+
+  seleccionarIngredienteExtra(productoId: string): void {
+    this.state.seleccionarIngredienteExtra(productoId);
+  }
+
+  onCantidadIngredienteChange(val: number | null): void {
+    this.state.setCantidadIngrediente(val);
+  }
+
+  onPrecioIngredienteChange(val: number | null): void {
+    this.state.setPrecioIngrediente(val);
+  }
+
+  confirmarAgregarIngrediente(): void {
+    this.state.confirmarAgregarIngrediente();
   }
 }

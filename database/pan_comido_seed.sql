@@ -52,7 +52,8 @@ INSERT INTO categoria_llamado (descripcion) VALUES
     ('General'),
     ('Servilleta'),
     ('Condimentos'),
-    ('Panera');
+    ('Panera'),
+    ('Pago');
 
 INSERT INTO configuracion_articulo (descripcion) VALUES
     ('Es vendible'),

@@ -1,0 +1,53 @@
+.mesas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.mesa-card {
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mesa-card:hover {
+  border-color: #007bff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+}
+
+.mesa-card.seleccionada {
+  background: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.mesa-icon {
+  font-size: 48px;
+  color: #6c757d;
+  transition: color 0.3s ease;
+}
+
+.mesa-card.seleccionada .mesa-icon {
+  color: white;
+}
+
+.mesa-numero {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+}

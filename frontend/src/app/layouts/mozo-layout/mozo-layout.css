@@ -1,0 +1,36 @@
+.mozo-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--gray-50);
+}
+
+.mozo-header {
+  padding: 1rem;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+}
+
+.logo-icon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.mozo-content {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .mozo-content {
+    padding: 0.75rem;
+  }
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+  }
+}

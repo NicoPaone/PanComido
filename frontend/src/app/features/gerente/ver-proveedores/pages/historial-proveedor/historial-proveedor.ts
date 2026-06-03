@@ -47,6 +47,7 @@ export class HistorialProveedorComponent implements OnInit {
   busquedaIngrediente = signal('');
   productoSeleccionadoId = signal('');
   cantidadIngrediente = signal(1);
+  precioIngrediente = signal<number | null>(null);
 
   ingredientesParaAgregar = computed<IngredientePickerItem[]>(() => {
     const texto = this.busquedaIngrediente().toLowerCase().trim();
@@ -145,11 +146,18 @@ export class HistorialProveedorComponent implements OnInit {
     this.state.recibirPedido();
   }
 
-  agregarIngredientes(): void {
+ agregarIngredientes(): void {
     this.isAgregarIngredientesOpen.set(true);
     this.busquedaIngrediente.set('');
     this.productoSeleccionadoId.set('');
     this.cantidadIngrediente.set(1);
+    this.precioIngrediente.set(null);
+  }
+
+  updatePrecioIngrediente(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const precio = Number(input.value);
+    this.precioIngrediente.set(Number.isFinite(precio) && precio >= 0 ? precio : null);
   }
 
   cerrarAgregarIngredientes(): void {
@@ -160,10 +168,27 @@ export class HistorialProveedorComponent implements OnInit {
     this.busquedaIngrediente.set((event.target as HTMLInputElement).value);
   }
 
-  seleccionarIngrediente(producto: Insumo): void {
+seleccionarIngrediente(producto: Insumo): void {
     this.productoSeleccionadoId.set(producto.id.toString());
     this.busquedaIngrediente.set(producto.nombre);
     this.cantidadIngrediente.set(this.getCantidadConfiguracion(producto.unidadMedida).min);
+    this.precioIngrediente.set(this.ultimoPrecioDeInsumo(producto.id));
+  }
+
+  private ultimoPrecioDeInsumo(insumoId: number | string): number | null {
+    const historial = [...this.state.historialProveedor()].sort((a, b) => {
+      const fa = new Date(a.fecha).getTime();
+      const fb = new Date(b.fecha).getTime();
+      return fb - fa;
+    });
+
+    for (const pedido of historial) {
+      const item = pedido.items.find(i => i.id.toString() === insumoId.toString());
+      if (item && item.precioUnitario && item.precioUnitario > 0) {
+        return item.precioUnitario;
+      }
+    }
+    return null;
   }
 
   updateCantidadIngrediente(event: Event): void {
@@ -259,15 +284,15 @@ export class HistorialProveedorComponent implements OnInit {
   }
 
   confirmarAgregarIngrediente(pedido: PedidoProveedor): void {
-    this.state.agregarIngredienteAPedido(pedido, this.productoSeleccionadoId(), this.cantidadIngrediente());
+    this.state.agregarIngredienteAPedido(pedido, this.productoSeleccionadoId(), this.cantidadIngrediente(), this.precioIngrediente() ?? 0);
     this.cerrarAgregarIngredientes();
   }
 
   getEstadoClase(estado: EstadoPedidoProveedor): string {
     switch (estado) {
-      case 'Recibido':  return 'estado-recibido';
+      case 'Recibido': return 'estado-recibido';
       case 'Enviado': return 'estado-enviado';
-      default:           return 'estado-pendiente';
+      default: return 'estado-pendiente';
     }
   }
 }

@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using System;
 using System.Collections.Generic;
@@ -15,5 +15,6 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task ActualizarEstadoAsync(int mesaId, EstadoMesa nuevoEstado);
         Task<List<MesaConPosiciones>> ObtenerTodasAsync(int restauranteId);
         Task<List<int>> ObtenerMozoIdsPorMesaAsync(int mesaId);
+        Task GuardarMapaMasivoAsync(int restauranteId, List<MesaMapaDominio> mesas);
     }
 }

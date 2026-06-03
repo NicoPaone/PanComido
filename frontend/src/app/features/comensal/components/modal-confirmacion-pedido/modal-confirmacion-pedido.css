@@ -1,0 +1,128 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4); /* Un poco más claro como en el mockup */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 24px; /* Esquinas muy redondeadas */
+  padding: 32px 24px;
+  max-width: 450px;
+  width: 100%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s ease;
+}
+
+/* ── Éxito Header ── */
+.success-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.check-icon {
+  font-size: 32px;
+  color: #64BD2E; /* Verde brillante */
+  font-variation-settings: 'FILL' 1; /* Icono sólido si la fuente lo soporta */
+}
+
+.success-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+}
+
+.success-subtitle {
+  text-align: center;
+  font-size: 1.05rem;
+  color: #374151;
+  line-height: 1.4;
+  margin-bottom: 32px;
+}
+
+/* ── Lista de Estados ── */
+.estados-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.estado-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  transition: opacity 0.3s ease;
+}
+
+.estado-row.activo {
+  /* El estado actual brilla al 100% */
+  opacity: 1; 
+}
+
+.estado-desc {
+  flex: 1;
+  font-size: 0.95rem;
+  color: #1F2937;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+/* ── Badges Base ── */
+.estado-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  /* El borde gris oscuro idéntico para los 3 */
+  border: 3px solid #828282; 
+  /* Ancho fijo para que los 3 midan exactamente lo mismo */
+  width: 160px; 
+  justify-content: flex-start;
+}
+
+.estado-badge .material-symbols-outlined {
+  font-size: 24px;
+}
+
+/* ── Colores Exactos de la Captura ── */
+.badge-recibido {
+  background-color: #A3A3A3;
+  color: #FFFFFF;
+}
+
+.badge-preparacion {
+  background-color: #EED239; /* Amarillo exacto de la imagen */
+  color: #000000;
+}
+
+.badge-listo {
+  background-color: #7CB342; /* Verde exacto de la imagen */
+  color: #FFFFFF;
+}
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { PedidoService } from '../../../../core/services/pedido.service';
 import { ItemPedido } from '../../../../core/models/item-pedido';
@@ -16,12 +16,17 @@ export class Pedido {
   private router = inject(Router);
   private pedidoService = inject(PedidoService);
 
-  pedidos = signal<ItemPedido[]>([]);
+  // Usar el signal del servicio directamente (reactivo)
+  pedidos = this.pedidoService.pedidos;
   configuracion = configuracionRestauranteMock;
 
-  constructor() {
-    this.pedidos.set(this.pedidoService.obtenerPedidos());
-  }
+  // Computed para el total
+  total = computed(() => {
+    return this.pedidos().reduce(
+      (acc, item) => acc + item.plato.precioVentaFinal * item.cantidad,
+      0
+    );
+  });
 
   irADetallePedido(): void {
     this.router.navigate(['/comensal/detalle-pedido']);
@@ -33,19 +38,11 @@ export class Pedido {
 
   eliminarPedido(index: number): void {
     this.pedidoService.eliminarPedido(index);
-    this.pedidos.set(this.pedidoService.obtenerPedidos());
   }
 
-  get total(): number {
-    return this.pedidos().reduce(
-      (acc, item) => acc + item.plato.precio * item.cantidad,
-      0
-    );
-  }
-
-  irAPersonalizar(item: ItemPedido): void {
+  irAPersonalizar(item: ItemPedido, index: number): void {
     this.router.navigate(['/comensal/personalizar-plato'], {
-      state: { plato: item }
+      state: { plato: item, index }
     });
   }
 }

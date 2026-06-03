@@ -1,8 +1,8 @@
 import { Component, ChangeDetectionStrategy, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { take } from 'rxjs';
-
+import { PlatoSugeridoIA } from '../../../../core/models/sugerencia-ia.model';
 // Componentes UI
 import { PageToolbar } from '../../../../shared/ui/page-toolbar/page-toolbar';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
@@ -18,7 +18,7 @@ import { RealizarPedidoSugeridoStateService } from '../../realizar-pedido-sugeri
 @Component({
   selector: 'app-avisos',
   standalone: true,
-  imports: [CommonModule, PageToolbar, Boton, Buscador],
+  imports: [CommonModule, DatePipe, PageToolbar, Boton, Buscador],
   templateUrl: './avisos.html',
   styleUrls: ['./avisos.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -47,16 +47,21 @@ export class AvisosPage implements OnInit {
     this.isVencimientosExpanded.update(v => !v);
   }
 
-  abrirPreviewSugerencia(tipo: 'sistema' | 'ia') {
-    if (this.panelPreviewAbierto() === tipo) {
-      this.panelPreviewAbierto.set(null);
-      return;
-    }
-    this.panelPreviewAbierto.set(tipo);
-    if (tipo === 'sistema') {
-      this.pedidoSugeridoState.cargarDatos();
-    }
+abrirPreviewSugerencia(tipo: 'sistema' | 'ia') {
+  if (this.panelPreviewAbierto() === tipo) {
+    this.panelPreviewAbierto.set(null);
+    return;
   }
+  this.panelPreviewAbierto.set(tipo);
+
+  if (tipo === 'sistema') {
+    this.pedidoSugeridoState.cargarDatos();
+  }
+
+  if (tipo === 'ia') {
+    this.state.generarSugerenciasIA();
+  }
+}
 
   irASugerenciasSistemaFull() {
     this.router.navigate(['/staff/gerente/realizar-pedido-sugerido']);
@@ -89,7 +94,7 @@ export class AvisosPage implements OnInit {
 
   abrirPedidoStock(aviso: Aviso) {
     this.stockAvisoSeleccionado = aviso;
-    this.cantidadAgregar = this.getCantidadInicial(aviso);
+    this.cantidadAgregar = this.cantidadAgregar = 1;;
     
     // 🔥 EL FIX: Ahora pasamos objetos puros, sin inferencias extrañas
     this.pedidoState.seleccionarIngredienteParaPedido({
@@ -169,14 +174,28 @@ export class AvisosPage implements OnInit {
     return defaultUnidad;
   }
 
-  private getCantidadInicial(aviso: Aviso): number {
-    const unidad = this.getUnidadMedida(aviso);
-    // Si necesitas lógica específica por tipo de unidad, usas el nombre o el ID
-    return unidad.nombre === 'Unidad' ? 1 : 1; 
-  }
-
-  nombreUnidad(unidadMedida: UnidadMedida | string | null | undefined): string {
+nombreUnidad(unidadMedida: UnidadMedida | string | null | undefined): string {
     if (!unidadMedida) return '';
     return typeof unidadMedida === 'string' ? unidadMedida : unidadMedida.nombre;
   }
+
+  // ← PEGÁ ACÁ ↓
+  crearPlatoDesdeIA(plato: PlatoSugeridoIA) {
+    this.router.navigate(['/staff/gerente/crear-plato'], {
+      state: {
+        desde_ia: true,
+        nombre: plato.nombre,
+        descripcion: plato.descripcion,
+        tiempoPreparacion: plato.tiempoPreparacion,
+        ingredientes: plato.ingredientesSugeridosIA.map(ing => ({
+          insumoId: ing.insumoId,
+          nombre: ing.nombre,
+          cantidad: ing.cantidad,
+          opcional: false
+        }))
+      }
+    });
+  }
+
+
 }

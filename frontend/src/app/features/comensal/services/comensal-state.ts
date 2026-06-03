@@ -18,6 +18,7 @@ export class ComensalState {
     this.#api.crearLlamado(request).subscribe({
       next: () => {
         this.#_llamadoEnviado.set(true);
+        console.log('Mozo solicitado');
         this.#_exito.set(true);
       },
       error: (e) => {
