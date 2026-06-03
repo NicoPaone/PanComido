@@ -70,21 +70,46 @@ INSERT INTO dimension_mesa (id, imagen, forma) VALUES
     (2, '/img/mesa-cuadrada-4.png',    'cuadrada'),
     (3, '/img/mesa-rectangular-6.png', 'rectangular'),
     (4, '/img/mesa-rectangular-8.png', 'rectangular'),
-    (5, '/img/mesa-redonda-4.png',     'redonda');
+    (5, '/img/mesa-redonda-4.png',     'redonda'),
+    (6, NULL,                          'horizontal_larga'),
+    (7, NULL,                          'horizontal_alta');
 
 INSERT INTO grilla (id, restaurante_id, cant_columnas, cant_filas) VALUES
     (1, 1, 8, 6);
 
 -- estado_mesa: 1=Disponible, 2=Ocupada, 3=Reservada, 4=Deshabilitada
 INSERT INTO mesa (id, grilla_id, estado_mesa_id, dimension_mesa_id, posicion_x_inicio, posicion_x_fin, posicion_y_inicio, posicion_y_fin, numero, codigo_invitacion, cant_personas_max) VALUES
-    (1, 1, 1, 1, 1, 2, 1, 2, 1, 'INV-001', 2),
-    (2, 1, 1, 2, 3, 4, 1, 2, 2, 'INV-002', 4),
-    (3, 1, 2, 2, 5, 6, 1, 2, 3, 'INV-003', 4),
-    (4, 1, 2, 3, 1, 3, 3, 4, 4, 'INV-004', 6),
-    (5, 1, 3, 5, 4, 5, 3, 4, 5, 'INV-005', 4),
-    (6, 1, 1, 4, 6, 8, 3, 4, 6, 'INV-006', 8),
-    (7, 1, 4, 2, 1, 2, 5, 6, 7, NULL,      4),
-    (8, 1, 1, 1, 3, 4, 5, 6, 8, 'INV-008', 2);
+    (1, 1, 1, 1, 30, 120, 30, 120, 1, NULL, 4),
+    (2, 1, 3, 1, 30, 120, 165, 255, 2, NULL, 4), -- Reservada (reserva id 2)
+    (3, 1, 2, 1, 30, 120, 300, 390, 3, NULL, 4), -- Ocupada por comanda activa 1
+    (4, 1, 2, 1, 30, 120, 435, 525, 4, NULL, 4), -- Ocupada por comanda activa 2
+    (5, 1, 3, 1, 30, 120, 570, 660, 5, NULL, 4), -- Reservada (reserva id 1)
+    (6, 1, 3, 1, 165, 255, 30, 120, 6, NULL, 4), -- Reservada (reserva id 3)
+    (7, 1, 1, 1, 165, 255, 165, 255, 7, NULL, 4),
+    (8, 1, 1, 1, 165, 255, 300, 390, 8, NULL, 4),
+    (9, 1, 1, 1, 165, 255, 435, 525, 9, NULL, 4),
+    (10, 1, 1, 1, 165, 255, 570, 660, 10, NULL, 4),
+    (11, 1, 1, 6, 300, 450, 30, 105, 11, NULL, 4),
+    (12, 1, 1, 6, 510, 660, 30, 105, 12, NULL, 4),
+    (13, 1, 1, 6, 720, 870, 30, 105, 13, NULL, 4),
+    (14, 1, 1, 6, 300, 450, 585, 660, 14, NULL, 4),
+    (15, 1, 1, 6, 510, 660, 585, 660, 15, NULL, 4),
+    (16, 1, 1, 6, 300, 450, 480, 555, 16, NULL, 4),
+    (17, 1, 1, 7, 930, 1005, 30, 180, 17, NULL, 4), -- Corregido: era 18
+    (18, 1, 1, 6, 510, 660, 480, 555, 18, NULL, 4),
+    (19, 1, 1, 7, 1080, 1155, 30, 180, 19, NULL, 4),
+    (20, 1, 1, 7, 930, 1005, 240, 390, 20, NULL, 4),
+    (21, 1, 1, 7, 1080, 1155, 240, 390, 21, NULL, 4),
+    (22, 1, 1, 7, 930, 1005, 450, 600, 22, NULL, 4),
+    (23, 1, 1, 7, 1080, 1155, 450, 600, 23, NULL, 4),
+    (24, 1, 1, 5, 315, 405, 165, 255, 24, NULL, 4),
+    (25, 1, 1, 5, 315, 405, 300, 390, 25, NULL, 4),
+    (26, 1, 1, 5, 465, 555, 165, 255, 26, NULL, 4),
+    (27, 1, 1, 5, 465, 555, 300, 390, 27, NULL, 4),
+    (28, 1, 1, 5, 615, 705, 165, 255, 28, NULL, 4),
+    (29, 1, 1, 5, 615, 705, 300, 390, 29, NULL, 4),
+    (30, 1, 1, 5, 780, 870, 165, 255, 30, NULL, 4),
+    (31, 1, 1, 5, 780, 870, 300, 390, 31, NULL, 4);
 
 INSERT INTO mozo_mesa (mozo_id, mesa_id) VALUES
     (3, 1), (3, 2), (3, 3),

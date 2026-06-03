@@ -22,5 +22,6 @@ namespace PanComido.Dominio.Entidades
 
         //public List<Plato> Platos { get; set; }
         public List<ArticuloComanda> Items { get; set; } = new List<ArticuloComanda>();
+        public int? MozoId { get; set; }
     }
 }

@@ -18,6 +18,6 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task<Comanda?> ObtenerComandaPorIdAsync(int comandaId);
         Task MarcarItemsEntregadosAsync(int comandaId, List<int> articuloComandaIds);
         Task ActualizarAsync(Comanda comanda);
-
+        Task ActualizarComandaParaPagoAsync(Comanda comanda);
     }
 }

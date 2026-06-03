@@ -36,7 +36,6 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             {
                 throw new InvalidOperationException($"Articulo ID {efArticulo.Id} no tiene subclase válida.");
             }
-
             // 2. Mapeamos las propiedades del padre 
             articuloBase.Id = efArticulo.Id;
             articuloBase.RestauranteId = efArticulo.RestauranteId;
@@ -48,15 +47,12 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             articuloBase.PrecioPromocional = efArticulo.PrecioPromocional;
             articuloBase.UrlImagen = efArticulo.UrlImagen;
             articuloBase.EsVisibleEnCarta = efArticulo.ConfiguracionArticulos?.Any(c => c.Id == 2) ?? false;
-
-
             return articuloBase;
         }
 
         public EF.Articulo paraEntidad(DOM.Articulo articuloDominio)
         {
             if (articuloDominio == null) return null;
-
             var efArticulo = new EF.Articulo
             {
                 Id = articuloDominio.Id,
@@ -69,7 +65,6 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 PrecioPromocional = articuloDominio.PrecioPromocional,
                 UrlImagen = articuloDominio.UrlImagen
             };
-
             if (articuloDominio is DOM.Insumo insumoDominio)
             {
                 efArticulo.Insumo = _insumoMapper.CompletarMapeoAEntidad(insumoDominio);
@@ -82,10 +77,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             {
                 throw new InvalidOperationException("El tipo de artículo de dominio no está soportado para guardar.");
             }
-
             return efArticulo;
         }
-
-
     }
 }
