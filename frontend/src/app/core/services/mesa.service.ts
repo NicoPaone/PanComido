@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Mesa } from '../models/mesa.model';
+import { MesaOcuparResponse } from '../models/mesa-ocupar-response';
 import { ApiService } from './api-service';
 
 @Injectable({ providedIn: 'root' })
@@ -12,8 +13,8 @@ export class MesaService {
     return this.api.get<Mesa[]>(this.endpoint);
   }
 
-  ocuparMesa(mesaId: number, cantidadComensales: number): Observable<any> {
-    return this.api.post(`${this.endpoint}/${mesaId}/ocupar`, { cantidadComensales });
+  ocuparMesa(mesaId: number, cantidadComensales: number): Observable<MesaOcuparResponse> {
+    return this.api.post<MesaOcuparResponse>(`${this.endpoint}/${mesaId}/ocupar`, { cantidadComensales });
   }
 
   reservarMesa(mesaId: number): Observable<any> {

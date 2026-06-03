@@ -2,7 +2,7 @@ import { inject, Injectable, signal, computed } from '@angular/core';
 import { ComandaService } from './comanda.service';
 import { PedidoService } from '../../../core/services/pedido.service';
 import { ComandaClienteResponse } from '../../../core/models/comanda-cliente-response';
-import { MesaInfo } from '../../../core/models/mesa-ocupar-response';
+import { Mesa } from '../../../core/models/mesa.model';
 import { ItemPedidoRequest } from '../../../core/models/confirmar-pedido-request';
 
 @Injectable({ providedIn: 'root' })
@@ -13,7 +13,7 @@ export class ComandaStateService {
   // Signals de estado
   private _comandaId = signal<number | null>(null);
   private _mesaId = signal<number | null>(null);
-  private _mesaInfo = signal<MesaInfo | null>(null);
+  private _mesaInfo = signal<Mesa | null>(null);
   private _estadoPedido = signal<ComandaClienteResponse | null>(null);
   private _cargando = signal(false);
   private _error = signal<string | null>(null);

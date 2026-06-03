@@ -1,6 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { EstadoMesa, Mesa } from '../../../core/models/mesa.model';
 import { MesaService } from '../../../core/services/mesa.service';
+import { MesaOcuparResponse } from '../../../core/models/mesa-ocupar-response';
 
 @Injectable({
   providedIn: 'root',
@@ -39,8 +40,8 @@ export class MesaLecturaState {
   }
   ocuparMesa(mesaId:number,cantidadComensales:number):void{
     this.api.ocuparMesa(mesaId, cantidadComensales).subscribe({
-      next: (mesaActualizada) => {
-        this._mesas.update(mesas => mesas.map(m => m.id === mesaId ? mesaActualizada : m));
+      next: (response: MesaOcuparResponse) => {
+        this._mesas.update(mesas => mesas.map(m => m.id === mesaId ? response.mesa : m));
         this._mesaSeleccionada.set(null);
         this.mostrarNotificacion('Mesa ocupada exitosamente', 'exito');
       },
