@@ -1,9 +1,9 @@
 ﻿using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
-using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.DTOs.Articulo;
 using PanComido.Presentacion.DTOs.Cliente;
-using PanComido.Presentacion.DTOs.Pedidos;
+using PanComido.Presentacion.DTOs.Articulo;
+using PanComido.Presentacion.DTOs.Comanda;
 using DOM = PanComido.Dominio.Entidades;
 
 namespace PanComido.Presentacion.Mappers

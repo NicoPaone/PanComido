@@ -2,9 +2,8 @@
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
-using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.DTOs.Cliente;
-using PanComido.Presentacion.DTOs.Pedidos;
+using PanComido.Presentacion.DTOs.Comanda;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.SesionMock;
 
@@ -16,8 +15,8 @@ namespace PanComido.Presentacion.Controllers
     {
         private readonly ListarComandaActivaCocinaCasoDeUso _listarComandasActivasCocinaCasoDeUso;
         private readonly ModificarEstadoComandaCasoDeUso _modificarEstadoComandaCasoDeUso;
-        private readonly MarcarItemEntregadoCasoDeUso _marcarItemEntregadoCasoDeUso;
         private readonly ConfirmarPedidoClienteAComandaCasoDeUso _confirmarPedidoCasoDeUso;
+        private readonly MarcarItemsEntregadosCasoDeUso _marcarItemsEntregadosCasoDeUso;
         private readonly ComandaMapper _mapper;
 
         private readonly IComandaRepositorio _comandaRepositorio;
@@ -26,15 +25,17 @@ namespace PanComido.Presentacion.Controllers
         public ComandaController(
             ListarComandaActivaCocinaCasoDeUso listarComandaActivasCasoDeUso,
             ModificarEstadoComandaCasoDeUso modificar,
-            MarcarItemEntregadoCasoDeUso marcarItemEntregadoCasoDeUso,
             ConfirmarPedidoClienteAComandaCasoDeUso confirmarPedidoCasoDeUso,
+            MarcarItemsEntregadosCasoDeUso marcarItemsEntregadosCasoDeUso,
             ComandaMapper mapper,
             IComandaRepositorio comandaRepositorio)
         {
             _listarComandasActivasCocinaCasoDeUso = listarComandaActivasCasoDeUso;
             _modificarEstadoComandaCasoDeUso = modificar;
-            _marcarItemEntregadoCasoDeUso = marcarItemEntregadoCasoDeUso;
             _confirmarPedidoCasoDeUso = confirmarPedidoCasoDeUso;
+            _listarComandasActivasCocinaCasoDeUso = listarComandaActivasCasoDeUso;
+            _modificarEstadoComandaCasoDeUso = modificar;
+            _marcarItemsEntregadosCasoDeUso = marcarItemsEntregadosCasoDeUso;
             _mapper = mapper;
             _comandaRepositorio = comandaRepositorio;
 
@@ -57,10 +58,10 @@ namespace PanComido.Presentacion.Controllers
             return Ok(comandaDto);
         }
 
-        [HttpPut("{comandaId}/item/{articuloComandaId}/entregar")]
-        public async Task<ActionResult<ComandaResponseDto>> MarcarItemComandaEntregado(int comandaId, int articuloComandaId)
+        [HttpPut("{comandaId}/entregar-items")]
+        public async Task<ActionResult<ComandaResponseDto>> MarcarItemComandaEntregado(int comandaId, [FromBody] List<int> itemsEntregados)
         {
-            var comanda = await _marcarItemEntregadoCasoDeUso.EjecutarAsync(comandaId, articuloComandaId);
+            var comanda = await _marcarItemsEntregadosCasoDeUso.EjecutarAsync(comandaId, itemsEntregados);
             var comandaDto = _mapper.ComandaResponseDto(comanda);
             return Ok(comandaDto);
         }

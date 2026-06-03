@@ -9,6 +9,7 @@ namespace PanComido.Dominio.Interfaces.Servicios
 {
     public interface IComandaNotificador
     {
-        Task NotificarEstadoModificadoAsync(Comanda comanda);
+        Task NotificarEstadoModificadoAsync(Comanda comanda, List<int> mozoIds);
+        Task NotificarLlamadoCocinaAsync(Comanda comanda, List<int> mozoIds);
     }
 }

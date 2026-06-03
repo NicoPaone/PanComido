@@ -16,7 +16,8 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task<int> CrearAsync(Comanda comanda);
         Task<List<Comanda>> ObtenerComandasActivasPorMozoAsync(int restauranteId, int mozoId);  
         Task<Comanda?> ObtenerComandaPorIdAsync(int comandaId);
-        Task MarcarItemEntregadoAsync(int comandaId, int articuloComandaId);
+        Task MarcarItemsEntregadosAsync(int comandaId, List<int> articuloComandaIds);
         Task ActualizarAsync(Comanda comanda);
+
     }
 }

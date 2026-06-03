@@ -68,5 +68,31 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
             return _mapper.paraDominio(efArticulo);
         }
+
+        public async Task<List<Articulo>> ObtenerTodosLosArticulosParaCartaAsync()
+        {
+          var efArticulos = await _ctx.Articulos
+                .AsNoTracking()
+                .Include(a => a.ConfiguracionArticulos)
+                // --- INCLUDES PARA PLATOS ---
+                .Include(a => a.Plato)
+                    .ThenInclude(p => p.CategoriaPlato)
+                .Include(a => a.Plato)
+                    .ThenInclude(p => p.PlatoIngredientes)
+                        .ThenInclude(pi => pi.Ingrediente)
+                            .ThenInclude(ing => ing.IdInsumoNavigation)
+                                .ThenInclude(ins => ins.PedidoInsumos) // <-- CAMBIO ACÁ
+                                                                       // --- INCLUDES PARA INSUMOS (BEBIDAS) ---
+                .Include(a => a.Insumo)
+                    .ThenInclude(i => i.CategoriaInsumo)
+                .Include(a => a.Insumo)
+                    .ThenInclude(i => i.PedidoInsumos) // <-- CAMBIO ACÁ
+                .Where(a => a.Plato != null || (a.Insumo != null && a.Insumo.CategoriaInsumo.TipoAplica == 2))
+                .ToListAsync();
+
+            // Usamos tu mapper inyectado para devolver la lista de Dominio
+            return efArticulos.Select(a => _mapper.paraDominio(a)).ToList();
+
+        }
     }
 }

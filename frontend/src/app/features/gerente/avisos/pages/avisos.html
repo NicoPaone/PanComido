@@ -1,8 +1,7 @@
-<div class="container-fluid p-2 p-sm-3 p-lg-4 bg-light min-vh-100">
-  
+<div class="avisos-page">
+
   <app-page-toolbar>
     <app-buscador buscador placeholder="Buscar avisos..." (busquedaCambiada)="onBuscar($event)"></app-buscador>
-
     <div acciones class="d-flex gap-2">
       <app-boton variante="outline" tamanio="md" (clicked)="state.marcarTodoRevisado()">
         <div class="d-flex align-items-center gap-1">
@@ -10,205 +9,257 @@
           <span>Marcar todo</span>
         </div>
       </app-boton>
-      <app-boton variante="secondary" tamanio="md">
-        <div class="d-flex align-items-center gap-1">
-          <span class="material-symbols-outlined" style="font-size: 1.2rem;">add_shopping_cart</span>
-          <span>Crear pedidos</span>
-        </div>
-      </app-boton>
     </div>
   </app-page-toolbar>
 
-  <div class="mb-4 mt-4 d-flex align-items-center justify-content-between">
-    <div>
-      <h3 class="fw-bold mb-1 text-dark">Sistema de avisos</h3>
-      <p class="text-muted small mb-0">Agrupados por tipo: vencimiento próximo, stock bajo y sugerencias de cocina.</p>
+  @if (state.mensaje()) {
+    <div class="avisos-toast">
+      <span class="material-symbols-outlined">check_circle</span>
+      {{ state.mensaje() }}
     </div>
-  </div>
+  }
 
-  <div class="row row-cols-1 row-cols-lg-3 g-4">
-    <!-- Vencimientos -->
-    <div class="col">
-      <div class="d-flex align-items-center gap-2 mb-3">
-        <h5 class="fw-bold mb-0 text-dark">Vencimiento próximo</h5>
-      </div>
-      <div class="d-flex flex-column gap-3">
-        @for (a of state.vencimientos(); track a.id) {
-          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white d-flex flex-column" style="min-height: 250px; cursor: pointer;" (click)="abrirAviso(a)">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-              <div class="rounded-circle d-flex align-items-center justify-content-center border" style="width: 44px; height: 44px; background-color: #fafafa;">
-                <span class="material-symbols-outlined text-danger" style="font-size: 1.4rem;">event_busy</span>
-              </div>
-              <div class="badge bg-light text-muted border px-2 py-1 rounded-2 d-flex align-items-center gap-1 shadow-sm">
-                <span class="material-symbols-outlined" style="font-size: 0.9rem;">bookmark</span>
-                <span class="fw-medium">Prioridad</span>
-              </div>
-            </div>
-            
-            <div class="mb-1 d-flex justify-content-between align-items-baseline">
-              <span class="fw-bold text-dark fs-6">Inventario</span>
-              <span class="text-muted small">Alerta del sistema</span>
-            </div>
-            <h4 class="fw-bold text-dark mb-3" style="letter-spacing: -0.02em;">{{ a.titulo }}</h4>
-            
-            <div class="d-flex flex-wrap gap-2 mb-4">
-              <div class="badge bg-light text-dark border px-2 py-1 rounded-3">
-                {{ a.subtitulo }}
-              </div>
-              <div class="badge bg-light text-dark border px-2 py-1 rounded-3">
-                {{ a.info }}
-              </div>
-            </div>
-            
-            <div class="mt-auto pt-2 border-top d-flex align-items-center justify-content-between gap-2 flex-wrap">
-              <div>
-                <div class="text-dark fw-bold" style="font-size: 0.95rem;">Revisión</div>
-                <div class="text-muted" style="font-size: 0.8rem;">Ver vencimientos</div>
-              </div>
-              <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
-                <app-boton variante="outline" tamanio="md" (clicked)="$event.stopPropagation(); abrirVencimientos(a.id)">
-                  <div class="d-flex align-items-center gap-1">
-                    <span class="material-symbols-outlined" style="font-size: 1.2rem; line-height: 1;">open_in_new</span>
-                    <span class="fw-bold">Ver detalle</span>
-                  </div>
-                </app-boton>
-                <app-boton variante="danger" tamanio="md" (clicked)="$event.stopPropagation(); state.marcarRevisado(a.tipo, a.id)">
-                  <div class="d-flex align-items-center gap-1 text-white">
-                    <span class="material-symbols-outlined" style="font-size: 1.2rem; line-height: 1;">visibility</span>
-                    <span class="fw-bold">Visto</span>
-                  </div>
-                </app-boton>
-              </div>
-            </div>
+  <div class="avisos-sections">
+
+    <!-- ─── Stock Crítico ─── -->
+    <div class="accordion-section" [class.expanded]="isStockExpanded()">
+      <button class="accordion-header" (click)="toggleStock()" type="button">
+        <div class="accordion-header-left">
+          <span class="accordion-icon material-symbols-outlined stock">inventory_2</span>
+          <div>
+            <span class="accordion-title">Stock crítico</span>
+            <span class="accordion-subtitle">Insumos por debajo del mínimo</span>
           </div>
-        }
-        @if (state.vencimientos().length === 0) {
-          <div class="text-muted small p-3 bg-white rounded shadow-sm text-center">No hay items</div>
-        }
-      </div>
-    </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          @if (state.stockBajo().length > 0) {
+            <span class="accordion-badge badge-stock">{{ state.stockBajo().length }}</span>
+          }
+          <span class="accordion-chevron material-symbols-outlined">
+            {{ isStockExpanded() ? 'expand_less' : 'expand_more' }}
+          </span>
+        </div>
+      </button>
 
-    <!-- Stock bajo -->
-    <div class="col">
-      <div class="d-flex align-items-center gap-2 mb-3">
-        <h5 class="fw-bold mb-0 text-dark">Stock bajo</h5>
-      </div>
-      <div class="d-flex flex-column gap-3">
-        @for (a of state.stockBajo(); track a.id) {
-          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white d-flex flex-column" style="min-height: 250px;">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-              <div class="rounded-circle d-flex align-items-center justify-content-center border" style="width: 44px; height: 44px; background-color: #fafafa;">
-                <span class="material-symbols-outlined text-warning" style="font-size: 1.4rem;">inventory_2</span>
-              </div>
-              <div class="badge bg-light text-muted border px-2 py-1 rounded-2 d-flex align-items-center gap-1 shadow-sm">
-                <span class="material-symbols-outlined" style="font-size: 0.9rem;">bookmark</span>
-                <span class="fw-medium">Atención</span>
-              </div>
+      @if (isStockExpanded()) {
+        <div class="accordion-body">
+          @if (state.stockBajo().length === 0) {
+            <div class="accordion-empty">
+              <span class="material-symbols-outlined">check_circle</span>
+              <span>No hay insumos con stock crítico</span>
             </div>
-            
-            <div class="mb-1 d-flex justify-content-between align-items-baseline">
-              <span class="fw-bold text-dark fs-6">Proveedores</span>
-              <span class="text-muted small">Alerta del sistema</span>
-            </div>
-            <h4 class="fw-bold text-dark mb-3" style="letter-spacing: -0.02em;">{{ a.titulo }}</h4>
-            
-            <div class="d-flex flex-wrap gap-2 mb-4">
-              <div class="badge bg-light text-dark border px-2 py-1 rounded-3">
-                {{ a.subtitulo }}
-              </div>
-              <div class="badge bg-light text-dark border px-2 py-1 rounded-3">
-                {{ a.info }}
-              </div>
-            </div>
-            
-            <div class="mt-auto pt-2 border-top d-flex align-items-center justify-content-between">
-              <div>
-                <div class="text-dark fw-bold" style="font-size: 0.95rem;">Reponer</div>
-                <div class="text-muted" style="font-size: 0.8rem;">Generar orden</div>
-              </div>
-              <app-boton variante="warning" tamanio="md" (clicked)="abrirPedidoStock(a)">
-                <div class="d-flex align-items-center gap-1 text-dark">
-                  <span class="material-symbols-outlined" style="font-size: 1.2rem; line-height: 1;">shopping_cart</span>
-                  <span class="fw-bold">Pedir</span>
+          } @else {
+            <div class="avisos-list">
+              @for (a of state.stockBajo(); track a.id) {
+                <div class="aviso-item">
+                  <div class="aviso-item-icon tipo-stock">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                  </div>
+                  <div class="aviso-item-content">
+                    <span class="aviso-item-title">{{ a.titulo }}</span>
+                    <span class="aviso-item-sub">{{ a.subtitulo }}</span>
+                    <span class="aviso-item-info">{{ a.info }}</span>
+                  </div>
+                  <div class="aviso-item-actions">
+                    <app-boton variante="warning" tamanio="sm" (clicked)="abrirPedidoStock(a)">
+                      <div class="d-flex align-items-center gap-1 text-dark">
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">shopping_cart</span>
+                        <span class="fw-bold">Pedir</span>
+                      </div>
+                    </app-boton>
+                  </div>
                 </div>
-              </app-boton>
+              }
             </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ─── Vencimientos próximos ─── -->
+    <div class="accordion-section" [class.expanded]="isVencimientosExpanded()">
+      <button class="accordion-header" (click)="toggleVencimientos()" type="button">
+        <div class="accordion-header-left">
+          <span class="accordion-icon material-symbols-outlined vencimiento">event_busy</span>
+          <div>
+            <span class="accordion-title">Vencimientos próximos</span>
+            <span class="accordion-subtitle">Insumos con fecha de vencimiento cercana</span>
           </div>
-        }
-        @if (state.stockBajo().length === 0) {
-          <div class="text-muted small p-3 bg-white rounded shadow-sm text-center">No hay items</div>
-        }
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          @if (state.vencimientos().length > 0) {
+            <span class="accordion-badge badge-vencimiento">{{ state.vencimientos().length }}</span>
+          }
+          <span class="accordion-chevron material-symbols-outlined">
+            {{ isVencimientosExpanded() ? 'expand_less' : 'expand_more' }}
+          </span>
+        </div>
+      </button>
+
+      @if (isVencimientosExpanded()) {
+        <div class="accordion-body">
+          @if (state.vencimientos().length === 0) {
+            <div class="accordion-empty">
+              <span class="material-symbols-outlined">check_circle</span>
+              <span>No hay vencimientos próximos</span>
+            </div>
+          } @else {
+            <div class="avisos-list">
+              @for (a of state.vencimientos(); track a.id) {
+                <div class="aviso-item" (click)="abrirAviso(a)" style="cursor: pointer;">
+                  <div class="aviso-item-icon tipo-vencimiento">
+                    <span class="material-symbols-outlined">event_busy</span>
+                  </div>
+                  <div class="aviso-item-content">
+                    <span class="aviso-item-title">{{ a.titulo }}</span>
+                    <span class="aviso-item-sub">{{ a.subtitulo }}</span>
+                    <span class="aviso-item-info">{{ a.info }}</span>
+                  </div>
+                  <div class="aviso-item-actions">
+                    <app-boton variante="success" tamanio="sm" (clicked)="$event.stopPropagation(); state.avisarCocina(a.id)">
+                      <div class="d-flex align-items-center gap-1 text-white">
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">send</span>
+                        <span class="fw-bold">Avisar a cocina</span>
+                      </div>
+                    </app-boton>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ─── Sugerencias automáticas ─── -->
+    <div class="sugerencias-grid">
+
+      <!-- Sugerencias del sistema -->
+      <div class="sugerencia-card sistema">
+        <div class="sugerencia-card-header">
+          <div class="sugerencia-card-icon sistema">
+            <span class="material-symbols-outlined">auto_awesome</span>
+          </div>
+          <div>
+            <h4 class="sugerencia-card-title">Sugerencias del sistema</h4>
+            <p class="sugerencia-card-sub">Basado en stock mínimo y consumo promedio</p>
+          </div>
+        </div>
+        <p class="sugerencia-card-desc">
+          El sistema analiza los niveles de stock actuales y genera un pedido sugerido para cada proveedor automáticamente.
+        </p>
+        <app-boton variante="warning" tamanio="md" (clicked)="abrirPreviewSugerencia('sistema')">
+          <div class="d-flex align-items-center gap-2 text-dark fw-bold">
+            <span class="material-symbols-outlined" style="font-size: 1.1rem;">visibility</span>
+            Ver vista previa
+          </div>
+        </app-boton>
+      </div>
+
+      <!-- Sugerencias de IA -->
+      <div class="sugerencia-card ia">
+        <div class="sugerencia-card-header">
+          <div class="sugerencia-card-icon ia">
+            <span class="material-symbols-outlined">psychology</span>
+          </div>
+          <div>
+            <h4 class="sugerencia-card-title">Sugerencias de IA</h4>
+            <p class="sugerencia-card-sub">Análisis inteligente con aprendizaje automático</p>
+          </div>
+        </div>
+        <p class="sugerencia-card-desc">
+          La IA analiza patrones de consumo históricos y tendencias para generar predicciones de pedidos más precisas.
+        </p>
+        <div class="sugerencia-proximamente">
+          <app-boton variante="outline" tamanio="md" (clicked)="abrirPreviewSugerencia('ia')">
+            <div class="d-flex align-items-center gap-2 fw-bold">
+              <span class="material-symbols-outlined" style="font-size: 1.1rem;">visibility</span>
+              Ver vista previa
+            </div>
+          </app-boton>
+          <span class="proximamente-badge">Próximamente</span>
+        </div>
       </div>
     </div>
 
-    <!-- Sugerencias de cocina -->
-    <div class="col">
-      <div class="d-flex align-items-center gap-2 mb-3">
-        <h5 class="fw-bold mb-0 text-dark">Sugerencias de cocina</h5>
-      </div>
-      <div class="d-flex flex-column gap-3">
-        @if (state.loadingSugerenciasCocina()) {
-          <div class="text-muted small p-3 bg-white rounded shadow-sm text-center">Cargando sugerencias...</div>
-        }
-        @for (plato of state.sugerencias(); track plato.id) {
-          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white d-flex flex-column" style="min-height: 250px;">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-              <div class="rounded-circle d-flex align-items-center justify-content-center border" style="width: 44px; height: 44px; background-color: #fafafa;">
-                <span class="material-symbols-outlined text-success" style="font-size: 1.4rem;">restaurant_menu</span>
-              </div>
-              <div class="badge bg-light text-muted border px-2 py-1 rounded-2 d-flex align-items-center gap-1 shadow-sm">
-                <span class="material-symbols-outlined" style="font-size: 0.9rem;">bookmark</span>
-                <span class="fw-medium">Propuesta</span>
-              </div>
+    <!-- ─── Panel Vista Previa ─── -->
+    @if (panelPreviewAbierto()) {
+      <div class="sugerencia-preview-panel mt-4 p-4 bg-white border rounded-4 shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="fw-bold m-0 text-dark">
+            <span class="material-symbols-outlined fs-5 align-middle me-1">preview</span>
+            Vista previa: {{ panelPreviewAbierto() === 'sistema' ? 'Sugerencias del Sistema' : 'Sugerencias de IA' }}
+          </h4>
+          <button class="btn-close" (click)="panelPreviewAbierto.set(null)"></button>
+        </div>
+
+        @if (panelPreviewAbierto() === 'sistema') {
+          @if (pedidoSugeridoState.loading()) {
+            <div class="text-center p-4 text-muted">
+              <div class="spinner-border text-secondary" role="status"></div>
+              <p class="mt-2 mb-0">Cargando sugerencias...</p>
             </div>
-            
-            <div class="mb-1 d-flex justify-content-between align-items-baseline">
-              <span class="fw-bold text-dark fs-6">{{ plato.categoria || 'Carta' }}</span>
-              <span class="text-muted small">Sugerido por cocina</span>
-            </div>
-            <h4 class="fw-bold text-dark mb-3" style="letter-spacing: -0.02em;">{{ plato.nombre }}</h4>
-            
-            <div class="d-flex flex-wrap gap-2 mb-4">
-              <div class="badge bg-light text-dark border px-2 py-1 rounded-3">
-                Venta: ${{ plato.precioVenta | number:'1.0-0' }}
+          } @else {
+            @if (pedidoSugeridoState.proveedores().length > 0) {
+              <div class="alert alert-info border-0 rounded-3 mb-4 d-flex align-items-center gap-2">
+                <span class="material-symbols-outlined text-info">info</span>
+                Se detectaron insumos por debajo del punto mínimo. Se han armado borradores de pedidos para los siguientes proveedores:
               </div>
-              <div class="badge bg-light text-dark border px-2 py-1 rounded-3">
-                Costo: ${{ plato.costo | number:'1.0-0' }}
+              
+              <div class="row row-cols-1 row-cols-md-2 g-3 mb-4">
+                @for (prov of pedidoSugeridoState.proveedores(); track prov.id) {
+                  <div class="col">
+                    <div class="border rounded-3 p-3 bg-light d-flex flex-column h-100">
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                          <div class="fw-bold fs-6">{{ prov.nombre }}</div>
+                          <div class="small text-muted">{{ prov.categorias?.join(', ') || 'Sin categoría' }}</div>
+                        </div>
+                        <span class="badge bg-primary rounded-pill px-3 py-2">
+                          {{ pedidoSugeridoState.pedidosPorProveedor()[prov.id]?.length || 0 }} ítems
+                        </span>
+                      </div>
+                      <div class="d-flex flex-wrap gap-1 mt-auto pt-2 border-top">
+                        @for (item of pedidoSugeridoState.pedidosPorProveedor()[prov.id]; track item.productoId) {
+                          <span class="badge bg-white text-secondary border fw-normal border-secondary-subtle px-2 py-1" style="font-size: 0.75rem;">
+                            {{ item.nombre }}
+                          </span>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                }
               </div>
-              <div class="badge bg-light text-dark border px-2 py-1 rounded-3">
-                {{ plato.receta?.length || 0 }} ingredientes
-              </div>
-            </div>
-            
-            <div class="mt-auto pt-2 border-top d-flex align-items-center justify-content-between gap-2 flex-wrap">
-              <div>
-                <div class="text-dark fw-bold" style="font-size: 0.95rem;">Decisión</div>
-                <div class="text-muted" style="font-size: 0.8rem;">Visible en carta</div>
-              </div>
-              <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
-                <app-boton variante="outline" tamanio="md" (clicked)="state.ignorarSugerencia(plato)">
-                  <div class="d-flex align-items-center gap-1">
-                    <span class="material-symbols-outlined" style="font-size: 1.2rem; line-height: 1;">close</span>
-                    <span class="fw-bold">Ignorar</span>
+
+              <div class="d-flex justify-content-end gap-2 border-top pt-3 mt-2">
+                <app-boton variante="outline" tamanio="md" (clicked)="panelPreviewAbierto.set(null)">Cancelar</app-boton>
+                <app-boton variante="warning" tamanio="md" (clicked)="irASugerenciasSistemaFull()">
+                  <div class="d-flex align-items-center gap-1 text-dark fw-bold">
+                    <span class="material-symbols-outlined fs-5">edit_document</span>
+                    <span>Continuar a revisión detallada</span>
                   </div>
                 </app-boton>
-                <app-boton variante="success" tamanio="md" (clicked)="state.agregarSugerenciaACarta(plato)">
-                  <div class="d-flex align-items-center gap-1 text-dark">
-                    <span class="material-symbols-outlined" style="font-size: 1.2rem; line-height: 1;">playlist_add</span>
-                    <span class="fw-bold">Agregar a carta</span>
-                  </div>
-                </app-boton>
               </div>
-            </div>
+            } @else {
+              <div class="alert alert-success border-0 rounded-3 text-center py-4">
+                <span class="material-symbols-outlined fs-1 text-success mb-2">check_circle</span>
+                <h5 class="mb-0">No hay insumos con stock crítico para reponer en este momento.</h5>
+              </div>
+            }
+          }
+        } @else {
+          <div class="alert alert-secondary border-0 rounded-3 text-center py-5">
+            <span class="material-symbols-outlined fs-1 text-muted mb-3">psychology</span>
+            <h5 class="mb-1 text-dark">Modelo en entrenamiento</h5>
+            <p class="text-muted mb-0">Las sugerencias avanzadas mediante Inteligencia Artificial estarán disponibles próximamente.</p>
           </div>
         }
-        @if (!state.loadingSugerenciasCocina() && state.sugerencias().length === 0) {
-          <div class="text-muted small p-3 bg-white rounded shadow-sm text-center">No hay items</div>
-        }
       </div>
-    </div>
+    }
+
   </div>
 
+  <!-- ─── Modal confirmación carta ─── -->
   @if (state.platoAgregadoACarta(); as platoAgregado) {
     <div class="avisos-modal-overlay" (click)="cerrarConfirmacionCarta()">
       <div class="avisos-modal-card shadow border p-4 text-center bg-white" role="dialog" aria-modal="true" aria-labelledby="plato-agregado-title" (click)="$event.stopPropagation()">
@@ -232,9 +283,44 @@
     </div>
   }
 
+  <!-- ─── Modal Detalle Vencimiento ─── -->
+  @if (vencimientoSeleccionado) {
+    <div class="avisos-modal-overlay" (click)="cerrarModalVencimiento()">
+      <div class="avisos-modal-card shadow border p-4 bg-white text-start" role="dialog" aria-modal="true" aria-labelledby="vencimiento-modal-title" (click)="$event.stopPropagation()">
+        <div class="d-flex align-items-center mb-3 text-warning">
+          <span class="material-symbols-outlined fs-2 me-2">event_busy</span>
+          <h4 id="vencimiento-modal-title" class="mb-0 fw-bold">Detalle de Lote</h4>
+        </div>
+        <div class="mb-4">
+          <h5 class="fw-bold mb-3 text-dark">{{ vencimientoSeleccionado.titulo }}</h5>
+          <div class="d-flex justify-content-between py-2 border-bottom">
+            <span class="text-muted fw-medium">Cantidad:</span>
+            <span class="fw-bold">{{ vencimientoSeleccionado.payloadVencimiento?.cantidad }}</span>
+          </div>
+          <div class="d-flex justify-content-between py-2 border-bottom">
+            <span class="text-muted fw-medium">Fecha de Vencimiento:</span>
+            <span class="fw-bold text-danger">{{ vencimientoSeleccionado.payloadVencimiento?.fechaVencimiento === '0001-01-01' ? 'Sin fecha especificada' : vencimientoSeleccionado.payloadVencimiento?.fechaVencimiento }}</span>
+          </div>
+        </div>
+        <div class="d-flex justify-content-end gap-2 mt-4">
+          <app-boton variante="outline" tamanio="md" (clicked)="cerrarModalVencimiento()">
+            <div class="fw-bold">Cerrar</div>
+          </app-boton>
+          <app-boton variante="success" tamanio="md" (clicked)="state.avisarCocina(vencimientoSeleccionado.id); cerrarModalVencimiento()">
+            <div class="d-flex align-items-center gap-1 text-white">
+              <span class="material-symbols-outlined fs-6">send</span>
+              <span class="fw-bold">Avisar a cocina</span>
+            </div>
+          </app-boton>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ─── Offcanvas pedido por stock ─── -->
   @if (isPedidoOffcanvasOpen) {
     <div class="offcanvas-backdrop fade show" (click)="cerrarPedidoStock()"></div>
-    
+
     <div class="offcanvas offcanvas-end show shadow" tabindex="-1" style="width: 400px; z-index: 1050;">
       <div class="offcanvas-header border-bottom">
         <h5 class="offcanvas-title fw-bold">Crear pedido por stock bajo</h5>
@@ -260,7 +346,7 @@
           @if (pedidoState.proveedorSeleccionado(); as prov) {
             <div class="mb-3">
               <label class="form-label fw-medium small text-muted">Pedido inicial para {{ prov.nombre }}</label>
-              
+
               @if (pedidoState.pedidosActivos().length > 0) {
                 <div class="text-muted small bg-light p-2 rounded-2 mb-3">
                   {{ prov.nombre }} ya tiene {{ pedidoState.pedidosActivos().length }} pedido(s) pendiente(s). Se creará uno nuevo para esta reposición.

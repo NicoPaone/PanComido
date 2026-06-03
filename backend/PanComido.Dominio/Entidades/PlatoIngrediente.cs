@@ -10,6 +10,7 @@ namespace PanComido.Dominio.Entidades
     {
         public int InsumoId { get; set; }
         public bool Opcional { get; set; }
+     
         public Insumo Insumo { get; set; }
         public decimal Cantidad { get; set; }
     }

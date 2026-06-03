@@ -24,7 +24,7 @@ namespace PanComido.Presentacion.Mappers
 
                 dto.CategoriaPlato = plato.Categoria;
                 dto.TipoPlato = plato.TipoPlato;
-                dto.Restricciones = plato.Restricciones ?? new List<string>();
+                dto.Restricciones = plato.Restricciones?.Select(r => r.Descripcion).ToList() ?? new List<string>();
             }
             else if (articuloDominio is Insumo bebida)
             {

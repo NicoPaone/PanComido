@@ -18,5 +18,7 @@ namespace PanComido.Dominio.Entidades
         public decimal? PrecioPromocional { get; set; }
         public string UrlImagen { get; set; }
         public bool EsVisibleEnCarta { get; set; }
+        public decimal CostoCalculado { get; set; }
+
     }
 }
