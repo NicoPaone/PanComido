@@ -24,6 +24,10 @@ export class ApiClient {
     return this.http.put<T>(`${this.baseUrl}/${endpoint}`, body);
   }
 
+  patch<T>(endpoint: string, body: any): Observable<T> {
+    return this.http.patch<T>(`${this.baseUrl}/${endpoint}`, body);
+  }
+
   delete<T>(endpoint: string): Observable<T> {
     return this.http.delete<T>(`${this.baseUrl}/${endpoint}`);
   }

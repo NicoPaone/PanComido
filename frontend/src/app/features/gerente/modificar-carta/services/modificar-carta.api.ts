@@ -50,7 +50,36 @@ export class ModificarCartaApiService {
   }
 
   updatePlato(id: number, data: Partial<Plato>): Observable<Plato> {
-    return this.api.put<Plato>(`/platos/${id}`, data);
+    // Map frontend specific fields to the ones backend expects
+    const payload: any = { ...data };
+    if (data.visible !== undefined) {
+      payload.visibleEnCarta = data.visible;
+      delete payload.visible;
+    }
+    if (data.precioVenta !== undefined) {
+      payload.precioVentaFinal = data.precioVenta;
+      delete payload.precioVenta;
+    }
+    if (data.imagen !== undefined) {
+      payload.urlImagen = data.imagen;
+      delete payload.imagen;
+    }
+
+    // Since the API returns the updated DTO, map it back to Plato if necessary,
+    // or return the data so optimistic updates don't break.
+    return this.api.patch<any>(`carta/articulos/${id}`, payload).pipe(
+      map(dto => ({
+        ...data, // Keep optimistic properties
+        id: dto.articuloId ?? id,
+        nombre: dto.nombre ?? data.nombre,
+        precioVenta: dto.precioVentaFinal ?? data.precioVenta,
+        costo: dto.costo ?? data.costo,
+        visible: dto.visibleEnCarta ?? data.visible,
+        imagen: dto.urlImagen ?? data.imagen,
+        tipo: dto.tipoArticulo ?? data.tipo,
+        categoria: dto.tipoArticulo ?? data.categoria
+      } as Plato))
+    );
   }
 
   deletePlato(id: number): Observable<boolean> {
