@@ -22,7 +22,7 @@ namespace PanComido.Presentacion.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}/cliente")]
         public async Task<IActionResult> ObtenerDetalle(int id)
         {
             try

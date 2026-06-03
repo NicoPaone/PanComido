@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="ServiciosExternos\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\PanComido.Dominio\PanComido.Dominio.csproj" />
   </ItemGroup>
 

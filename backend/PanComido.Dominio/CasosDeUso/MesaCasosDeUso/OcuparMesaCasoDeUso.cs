@@ -34,6 +34,8 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
             mesa.EstadoMesa = EstadoMesa.Ocupada;
             await _mesaRepositorio.ActualizarEstadoAsync(mesaId,EstadoMesa.Ocupada);
 
+            // signalR para informar al gerente
+
             Comanda nuevaComanda = new Comanda
             {
                 MesaId = mesa.Id,
@@ -43,7 +45,9 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
                 HoraInicio = DateTime.Now
             };
 
-            await _comandaRepositorio.CrearAsync(nuevaComanda);
+            int idComanda = await _comandaRepositorio.CrearAsync(nuevaComanda);
+
+            mesa.idComanda = idComanda;
             return mesa;
 
         }
