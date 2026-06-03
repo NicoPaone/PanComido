@@ -80,6 +80,7 @@ namespace PanComido.Presentacion.Mappers
                     ArticuloId = ac.Articulo.Id,
                     Nombre = ac.Articulo.Nombre,
                     Cantidad = ac.Cantidad,
+                    Entregado = ac.Entregado,
                     PrecioUnitario = ac.Articulo.PrecioVentaFinal ?? 0m,
                     Subtotal = (ac.Articulo.PrecioVentaFinal ?? 0m) * ac.Cantidad,
 
