@@ -143,7 +143,11 @@ builder.Services.AddScoped<ListarComandasActivasMozoCasoDeUso>();
 builder.Services.AddScoped<ObtenerDetalleArticuloCasoDeUso>();
 builder.Services.AddScoped<ConfirmarPedidoClienteAComandaCasoDeUso>();
 builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
+builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
 builder.Services.AddScoped<ObtenerArticulosParaCrearCartaCasoDeUso>();
+builder.Services.AddScoped<ModificarArticuloCasoDeUso>();
+
+
 
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
 
