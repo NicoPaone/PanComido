@@ -33,6 +33,7 @@ using PanComido.Presentacion.Servicios;
 using PanComido.Presentacion.SesionMock;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -146,7 +147,7 @@ builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
 builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
 builder.Services.AddScoped<ObtenerArticulosParaCrearCartaCasoDeUso>();
 builder.Services.AddScoped<ModificarArticuloCasoDeUso>();
-
+builder.Services.AddScoped<LlamarMozoComandaCasoDeUso>();
 
 
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
