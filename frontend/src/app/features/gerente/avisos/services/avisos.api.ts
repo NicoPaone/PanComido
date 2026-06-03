@@ -4,6 +4,7 @@ import { ApiService } from '../../../../core/services/api-service';
 import { Plato } from '../../../../core/models/plato';
 import { AvisosResponseDto } from '../../../../core/models/aviso.model';
 import { Insumo } from '../../../../core/models/insumos/insumo';
+import { SugerenciaIA } from '../../../../core/models/sugerencia-ia.model';
 
 @Injectable({ providedIn: 'root' })
 export class AvisosApiService {
@@ -24,4 +25,12 @@ export class AvisosApiService {
   getInsumos(): Observable<Insumo[]> {
     return this.api.get<Insumo[]>('insumo');
   }
+
+  generarSugerenciasIA(): Observable<SugerenciaIA> {
+    return this.api.post<SugerenciaIA>('avisos/sugerencias-ia', {});
+  }
+
+  crearPlatoDesdeIA(plato: any): Observable<any> {
+  return this.api.post<any>('plato', plato);
+}
 }

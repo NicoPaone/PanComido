@@ -131,10 +131,11 @@
       }
     </div>
 
-    <!-- ─── Sugerencias automáticas ─── -->
-    <div class="sugerencias-grid">
+    <!-- ─── Sugerencias ─── -->
 
-      <!-- Sugerencias del sistema -->
+    <!-- SUGERENCIAS DEL SISTEMA: comentado temporalmente, retomar en próxima iteración -->
+    <!--
+    <div class="sugerencias-grid">
       <div class="sugerencia-card sistema">
         <div class="sugerencia-card-header">
           <div class="sugerencia-card-icon sistema">
@@ -155,31 +156,29 @@
           </div>
         </app-boton>
       </div>
+    </div>
+    -->
 
-      <!-- Sugerencias de IA -->
-      <div class="sugerencia-card ia">
-        <div class="sugerencia-card-header">
-          <div class="sugerencia-card-icon ia">
-            <span class="material-symbols-outlined">psychology</span>
-          </div>
-          <div>
-            <h4 class="sugerencia-card-title">Sugerencias de IA</h4>
-            <p class="sugerencia-card-sub">Análisis inteligente con aprendizaje automático</p>
-          </div>
+    <!-- Sugerencias de IA -->
+    <div class="sugerencia-card ia w-100">
+      <div class="sugerencia-card-header">
+        <div class="sugerencia-card-icon ia">
+          <span class="material-symbols-outlined">psychology</span>
         </div>
-        <p class="sugerencia-card-desc">
-          La IA analiza patrones de consumo históricos y tendencias para generar predicciones de pedidos más precisas.
-        </p>
-        <div class="sugerencia-proximamente">
-          <app-boton variante="outline" tamanio="md" (clicked)="abrirPreviewSugerencia('ia')">
-            <div class="d-flex align-items-center gap-2 fw-bold">
-              <span class="material-symbols-outlined" style="font-size: 1.1rem;">visibility</span>
-              Ver vista previa
-            </div>
-          </app-boton>
-          <span class="proximamente-badge">Próximamente</span>
+        <div>
+          <h4 class="sugerencia-card-title">Sugerencias de IA</h4>
+          <p class="sugerencia-card-sub">Análisis inteligente con aprendizaje automático</p>
         </div>
       </div>
+      <p class="sugerencia-card-desc">
+        La IA analiza los insumos con vencimiento próximo y genera sugerencias de platos para aprovecharlos antes de que venzan.
+      </p>
+      <app-boton variante="outline" tamanio="md" (clicked)="abrirPreviewSugerencia('ia')">
+        <div class="d-flex align-items-center gap-2 fw-bold">
+          <span class="material-symbols-outlined" style="font-size: 1.1rem;">visibility</span>
+          Ver vista previa
+        </div>
+      </app-boton>
     </div>
 
     <!-- ─── Panel Vista Previa ─── -->
@@ -188,11 +187,13 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h4 class="fw-bold m-0 text-dark">
             <span class="material-symbols-outlined fs-5 align-middle me-1">preview</span>
-            Vista previa: {{ panelPreviewAbierto() === 'sistema' ? 'Sugerencias del Sistema' : 'Sugerencias de IA' }}
+            Sugerencias de IA
           </h4>
           <button class="btn-close" (click)="panelPreviewAbierto.set(null)"></button>
         </div>
 
+        <!-- PANEL SUGERENCIAS DEL SISTEMA: comentado temporalmente, retomar en próxima iteración -->
+        <!--
         @if (panelPreviewAbierto() === 'sistema') {
           @if (pedidoSugeridoState.loading()) {
             <div class="text-center p-4 text-muted">
@@ -205,7 +206,6 @@
                 <span class="material-symbols-outlined text-info">info</span>
                 Se detectaron insumos por debajo del punto mínimo. Se han armado borradores de pedidos para los siguientes proveedores:
               </div>
-              
               <div class="row row-cols-1 row-cols-md-2 g-3 mb-4">
                 @for (prov of pedidoSugeridoState.proveedores(); track prov.id) {
                   <div class="col">
@@ -230,7 +230,6 @@
                   </div>
                 }
               </div>
-
               <div class="d-flex justify-content-end gap-2 border-top pt-3 mt-2">
                 <app-boton variante="outline" tamanio="md" (clicked)="panelPreviewAbierto.set(null)">Cancelar</app-boton>
                 <app-boton variante="warning" tamanio="md" (clicked)="irASugerenciasSistemaFull()">
@@ -248,12 +247,74 @@
             }
           }
         } @else {
+        -->
+
+        @if (state.loadingIA()) {
+          <div class="text-center p-4 text-muted">
+            <div class="spinner-border text-secondary" role="status"></div>
+            <p class="mt-2 mb-0">Generando sugerencias con IA...</p>
+          </div>
+        } @else if (state.errorIA()) {
+          <div class="alert alert-danger border-0 rounded-3 d-flex align-items-center gap-2">
+            <span class="material-symbols-outlined">error</span>
+            {{ state.errorIA() }}
+          </div>
+        } @else if (state.sugerenciasIA()) {
+          <div class="mb-3 text-muted small">
+            <span class="material-symbols-outlined align-middle me-1" style="font-size: 1rem;">calendar_today</span>
+            Generado el {{ state.sugerenciasIA()!.fechaSugerencia | date:'dd/MM/yyyy HH:mm' }}
+          </div>
+          <div class="row row-cols-1 row-cols-md-2 g-3">
+            @for (plato of state.sugerenciasIA()!.platosSugeridos; track plato.id) {
+              <div class="col">
+                <div class="border rounded-3 p-3 bg-light d-flex flex-column h-100">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="fw-bold fs-6 text-dark">{{ plato.nombre }}</div>
+                    <span class="badge bg-white text-secondary border ms-2" style="font-size: 0.75rem; white-space: nowrap;">
+                      <span class="material-symbols-outlined align-middle" style="font-size: 0.85rem;">timer</span>
+                      {{ plato.tiempoPreparacion }} min
+                    </span>
+                  </div>
+                  <p class="text-muted small mb-2" style="line-height: 1.4;">{{ plato.descripcion }}</p>
+                  <div class="small text-muted mb-2">
+                    <span class="material-symbols-outlined align-middle" style="font-size: 0.9rem;">restaurant</span>
+                    {{ plato.porcionesPosibles }} porciones posibles
+                  </div>
+                  <div class="d-flex flex-wrap gap-1 pt-2 border-top mb-3">
+                    @for (ing of plato.ingredientesSugeridosIA; track ing.insumoId) {
+                      <span class="badge bg-white text-secondary border fw-normal border-secondary-subtle px-2 py-1" style="font-size: 0.75rem;">
+                        {{ ing.nombre }} ({{ ing.cantidad }})
+                      </span>
+                    }
+                  </div>
+                  <app-boton variante="warning" tamanio="sm" (clicked)="crearPlatoDesdeIA(plato)">
+                    <div class="d-flex align-items-center gap-1 text-dark fw-bold">
+                      <span class="material-symbols-outlined" style="font-size: 1rem;">add_circle</span>
+                      <span>Crear plato</span>
+                    </div>
+                  </app-boton>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
           <div class="alert alert-secondary border-0 rounded-3 text-center py-5">
             <span class="material-symbols-outlined fs-1 text-muted mb-3">psychology</span>
-            <h5 class="mb-1 text-dark">Modelo en entrenamiento</h5>
-            <p class="text-muted mb-0">Las sugerencias avanzadas mediante Inteligencia Artificial estarán disponibles próximamente.</p>
+            <h5 class="mb-1 text-dark">Generando sugerencias...</h5>
+            <p class="text-muted mb-0">Aguardá un momento mientras la IA analiza los insumos.</p>
           </div>
         }
+
+        <!-- } -->
+        <!-- fin bloque sistema comentado -->
+
+      </div>
+    }
+
+    @if (state.platoIACreado()) {
+      <div class="avisos-toast mt-3">
+        <span class="material-symbols-outlined">check_circle</span>
+        "{{ state.platoIACreado() }}" fue agregado al sistema como nuevo plato.
       </div>
     }
 
@@ -262,7 +323,8 @@
   <!-- ─── Modal confirmación carta ─── -->
   @if (state.platoAgregadoACarta(); as platoAgregado) {
     <div class="avisos-modal-overlay" (click)="cerrarConfirmacionCarta()">
-      <div class="avisos-modal-card shadow border p-4 text-center bg-white" role="dialog" aria-modal="true" aria-labelledby="plato-agregado-title" (click)="$event.stopPropagation()">
+      <div class="avisos-modal-card shadow border p-4 text-center bg-white" role="dialog" aria-modal="true"
+        aria-labelledby="plato-agregado-title" (click)="$event.stopPropagation()">
         <div class="avisos-modal-success mb-3">
           <span class="material-symbols-outlined">check</span>
         </div>
@@ -286,7 +348,8 @@
   <!-- ─── Modal Detalle Vencimiento ─── -->
   @if (vencimientoSeleccionado) {
     <div class="avisos-modal-overlay" (click)="cerrarModalVencimiento()">
-      <div class="avisos-modal-card shadow border p-4 bg-white text-start" role="dialog" aria-modal="true" aria-labelledby="vencimiento-modal-title" (click)="$event.stopPropagation()">
+      <div class="avisos-modal-card shadow border p-4 bg-white text-start" role="dialog" aria-modal="true"
+        aria-labelledby="vencimiento-modal-title" (click)="$event.stopPropagation()">
         <div class="d-flex align-items-center mb-3 text-warning">
           <span class="material-symbols-outlined fs-2 me-2">event_busy</span>
           <h4 id="vencimiento-modal-title" class="mb-0 fw-bold">Detalle de Lote</h4>
@@ -299,7 +362,11 @@
           </div>
           <div class="d-flex justify-content-between py-2 border-bottom">
             <span class="text-muted fw-medium">Fecha de Vencimiento:</span>
-            <span class="fw-bold text-danger">{{ vencimientoSeleccionado.payloadVencimiento?.fechaVencimiento === '0001-01-01' ? 'Sin fecha especificada' : vencimientoSeleccionado.payloadVencimiento?.fechaVencimiento }}</span>
+            <span class="fw-bold text-danger">{{
+              vencimientoSeleccionado.payloadVencimiento?.fechaVencimiento === '0001-01-01'
+                ? 'Sin fecha especificada'
+                : vencimientoSeleccionado.payloadVencimiento?.fechaVencimiento
+            }}</span>
           </div>
         </div>
         <div class="d-flex justify-content-end gap-2 mt-4">
@@ -371,4 +438,5 @@
       </div>
     </div>
   }
+
 </div>
