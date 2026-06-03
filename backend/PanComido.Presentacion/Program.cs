@@ -213,3 +213,7 @@ app.MapControllers();
 app.MapHub<PanComidoHub>("/hubs/pancomido");
 
 app.Run();
+
+
+// para imagenes
+app.UseStaticFiles();
