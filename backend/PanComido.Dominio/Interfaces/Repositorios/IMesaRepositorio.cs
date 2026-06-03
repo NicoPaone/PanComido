@@ -14,8 +14,6 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task ActualizarAsync(Mesa mesa);
         Task ActualizarEstadoAsync(int mesaId, EstadoMesa nuevoEstado);
         Task<List<MesaConPosiciones>> ObtenerTodasAsync(int restauranteId);
-
-
-      
+        Task<List<int>> ObtenerMozoIdsPorMesaAsync(int mesaId);
     }
 }

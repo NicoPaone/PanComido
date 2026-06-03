@@ -1,0 +1,216 @@
+.detalle-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65); /* Fondo un poco más oscuro para resaltar la tarjeta */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 16px;
+}
+
+/* 🎯 El nuevo contenedor unificado (La comanda entera es el modal) */
+.modal-comanda {
+  background: #f7f5ee;
+  border: 2px solid #1e293b;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* ── Header ── */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #d1c9b8;
+}
+
+.header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mesa-label { 
+  font-size: 1.2rem; 
+  font-weight: 800;
+  color: #1e293b;
+  text-transform: uppercase; 
+}
+
+.tiempo-label { 
+  font-size: 0.9rem; 
+  font-weight: 500; 
+  color: #475569;
+}
+
+.btn-cerrar {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: #1e293b;
+  line-height: 1;
+  padding: 0 8px;
+  transition: transform 0.1s;
+}
+
+.btn-cerrar:active {
+  transform: scale(0.9);
+}
+
+/* ── Body & Items ── */
+.modal-body { 
+  padding: 12px 16px; 
+}
+
+.select-all-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 8px;
+  border-bottom: 2px solid #d1c9b8;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+  cursor: pointer;
+}
+
+.select-all-row input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #6abf3f;
+}
+
+.items-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 8px;
+  border-bottom: 1px solid #e8e2d6;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.item-row.no-border { border-bottom: none; }
+
+.item-row.entregado {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+.item-row.clickable { cursor: pointer; }
+.item-row.clickable:hover { background: rgba(0, 0, 0, 0.04); }
+
+.item-row.seleccionado { 
+  background: #f5b7b1; 
+  border-bottom-color: transparent;
+}
+
+.item-checkbox {
+  margin-top: 2px;
+  width: 22px;
+  height: 22px;
+  accent-color: #6abf3f;
+  flex-shrink: 0;
+}
+
+.item-content { flex: 1; }
+
+.item-main {
+  display: flex;
+  gap: 8px;
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 1.05rem;
+}
+
+.item-cantidad { min-width: 28px; }
+
+.item-obs {
+  font-size: 0.9rem;
+  color: #475569;
+  margin-top: 4px;
+  padding-left: 36px;
+}
+
+.item-obs-ing {
+  color: #64748b;
+}
+
+/* ── Footer Info ── */
+.modal-footer-info {
+  padding: 16px;
+  text-align: right;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #1e293b;
+  border-top: 1px solid #d1c9b8;
+  border-bottom: 1px solid #d1c9b8;
+}
+
+/* ── Botonera ── */
+.modal-botonera {
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-color: #f7f5ee; /* Mantiene la armonía al fondo */
+}
+
+.modal-botonera button {
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  color: white;
+  transition: opacity 0.2s;
+}
+
+.modal-botonera button:active { opacity: 0.8; }
+
+.btn-agregar { background-color: #64bd2e; color: #1e293b !important; }
+.btn-mover { background-color: #1f5b6e; }
+
+.seleccion-info {
+  text-align: center;
+  font-size: 0.95rem;
+  color: #1e293b;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.botonera-entrega {
+  display: flex;
+  gap: 16px;
+}
+
+.botonera-entrega button { flex: 1; }
+
+.btn-cancelar { background-color: #b71c1c; }
+.btn-aplicar { background-color: #64bd2e; color: #1e293b !important; }
+
+.btn-cancelar:disabled,
+.btn-aplicar:disabled {
+  background-color: #94a3b8;
+  color: white !important;
+  cursor: not-allowed;
+}

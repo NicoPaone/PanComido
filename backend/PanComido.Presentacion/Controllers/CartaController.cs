@@ -1,32 +1,50 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.CartaCasosDeUso;
-using PanComido.Presentacion.DTOs.Articulos;
+using PanComido.Presentacion.DTOs.Carta;
 using PanComido.Presentacion.Mappers;
+using PanComido.Presentacion.SesionMock;
+using System.Threading.Tasks;
 
 namespace PanComido.Presentacion.Controllers
 {
-    [Route("restaurante/{restauranteId}/carta")]
+    [Route("carta")]
     [ApiController]
     public class CartaController : ControllerBase
     {
-        private readonly ObtenerCartaCasoDeUso _obtenerCartaCasoDeUso;
-        private readonly CartaMapper _mapper;
-
-        public CartaController(ObtenerCartaCasoDeUso obtenerCartaCasoDeUso, CartaMapper mapper)
+        private readonly ObtenerArticulosParaCrearCartaCasoDeUso _obtenerArticulosCasoDeUso;
+        private readonly ArticuloCartaMapper _mapper;
+        private readonly ModificarArticuloCasoDeUso _modificarArticuloCasoDeUso;
+        public CartaController(ObtenerArticulosParaCrearCartaCasoDeUso obtenerArticulosCasoDeUso, ModificarArticuloCasoDeUso modificarArticuloCasoDeUso, ArticuloCartaMapper mapper)
         {
-            _obtenerCartaCasoDeUso = obtenerCartaCasoDeUso;
+            _obtenerArticulosCasoDeUso = obtenerArticulosCasoDeUso;
+            _modificarArticuloCasoDeUso = modificarArticuloCasoDeUso;
             _mapper = mapper;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> ObtenerCartaDisponible(int restauranteId)
+        [HttpGet("obtener-articulos")]
+        public async Task<IActionResult> ObtenerArticulosParaCarta()
         {
-            var articulosDisponibles = await _obtenerCartaCasoDeUso.EjecutarAsync(restauranteId);
+            // Ejecutamos el caso de uso que trae la lista y hace la matemática
+            var articulosDominio = await _obtenerArticulosCasoDeUso.EjecutarAsync();
 
-            var respuestaJson = _mapper.ParaDtoList(articulosDisponibles);
-
-            return Ok(respuestaJson);
+            // Usamos nuestro mapper para traducirlo al DTO de Angular y devolvemos 200 OK
+            return Ok(_mapper.aListaDto(articulosDominio));
         }
+
+        [HttpPatch("articulos/{id}")]
+        public async Task<IActionResult> ModificarArticulo(int id, [FromBody] ModificarArticuloRequestDto request)
+        {
+            // 3. Usamos el método de tu compañero para obtener el ID limpio
+            var restauranteId = HttpContext.ObtenerRestauranteId();
+
+            // 4. Ahora sí, la variable existe y funciona perfecto
+            await _modificarArticuloCasoDeUso.EjecutarAsync(restauranteId, id, request.VisibleEnCarta, request.Destacado);
+
+            return Ok(new { mensaje = "Artículo actualizado exitosamente" });
+        }
+
+
+
+
     }
 }

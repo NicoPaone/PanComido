@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.CasosDeUso.ArticuloCasosDeUso;
+using Microsoft.Extensions.DependencyInjection;
 using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso;
+using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso.IA;
 using PanComido.Dominio.CasosDeUso.BodegaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.CartaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
@@ -14,16 +16,24 @@ using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.CasosDeUso.UnidadMedidaCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Interfaces.Repositorios.IA;
 using PanComido.Dominio.Interfaces.Servicios;
+using PanComido.Dominio.Interfaces.Servicios.IA;
 using PanComido.Dominio.Servicios;
 using PanComido.Infraestructura.Persistencia;
 using PanComido.Infraestructura.Persistencia.Mappers;
+using PanComido.Infraestructura.Persistencia.Mappers.IA;
 using PanComido.Infraestructura.Persistencia.Repositorios;
+using PanComido.Infraestructura.Persistencia.Repositorios.IA;
+using PanComido.Infraestructura.ServiciosExternos.Gemini;
+using PanComido.Infraestructura.ServiciosExternos.Gemini.Mappers;
+using PanComido.Infraestructura.ServiciosExternos.Gemini.Servicio;
 using PanComido.Presentacion;
 using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Servicios;
 using PanComido.Presentacion.SesionMock;
+using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,6 +88,9 @@ builder.Services.AddScoped<LlamadoMapper>();
 builder.Services.AddScoped<CartaMapper>();
 builder.Services.AddScoped<FormularioParaCrearPlatoMapper>();
 builder.Services.AddScoped<PlatoMapper>();
+builder.Services.AddScoped<ArticuloCartaMapper>();
+
+
 builder.Services.AddScoped<ArticuloMapper>();
 builder.Services.AddScoped<PagoMapper>();
 
@@ -132,16 +145,33 @@ builder.Services.AddScoped<ObtenerDetalleArticuloCasoDeUso>();
 builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
 builder.Services.AddScoped<SolicitarPagoEfectivoCasoDeUso>();
 builder.Services.AddScoped<ConfirmarPagoEfectivoCasoDeUso>();
+builder.Services.AddScoped<ConfirmarPedidoClienteAComandaCasoDeUso>();
+builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
+builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
+builder.Services.AddScoped<ObtenerArticulosParaCrearCartaCasoDeUso>();
+builder.Services.AddScoped<ModificarArticuloCasoDeUso>();
+
+
+
+builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
 builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticuloServicio>();
+builder.Services.AddScoped<ISugerenciaPlatosIAServicio, GeminiSugerenciaPlatosIAServicio >();
+builder.Services.AddScoped<IGestionStockServicio, GestionStockServicio>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 //Servicios externos
 builder.Services.AddScoped<IComandaNotificador, ComandaNotificadorSignalR>();
 builder.Services.AddScoped<ILlamadoNotificador, LlamadoNotificadorSignalR>();
+builder.Services.Configure<GeminiConfiguracion>(builder.Configuration.GetSection("Gemini"));
+builder.Services.AddScoped<GeminiResponseMapper>();
+builder.Services.AddScoped<SugerenciaIAEntityMapper>();
+builder.Services.AddScoped<ISugerenciaIARepositorio, SugerenciaIARepositorio>();
+
+builder.Services.AddHttpClient();
 
 var allowedOrigins = builder.Configuration.GetSection("CorsSettings:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
 

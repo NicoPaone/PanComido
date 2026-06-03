@@ -58,5 +58,13 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
          mesaEF.EstadoMesaId = (int)nuevoEstado;
          await _ctx.SaveChangesAsync();
       }
-   }
+
+        public async Task<List<int>> ObtenerMozoIdsPorMesaAsync(int mesaId)
+        {
+            return await _ctx.Mozos
+                .Where(m => m.Mesas.Any(mesa => mesa.Id == mesaId))
+                .Select(m => m.IdEmpleado)
+                .ToListAsync();
+        }
+    }
 }

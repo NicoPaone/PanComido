@@ -20,7 +20,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             _mapper = mapper;
         }
 
-        public async Task CrearAsync(DOM.Comanda comandaDominio)
+        public async Task<int> CrearAsync(DOM.Comanda comandaDominio)
         {
             EF.Comandum comandaEF = _mapper.paraEntidad(comandaDominio);
             comandaEF.HoraUltimoCambioEstado = DateTime.Now;
@@ -28,6 +28,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             await _ctx.Comanda.AddAsync(comandaEF);
 
             await _ctx.SaveChangesAsync();
+
+            return comandaEF.Id;
         }
 
         public async Task<DOM.Comanda?> ModificarEstadoComandaAsync(int mesaId, int estadoId)
@@ -106,19 +108,28 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<DOM.Comanda?> ObtenerComandaPorIdAsync(int comandaId)
         {
             var efComanda = await BaseQueryMozo()
+                .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == comandaId);
 
             return efComanda == null ? null : _mapper.ParaDominio(efComanda);
         }
 
-        public async Task MarcarItemEntregadoAsync(int comandaId, int articuloComandaId)
+        public async Task MarcarItemsEntregadosAsync(int comandaId, List<int> articuloComandaIds)
         {
-            var efItem = await _ctx.ArticuloComanda
-                .FirstOrDefaultAsync(ac => ac.Id == articuloComandaId && ac.ComandaId == comandaId);
+            var efItems = await _ctx.ArticuloComanda
+                .Where(ac => ac.ComandaId == comandaId && articuloComandaIds.Contains(ac.Id))
+                .ToListAsync();
 
-            if (efItem == null) return;
+            foreach (var item in efItems)
+                item.Entregado = true;
 
-            efItem.Entregado = true;
+            await _ctx.SaveChangesAsync();
+        }
+
+        public async Task ActualizarAsync(Comanda comanda)
+        {
+            var efComanda = _mapper.paraEntidad(comanda);
+            _ctx.Comanda.Update(efComanda);
             await _ctx.SaveChangesAsync();
         }
 

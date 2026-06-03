@@ -29,7 +29,13 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                     Insumo = new DOM.Insumo
                     {
                         Id = pi.IngredienteId,
-                        Nombre = pi.Ingrediente?.IdInsumoNavigation?.IdArticuloNavigation?.Nombre ?? "Ingrediente sin nombre"
+                        Nombre = pi.Ingrediente?.IdInsumoNavigation?.IdArticuloNavigation?.Nombre ?? "Ingrediente sin nombre",
+                        PedidoInsumos = pi.Ingrediente?.IdInsumoNavigation?.PedidoInsumos?.Select(pedido => new DOM.PedidoInsumo
+                        {
+                            InsumoId = pedido.InsumoId,
+                            Cantidad = pedido.Cantidad,
+                            PrecioCompra = pedido.PrecioCompra
+                        }).ToList() ?? new List<DOM.PedidoInsumo>()
                     }
                 }).ToList() ?? new List<DOM.PlatoIngrediente>(),
 

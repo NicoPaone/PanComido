@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 using EF = PanComido.Infraestructura.Persistencia.Entidades;
 using PanComido.Infraestructura.Persistencia.Mappers;
-
 namespace PanComido.Infraestructura.Persistencia.Repositorios
 {
     public class LoteRepositorio : ILoteRepositorio
@@ -94,6 +93,27 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .ToDictionaryAsync(k => k.InsumoId, v => v.TotalStock);
 
             return diccionarioStock;
+        }
+
+        public async Task<List<DOM.Lote>> ObtenerLotesPorFechaVencimientoAscendenteAsync(int restauranteId, int insumoId)
+        {
+            List<EF.Lote> efLotes = await _ctx.Lotes
+                            .AsNoTracking()
+                            .Where(l => l.Bodega.RestauranteId == restauranteId
+                                        && l.InsumoId == insumoId
+                                        && l.Cantidad > 0)
+                            .OrderBy(l => l.FechaVencimiento)
+                            .ToListAsync();
+
+            return efLotes.Select(l => _loteEntityMapper.paraDominio(l)).ToList();
+        }
+
+        public async Task ActualizarLotesAsync(List<DOM.Lote> lotesModificados)
+        {
+            List<EF.Lote> efLotes = lotesModificados.Select(l => _loteEntityMapper.paraEntidad(l)).ToList();
+
+            _ctx.Lotes.UpdateRange(efLotes);
+            await _ctx.SaveChangesAsync();
         }
     }
 }

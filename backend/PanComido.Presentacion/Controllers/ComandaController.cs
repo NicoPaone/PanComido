@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
+using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Presentacion.DTOs.Cliente;
+using PanComido.Presentacion.DTOs.Comanda;
 using PanComido.Infraestructura.Persistencia.Entidades;
 using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.Mappers;
@@ -14,18 +18,31 @@ namespace PanComido.Presentacion.Controllers
         private readonly ListarComandaActivaCocinaCasoDeUso _listarComandasActivasCocinaCasoDeUso;
         private readonly ModificarEstadoComandaCasoDeUso _modificarEstadoComandaCasoDeUso;
         private readonly MarcarItemsEntregadosCasoDeUso _marcarItemEntregadoCasoDeUso;
+        private readonly ConfirmarPedidoClienteAComandaCasoDeUso _confirmarPedidoCasoDeUso;
+        private readonly MarcarItemsEntregadosCasoDeUso _marcarItemsEntregadosCasoDeUso;
         private readonly ComandaMapper _mapper;
+
+        private readonly IComandaRepositorio _comandaRepositorio;
+
 
         public ComandaController(
             ListarComandaActivaCocinaCasoDeUso listarComandaActivasCasoDeUso,
             ModificarEstadoComandaCasoDeUso modificar,
             MarcarItemsEntregadosCasoDeUso marcarItemEntregadoCasoDeUso,
             ComandaMapper mapper)
+            ConfirmarPedidoClienteAComandaCasoDeUso confirmarPedidoCasoDeUso,
+            MarcarItemsEntregadosCasoDeUso marcarItemsEntregadosCasoDeUso,
+            ComandaMapper mapper,
+            IComandaRepositorio comandaRepositorio)
         {
             _listarComandasActivasCocinaCasoDeUso = listarComandaActivasCasoDeUso;
             _modificarEstadoComandaCasoDeUso = modificar;
-            _marcarItemEntregadoCasoDeUso = marcarItemEntregadoCasoDeUso;
+            _confirmarPedidoCasoDeUso = confirmarPedidoCasoDeUso;
+            _listarComandasActivasCocinaCasoDeUso = listarComandaActivasCasoDeUso;
+            _modificarEstadoComandaCasoDeUso = modificar;
+            _marcarItemsEntregadosCasoDeUso = marcarItemsEntregadosCasoDeUso;
             _mapper = mapper;
+            _comandaRepositorio = comandaRepositorio;
 
         }
 
@@ -46,12 +63,54 @@ namespace PanComido.Presentacion.Controllers
             return Ok(comandaDto);
         }
 
-        [HttpPut("{comandaId}/item/{articuloComandaId}/entregar")]
-        public async Task<ActionResult<ComandaResponseDto>> MarcarItemComandaEntregado(int comandaId, int articuloComandaId)
+        [HttpPut("{comandaId}/entregar-items")]
+        public async Task<ActionResult<ComandaResponseDto>> MarcarItemComandaEntregado(int comandaId, [FromBody] List<int> itemsEntregados)
         {
-            var comanda = await _marcarItemEntregadoCasoDeUso.EjecutarAsync(comandaId, articuloComandaId);
+            var comanda = await _marcarItemsEntregadosCasoDeUso.EjecutarAsync(comandaId, itemsEntregados);
             var comandaDto = _mapper.ComandaResponseDto(comanda);
             return Ok(comandaDto);
-        } 
+        }
+
+        [HttpPost("{comandaId}/cliente/confirmar-pedido")]
+        public async Task<ActionResult<ComandaClienteEstadoResponseDto>> ConfirmarPedido(int comandaId, [FromBody] ConfirmarPedidoClienteRequestDto request)
+        {
+            try
+            {
+                int restauranteId = HttpContext.ObtenerRestauranteId();
+
+                List<ArticuloComanda> articulosSolicitados = _mapper.ParaListaArticuloComandaDominio(request);
+
+                Comanda comandaActualizada = await _confirmarPedidoCasoDeUso.EjecutarAsync(restauranteId, comandaId, articulosSolicitados);
+
+                ComandaClienteEstadoResponseDto responseDto = _mapper.ParaEstadoClienteDto(comandaActualizada);
+
+                return Ok(responseDto);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(new { mensaje = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Ocurrió un error al procesar el pedido.", detalle = ex.Message });
+            }
+        }
+
+        [HttpGet("{comandaId}/cliente/estado-pedido")]
+        public async Task<ActionResult<ComandaClienteEstadoResponseDto>> ObtenerEstadoComanda(int comandaId)
+        {
+            Comanda comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
+
+            if (comanda == null)
+                return NotFound(new { mensaje = $"No se encontró la comanda con ID {comandaId}." });
+
+            ComandaClienteEstadoResponseDto responseDto = _mapper.ParaEstadoClienteDto(comanda);
+
+            return Ok(responseDto);
+        }
     }
 }

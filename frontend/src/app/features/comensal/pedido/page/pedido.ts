@@ -38,7 +38,7 @@ export class Pedido {
 
   get total(): number {
     return this.pedidos().reduce(
-      (acc, item) => acc + item.plato.precioVenta * item.cantidad,
+      (acc, item) => acc + item.plato.precio * item.cantidad,
       0
     );
   }
