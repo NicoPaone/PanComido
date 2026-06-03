@@ -10,8 +10,9 @@ export class CartaService {
 
 
   private api = inject(ApiService)
-  obtenerCarta(restauranteId:number):Observable<CartaItem[]>{
-    return this.api.get<CartaItem[]>(`restaurante/${restauranteId}/carta`);
+  private endpoint = 'carta'
+  obtenerCarta():Observable<CartaItem[]>{
+    return this.api.get<CartaItem[]>(`${this.endpoint}/obtener-articulos`);
   }
 
   

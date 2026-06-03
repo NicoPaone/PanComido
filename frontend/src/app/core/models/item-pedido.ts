@@ -1,7 +1,8 @@
 import { CartaItem } from './carta-item';
 
 export interface ItemPedido {
- plato: CartaItem;
+  plato: CartaItem;
   cantidad: number;
-
+  observacionesIngredientes?: string;
+  observacionesGenerales?: string;
 }

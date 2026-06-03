@@ -1,96 +1,97 @@
 .carta-container {
-  padding: 16px;
-  background-color: #F8F9FA; /* Fondo general limpio */
+  padding: 1rem;
+  background-color: var(--gray-50);
   min-height: 100vh;
-  padding-bottom: 90px; /* Evita que el boton llamar al mozo tape los platos */
+  padding-bottom: 140px; /* Espacio para sticky footer */
 }
 
-/* Header */
+/* ===== HEADER ===== */
 .header-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 1rem;
 }
 
 .logo-img { 
-  height: 40px; 
-  width: 40px; 
-  border-radius: 50%; 
+  height: 48px; 
+  width: 48px; 
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: var(--shadow-sm);
 }
 
 .mesa-info-container {
   display: flex;
-  gap: 16px;
+  gap: 1rem;
+  align-items: center;
 }
 
 .badge-info {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0.25rem;
   font-weight: 700;
-  color: #212529;
+  font-size: 1rem;
+  color: var(--gray-900);
 }
 
-/* Buscador */
+.badge-info .material-symbols-outlined {
+  font-size: 1.25rem;
+}
+
+/* ===== BUSCADOR + FILTRO ===== */
 .search-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
 .buscador-wrapper {
-  flex: 1; /* Hace que tu app-buscador tome todo el ancho disponible */
+  flex: 1;
 }
 
 .btn-filtro-icono {
   background: none;
   border: none;
-  color: #000;
-  padding: 0;
+  color: var(--gray-700);
+  padding: 0.5rem;
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  border-radius: var(--border-radius-sm);
+}
+
+.btn-filtro-icono:hover {
+  background-color: var(--gray-100);
+  color: var(--gray-900);
+}
+
+.btn-filtro-icono:active {
+  transform: scale(0.95);
 }
 
 .btn-filtro-icono .material-symbols-outlined {
-  font-size: 2.2rem;
+  font-size: 2rem;
 }
 
-/* Botones Acción */
-.actions-row {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.action-btn-wrapper {
-  flex: 1;
-}
-
-/* Magia CSS: Tu <select> convertido en el botón verde de la imagen */
-.custom-select-ordenar {
-  width: 100%;
-  appearance: none;
-  background-color: #2E7D32; 
+.filtro-badge {
+  background-color: #2E7D32;
   color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 11px 16px 11px 44px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: left 12px center;
-  background-size: 24px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  margin-left: -4px;
+  margin-top: -8px;
 }
 
-.custom-select-ordenar option {
-  background-color: white;
-  color: #212529;
+/* ===== DROPDOWN ORDENAR ===== */
+.ordenar-section {
+  margin-bottom: 1.5rem;
 }
 
 .dropdown-ordenar {
@@ -103,57 +104,125 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  background-color: #2E7D32;
-  color: white;
+  gap: 0.75rem;
+  background-color: var(--comensal-green);
+  color: #ffffff;
   border: none;
-  border-radius: 8px;
-  padding: 11px 16px;
+  border-radius: var(--border-radius-md);
+  padding: 0.875rem 1.25rem;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
 }
 
-.dropdown-trigger .material-symbols-outlined {
-  font-size: 1.2rem;
+.dropdown-trigger:hover {
+  background-color: var(--comensal-green-dark);
 }
 
+.dropdown-trigger:active {
+  transform: scale(0.98);
+}
+
+/* Cuando está abierto, solo redondea arriba */
+.dropdown-trigger.abierto {
+  border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
+}
+
+.icon-ordenar {
+  font-size: 1.25rem;
+}
+
+.label-ordenar {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* Menu desplegable */
 .dropdown-menu {
   position: absolute;
   top: 100%;
   left: 0;
-  width: 100%;
-  margin-top: 4px;
-  background-color: #F7F5EE;
-  border: 2px solid #2E7D32;
-  border-radius: 0 0 8px 8px;
-  padding: 8px;
+  right: 0;
+  z-index: 100;
+  background-color: #F7F5EE; /* Color crema del mockup */
+  border: 2px solid var(--comensal-green);
+  border-top: none; /* Se fusiona con el botón */
+  border-radius: 0 0 var(--border-radius-md) var(--border-radius-md);
+  padding: 0.5rem;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  z-index: 100;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  gap: 0.5rem;
+  box-shadow: var(--shadow-md);
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .dropdown-item {
   width: 100%;
   background-color: #FFFFFF;
-  color: #2E7D32;
-  border: 2px solid #2E7D32;
-  border-radius: 6px;
-  padding: 10px 0;
+  color: var(--comensal-green);
+  border: 2px solid var(--comensal-green);
+  border-radius: var(--border-radius-sm);
+  padding: 0.75rem 0;
   font-size: 1.05rem;
   font-weight: 700;
   text-align: center;
   cursor: pointer;
-  transition: background-color 0.15s, opacity 0.15s;
+  transition: all var(--transition-fast);
 }
 
 .dropdown-item:hover {
-  background-color: #E8F5E9;
+  background-color: var(--comensal-green-light);
 }
 
 .dropdown-item:active {
-  opacity: 0.7;
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+
+/* ===== LISTA DE PLATOS ===== */
+.platos-lista-container {
+  margin-top: 1rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: var(--gray-500);
+}
+
+.py-5 {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .carta-container {
+    padding: 0.75rem;
+    padding-bottom: 120px;
+  }
+
+  .logo-img {
+    height: 40px;
+    width: 40px;
+  }
+
+  .badge-info {
+    font-size: 0.9rem;
+  }
 }

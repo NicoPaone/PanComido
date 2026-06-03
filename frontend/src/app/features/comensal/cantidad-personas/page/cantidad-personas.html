@@ -1,42 +1,33 @@
 <app-header-cantidad-personas (back)="volverAtras()">
 </app-header-cantidad-personas>
-<div class="cantidad-card">
 
-  <h1>
-    ¿Cuántas personas
-    son en tu grupo?
-  </h1>
+<div class="cantidad-card">
+  <h1>¿Cuántas personas son en tu grupo?</h1>
 
   <div class="cantidad-grid">
-
     @for (numero of [].constructor(maxCantidad); track $index) {
-
-    <div class="cantidad-item" [class.selected]="cantidadPersonas === $index + 1"
-      (click)="seleccionarCantidad($index + 1)">
-      {{ $index + 1 }}
-    </div>
-
+      <div class="cantidad-item"
+           [class.selected]="cantidadPersonas === $index + 1"
+           (click)="seleccionarCantidad($index + 1)">
+        {{ $index + 1 }}
+      </div>
     }
-
-    <div class="cantidad-item plus" (click)="expandirOpciones()">
-      +
-    </div>
-
+    <div class="cantidad-item plus" (click)="expandirOpciones()">+</div>
   </div>
 
   <div class="botones">
-
-    <app-boton variante="outline" label="Cancelar">
-    </app-boton>
+    <app-boton variante="outline" label="Cancelar"></app-boton>
 
     <app-boton-comensal
-  [backgroundColor]="configuracion.paleta.botonPrimario"
-  [textColor]="configuracion.paleta.textoClaro"
-  label="Aceptar"
-  
-  (clicked)="aceptar()">
-</app-boton-comensal>
-
+      [backgroundColor]="configuracion.paleta.botonPrimario"
+      [textColor]="configuracion.paleta.textoClaro"
+      [disabled]="cargando()"
+      (clicked)="aceptar()">
+      @if (cargando()) {
+        Ocupando mesa...
+      } @else {
+        Aceptar
+      }
+    </app-boton-comensal>
   </div>
-
 </div>

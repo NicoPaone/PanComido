@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { ApiClient } from '../../../../core/services/api-client';
+import { ApiService } from '../../../../core/services/api-service';
 
 import { Proveedor, SugerenciaPedidoItem, NuevoPedidoProveedor } from '../../../../core/models/proveedor';
 import { Insumo } from '../../../../core/models/insumos/insumo';
@@ -10,7 +10,7 @@ import { CategoriaInsumo } from '../../../../core/models/insumos/categorias/cate
 @Injectable({ providedIn: 'root' })
 export class RealizarPedidoSugeridoApiService {
 
-  private api = inject(ApiClient);
+  private api = inject(ApiService);
 
   getProveedores(): Observable<Proveedor[]> {
     return this.api.get<any[]>('Proveedor').pipe(

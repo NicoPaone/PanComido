@@ -25,20 +25,26 @@
         <h4 class="fw-bold mb-2">{{ item.plato.nombre }}</h4>
         <div class="d-flex justify-content-between align-items-center">
           <span class="badge bg-dark">x{{ item.cantidad }}</span>
-          <span class="fw-bold fs-5">${{ item.plato.precio * item.cantidad }}</span>
+          <span class="fw-bold fs-5">${{ item.plato.precioVentaFinal * item.cantidad }}</span>
         </div>
       </div>
 
       <!-- IMAGEN -->
-      <img [src]="item.plato.urlImagen" class="img-fluid rounded-4 mb-3" style="height: 220px; object-fit: cover;">
+      @if (item.plato.urlImagen) {
+        <img [src]="item.plato.urlImagen" class="img-fluid rounded-4 mb-3" style="height: 220px; object-fit: cover;">
+      } @else {
+        <div class="rounded-4 mb-3 d-flex align-items-center justify-content-center bg-light" style="height: 220px;">
+          <span class="material-symbols-outlined text-muted" style="font-size: 48px;">restaurant</span>
+        </div>
+      }
 
       <!-- DESCRIPCION -->
-      <p class="text-muted mb-4">{{ item.plato.descripcion }}</p>
+      <p class="text-muted mb-4">{{ item.plato.tipoArticulo }}</p>
 
       <!-- BOTONES -->
       <div class="d-flex flex-column gap-2">
         <app-boton-comensal class="w-100" [backgroundColor]="configuracion.paleta.botonPrimario"
-          [textColor]="configuracion.paleta.textoClaro" (clicked)="irAPersonalizar(item)">
+          [textColor]="configuracion.paleta.textoClaro" (clicked)="irAPersonalizar(item, $index)">
           <span class="material-symbols-outlined">edit</span>
           <span>Personalizar</span>
         </app-boton-comensal>
