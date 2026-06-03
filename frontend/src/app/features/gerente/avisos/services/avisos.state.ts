@@ -3,6 +3,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Aviso, AvisoTipo } from '../../../../core/models/aviso.model';
 import { Plato } from '../../../../core/models/plato';
 import { AvisosApiService } from './avisos.api';
+import { SugerenciaIA } from '../../../../core/models/sugerencia-ia.model';
+import { PlatoSugeridoIA } from '../../../../core/models/sugerencia-ia.model';
 
 @Injectable({ providedIn: 'root' })
 export class AvisosStateService {
@@ -18,26 +20,36 @@ export class AvisosStateService {
 
   private _vencimientos = signal<Aviso[]>([]);
   private _stockBajo = signal<Aviso[]>([]);
+  private _sugerenciasIA = signal<SugerenciaIA | null>(null);
+  private _loadingIA = signal<boolean>(false);
+  private _errorIA = signal<string | null>(null);
+  private _creandoPlato = signal<number | null>(null);
+  private _platoIACreado = signal<string | null>(null);
 
   mensaje = this._mensaje.asReadonly();
   searchTerm = this._searchTerm.asReadonly();
   loadingSugerenciasCocina = this._loadingSugerenciasCocina.asReadonly();
   platoAgregadoACarta = this._platoAgregadoACarta.asReadonly();
+  sugerenciasIA = this._sugerenciasIA.asReadonly();
+  loadingIA = this._loadingIA.asReadonly();
+  errorIA = this._errorIA.asReadonly();
+  creandoPlato = this._creandoPlato.asReadonly();
+  platoIACreado = this._platoIACreado.asReadonly();
 
   vencimientos = computed(() => {
     const term = this._searchTerm().toLowerCase();
-    return this._vencimientos().filter(a => 
-      (a.titulo || '').toLowerCase().includes(term) || 
-      (a.subtitulo && a.subtitulo.toLowerCase().includes(term)) || 
+    return this._vencimientos().filter(a =>
+      (a.titulo || '').toLowerCase().includes(term) ||
+      (a.subtitulo && a.subtitulo.toLowerCase().includes(term)) ||
       (a.info && a.info.toLowerCase().includes(term))
     );
   });
 
   stockBajo = computed(() => {
     const term = this._searchTerm().toLowerCase();
-    return this._stockBajo().filter(a => 
-      (a.titulo || '').toLowerCase().includes(term) || 
-      (a.subtitulo && a.subtitulo.toLowerCase().includes(term)) || 
+    return this._stockBajo().filter(a =>
+      (a.titulo || '').toLowerCase().includes(term) ||
+      (a.subtitulo && a.subtitulo.toLowerCase().includes(term)) ||
       (a.info && a.info.toLowerCase().includes(term))
     );
   });
@@ -62,40 +74,40 @@ export class AvisosStateService {
         avisos: this.api.getAvisos(),
         insumos: this.api.getInsumos()
       })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: ({ avisos, insumos }) => {
-          const stockAvisos: Aviso[] = avisos.insumosConStockCritico.map(insumo => ({
-            id: insumo.id.toString(),
-            tipo: 'stock',
-            titulo: insumo.nombre || 'Insumo sin nombre',
-            subtitulo: `Stock: ${insumo.stockActual} ${insumo.unidadMedida}`,
-            info: `Punto mínimo: ${insumo.stockMinimo} ${insumo.unidadMedida}`,
-            payloadStock: insumo
-          }));
-          this._stockBajo.set(stockAvisos);
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: ({ avisos, insumos }) => {
+            const stockAvisos: Aviso[] = avisos.insumosConStockCritico.map(insumo => ({
+              id: insumo.id.toString(),
+              tipo: 'stock',
+              titulo: insumo.nombre || 'Insumo sin nombre',
+              subtitulo: `Stock: ${insumo.stockActual} ${insumo.unidadMedida}`,
+              info: `Punto mínimo: ${insumo.stockMinimo} ${insumo.unidadMedida}`,
+              payloadStock: insumo
+            }));
+            this._stockBajo.set(stockAvisos);
 
-          const vencimientosAvisos: Aviso[] = [];
-          Object.entries(avisos.insumosConVencimientoProximo).forEach(([insumoIdStr, lotes]) => {
-            const insumoId = Number(insumoIdStr);
-            const insumoData = insumos.find(i => i.id === insumoId);
-            const nombreInsumo = insumoData?.nombre || `Insumo ${insumoIdStr}`;
+            const vencimientosAvisos: Aviso[] = [];
+            Object.entries(avisos.insumosConVencimientoProximo).forEach(([insumoIdStr, lotes]) => {
+              const insumoId = Number(insumoIdStr);
+              const insumoData = insumos.find(i => i.id === insumoId);
+              const nombreInsumo = insumoData?.nombre || `Insumo ${insumoIdStr}`;
 
-            lotes.forEach(lote => {
-              vencimientosAvisos.push({
-                id: lote.id.toString(),
-                tipo: 'vencimiento',
-                titulo: lote.nombre || `Lote de ${nombreInsumo}`,
-                subtitulo: `Vence: ${lote.fechaVencimiento === '0001-01-01' ? 'Sin fecha' : lote.fechaVencimiento}`,
-                info: `Cantidad: ${lote.cantidad}`,
-                payloadVencimiento: lote
+              lotes.forEach(lote => {
+                vencimientosAvisos.push({
+                  id: lote.id.toString(),
+                  tipo: 'vencimiento',
+                  titulo: lote.nombre || `Lote de ${nombreInsumo}`,
+                  subtitulo: `Vence: ${lote.fechaVencimiento === '0001-01-01' ? 'Sin fecha' : lote.fechaVencimiento}`,
+                  info: `Cantidad: ${lote.cantidad}`,
+                  payloadVencimiento: lote
+                });
               });
             });
-          });
-          this._vencimientos.set(vencimientosAvisos);
-        },
-        error: (err) => console.error('Error al cargar avisos', err)
-      });
+            this._vencimientos.set(vencimientosAvisos);
+          },
+          error: (err) => console.error('Error al cargar avisos', err)
+        });
     });
   }
 
@@ -174,4 +186,57 @@ export class AvisosStateService {
     this._mensaje.set(msg);
     setTimeout(() => this._mensaje.set(null), 2500);
   }
+
+  generarSugerenciasIA(): void {
+    this._loadingIA.set(true);
+    this._errorIA.set(null);
+    this._sugerenciasIA.set(null);
+
+    this.api.generarSugerenciasIA()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (resultado) => {
+          this._sugerenciasIA.set(resultado);
+          this._loadingIA.set(false);
+        },
+        error: () => {
+          this._errorIA.set('No se pudo generar la sugerencia. Intentá de nuevo.');
+          this._loadingIA.set(false);
+        }
+      });
+  }
+
+  crearPlatoDesdeIA(plato: PlatoSugeridoIA): void {
+  this._creandoPlato.set(plato.id);
+
+  const request = {
+    nombre: plato.nombre,
+    descripcion: plato.descripcion,
+    precioVentaFinal: 0,
+    tiempoPreparacionBase: plato.tiempoPreparacion,
+    tipoPlatoId: 2,
+    categoriaPlatoId: 2,
+    urlImagen: '',
+    restriccionesIds: [],
+    ingredientes: plato.ingredientesSugeridosIA.map(ing => ({
+      insumoId: ing.insumoId,
+      cantidad: ing.cantidad,
+      opcional: false
+    }))
+  };
+
+  this.api.crearPlatoDesdeIA(request)
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
+      next: () => {
+        this._creandoPlato.set(null);
+        this._platoIACreado.set(plato.nombre);
+        setTimeout(() => this._platoIACreado.set(null), 3000);
+      },
+      error: () => {
+        this._creandoPlato.set(null);
+        this.mostrarMensaje('No se pudo crear el plato. Intentá de nuevo.');
+      }
+    });
+}
 }

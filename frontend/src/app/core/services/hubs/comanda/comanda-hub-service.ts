@@ -20,6 +20,15 @@ export class ComandaHubService  {
       this.comandaModificada.set(comanda);
     });
   }
+
+  public async conectarComoMozo(restauranteId: number, mozoId: number): Promise<void> {
+    await this.conexion.iniciar();
+    await this.conexion.hub.invoke("UnirseMozo", restauranteId, mozoId);
+    this.conexion.hub.off("EstadoComandaModificada");
+    this.conexion.hub.on("EstadoComandaModificada", (comanda: Comanda) => {
+        this.comandaModificada.set(comanda);
+    });
+  }
   
   public detener():void{
     this.conexion.detener();
