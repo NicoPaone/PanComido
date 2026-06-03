@@ -1,100 +1,81 @@
 <div class="filtros-overlay" (click)="cerrar.emit()">
   <div class="filtros-panel" (click)="$event.stopPropagation()">
-    <!-- Header -->
+    
     <header class="filtros-header">
-      <span class="material-symbols-outlined filter-icon">filter_alt</span>
-      <h2 class="filtros-titulo">Filtros</h2>
+      <div class="header-title">
+        <span class="material-symbols-outlined filter-icon">filter_alt</span>
+        <h2 class="filtros-titulo">Filtros</h2>
+        @if (cartaState.cantidadFiltrosActivos() > 0) {
+          <span class="badge-filtros">{{ cartaState.cantidadFiltrosActivos() }}</span>
+        }
+      </div>
       <button class="btn-cerrar" (click)="cerrar.emit()">
-        <span class="material-symbols-outlined">close</span>
+        <span class="material-symbols-outlined font-weight-bold">close</span>
       </button>
     </header>
 
-    <!-- Filtros -->
     <div class="filtros-content">
-      <!-- TIPO -->
+      
       <div class="categoria-section">
-        <div class="categoria-header">
+        <button class="categoria-header" (click)="toggleSeccion('platos')">
           <div class="categoria-info">
-            <span class="material-symbols-outlined categoria-icono">restaurant</span>
-            <span class="categoria-nombre">Tipo</span>
+            <span class="material-symbols-outlined categoria-icono">room_service</span>
+            <span class="categoria-nombre">Platos</span>
           </div>
-        </div>
+          <span class="material-symbols-outlined chevron" [class.rotado]="!seccionPlatosAbierta()">
+            expand_more
+          </span>
+        </button>
 
-        <div class="subcategorias-list">
-          <label class="checkbox-item">
-            <input 
-              type="checkbox" 
-              [checked]="cartaState.tiposSeleccionados().includes('Plato')"
-              (change)="cartaState.toggleTipoPlato('Plato')">
-            <span class="checkbox-label">Platos</span>
-          </label>
-          <label class="checkbox-item">
-            <input 
-              type="checkbox" 
-              [checked]="cartaState.tiposSeleccionados().includes('Bebida')"
-              (change)="cartaState.toggleTipoPlato('Bebida')">
-            <span class="checkbox-label">Bebidas</span>
-          </label>
-        </div>
+        @if (seccionPlatosAbierta()) {
+          <div class="subcategorias-list">
+            <label class="checkbox-item">
+              <input type="checkbox" 
+                     [checked]="cartaState.tiposSeleccionados().includes('Plato')"
+                     (change)="cartaState.toggleTipoPlato('Plato')">
+              <span class="checkbox-label">Todos los platos</span>
+            </label>
+          </div>
+        }
         <div class="divider"></div>
       </div>
 
-      <!-- Ordenamiento -->
       <div class="categoria-section">
-        <div class="categoria-header">
+        <button class="categoria-header" (click)="toggleSeccion('bebidas')">
           <div class="categoria-info">
-            <span class="material-symbols-outlined categoria-icono">sort</span>
-            <span class="categoria-nombre">Ordenar por</span>
+            <span class="material-symbols-outlined categoria-icono">local_drink</span>
+            <span class="categoria-nombre">Bebidas</span>
           </div>
-        </div>
+          <span class="material-symbols-outlined chevron" [class.rotado]="!seccionBebidasAbierta()">
+            expand_more
+          </span>
+        </button>
 
-        <div class="subcategorias-list">
-          <label class="checkbox-item">
-            <input 
-              type="radio" 
-              name="orden"
-              value=""
-              [checked]="cartaState.ordenarPor() === ''"
-              (change)="cartaState.setOrdenar('')">
-            <span class="checkbox-label">Sin orden</span>
-          </label>
-          <label class="checkbox-item">
-            <input 
-              type="radio" 
-              name="orden"
-              value="precio-menor"
-              [checked]="cartaState.ordenarPor() === 'precio-menor'"
-              (change)="cartaState.setOrdenar('precio-menor')">
-            <span class="checkbox-label">Precio: menor a mayor</span>
-          </label>
-          <label class="checkbox-item">
-            <input 
-              type="radio" 
-              name="orden"
-              value="precio-mayor"
-              [checked]="cartaState.ordenarPor() === 'precio-mayor'"
-              (change)="cartaState.setOrdenar('precio-mayor')">
-            <span class="checkbox-label">Precio: mayor a menor</span>
-          </label>
-          <label class="checkbox-item">
-            <input 
-              type="radio" 
-              name="orden"
-              value="nombre"
-              [checked]="cartaState.ordenarPor() === 'nombre'"
-              (change)="cartaState.setOrdenar('nombre')">
-            <span class="checkbox-label">Nombre (A-Z)</span>
-          </label>
-        </div>
+        @if (seccionBebidasAbierta()) {
+          <div class="subcategorias-list">
+            <label class="checkbox-item">
+              <input type="checkbox"
+                     [checked]="cartaState.tiposSeleccionados().includes('Bebida')"
+                     (change)="cartaState.toggleTipoPlato('Bebida')">
+              <span class="checkbox-label">Todas las bebidas</span>
+            </label>
+          </div>
+        }
         <div class="divider"></div>
       </div>
 
-      <!-- Boton Limpiar Filtros -->
-      <div class="actions-footer">
+    </div>
+
+    <div class="actions-footer">
+      @if (cartaState.tieneFiltrosActivos()) {
         <button class="btn-limpiar" (click)="limpiarFiltros()">
           Limpiar filtros
         </button>
-      </div>
+      }
+      <button class="btn-aplicar-amarillo" (click)="aplicarFiltros()">
+        Aplicar filtros
+      </button>
     </div>
+
   </div>
 </div>

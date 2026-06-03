@@ -5,25 +5,18 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: var(--z-modal);
+  z-index: 1050;
   display: flex;
-  justify-content: flex-end;
-  animation: fadeIn var(--transition-base);
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  justify-content: flex-end; /* Panel a la derecha */
 }
 
 .filtros-panel {
   width: 100%;
-  max-width: 400px;
+  max-width: 320px; /* Un poco más angosto, como un drawer de mobile */
   background-color: #ffffff;
-  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
-  animation: slideIn var(--transition-base);
+  animation: slideIn 0.25s ease-out;
 }
 
 @keyframes slideIn {
@@ -31,24 +24,29 @@
   to { transform: translateX(0); }
 }
 
+/* ── Header ── */
 .filtros-header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--gray-200);
+  justify-content: space-between;
+  padding: 16px 20px;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .filter-icon {
-  font-size: 1.75rem;
-  color: var(--gray-700);
+  font-size: 2.2rem;
+  color: #000;
 }
 
 .filtros-titulo {
-  flex: 1;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--gray-900);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #000;
   margin: 0;
 }
 
@@ -56,23 +54,28 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0.5rem;
-  color: var(--gray-600);
-  transition: color var(--transition-fast);
+  padding: 4px;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.btn-cerrar:hover {
-  color: var(--gray-900);
+.btn-cerrar span {
+  font-size: 1.8rem;
+  font-weight: 900;
 }
 
+/* ── Contenido y Acordeón ── */
 .filtros-content {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem 1.5rem;
+  padding: 16px 20px;
 }
 
 .categoria-section {
-  margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .categoria-header {
@@ -80,97 +83,134 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 0;
+  padding: 12px 0;
   background: none;
   border: none;
   cursor: pointer;
-  transition: all var(--transition-fast);
 }
 
 .categoria-info {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 10px;
 }
 
 .categoria-icono {
   font-size: 1.5rem;
-  color: var(--comensal-green);
+  color: #2E7D32; /* Verde de la imagen */
 }
 
 .categoria-nombre {
-  font-size: 1.125rem;
+  font-size: 1.2rem;
   font-weight: 700;
-  color: var(--comensal-green);
+  color: #2E7D32; /* Verde de la imagen */
 }
 
 .chevron {
-  color: var(--comensal-green);
-  transition: transform var(--transition-base);
+  color: #2E7D32;
+  font-size: 1.5rem;
+  font-weight: 700;
+  transition: transform 0.2s ease;
 }
 
 .chevron.rotado {
   transform: rotate(180deg);
 }
 
+/* ── Lista de Checkboxes ── */
 .subcategorias-list {
-  padding-left: 2.5rem;
-  margin-top: 0.5rem;
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  padding-left: 2px; /* Alineado casi al borde izquierdo según tu imagen */
+  margin-top: 4px;
+  margin-bottom: 12px;
 }
 
 .checkbox-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 0;
+  gap: 12px;
+  padding: 8px 0;
   cursor: pointer;
 }
 
 .checkbox-item input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   cursor: pointer;
-  accent-color: var(--comensal-green);
+  accent-color: #000; /* Checkbox oscuro/nativo */
+  border: 1.5px solid #000;
+  border-radius: 4px;
 }
 
 .checkbox-label {
-  font-size: 1rem;
-  color: var(--gray-700);
-  font-weight: 500;
+  font-size: 1.05rem;
+  color: #212529;
+  font-weight: 400;
 }
 
+.fw-bold { font-weight: 700; }
+
+/* ── Divisores ── */
 .divider {
-  height: 1px;
-  background-color: var(--gray-200);
-  margin: 0.5rem 0;
+  height: 2px;
+  background-color: #E9ECEF;
+  margin: 8px 0;
+  border-radius: 2px;
 }
 
+/* ── Footer / Botón Amarillo ── */
 .actions-footer {
-  padding: 1rem 0;
-  border-top: 1px solid var(--gray-200);
-  margin-top: 1rem;
+  padding: 20px;
+  background-color: #fff;
 }
 
+.btn-aplicar-amarillo {
+  width: 100%;
+  padding: 14px;
+  background-color: #FDE047; /* Amarillo de la imagen */
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-aplicar-amarillo:active {
+  background-color: #FACC15;
+  transform: scale(0.98);
+}
+
+/* ── Badge filtros activos ── */
+.badge-filtros {
+  background-color: #2E7D32;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  min-width: 22px;
+  text-align: center;
+}
+
+/* ── Botón limpiar filtros ── */
 .btn-limpiar {
   width: 100%;
-  padding: 0.875rem;
-  background-color: var(--gray-100);
-  color: var(--gray-700);
-  border: 1px solid var(--gray-300);
-  border-radius: var(--border-radius-md);
+  padding: 12px;
+  background-color: transparent;
+  color: #6b7280;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
   font-weight: 600;
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  margin-bottom: 10px;
+  transition: all 0.15s ease;
 }
 
 .btn-limpiar:hover {
-  background-color: var(--gray-200);
-  color: var(--gray-900);
-}
-
-@media (max-width: 768px) {
-  .filtros-panel {
-    max-width: 100%;
-  }
+  border-color: #9ca3af;
+  color: #374151;
 }

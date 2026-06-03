@@ -78,6 +78,17 @@
   font-size: 2rem;
 }
 
+.filtro-badge {
+  background-color: #2E7D32;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  margin-left: -4px;
+  margin-top: -8px;
+}
+
 /* ===== DROPDOWN ORDENAR ===== */
 .ordenar-section {
   margin-bottom: 1.5rem;

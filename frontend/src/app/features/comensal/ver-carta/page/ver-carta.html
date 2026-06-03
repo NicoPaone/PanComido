@@ -21,6 +21,9 @@
     </div>
     <button class="btn-filtro-icono" (click)="mostrarFiltros.set(true)">
       <span class="material-symbols-outlined">filter_alt</span>
+      @if (state.cantidadFiltrosActivos() > 0) {
+        <span class="filtro-badge">{{ state.cantidadFiltrosActivos() }}</span>
+      }
     </button>
   </div>
 

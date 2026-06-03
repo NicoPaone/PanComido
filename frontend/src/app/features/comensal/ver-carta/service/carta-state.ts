@@ -101,4 +101,12 @@ export class CartaState {
     this.tiposSeleccionados.set([]);
     this.ordenarPor.set('');
   }
+
+  tieneFiltrosActivos = computed(() =>
+    this.tiposSeleccionados().length > 0
+  );
+
+  cantidadFiltrosActivos = computed(() =>
+    this.tiposSeleccionados().length
+  );
 }
