@@ -99,13 +99,18 @@ export class CartaState {
 
   cargarCarta(restauranteId: number): void {
     this._cargando.set(true);
-    this.api.obtenerCarta(restauranteId).subscribe({
-      next: (data) => {
-        this._items.set(data);
-        this._cargando.set(false);
-      },
-      error: () => this._cargando.set(false)
-    });
+   
+ this.api.obtenerCarta().subscribe({
+  next: (data) => {
+    console.log('DATOS:', data);
+    this._items.set(data);
+    this._cargando.set(false);
+  },
+  error: (err) => {
+    console.error('ERROR API:', err);
+    this._cargando.set(false);
+  }
+});
   }
 
   setBusqueda(valor: string): void {

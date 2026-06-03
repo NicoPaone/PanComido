@@ -8,11 +8,9 @@ import { CartaItem } from '../../../../core/models/carta-item';
 })
 export class CartaService {
 
+  private api = inject(ApiService);
 
-  private api = inject(ApiService)
-  obtenerCarta(restauranteId:number):Observable<CartaItem[]>{
-    return this.api.get<CartaItem[]>(`restaurante/${restauranteId}/carta`);
-  }
-
-  
+obtenerCarta(): Observable<CartaItem[]> {
+  return this.api.get<CartaItem[]>('carta/obtener-articulos');
+}
 }

@@ -69,7 +69,7 @@
   flex: 1;
 }
 
-/* Magia CSS: Tu <select> convertido en el botón verde de la imagen */
+
 .custom-select-ordenar {
   width: 100%;
   appearance: none;
@@ -108,7 +108,7 @@
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 11px 16px;
+  padding: 8px 16px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
