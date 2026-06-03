@@ -5,7 +5,7 @@
      (click)="manejarClickMesa($event)">
 
   @if (!isEditorMode() && isSeleccionada()) {
-    <div class="popup-acciones" (click)="$event.stopPropagation()">
+    <div class="popup-acciones" [class.arriba]="abrirHaciaArriba()" (click)="$event.stopPropagation()">
 
       @if (mesa().estadoMesa === 'Disponible') {
         <button type="button" class="btn-accion" (click)="$event.stopPropagation(); accionMenu.emit('ocupar')">Ocupar mesa</button>
