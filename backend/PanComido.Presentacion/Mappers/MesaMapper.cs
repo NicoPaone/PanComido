@@ -1,5 +1,9 @@
-﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Presentacion.DTOs.Mesas;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PanComido.Presentacion.Mappers
 {
@@ -23,13 +27,42 @@ namespace PanComido.Presentacion.Mappers
                Forma = mesa.Forma,
             }
          };
-
-
       }
+
       public List<MesaResponseDto> aListaDto(List<MesaConPosiciones> mesas)
       {
          return mesas.Select(aDto).ToList();
       }
 
+      private EstadoMesa ParsearEstado(string estadoStr)
+      {
+          // Intentamos parsear. Si falla o viene vacío, lo dejamos Disponible por seguridad.
+          if (Enum.TryParse<EstadoMesa>(estadoStr, true, out var estado))
+              return estado;
+              
+          return EstadoMesa.Disponible;
+      }
+
+      public MesaMapaDominio aDominio(GuardarMesaRequestDto dto)
+      {
+          return new MesaMapaDominio
+          {
+              Id = dto.Id,
+              Numero = dto.NumeroMesa,
+              CantPersonasMax = dto.CantidadPersonasMax,
+              EstadoMesa = ParsearEstado(dto.EstadoMesa),
+              PosicionXInicio = dto.PosicionXInicio,
+              PosicionXFin = dto.PosicionXFin,
+              PosicionYInicio = dto.PosicionYInicio,
+              PosicionYFin = dto.PosicionYFin,
+              DimensionMesaId = dto.DimensionMesa.Id,
+              Forma = dto.DimensionMesa.Forma
+          };
+      }
+
+      public List<MesaMapaDominio> aListaDominio(List<GuardarMesaRequestDto> dtos)
+      {
+          return dtos.Select(aDominio).ToList();
       }
    }
+}

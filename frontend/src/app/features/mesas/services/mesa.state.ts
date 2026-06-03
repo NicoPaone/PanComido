@@ -7,6 +7,7 @@ import { MesaLecturaState } from '../shared/mesa-lectura-state';
 @Injectable({ providedIn: 'root' })
 export class MesaStateService {
   private lectura = inject(MesaLecturaState);
+  private mesaService = inject(MesaService);
 
   // Expone lo que ya tiene MesaLecturaState
   mesas = this.lectura.mesas;
@@ -62,9 +63,14 @@ export class MesaStateService {
     if (forma === FormaMesa.HorizontalLarga) { ancho = 150; alto = 75; }
     else if (forma === FormaMesa.HorizontalAlta) { ancho = 75; alto = 150; }
 
+    const idNegativo = -(Math.floor(Math.random() * 1000000) + 1);
+
     const nuevaMesa: Mesa = {
-      id: Date.now(), codigoInvitacion: '', numeroMesa: proximoNumero,
-      cantidadPersonasMax: 4, estadoMesa: EstadoMesa.Disponible,
+      id: idNegativo,
+      codigoInvitacion: '',
+      numeroMesa: proximoNumero,
+      cantidadPersonasMax: 4,
+      estadoMesa: EstadoMesa.Disponible,
       dimensionMesa: { id: 0, forma },
       posicionXInicio: 15, posicionXFin: 15 + ancho,
       posicionYInicio: 15, posicionYFin: 15 + alto
@@ -74,6 +80,14 @@ export class MesaStateService {
   }
 
   eliminarMesa(id: number): void {
+    const mesas = this.lectura.mesas();
+    const mesa = mesas.find(m => m.id === id);
+
+    if (mesa && mesa.estadoMesa !== EstadoMesa.Disponible) {
+      this.lectura.mostrarNotificacion('No se puede eliminar una mesa ocupada o con comandas activas', 'error');
+      return;
+    }
+
     this.lectura['_mesas'].update(mesas => mesas.filter(m => m.id !== id));
   }
 
@@ -85,24 +99,28 @@ export class MesaStateService {
 
   guardarConfiguracion(): void {
     const mesas = this.lectura.mesas();
-    const posiciones = mesas
-      .filter(m => m.id < 1000000000)
-      .map(m => ({
-        mesaId: m.id,
-        posicionXInicio: m.posicionXInicio,
-        posicionXFin: m.posicionXFin,
-        posicionYInicio: m.posicionYInicio,
-        posicionYFin: m.posicionYFin
-      }));
 
-    if (posiciones.length > 0) {
-      inject(MesaService).guardarPosiciones(posiciones).subscribe({
-        next: () => {
-          this._isEditorMode.set(false);
-          this.lectura.mostrarNotificacion('Mapa guardado con éxito', 'exito');
-        },
-        error: () => this.lectura.mostrarNotificacion('Error al guardar', 'error')
-      });
+    // Validación de límites espaciales (máximo 3000px)
+    const LIMITE = 3000;
+    const mesaFueraDeRango = mesas.find(m =>
+      m.posicionXInicio < 0 || m.posicionXFin > LIMITE ||
+      m.posicionYInicio < 0 || m.posicionYFin > LIMITE
+    );
+
+    if (mesaFueraDeRango) {
+      this.lectura.mostrarNotificacion(`La mesa ${mesaFueraDeRango.numeroMesa} está fuera del límite del mapa (${LIMITE}px)`, 'error');
+      return;
     }
+
+    this.mesaService.guardarMapa(mesas).subscribe({
+      next: () => {
+        this._isEditorMode.set(false);
+        this.lectura.mostrarNotificacion('Mapa guardado con éxito', 'exito');
+      },
+      error: (err) => {
+        const mensaje = err.error?.error || 'Error al guardar el mapa';
+        this.lectura.mostrarNotificacion(mensaje, 'error');
+      }
+    });
   }
 }
