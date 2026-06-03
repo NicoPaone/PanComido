@@ -1,17 +1,54 @@
-<div class="container-fluid p-4 bg-light min-vh-100">
-
-  <!-- HEADER -->
-  <div class="d-flex align-items-center gap-2 mb-4" (click)="volver()" style="cursor: pointer;">
-    <span class="material-symbols-outlined">arrow_back</span>
-    <span class="fw-semibold">Volver</span>
+<div class="container-fluid p-3 bg-white min-vh-100">
+  
+  <!-- LOGO -->
+  <div class="mb-3">
+    <div class="rounded-circle d-flex align-items-center justify-content-center overflow-hidden" 
+         style="width: 50px; height: 50px; background-color: #216E39;">
+      <img alt="Logo" class="logo-img w-100 h-100" style="object-fit: cover;" src="assets/images/logo/logo_el_ferroviario.png">
+    </div>
   </div>
 
-  <h2 class="fw-bold mb-4 text-center">Estado de tu pedido</h2>
+  @if (estado()) {
+    <!-- HEADERS (Badge Estado y Nro Mesa) -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <!-- Badge Estado -->
+      <div class="d-flex align-items-center px-3 py-1 rounded-3"
+           [style.background-color]="estadoColor"
+           [style.border]="estadoBorder ? '2px solid ' + estadoBorder : 'none'"
+           [style.color]="estadoTextColor">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2">
+          <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/>
+          <line x1="6" y1="17" x2="18" y2="17"/>
+        </svg>
+        <span class="fw-semibold fs-6">{{ estado()!.estadoUI }}</span>
+      </div>
 
-  <!-- ERROR -->
-  @if (error()) {
-    <div class="alert alert-danger">
-      {{ error() }}
+      <!-- Nro Mesa -->
+      <div class="px-2 py-1 rounded-2 border border-secondary text-dark bg-white">
+        Nro mesa: <span class="fw-bold">{{ mesaId() || 8 }}</span>
+      </div>
+    </div>
+
+    <!-- DETALLE DEL PEDIDO (Box) -->
+    <div class="border border-secondary rounded-3 p-3 mb-3 bg-white">
+      <h6 class="fw-bold text-dark mb-2">Detalle del pedido</h6>
+      @for (item of estado()!.items; track item.articuloId) {
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="fw-semibold text-dark">{{ item.nombre }} x{{ item.cantidad }}</span>
+          <span class="text-dark">$ {{ item.precioUnitario * item.cantidad | number:'1.0-0' }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- SEPARADOR GRUESO -->
+    <hr class="opacity-100" style="border-top: 3px solid #000; margin-bottom: 1rem;">
+
+    <!-- TOTAL -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <span class="fs-4 text-dark">Total:</span>
+      <div class="px-3 py-1 rounded-2 border border-secondary text-dark fw-bold fs-5 bg-white">
+        $ {{ estado()!.totalAPagar | number:'1.0-0' }}
+      </div>
     </div>
   }
 
@@ -23,50 +60,45 @@
     </div>
   }
 
-  <!-- ESTADO -->
-  @if (estado) {
-    <!-- Badge estado -->
-    <div class="text-center mb-4">
-      <div class="estado-badge" [style.background-color]="estadoColor">
-        {{ estadoLabel }}
-      </div>
-    </div>
-
-    <!-- Resumen -->
-    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-      <div class="d-flex justify-content-between mb-3">
-        <span class="text-muted">Comanda #{{ estado.comandaId }}</span>
-        <span class="fw-bold text-success">${{ estado.totalAPagar | number:'1.0-0' }}</span>
-      </div>
-
-      <h5 class="fw-bold mb-3">Items</h5>
-      @for (item of estado.items; track item.articuloId) {
-        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-          <div>
-            <span class="fw-semibold">{{ item.nombre }}</span>
-            <span class="badge bg-secondary ms-2">x{{ item.cantidad }}</span>
-          </div>
-          <span>${{ item.precioUnitario * item.cantidad | number:'1.0-0' }}</span>
-        </div>
-      }
-    </div>
-
-    <!-- Auto-refresh indicator -->
-    <div class="text-center text-muted small">
-      <span class="material-symbols-outlined" style="font-size: 14px;">refresh</span>
-      Se actualiza automáticamente cada 10 segundos
-    </div>
-  }
-
-  <!-- BOTON VOLVER -->
-  <div class="mt-4">
+  <!-- BOTONES -->
+  <div>
+    <!-- Botón siempre visible para agregar más platos -->
     <app-boton-comensal
-      class="w-100"
-      [backgroundColor]="configuracion.paleta.botonSecundario"
-      [textColor]="configuracion.paleta.textoOscuro"
+      class="w-100 mb-3 d-block"
+      backgroundColor="#2f7a40"
+      textColor="#ffffff"
+      [tieneBorde]="true"
       (clicked)="volver()">
-      Seguir pidiendo
+      <div class="fw-bold fs-5 py-1">+ Agregar más platos</div>
     </app-boton-comensal>
+
+    <!-- Botones extras -->
+    <div class="d-flex gap-2">
+      <app-boton-comensal
+        class="w-50"
+        backgroundColor="#ffffff"
+        textColor="#000000"
+        [tieneBorde]="true"
+        (clicked)="modalLlamarMozo.abrirModal()">
+        <div class="d-flex align-items-center justify-content-center gap-2 w-100 fw-bold" style="padding: 0 5px;">
+           <span class="material-symbols-outlined fs-3">room_service</span>
+           <span>Llamar al mozo</span>
+        </div>
+      </app-boton-comensal>
+
+      <app-boton-comensal
+        class="w-50"
+        backgroundColor="#ffffff"
+        textColor="#000000"
+        [tieneBorde]="true"
+        (clicked)="pagarCuenta()">
+        <div class="d-flex align-items-center justify-content-center gap-2 w-100 fw-bold" style="padding: 0 5px;">
+           <span class="material-symbols-outlined fs-3">credit_card</span>
+           <span>Pagar cuenta</span>
+        </div>
+      </app-boton-comensal>
+    </div>
   </div>
 
+  <app-llamar-al-mozo #modalLlamarMozo [configuracion]="configuracion"></app-llamar-al-mozo>
 </div>
