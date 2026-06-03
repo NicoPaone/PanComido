@@ -4,32 +4,32 @@ using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios.IA;
 using PanComido.Infraestructura.ServiciosExternos.Gemini;
 using PanComido.Infraestructura.ServiciosExternos.Gemini.DTOs.Request;
+using PanComido.Infraestructura.ServiciosExternos.Gemini.DTOs.Response;
+using PanComido.Infraestructura.ServiciosExternos.Gemini.Mappers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
-namespace PanComido.Dominio.Servicios.IA
+namespace PanComido.Infraestructura.ServiciosExternos.Gemini.Servicio
 {
     public class GeminiSugerenciaPlatosIAServicio : ISugerenciaPlatosIAServicio
     {
         private readonly HttpClient _httpClient;
-        private readonly IArticuloRepositorio _articuloRepositorio;
         private readonly GeminiResponseMapper _mapper;
         private readonly GeminiConfiguracion _configuracion;
 
         public GeminiSugerenciaPlatosIAServicio(HttpClient httpClient,
-                                                IArticuloRepositorio articuloRepositorio,
                                                 GeminiResponseMapper mapper,
-                                                GeminiConfiguracion configuracion)
+                                                IOptions<GeminiConfiguracion> configuracion)
         {
             _httpClient = httpClient;
-            _articuloRepositorio = articuloRepositorio;
             _mapper = mapper;
-            _configuracion = configuracion;
-
+            _configuracion = configuracion.Value;
         }
 
         public async Task<SugerenciaIA> GenerarSugerenciasAsync(int restauranteId,
@@ -46,6 +46,9 @@ namespace PanComido.Dominio.Servicios.IA
             string apiKey = _configuracion.ApiKey;
             string url = _configuracion.Url;
 
+            Console.WriteLine($"URL: '{url}'");
+            Console.WriteLine($"API KEY: '{apiKey}'");
+
             GeminiRequestDto requestDto = CrearRequest(prompt);
 
             var response = await _httpClient.PostAsJsonAsync($"{url}?key={apiKey}", requestDto);
@@ -53,7 +56,29 @@ namespace PanComido.Dominio.Servicios.IA
             response.EnsureSuccessStatusCode();
             string jsonRespuesta = await response.Content.ReadAsStringAsync();
 
-            throw new NotImplementedException();
+            GeminiApiResponseDto? respuestaGemini = JsonSerializer.Deserialize<GeminiApiResponseDto>(jsonRespuesta);
+
+            if (respuestaGemini == null)
+            {
+                throw new Exception("No se pudo deserializar la respuesta de Gemini.");
+            }
+
+            string textoRespuesta = respuestaGemini?.Candidatos
+                                                    .FirstOrDefault()?
+                                                    .Contenido
+                                                    .Partes
+                                                    .FirstOrDefault()?
+                                                    .Texto 
+                                                    ?? throw new Exception("Gemini no devolvió contenido.");
+
+            GeminiResponseDto? sugerenciaDto = JsonSerializer.Deserialize<GeminiResponseDto>(textoRespuesta);
+
+            if (sugerenciaDto == null)
+            {
+                throw new Exception("No se pudo deserializar la respuesta de Gemini.");
+            }
+
+            return _mapper.ADominio(sugerenciaDto);
         }
 
         private GeminiRequestDto CrearRequest(string prompt)
@@ -147,6 +172,9 @@ namespace PanComido.Dominio.Servicios.IA
             prompt.AppendLine("NO RESPONDER TEXTO.");
             prompt.AppendLine("NO RESPONDER MARKDOWN.");
             prompt.AppendLine("NO RESPONDER EXPLICACIONES.");
+            prompt.AppendLine("- El JSON debe ser válido y deserializable.");
+            prompt.AppendLine("- No incluir ```json ni ```.");
+            prompt.AppendLine("- No incluir propiedades adicionales.");
             prompt.AppendLine();
 
             prompt.AppendLine("""
