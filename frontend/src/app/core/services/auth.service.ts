@@ -14,7 +14,7 @@ const DEFAULT_ROUTE = 'staff/cocina';
   providedIn: 'root'
 })
 export class AuthService {
-  currentRole = signal<string>('Mozo');
+  currentRole = signal<string>('Gerente');
 
   validateManagerCredentials(username: string, password: string): Observable<boolean> {
     const esValido = username.toLowerCase().trim() === 'gerente' && password === '123456';
