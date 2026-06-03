@@ -1,4 +1,4 @@
-﻿namespace PanComido.Presentacion.DTOs.Carta
+namespace PanComido.Presentacion.DTOs.Carta
 {
     public class ArticuloCartaResponseDto
     {
@@ -9,5 +9,6 @@
         public decimal Costo { get; set; }
         public bool VisibleEnCarta { get; set; }
         public string TipoArticulo { get; set; }
+        public string Categoria { get; set; }
     }
 }

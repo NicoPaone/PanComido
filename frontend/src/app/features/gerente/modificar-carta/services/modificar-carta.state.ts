@@ -27,6 +27,11 @@ export class ModificarCartaStateService {
   loading = this._loading.asReadonly();
 
   // 3. Variables Derivadas (Computed)
+  categoriasDisponibles = computed(() => {
+    const cats = new Set(this._platos().map(p => p.categoria).filter(c => !!c));
+    return Array.from(cats).sort() as string[];
+  });
+
   filteredPlatos = computed(() => {
     const sorted = [...this._platos()].sort((a, b) => {
       if (a.visible === b.visible) return 0;
