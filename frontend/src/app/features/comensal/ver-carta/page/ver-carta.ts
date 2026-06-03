@@ -1,26 +1,28 @@
 import { Component, HostListener, inject, input, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Buscador } from '../../../../../app/shared/ui/buscador/buscador';
-import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
 import { ListaPlatosComensalComponent } from '../components/lista-platos-comensal/lista-platos-comensal';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { PedidoService } from '../../../../../app/core/services/pedido.service';
 import { ItemPedido } from '../../../../core/models/item-pedido';
 import { configuracionRestauranteMock } from '../../../../../app/core/interceptors/handlers/configuracion-restaurante.mock';
-import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
 import { CartaState } from '../service/carta-state';
+import { ComensalFooterCart } from '../../components/comensal-footer-cart/comensal-footer-cart';
+import { FiltrosCartaOverlay } from '../../components/filtros-carta-overlay/filtros-carta-overlay';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
   selector: 'app-ver-carta',
   standalone: true,
   imports: [
+    CommonModule,
     ListaPlatosComensalComponent,
     Buscador,
-    BotonComensal,
     FontAwesomeModule,
-    LlamarAlMozo
+    ComensalFooterCart,
+    FiltrosCartaOverlay
   ],
   templateUrl: './ver-carta.html',
   styleUrls: ['./ver-carta.css'],
@@ -39,8 +41,13 @@ export class VerCarta {
   configuracion = configuracionRestauranteMock;
   cantidadPersonas = signal(1);
 
-  menuOrdenarAbierto =signal(false);
+  menuOrdenarAbierto = signal(false);
   ordenSeleccionado = signal('');
+
+  // Usar computed del servicio para reactividad
+  cantidadTotalPedido = this.pedidoService.cantidadTotal;
+  totalPedido = this.pedidoService.totalPrecio;
+
   @HostListener('document:click', ['$event'])
   onClickOutSide(event: Event) {
     const target = event.target as HTMLElement;
@@ -48,19 +55,20 @@ export class VerCarta {
       this.menuOrdenarAbierto.set(false);
     }
   }
-  toggleMenuOrdenar(): void {
-  this.menuOrdenarAbierto.update(v => !v);
-}
 
-seleccionarOrden(criterio: string, label: string): void {
-  this.ordenSeleccionado.set(label);
-  this.state.setOrdenar(criterio);
-  this.menuOrdenarAbierto.set(false);
-}
+  toggleMenuOrdenar(): void {
+    this.menuOrdenarAbierto.update(v => !v);
+  }
+
+  seleccionarOrden(criterio: string, label: string): void {
+    this.ordenSeleccionado.set(label);
+    this.state.setOrdenar(criterio);
+    this.menuOrdenarAbierto.set(false);
+  }
 
   ngOnInit(): void {
     this.cantidadPersonas.set(history.state?.cantidadPersonas ?? 1);
-    this.state.cargarCarta(1); // restauranteId hardcodeado por ahora
+    this.state.cargarCarta(1);
   }
 
   onSearch(valor: string): void {
@@ -74,22 +82,5 @@ seleccionarOrden(criterio: string, label: string): void {
   agregarAlPedido(item: ItemPedido): void {
     this.pedidoService.agregarPedido(item);
   }
-
-  ordenar(tipo: string): void {
-    this.state.setOrdenar(tipo);
-  }
-
-  get cantidadTotalPedido(): number {
-    return this.pedidoService.obtenerPedidos().reduce(
-      (total, item) => total + item.cantidad,
-      0
-    );
-  }
-  toggleEnArray(lista: string[], event: Event): string[] {
-  const checkbox = event.target as HTMLInputElement;
-  if (checkbox.checked) {
-    return [...lista, checkbox.value];
-  }
-  return lista.filter(v => v !== checkbox.value);
 }
-}
+

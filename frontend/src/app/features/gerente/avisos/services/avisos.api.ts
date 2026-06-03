@@ -1,11 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiClient } from '../../../../core/services/api-client';
+import { ApiService } from '../../../../core/services/api-service';
 import { Plato } from '../../../../core/models/plato';
 
 @Injectable({ providedIn: 'root' })
 export class AvisosApiService {
-  private api = inject(ApiClient);
+  private api = inject(ApiService);
 
   getPlatos(): Observable<Plato[]> {
     return this.api.get<Plato[]>('platos');

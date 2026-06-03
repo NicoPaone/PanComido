@@ -1,0 +1,176 @@
+.filtros-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: var(--z-modal);
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeIn var(--transition-base);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.filtros-panel {
+  width: 100%;
+  max-width: 400px;
+  background-color: #ffffff;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  animation: slideIn var(--transition-base);
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.filtros-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.filter-icon {
+  font-size: 1.75rem;
+  color: var(--gray-700);
+}
+
+.filtros-titulo {
+  flex: 1;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin: 0;
+}
+
+.btn-cerrar {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: var(--gray-600);
+  transition: color var(--transition-fast);
+}
+
+.btn-cerrar:hover {
+  color: var(--gray-900);
+}
+
+.filtros-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.5rem;
+}
+
+.categoria-section {
+  margin-bottom: 0.5rem;
+}
+
+.categoria-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.categoria-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.categoria-icono {
+  font-size: 1.5rem;
+  color: var(--comensal-green);
+}
+
+.categoria-nombre {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--comensal-green);
+}
+
+.chevron {
+  color: var(--comensal-green);
+  transition: transform var(--transition-base);
+}
+
+.chevron.rotado {
+  transform: rotate(180deg);
+}
+
+.subcategorias-list {
+  padding-left: 2.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  cursor: pointer;
+}
+
+.checkbox-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--comensal-green);
+}
+
+.checkbox-label {
+  font-size: 1rem;
+  color: var(--gray-700);
+  font-weight: 500;
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--gray-200);
+  margin: 0.5rem 0;
+}
+
+.actions-footer {
+  padding: 1rem 0;
+  border-top: 1px solid var(--gray-200);
+  margin-top: 1rem;
+}
+
+.btn-limpiar {
+  width: 100%;
+  padding: 0.875rem;
+  background-color: var(--gray-100);
+  color: var(--gray-700);
+  border: 1px solid var(--gray-300);
+  border-radius: var(--border-radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-limpiar:hover {
+  background-color: var(--gray-200);
+  color: var(--gray-900);
+}
+
+@media (max-width: 768px) {
+  .filtros-panel {
+    max-width: 100%;
+  }
+}

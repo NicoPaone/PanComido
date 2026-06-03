@@ -3,7 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
-import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
 
 @Component({
@@ -11,7 +10,6 @@ import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
   standalone: true,
   imports: [
     CommonModule,
-    Boton,
     FormsModule,
     LlamarAlMozo
   ],
@@ -59,6 +57,13 @@ export class PersonalizarPlato implements OnInit {
       '/comensal/pedido'
     ]);
 
+  }
+
+  abrirLlamarMozo(): void {
+    const modalComponent = document.querySelector('app-llamar-al-mozo');
+    if (modalComponent) {
+      (modalComponent as any).abrirModal?.();
+    }
   }
 
   toggleExtra(ingrediente: string) {

@@ -116,6 +116,34 @@ export class CartaState {
     this.ordenarPor.set(valor);
   }
 
+  // Métodos para actualizar filtros
+  toggleTipoPlato(tipo: string): void {
+    this.tiposSeleccionados.update(tipos => {
+      if (tipos.includes(tipo)) {
+        return tipos.filter(t => t !== tipo);
+      }
+      return [...tipos, tipo];
+    });
+  }
+
+  toggleBebida(bebida: string): void {
+    this.bebidasSeleccionadas.update(bebidas => {
+      if (bebidas.includes(bebida)) {
+        return bebidas.filter(b => b !== bebida);
+      }
+      return [...bebidas, bebida];
+    });
+  }
+
+  toggleRestriccion(restriccion: string): void {
+    this.restriccionesSeleccionadas.update(restricciones => {
+      if (restricciones.includes(restriccion)) {
+        return restricciones.filter(r => r !== restriccion);
+      }
+      return [...restricciones, restriccion];
+    });
+  }
+
   limpiarFiltros(): void {
     this.busqueda.set('');
     this.tiposSeleccionados.set([]);

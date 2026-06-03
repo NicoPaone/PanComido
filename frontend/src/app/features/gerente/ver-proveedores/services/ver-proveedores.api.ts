@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { catchError, forkJoin, map, Observable, of } from 'rxjs';
-import { ApiClient } from '../../../../core/services/api-client';
+import { ApiService } from '../../../../core/services/api-service';
 
 // Modelos de Dominio
 import { Proveedor, PedidoProveedor, NuevoPedidoProveedor, PreRecepcionPedidoItem } from '../../../../core/models/proveedor';
@@ -78,7 +78,7 @@ interface InsumoResponseDto {
 
 @Injectable({ providedIn: 'root' })
 export class VerProveedoresApiService {
-  private api = inject(ApiClient);
+  private api = inject(ApiService);
 
   getProveedores(): Observable<Proveedor[]> {
     return this.api.get<ProveedorResponseDto[]>('Proveedor').pipe(

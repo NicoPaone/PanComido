@@ -1,0 +1,112 @@
+<div class="filtros-overlay" (click)="cerrar.emit()">
+  <div class="filtros-panel" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <header class="filtros-header">
+      <span class="material-symbols-outlined filter-icon">filter_alt</span>
+      <h2 class="filtros-titulo">Filtros</h2>
+      <button class="btn-cerrar" (click)="cerrar.emit()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </header>
+
+    <!-- Categorias -->
+    <div class="filtros-content">
+      <!-- PLATOS -->
+      <div class="categoria-section">
+        <button 
+          class="categoria-header" 
+          (click)="toggleCategoria('platos')">
+          <div class="categoria-info">
+            <span class="material-symbols-outlined categoria-icono">restaurant</span>
+            <span class="categoria-nombre">Platos</span>
+          </div>
+          <span class="material-symbols-outlined chevron" [class.rotado]="expandidoPlatos">
+            expand_more
+          </span>
+        </button>
+
+        @if (expandidoPlatos) {
+          <div class="subcategorias-list">
+            @for (sub of subcategorias.platos; track sub.valor) {
+              <label class="checkbox-item">
+                <input 
+                  type="checkbox" 
+                  [checked]="cartaState.tiposSeleccionados().includes(sub.valor)"
+                  (change)="cartaState.toggleTipoPlato(sub.valor)">
+                <span class="checkbox-label">{{ sub.label }}</span>
+              </label>
+            }
+          </div>
+        }
+        <div class="divider"></div>
+      </div>
+
+      <!-- BEBIDAS -->
+      <div class="categoria-section">
+        <button 
+          class="categoria-header" 
+          (click)="toggleCategoria('bebidas')">
+          <div class="categoria-info">
+            <span class="material-symbols-outlined categoria-icono">local_bar</span>
+            <span class="categoria-nombre">Bebidas</span>
+          </div>
+          <span class="material-symbols-outlined chevron" [class.rotado]="expandidoBebidas">
+            expand_more
+          </span>
+        </button>
+
+        @if (expandidoBebidas) {
+          <div class="subcategorias-list">
+            @for (sub of subcategorias.bebidas; track sub.valor) {
+              <label class="checkbox-item">
+                <input 
+                  type="checkbox" 
+                  [checked]="cartaState.bebidasSeleccionadas().includes(sub.valor)"
+                  (change)="cartaState.toggleBebida(sub.valor)">
+                <span class="checkbox-label">{{ sub.label }}</span>
+              </label>
+            }
+          </div>
+        }
+        <div class="divider"></div>
+      </div>
+
+      <!-- RESTRICCIONES -->
+      <div class="categoria-section">
+        <button 
+          class="categoria-header" 
+          (click)="toggleCategoria('restricciones')">
+          <div class="categoria-info">
+            <span class="material-symbols-outlined categoria-icono">health_and_safety</span>
+            <span class="categoria-nombre">Restricciones</span>
+          </div>
+          <span class="material-symbols-outlined chevron" [class.rotado]="expandidoRestricciones">
+            expand_more
+          </span>
+        </button>
+
+        @if (expandidoRestricciones) {
+          <div class="subcategorias-list">
+            @for (sub of subcategorias.restricciones; track sub.valor) {
+              <label class="checkbox-item">
+                <input 
+                  type="checkbox" 
+                  [checked]="cartaState.restriccionesSeleccionadas().includes(sub.valor)"
+                  (change)="cartaState.toggleRestriccion(sub.valor)">
+                <span class="checkbox-label">{{ sub.label }}</span>
+              </label>
+            }
+          </div>
+        }
+        <div class="divider"></div>
+      </div>
+
+      <!-- Boton Limpiar Filtros -->
+      <div class="actions-footer">
+        <button class="btn-limpiar" (click)="limpiarFiltros()">
+          Limpiar filtros
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

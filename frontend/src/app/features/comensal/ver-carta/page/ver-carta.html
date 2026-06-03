@@ -1,5 +1,6 @@
 <div class="carta-container">
 
+  <!-- Header: Logo + Info Mesa -->
   <div class="header-top">
     <div class="logo-container">
       <img [src]="logoUrl()" alt="Logo" class="logo-img" />
@@ -9,10 +10,11 @@
         <span class="material-symbols-outlined">person</span>
         <span>{{ cantidadPersonas() }}</span>
       </div>
-      <div class="badge-info">Mesa: 12</div>
+      <div class="badge-info">Mesa 8</div>
     </div>
   </div>
 
+  <!-- Buscador + Filtro -->
   <div class="search-row">
     <div class="buscador-wrapper">
       <app-buscador placeholder="Buscar en EL FERROVIARIO" (busquedaCambiada)="onSearch($event)" />
@@ -22,45 +24,6 @@
     </button>
   </div>
 
-  <div class="actions-row">
-    <div class="action-btn-wrapper">
-      <app-boton-comensal
-        [backgroundColor]="'#2E7D32'" 
-        [textColor]="'#FFFFFF'"
-        (clicked)="irAPedido()">
-        <span class="d-flex align-items-center justify-content-center gap-2 font-weight-bold">
-          <span class="material-symbols-outlined">edit_document</span>
-          <span>Pedido ({{ cantidadTotalPedido }})</span>
-        </span>
-      </app-boton-comensal>
-    </div>
-    
-   <div class="action-btn-wrapper">
-  <div class="dropdown-ordenar">
-    <button class="dropdown-trigger" (click)="toggleMenuOrdenar()">
-      <span class="material-symbols-outlined">sort</span>
-      <span>{{ ordenSeleccionado() || 'Ordenar' }}</span>
-    </button>
-
-    @if (menuOrdenarAbierto()) {
-      <div class="dropdown-menu">
-        <button class="dropdown-item" (click)="seleccionarOrden('precio-menor', 'Menor precio')">
-          Menor precio
-        </button>
-        <button class="dropdown-item" (click)="seleccionarOrden('precio-mayor', 'Mayor precio')">
-          Mayor precio
-        </button>
-        <button class="dropdown-item" (click)="seleccionarOrden('tiempo', 'Más rápidos')">
-          Más rápidos
-        </button>
-        <button class="dropdown-item" (click)="seleccionarOrden('nombre', 'A-Z')">
-          A-Z
-        </button>
-      </div>
-    }
-  </div>
-</div>
-  </div>
 
   <div class="platos-lista-container">
     @if (state.cargando()) {
@@ -75,8 +38,11 @@
 </div>
 
 @if (mostrarFiltros()) {
-  <div class="filtros-overlay">
-    </div>
+  <app-filtros-carta-overlay (cerrar)="mostrarFiltros.set(false)" />
 }
 
-<app-llamar-al-mozo [configuracion]="configuracion" />
+<app-comensal-footer-cart
+  [cantidadItems]="cantidadTotalPedido()"
+  [total]="totalPedido()"
+  [configuracion]="configuracion"
+  (verPedido)="irAPedido()" />

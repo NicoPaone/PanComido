@@ -1,0 +1,103 @@
+.comensal-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #F8D038;
+  padding: 14px 16px;
+  padding-bottom: calc(14px + env(safe-area-inset-bottom));
+  z-index: 1000;
+}
+.footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Alineamos los elementos al inicio */
+  gap: 16px;
+  max-width: 500px; /* Reducimos el ancho total para que sea más compacto */
+  margin: 0 auto;
+}
+
+.cart-pill-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #2F7D32;
+  color: #ffffff;
+  border: none;
+  border-radius: 50px;
+  padding: 6px 20px 6px 6px;
+  height: 52px;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+  
+  max-width: 280px; 
+}
+.cart-pill-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cart-pill-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.cart-pill-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cart-count-badge {
+  background-color: rgba(0, 0, 0, 0.25);
+  color: white;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.cart-label {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.cart-total {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+/* Wrapper y Forzado del Botón Mozo */
+.mozo-wrapper {
+  flex-shrink: 0;
+  margin-left: auto; 
+}
+::ng-deep .mozo-wrapper .waiter-btn {
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 50% !important;
+  background-color: #1B5E20 !important;
+  color: white !important;
+  border: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .mozo-wrapper .waiter-icon {
+  font-size: 24px !important;
+  margin-bottom: -4px !important;
+}
+
+::ng-deep .mozo-wrapper .waiter-text {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+}

@@ -1,18 +1,24 @@
 .dish-card {
   background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  padding: 12px;
-  margin-bottom: 16px;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 0.75rem;
+  margin-bottom: 1rem;
   border: none;
+  transition: all var(--transition-base);
+}
+
+.dish-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }
 
 .dish-layout {
   display: flex;
-  gap: 16px;
+  gap: 1rem;
 }
 
-/* Imagen */
+/* ===== IMAGEN ===== */
 .dish-img-wrapper {
   width: 130px;
   flex-shrink: 0;
@@ -22,61 +28,71 @@
   width: 100%;
   height: 130px;
   object-fit: cover;
-  border-radius: 12px;
+  border-radius: var(--border-radius-md);
 }
 
 .dish-img-placeholder {
   width: 100%;
   height: 130px;
-  background-color: #e9ecef;
-  border-radius: 12px;
+  background-color: var(--gray-100);
+  border-radius: var(--border-radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #adb5bd;
+  color: var(--gray-400);
 }
 
-/* Info */
+.dish-img-placeholder .material-symbols-outlined {
+  font-size: 2.5rem;
+}
+
+/* ===== INFO ===== */
 .dish-info-wrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.dish-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .dish-title {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
-  color: #212529;
-  margin: 0 0 4px 0;
-  line-height: 1.2;
+  color: var(--gray-900);
+  margin: 0;
+  line-height: 1.3;
 }
 
 .dish-badge {
-  background-color: #2E7D32;
-  color: white;
-  font-size: 0.75rem;
+  background-color: var(--comensal-green);
+  color: #ffffff;
+  font-size: 0.7rem;
   font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 6px;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--border-radius-sm);
   display: inline-block;
-  margin-bottom: 8px;
+  width: fit-content;
 }
 
 .dish-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
 }
 
 .dish-time {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 1rem;
-  color: #212529;
-  font-weight: 500;
+  gap: 0.25rem;
+  font-size: 0.95rem;
+  color: var(--gray-700);
+  font-weight: 600;
 }
 
 .dish-time .material-symbols-outlined {
@@ -84,59 +100,96 @@
 }
 
 .dish-price {
-  font-size: 1.15rem;
+  font-size: 1.125rem;
   font-weight: 800;
-  color: #212529;
+  color: var(--gray-900);
 }
 
-/* Controles */
+/* ===== CONTROLES ===== */
 .dish-controls {
   display: flex;
-  gap: 8px;
+  gap: 0.5rem;
   align-items: center;
 }
 
 .counter-pill {
   display: flex;
   align-items: center;
-  background-color: #F8F9FA;
-  border: 1.5px solid #E9ECEF;
-  border-radius: 8px;
-  padding: 2px;
+  background-color: var(--gray-50);
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--border-radius-sm);
+  padding: 0.125rem;
+  gap: 0.25rem;
 }
 
 .btn-counter {
   background: none;
   border: none;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  color: #495057;
+  font-weight: 700;
+  color: var(--gray-700);
   cursor: pointer;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.btn-counter:hover {
+  background-color: var(--gray-200);
+}
+
+.btn-counter:active {
+  transform: scale(0.9);
 }
 
 .counter-value {
   font-weight: 700;
-  width: 20px;
+  width: 24px;
   text-align: center;
-  font-size: 0.95rem;
+  font-size: 1rem;
+  color: var(--gray-900);
 }
 
 .add-btn-wrapper {
   flex: 1;
 }
 
-/* Asegura que el boton comensal quite bordes nativos feos si los tiene */
+/* Asegura que el boton comensal tenga el estilo correcto */
 ::ng-deep .add-btn-wrapper button {
-  border-radius: 8px !important;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  transition: transform 0.1s;
+  border-radius: var(--border-radius-sm) !important;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+  font-weight: 700 !important;
+}
+
+::ng-deep .add-btn-wrapper button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 ::ng-deep .add-btn-wrapper button:active {
   transform: scale(0.97);
+}
+
+@media (max-width: 768px) {
+  .dish-img-wrapper {
+    width: 100px;
+  }
+
+  .dish-img,
+  .dish-img-placeholder {
+    height: 100px;
+  }
+
+  .dish-title {
+    font-size: 0.95rem;
+  }
+
+  .dish-price {
+    font-size: 1rem;
+  }
 }
