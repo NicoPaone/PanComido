@@ -4,8 +4,6 @@ using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Presentacion.DTOs.Cliente;
 using PanComido.Presentacion.DTOs.Comanda;
-using PanComido.Infraestructura.Persistencia.Entidades;
-using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.SesionMock;
 
@@ -17,7 +15,6 @@ namespace PanComido.Presentacion.Controllers
     {
         private readonly ListarComandaActivaCocinaCasoDeUso _listarComandasActivasCocinaCasoDeUso;
         private readonly ModificarEstadoComandaCasoDeUso _modificarEstadoComandaCasoDeUso;
-        private readonly MarcarItemsEntregadosCasoDeUso _marcarItemEntregadoCasoDeUso;
         private readonly ConfirmarPedidoClienteAComandaCasoDeUso _confirmarPedidoCasoDeUso;
         private readonly MarcarItemsEntregadosCasoDeUso _marcarItemsEntregadosCasoDeUso;
         private readonly ComandaMapper _mapper;
@@ -28,8 +25,6 @@ namespace PanComido.Presentacion.Controllers
         public ComandaController(
             ListarComandaActivaCocinaCasoDeUso listarComandaActivasCasoDeUso,
             ModificarEstadoComandaCasoDeUso modificar,
-            MarcarItemsEntregadosCasoDeUso marcarItemEntregadoCasoDeUso,
-            ComandaMapper mapper)
             ConfirmarPedidoClienteAComandaCasoDeUso confirmarPedidoCasoDeUso,
             MarcarItemsEntregadosCasoDeUso marcarItemsEntregadosCasoDeUso,
             ComandaMapper mapper,
@@ -49,7 +44,7 @@ namespace PanComido.Presentacion.Controllers
         [HttpGet("activas")]
         public async Task<ActionResult<List<ComandaResponseDto>>> ObtenerComandasActivas()
         {
-            int restauranteId = HttpContext.ObtenerRestauranteId();
+            int restauranteId = 1;
             var comandas = await _listarComandasActivasCocinaCasoDeUso.Ejecutar(restauranteId);
             var comandasDto = _mapper.ComandaResponseDtoList(comandas);
             return Ok(comandasDto);

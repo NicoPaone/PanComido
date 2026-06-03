@@ -133,7 +133,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             await _ctx.SaveChangesAsync();
         }
 
-        public async Task ActualizarAsync(DOM.Comanda comanda)
+        public async Task ActualizarComandaParaPagoAsync(DOM.Comanda comanda)
         {
             var efComanda = await _ctx.Comanda
                 .FirstOrDefaultAsync(c => c.Id == comanda.Id);
