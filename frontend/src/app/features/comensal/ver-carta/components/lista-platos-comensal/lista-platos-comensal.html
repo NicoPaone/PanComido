@@ -1,5 +1,5 @@
 <div class="d-flex flex-column gap-3">
-  @for (plato of platos(); track plato.nombre + '-' + $index) {
+  @for (plato of platos(); track plato.articuloId) {
     <app-card-plato-comensal
       [plato]="plato"
       (agregarPedido)="onAgregarPedido($event)" />

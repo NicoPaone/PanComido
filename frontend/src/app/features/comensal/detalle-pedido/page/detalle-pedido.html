@@ -18,11 +18,11 @@
       <div class="mb-3">
         <div class="d-flex justify-content-between">
           <span class="fw-semibold">{{ item.plato.nombre }} x{{ item.cantidad }}</span>
-          <span>${{ item.plato.precio * item.cantidad }}</span>
+          <span>${{ item.plato.precioVentaFinal * item.cantidad }}</span>
         </div>
         <div class="d-flex justify-content-between text-muted small mt-1">
           <span>Precio unitario</span>
-          <span>${{ item.plato.precio }}</span>
+          <span>${{ item.plato.precioVentaFinal }}</span>
         </div>
 
         <hr>

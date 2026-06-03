@@ -24,7 +24,7 @@ export class DetallePedido {
   // Computed para el total
   total = computed(() => {
     return this.pedidos().reduce(
-      (acc, item) => acc + item.plato.precio * item.cantidad,
+      (acc, item) => acc + item.plato.precioVentaFinal * item.cantidad,
       0
     );
   });

@@ -9,95 +9,83 @@
       </button>
     </header>
 
-    <!-- Categorias -->
+    <!-- Filtros -->
     <div class="filtros-content">
-      <!-- PLATOS -->
+      <!-- TIPO -->
       <div class="categoria-section">
-        <button 
-          class="categoria-header" 
-          (click)="toggleCategoria('platos')">
+        <div class="categoria-header">
           <div class="categoria-info">
             <span class="material-symbols-outlined categoria-icono">restaurant</span>
-            <span class="categoria-nombre">Platos</span>
+            <span class="categoria-nombre">Tipo</span>
           </div>
-          <span class="material-symbols-outlined chevron" [class.rotado]="expandidoPlatos">
-            expand_more
-          </span>
-        </button>
+        </div>
 
-        @if (expandidoPlatos) {
-          <div class="subcategorias-list">
-            @for (sub of subcategorias.platos; track sub.valor) {
-              <label class="checkbox-item">
-                <input 
-                  type="checkbox" 
-                  [checked]="cartaState.tiposSeleccionados().includes(sub.valor)"
-                  (change)="cartaState.toggleTipoPlato(sub.valor)">
-                <span class="checkbox-label">{{ sub.label }}</span>
-              </label>
-            }
-          </div>
-        }
+        <div class="subcategorias-list">
+          <label class="checkbox-item">
+            <input 
+              type="checkbox" 
+              [checked]="cartaState.tiposSeleccionados().includes('Plato')"
+              (change)="cartaState.toggleTipoPlato('Plato')">
+            <span class="checkbox-label">Platos</span>
+          </label>
+          <label class="checkbox-item">
+            <input 
+              type="checkbox" 
+              [checked]="cartaState.tiposSeleccionados().includes('Bebida')"
+              (change)="cartaState.toggleTipoPlato('Bebida')">
+            <span class="checkbox-label">Bebidas</span>
+          </label>
+        </div>
         <div class="divider"></div>
       </div>
 
-      <!-- BEBIDAS -->
+      <!-- Ordenamiento -->
       <div class="categoria-section">
-        <button 
-          class="categoria-header" 
-          (click)="toggleCategoria('bebidas')">
+        <div class="categoria-header">
           <div class="categoria-info">
-            <span class="material-symbols-outlined categoria-icono">local_bar</span>
-            <span class="categoria-nombre">Bebidas</span>
+            <span class="material-symbols-outlined categoria-icono">sort</span>
+            <span class="categoria-nombre">Ordenar por</span>
           </div>
-          <span class="material-symbols-outlined chevron" [class.rotado]="expandidoBebidas">
-            expand_more
-          </span>
-        </button>
+        </div>
 
-        @if (expandidoBebidas) {
-          <div class="subcategorias-list">
-            @for (sub of subcategorias.bebidas; track sub.valor) {
-              <label class="checkbox-item">
-                <input 
-                  type="checkbox" 
-                  [checked]="cartaState.bebidasSeleccionadas().includes(sub.valor)"
-                  (change)="cartaState.toggleBebida(sub.valor)">
-                <span class="checkbox-label">{{ sub.label }}</span>
-              </label>
-            }
-          </div>
-        }
-        <div class="divider"></div>
-      </div>
-
-      <!-- RESTRICCIONES -->
-      <div class="categoria-section">
-        <button 
-          class="categoria-header" 
-          (click)="toggleCategoria('restricciones')">
-          <div class="categoria-info">
-            <span class="material-symbols-outlined categoria-icono">health_and_safety</span>
-            <span class="categoria-nombre">Restricciones</span>
-          </div>
-          <span class="material-symbols-outlined chevron" [class.rotado]="expandidoRestricciones">
-            expand_more
-          </span>
-        </button>
-
-        @if (expandidoRestricciones) {
-          <div class="subcategorias-list">
-            @for (sub of subcategorias.restricciones; track sub.valor) {
-              <label class="checkbox-item">
-                <input 
-                  type="checkbox" 
-                  [checked]="cartaState.restriccionesSeleccionadas().includes(sub.valor)"
-                  (change)="cartaState.toggleRestriccion(sub.valor)">
-                <span class="checkbox-label">{{ sub.label }}</span>
-              </label>
-            }
-          </div>
-        }
+        <div class="subcategorias-list">
+          <label class="checkbox-item">
+            <input 
+              type="radio" 
+              name="orden"
+              value=""
+              [checked]="cartaState.ordenarPor() === ''"
+              (change)="cartaState.setOrdenar('')">
+            <span class="checkbox-label">Sin orden</span>
+          </label>
+          <label class="checkbox-item">
+            <input 
+              type="radio" 
+              name="orden"
+              value="precio-menor"
+              [checked]="cartaState.ordenarPor() === 'precio-menor'"
+              (change)="cartaState.setOrdenar('precio-menor')">
+            <span class="checkbox-label">Precio: menor a mayor</span>
+          </label>
+          <label class="checkbox-item">
+            <input 
+              type="radio" 
+              name="orden"
+              value="precio-mayor"
+              [checked]="cartaState.ordenarPor() === 'precio-mayor'"
+              (change)="cartaState.setOrdenar('precio-mayor')">
+            <span class="checkbox-label">Precio: mayor a menor</span>
+          </label>
+          <label class="checkbox-item">
+            <input 
+              type="radio" 
+              name="orden"
+              value="nombre"
+              [checked]="cartaState.ordenarPor() === 'nombre'"
+              (change)="cartaState.setOrdenar('nombre')">
+            <span class="checkbox-label">Nombre (A-Z)</span>
+          </label>
+        </div>
         <div class="divider"></div>
       </div>
 

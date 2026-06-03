@@ -20,7 +20,7 @@ export class PedidoService {
   // Computed para precio total
   totalPrecio = computed(() => {
     return this.pedidosSignal().reduce(
-      (acc, item) => acc + (item.plato.precio * item.cantidad),
+      (acc, item) => acc + (item.plato.precioVentaFinal * item.cantidad),
       0
     );
   });

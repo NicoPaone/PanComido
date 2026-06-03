@@ -8,7 +8,6 @@ const preciosMock: Record<string, number> = {
   '6': 7500, '7': 120, '8': 300, '9': 800, '10': 700, '11': 4500
 };
 
-// 🔥 FIX: Actualizado con objetos UnidadMedida e IDs numéricos
 let dbProveedores: Proveedor[] = [
   {
     id: 1,
@@ -29,7 +28,6 @@ let dbProveedores: Proveedor[] = [
         estado: 'Recibido',
         observacion: 'Recepción completa en cámaras',
         items: [
-          // ✅ FIX: UnidadMedida ahora es el objeto {id, nombre}
           { id: 6, nombre: 'Bife de Chorizo', cantidad: 10, unidadMedida: { id: 1, nombre: 'KG' }, precioUnitario: 18450 },
           { id: 5, nombre: 'Tomate Perita', cantidad: 12, unidadMedida: { id: 1, nombre: 'KG' }, precioUnitario: 0 }
         ]
@@ -98,7 +96,7 @@ export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandler
           return {
             productoId: prod.id.toString(),
             nombre: prod.nombre,
-            unidadMedida: prod.unidadMedida, // ✅ FIX: Ahora pasa el objeto directamente
+            unidadMedida: prod.unidadMedida,
             stockActual: prod.stockActual,
             stockMinimo: prod.stockMinimo,
             consumoEstimado30Dias: prod.stockMinimo * 3,
