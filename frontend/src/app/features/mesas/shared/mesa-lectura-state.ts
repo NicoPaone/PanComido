@@ -1,6 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { EstadoMesa, Mesa } from '../../../core/models/mesa.model';
 import { MesaService } from '../../../core/services/mesa.service';
+import { MesaOcuparResponse } from '../../../core/models/mesa-ocupar-response';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,7 @@ export class MesaLecturaState {
   private _mesas = signal<Mesa[]>([]);
   private _loading = signal<boolean>(false);
   private _mesaSeleccionada = signal<number | null>(null);
-  private _notificacion = signal<{ mensaje: string; tipo: 'exito' | 'error' } | null>(null);
+  private _notificacion = signal<{ mensaje: string; tipo: 'exito' | 'error' | 'info' } | null>(null);
 
   mesas = this._mesas.asReadonly();
   loading = this._loading.asReadonly();
@@ -39,8 +40,8 @@ export class MesaLecturaState {
   }
   ocuparMesa(mesaId:number,cantidadComensales:number):void{
     this.api.ocuparMesa(mesaId, cantidadComensales).subscribe({
-      next: (mesaActualizada) => {
-        this._mesas.update(mesas => mesas.map(m => m.id === mesaId ? mesaActualizada : m));
+      next: (response: MesaOcuparResponse) => {
+        this._mesas.update(mesas => mesas.map(m => m.id === mesaId ? response.mesa : m));
         this._mesaSeleccionada.set(null);
         this.mostrarNotificacion('Mesa ocupada exitosamente', 'exito');
       },
@@ -49,17 +50,22 @@ export class MesaLecturaState {
   }
 
   cambiarEstadoMesa(id: number, nuevoEstado: EstadoMesa): void {
-    this._mesas.update(mesas =>
-      mesas.map(m => m.id === id ? { ...m, estadoMesa: nuevoEstado } : m)
-    );
-    this._mesaSeleccionada.set(null);
-    this.mostrarNotificacion(
-      `Mesa ${nuevoEstado === EstadoMesa.Ocupada ? 'ocupada' : 'cerrada'}`,
-      'exito'
-    );
+    this.api.cambiarEstado(id, nuevoEstado).subscribe({
+      next: (mesaActualizada: Mesa) => {
+        this._mesas.update(mesas =>
+          mesas.map(m => m.id === id ? mesaActualizada : m)
+        );
+        this._mesaSeleccionada.set(null);
+        this.mostrarNotificacion(
+          `Mesa ${nuevoEstado === EstadoMesa.Ocupada ? 'ocupada' : 'actualizada'}`,
+          'exito'
+        );
+      },
+      error: () => this.mostrarNotificacion('Error al cambiar el estado de la mesa', 'error')
+    });
   }
 
-  mostrarNotificacion(mensaje: string, tipo: 'exito' | 'error'): void {
+  mostrarNotificacion(mensaje: string, tipo: 'exito' | 'error' | 'info'): void {
     this._notificacion.set({ mensaje, tipo });
     setTimeout(() => this._notificacion.set(null), 3000);
   }
