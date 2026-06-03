@@ -11,7 +11,7 @@ export class CrearPlatoStateService {
 
   // Estado centralizado - expuestos como writeable signals para permitir manipulación en tests/vistas
   visible = signal<boolean>(true);
-  imagenSelected = signal<string>('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=200&h=150');
+  imagenSelected = signal<string>('');
   vegano = signal<boolean>(false);
   vegetariano = signal<boolean>(false);
   celiaco = signal<boolean>(false);
@@ -63,18 +63,31 @@ export class CrearPlatoStateService {
     this.mostrarExito.set(val);
   }
 
-  guardarPlato(platoData: { nombre: string; costo: number; precioVenta: number; }, callback: () => void): void {
+  guardarPlato(platoData: { nombre: string; costo: number; precioVenta: number; tiempoPreparacion: number; tipoPlato: string; descripcion: string; }, callback: () => void): void {
     this._loading.set(true);
-    const nuevoPlato = {
-      nombre: platoData.nombre,
-      costo: platoData.costo,
-      precioVenta: platoData.precioVenta,
-      visible: this.visible(),
-      imagen: this.imagenSelected(),
-      receta: this.receta()
-    } as Omit<Plato, 'id'>;
 
-    this.api.crearPlato(nuevoPlato)
+    const restriccionesIds: number[] = [];
+    if (this.vegano()) restriccionesIds.push(1);
+    if (this.vegetariano()) restriccionesIds.push(2);
+    if (this.celiaco()) restriccionesIds.push(3);
+
+    const request = {
+      nombre: platoData.nombre,
+      descripcion: platoData.descripcion,
+      precioVentaFinal: platoData.precioVenta,
+      tiempoPreparacionBase: platoData.tiempoPreparacion,
+      tipoPlatoId: 2,
+      categoriaPlatoId: 2,
+      urlImagen: this.imagenSelected() || '',
+      restriccionesIds,
+      ingredientes: this.receta().map(ing => ({
+        insumoId: Number(ing.id),
+        cantidad: ing.cantidad,
+        opcional: false
+      }))
+    };
+
+    this.api.crearPlato(request as any)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {

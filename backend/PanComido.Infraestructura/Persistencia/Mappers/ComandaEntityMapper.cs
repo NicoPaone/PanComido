@@ -28,10 +28,11 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 CantComensales = efComanda.CantComensales,
                 HoraInicio = efComanda.HoraInicio,
                 HoraFin = efComanda.HoraFin,
-                HoraUltimoCambioEstado = efComanda.HoraUltimoCambioEstado,    
-               Estado = (EstadoComanda)efComanda.EstadoComandaId,
+                HoraUltimoCambioEstado = efComanda.HoraUltimoCambioEstado,
+                Estado = (EstadoComanda)efComanda.EstadoComandaId,
 
-                Items = new List<DOM.ArticuloComanda>()
+                Items = new List<DOM.ArticuloComanda>(),
+                MozoId = efComanda.Mesa?.Mozos.FirstOrDefault()?.IdEmpleado
             };
 
             if (efComanda.ArticuloComanda != null)
@@ -43,6 +44,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                         comandaDominio.Items.Add(new DOM.ArticuloComanda
                         {
                             Id = relacion.Id,
+                            ArticuloId = relacion.ArticuloId,
                             Cantidad = relacion.Cantidad,
                             ObservacionesGenerales = relacion.ObservacionesGenerales,
                             ObservacionesIngredientes = relacion.ObservacionesIngrediente,
@@ -67,8 +69,19 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 CantComensales = comandaDominio.CantComensales,
                 HoraInicio = comandaDominio.HoraInicio,
                 HoraFin = comandaDominio.HoraFin,
-               HoraUltimoCambioEstado = comandaDominio.HoraUltimoCambioEstado,
-               PagoId = comandaDominio.PagoID,
+                HoraUltimoCambioEstado = comandaDominio.HoraUltimoCambioEstado,
+                PagoId = comandaDominio.PagoID,
+
+                ArticuloComanda = comandaDominio.Items?.Select(item => new EF.ArticuloComandum
+                {
+                    Id = item.Id,
+                    ArticuloId = item.ArticuloId,
+                    Cantidad = item.Cantidad,
+                    Entregado = item.Entregado,
+                    ObservacionesIngrediente = item.ObservacionesIngredientes,
+                    ObservacionesGenerales = item.ObservacionesGenerales,
+                    ComandaId = comandaDominio.Id
+                }).ToList() ?? new List<EF.ArticuloComandum>()
             };
         }
     }

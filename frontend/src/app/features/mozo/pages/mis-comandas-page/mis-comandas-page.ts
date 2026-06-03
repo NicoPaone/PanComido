@@ -26,9 +26,10 @@ export class MisComandasPage {
     });
   }
 
-  ngOnInit(): void {
+ ngOnInit(): void {
     this.state.cargarComandas();
-  }
+    void this.state.conectarHub(1, 3);
+}
 
   abrirDetalle(comandaId: number): void {
     const comanda = this.state.comandas().find(c => c.id === comandaId);

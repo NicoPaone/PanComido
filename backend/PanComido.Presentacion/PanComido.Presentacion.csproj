@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>PanComido.Presentacion</RootNamespace>
+    <UserSecretsId>30323c8c-41e0-4c5d-9078-fa74c70d3080</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

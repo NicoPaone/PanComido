@@ -1,14 +1,17 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { MozoComandaService } from './mozo-comanda-service';
 import { Comanda } from '../../../core/models/comanda/comanda';
 import { forkJoin } from 'rxjs';
+import { ComandaHubService } from '../../../core/services/hubs/comanda/comanda-hub-service';
+import { EstadoComanda } from '../../../core/models/comanda/comanda';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MozoComandaState {
 
-  private api = inject(MozoComandaService)
+  private api = inject(MozoComandaService);
+  private hub = inject(ComandaHubService);
   private _comandas = signal<Comanda[]>([]);
   private _cargando = signal<boolean>(false);
 
@@ -23,6 +26,28 @@ export class MozoComandaState {
 
   comandasEnEspera = computed(() =>
   this._comandas().filter(c => c.estado === 'EnEspera'));
+
+readonly #hubEffect = effect(() => {
+    const actualizada = this.hub.comandaModificada();
+    if (!actualizada) return;
+
+    const normalizada = {
+        ...actualizada,
+        estado: actualizada.estado.replace(/\s/g, '') as EstadoComanda
+    };
+
+    this._comandas.update(lista => {
+        const estadosFinales = ['Finalizada', 'Abierta'];
+        if (estadosFinales.includes(normalizada.estado)) {
+            return lista.filter(c => c.id !== normalizada.id);
+        }
+        const existe = lista.some(c => c.id === normalizada.id);
+        if (existe) {
+            return lista.map(c => c.id === normalizada.id ? normalizada : c);
+        }
+        return [normalizada, ...lista];
+    });
+});
 
   cargarComandas(): void{ 
     this._cargando.set(true);
@@ -50,5 +75,9 @@ export class MozoComandaState {
       },
       error: (err) => console.error('Error al entregar items', err)
     });
+  }
+ 
+  async conectarHub(restauranteId: number, mozoId: number): Promise<void> {
+    await this.hub.conectarComoMozo(restauranteId, mozoId);
   }
 }

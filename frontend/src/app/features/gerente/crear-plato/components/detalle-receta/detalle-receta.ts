@@ -1,8 +1,8 @@
-import { Component, output, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Buscador } from '../../../../../shared/ui/buscador/buscador';
 import { RecetaIngrediente } from '../../../../../core/models/plato';
 import { Insumo, INSUMOS_MOCK } from '../../../../../core/models/insumos/insumo';
+import { Component, output, signal, computed, input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-detalle-receta',
@@ -13,7 +13,7 @@ import { Insumo, INSUMOS_MOCK } from '../../../../../core/models/insumos/insumo'
 })
 export class DetalleRecetaComponent {
   recetaCambiada = output<RecetaIngrediente[]>();
-
+ingredientesIniciales = input<RecetaIngrediente[]>([]);
   busqueda = signal<string>('');
   
   ingredientesSeleccionados = signal<RecetaIngrediente[]>([]);
@@ -64,4 +64,12 @@ export class DetalleRecetaComponent {
   private notificarCambio() {
     this.recetaCambiada.emit(this.ingredientesSeleccionados());
   }
+
+  ngOnInit() {
+  const iniciales = this.ingredientesIniciales();
+  if (iniciales.length > 0) {
+    this.ingredientesSeleccionados.set(iniciales);
+    this.notificarCambio();
+  }
+}
 }
