@@ -31,14 +31,7 @@ export class ModificarCartaApiService {
         visible: dto.visibleEnCarta,
         imagen: dto.urlImagen,
         tipo: dto.tipoArticulo,
-        categoria: dto.tipoArticulo,
-        tiempo: 0,
-        bebida: '',
-        restriccion: '',
-        descripcion: '',
-        platoDelDia: false,
-        recomendado: false,
-        ventas: 0
+        categoria: dto.tipoArticulo
       })))
     );
   }
