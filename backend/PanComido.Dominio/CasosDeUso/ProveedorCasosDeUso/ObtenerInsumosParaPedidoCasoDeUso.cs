@@ -38,8 +38,7 @@ namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
             
             foreach (var insumo in insumosResto)
             {
-              if(insumo.Id == 0 || insumosProveedor.All(i => i.Id != insumo.Id) || insumoEnPedidoPendiente.Contains(insumo.Id)) continue;
-
+                if (insumo.Id == 0 || insumosProveedor.All(i => i.Id != insumo.Id)) continue;
                 decimal stockActualInsumo = await _loteRepositorio.ObtenerStockTotalDeInsumo(insumo.Id);
 
                 var estadoStock = _estadoStockInsumoServicio.CalcularEstadoStock(stockActualInsumo, insumo.StockMinimo);
