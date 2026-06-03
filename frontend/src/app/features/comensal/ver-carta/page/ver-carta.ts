@@ -68,7 +68,7 @@ export class VerCarta {
 
   ngOnInit(): void {
     this.cantidadPersonas.set(history.state?.cantidadPersonas ?? 1);
-    this.state.cargarCarta(1);
+    this.state.cargarCarta();
   }
 
   onSearch(valor: string): void {

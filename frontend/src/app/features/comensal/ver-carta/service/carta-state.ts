@@ -97,9 +97,9 @@ export class CartaState {
     return resultado;
   });
 
-  cargarCarta(restauranteId: number): void {
+  cargarCarta(): void {
     this._cargando.set(true);
-    this.api.obtenerCarta(restauranteId).subscribe({
+    this.api.obtenerCarta().subscribe({
       next: (data) => {
         this._items.set(data);
         this._cargando.set(false);
