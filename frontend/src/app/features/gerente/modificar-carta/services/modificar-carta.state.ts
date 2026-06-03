@@ -27,6 +27,11 @@ export class ModificarCartaStateService {
   loading = this._loading.asReadonly();
 
   // 3. Variables Derivadas (Computed)
+  categoriasDisponibles = computed(() => {
+    const cats = new Set(this._platos().map(p => p.categoria).filter(c => !!c));
+    return Array.from(cats).sort() as string[];
+  });
+
   filteredPlatos = computed(() => {
     const sorted = [...this._platos()].sort((a, b) => {
       if (a.visible === b.visible) return 0;
@@ -109,7 +114,7 @@ export class ModificarCartaStateService {
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
             next: updated => {
-              this._platos.update(platos => platos.map(p => p.id === plato.id ? updated : p));
+              this._platos.update(platos => platos.map(p => p.id === plato.id ? { ...p, ...updated } : p));
             },
             error: () => {
               this._platos.update(platos => platos.map(p => p.id === plato.id ? { ...p, visible: true } : p));
@@ -124,7 +129,7 @@ export class ModificarCartaStateService {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: updated => {
-            this._platos.update(platos => platos.map(p => p.id === plato.id ? updated : p));
+            this._platos.update(platos => platos.map(p => p.id === plato.id ? { ...p, ...updated } : p));
           },
           error: () => {
             this._platos.update(platos => platos.map(p => p.id === plato.id ? { ...p, visible: false } : p));
@@ -148,7 +153,7 @@ export class ModificarCartaStateService {
     this.api.updatePlato(target.id, updatedFields)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(updated => {
-        this._platos.update(platos => platos.map(p => p.id === target.id ? updated : p));
+        this._platos.update(platos => platos.map(p => p.id === target.id ? { ...p, ...updated } : p));
         this._platoAEditar.set(null);
       });
   }
@@ -182,7 +187,7 @@ export class ModificarCartaStateService {
       .subscribe({
         next: updated => {
           this._platos.update(platos =>
-            platos.map(p => p.id === plato.id ? updated : p)
+            platos.map(p => p.id === plato.id ? { ...p, ...updated } : p)
           );
         },
         error: () => {

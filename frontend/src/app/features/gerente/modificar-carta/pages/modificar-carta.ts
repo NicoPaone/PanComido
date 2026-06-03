@@ -42,6 +42,7 @@ export class ModificarCartaComponent implements OnInit {
   platoAEliminar = this.state.platoAEliminar;
   selectedCategoria = this.state.selectedCategoria;
   loading = this.state.loading;
+  categoriasDisponibles = this.state.categoriasDisponibles;
 
   ngOnInit() {
     this.state.cargarPlatos();
@@ -80,7 +81,6 @@ export class ModificarCartaComponent implements OnInit {
   }
 
   onCategoriaSeleccionada(categoria: string | null) {
-    console.log('Categoría seleccionada:', categoria);
     this.state.setCategoria(categoria);
   }
 

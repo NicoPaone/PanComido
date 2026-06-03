@@ -18,9 +18,9 @@
      <div menu>
        <ul>
          <li (click)="onCategoriaSeleccionada(null); filtroDropdown.cerrar()">Todas</li>
-         <li (click)="onCategoriaSeleccionada('Entradas'); filtroDropdown.cerrar()">Entradas</li>
-         <li (click)="onCategoriaSeleccionada('Principales'); filtroDropdown.cerrar()">Principales</li>
-         <li (click)="onCategoriaSeleccionada('Bebidas'); filtroDropdown.cerrar()">Bebidas</li>
+         @for (cat of categoriasDisponibles(); track cat) {
+           <li (click)="onCategoriaSeleccionada(cat); filtroDropdown.cerrar()">{{ cat }}</li>
+         }
        </ul>
      </div>
     

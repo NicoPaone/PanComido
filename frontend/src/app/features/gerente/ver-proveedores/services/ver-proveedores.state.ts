@@ -11,10 +11,10 @@ export class VerProveedoresStateService {
   private api = inject(VerProveedoresApiService);
   private destroyRef = inject(DestroyRef);
 
-  private readonly preciosMock: Record<string, number> = {
+  /*private readonly preciosMock: Record<string, number> = {
     '1': 1200, '2': 900, '3': 1500, '4': 600, '5': 1100,
     '6': 7500, '7': 120, '8': 300, '9': 800, '10': 700, '11': 4500
-  };
+  };*/
 
   termino = signal('');
   proveedores = signal<Proveedor[]>([]);
@@ -101,9 +101,9 @@ export class VerProveedoresStateService {
     return this._historialProveedor().filter(pedido => pedido.estado === 'Enviado');
   });
 
-  montoEstimado = computed(() => {
+ montoEstimado = computed(() => {
     return this.pedidoItems().reduce((total, item) => {
-      const base = item.precioUnitario ?? this.preciosMock[item.id] ?? 500;
+      const base = item.precioUnitario ?? 0;
       return total + base * item.cantidad;
     }, 0);
   });
@@ -295,8 +295,7 @@ export class VerProveedoresStateService {
       });
   }
 
-  agregarIngredienteAPedido(pedido: PedidoProveedor, productoId: number | string, cantidad: number): void {
-    const proveedor = this.proveedorSeleccionado();
+agregarIngredienteAPedido(pedido: PedidoProveedor, productoId: number | string, cantidad: number, precio: number): void {    const proveedor = this.proveedorSeleccionado();
     const producto = this.productos().find(item => item.id.toString() === productoId.toString());
     if (!proveedor || !producto || pedido.estado !== 'Pendiente' || cantidad <= 0) return;
 
@@ -305,7 +304,7 @@ export class VerProveedoresStateService {
       nombre: producto.nombre,
       cantidad,
       unidadMedida: producto.unidadMedida,
-      precioUnitario: this.preciosMock[producto.id] ?? 500
+      precioUnitario: precio
     };
 
     const pedidos = this._historialProveedor().map(itemPedido => {
@@ -327,11 +326,29 @@ export class VerProveedoresStateService {
     this.mensajeAccion.set('Ingrediente agregado');
   }
 
-  seleccionarProducto(producto: Insumo): void {
+seleccionarProducto(producto: Insumo): void {
     this.productoSeleccionadoId.set(producto.id);
     this.productoTexto.set(producto.nombre);
     this.cantidadProducto.set(this.getCantidadInicial(producto.unidadMedida));
-    this.precioProductoManual.set(this.preciosMock[producto.id] ?? 500);
+    this.precioProductoManual.set(this.ultimoPrecioDeInsumo(producto.id));
+  }
+
+  private ultimoPrecioDeInsumo(insumoId: number | string): number | null {
+    // Busca en el historial el último pedido (ordenado por fecha desc) que tenga este insumo
+    // y devuelve el precio de compra que se pagó en ese pedido.
+    const historial = [...this._historialProveedor()].sort((a, b) => {
+      const fa = new Date(a.fecha).getTime();
+      const fb = new Date(b.fecha).getTime();
+      return fb - fa;
+    });
+
+    for (const pedido of historial) {
+      const item = pedido.items.find(i => i.id.toString() === insumoId.toString());
+      if (item && item.precioUnitario && item.precioUnitario > 0) {
+        return item.precioUnitario;
+      }
+    }
+    return null;
   }
 
   onProductoTextoChange(valor: string): void {
@@ -342,7 +359,7 @@ export class VerProveedoresStateService {
     if (encontrado) {
       this.productoSeleccionadoId.set(encontrado.id);
       this.cantidadProducto.set(this.getCantidadInicial(encontrado.unidadMedida));
-      this.precioProductoManual.set(this.preciosMock[encontrado.id] ?? 500);
+      this.precioProductoManual.set(this.ultimoPrecioDeInsumo(encontrado.id));
     } else {
       this.productoSeleccionadoId.set(null);
       this.precioProductoManual.set(null);
@@ -353,7 +370,7 @@ export class VerProveedoresStateService {
     const producto = this.productoBaseActual();
     const nombre = producto?.nombre ?? this.productoTexto().trim();
     const cantidad = this.cantidadProducto();
-    const precio = producto ? (this.preciosMock[producto.id] ?? 500) : this.precioProductoManual();
+    const precio = this.precioProductoManual();
 
     if (!nombre || cantidad === null || cantidad <= 0 || precio === null || precio <= 0) {
       return;

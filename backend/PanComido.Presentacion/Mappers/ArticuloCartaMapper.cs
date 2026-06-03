@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
 using PanComido.Presentacion.DTOs.Carta;
 
 namespace PanComido.Presentacion.Mappers
@@ -23,7 +23,10 @@ namespace PanComido.Presentacion.Mappers
                 TipoArticulo = articulo is Plato ? "Plato" : "Bebida",
 
                 // ¡Acá inyectamos el resultado matemático que calculó el Caso de Uso!
-                Costo = articulo.CostoCalculado
+                Costo = articulo.CostoCalculado,
+
+                // Inyectamos la categoria para el filtrado en frontend
+                Categoria = articulo is Plato p ? (p.Categoria ?? "Sin categoria") : (articulo is Insumo i ? (i.Categoria ?? "Sin categoria") : "Sin categoria")
             };
         }
 

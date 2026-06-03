@@ -4,6 +4,7 @@ import { forkJoin, of, switchMap } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { RealizarPedidoSugeridoApiService } from './realizar-pedido-sugerido.api';
 import { Proveedor, SugerenciaPedidoItem } from '../../../../core/models/proveedor';
+import { Insumo } from '../../../../core/models/insumos/insumo';
 
 @Injectable({ providedIn: 'root' })
 export class RealizarPedidoSugeridoStateService {
@@ -147,7 +148,7 @@ export class RealizarPedidoSugeridoStateService {
     }));
   }
 
-  onCantidadCambiada(proveedorId: string | number, item: SugerenciaPedidoItem, val: number | null): void {
+onCantidadCambiada(proveedorId: string | number, item: SugerenciaPedidoItem, val: number | null): void {
     let cantidad = val ?? 1;
     if (cantidad <= 0) {
       cantidad = 1;
@@ -158,6 +159,17 @@ export class RealizarPedidoSugeridoStateService {
       ...pedidos,
       [key]: (pedidos[key] ?? []).map(i =>
         i.productoId === item.productoId ? { ...i, cantidadSugerida: cantidad } : i
+      )
+    }));
+  }
+
+  onPrecioCambiado(proveedorId: string | number, item: SugerenciaPedidoItem, val: number | null): void {
+    const precio = val == null || val < 0 ? 0 : val;
+    const key = proveedorId.toString();
+    this.pedidosPorProveedor.update(pedidos => ({
+      ...pedidos,
+      [key]: (pedidos[key] ?? []).map(i =>
+        i.productoId === item.productoId ? { ...i, precioUnitario: precio } : i
       )
     }));
   }
@@ -181,6 +193,125 @@ export class RealizarPedidoSugeridoStateService {
     return this.obtenerItemsProveedor(proveedorId)
       .reduce((total, item) => total + (item.precioUnitario * item.cantidadSugerida), 0);
   }
+
+// ============================================================
+  // TODO REFACTOR: bloque duplicado del panel "Agregar ingredientes"
+  // copiado de historial-proveedor.ts para la demo del 03/06/2026.
+  // Extraer a un componente compartido en shared/ui/ después de la entrega.
+  // ============================================================
+  productosDisponiblesPedido = signal<SugerenciaPedidoItem[]>([]);
+  proveedorAgregarIngredienteId = signal<number | string | null>(null);
+  busquedaIngrediente = signal('');
+  productoExtraSeleccionadoId = signal<string>('');
+  cantidadIngrediente = signal<number>(1);
+  precioIngrediente = signal<number | null>(null);
+
+  ingredientesParaAgregar = computed(() => {
+    const proveedorId = this.proveedorAgregarIngredienteId();
+    if (proveedorId === null) return [];
+
+    const texto = this.busquedaIngrediente().toLowerCase().trim();
+    const itemsActuales = this.obtenerItemsProveedor(proveedorId);
+    const idsActuales = new Set(itemsActuales.map(i => i.productoId.toString()));
+
+    return this.productosDisponiblesPedido()
+      .filter(p => !idsActuales.has(p.productoId.toString()))
+      .filter(p => !texto || p.nombre.toLowerCase().includes(texto));
+  });
+
+abrirAgregarIngrediente(proveedorId: number | string): void {
+    this.proveedorAgregarIngredienteId.set(proveedorId);
+    this.busquedaIngrediente.set('');
+    this.productoExtraSeleccionadoId.set('');
+    this.cantidadIngrediente.set(1);
+    this.precioIngrediente.set(null);
+
+    // Cargar TODOS los insumos disponibles (no solo los a reponer)
+    this.api.getProductosDisponibles()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (items: Insumo[]) => {
+          const mapped: SugerenciaPedidoItem[] = items.map(i => ({
+            productoId: i.id.toString(),
+            nombre: i.nombre,
+            unidadMedida: i.unidadMedida,
+            stockActual: i.stockActual,
+            stockMinimo: i.stockMinimo,
+            cantidadSugerida: 1,
+            precioUnitario: 0
+          }));
+          this.productosDisponiblesPedido.set(mapped);
+        },
+        error: () => this.productosDisponiblesPedido.set([])
+      });
+  }
+
+  cerrarAgregarIngrediente(): void {
+    this.proveedorAgregarIngredienteId.set(null);
+  }
+
+seleccionarIngredienteExtra(productoId: string): void {
+    this.productoExtraSeleccionadoId.set(productoId);
+    // Buscar el último precio en el historial del proveedor seleccionado
+    const proveedorId = this.proveedorAgregarIngredienteId();
+    if (proveedorId !== null) {
+      this.api.getHistorialPedidos(proveedorId).subscribe({
+        next: pedidos => {
+          const ordenados = [...pedidos].sort((a, b) => {
+            const fa = new Date(a.fecha).getTime();
+            const fb = new Date(b.fecha).getTime();
+            return fb - fa;
+          });
+          for (const pedido of ordenados) {
+            const item = pedido.items.find(i => i.id.toString() === productoId);
+            if (item && item.precioUnitario && item.precioUnitario > 0) {
+              this.precioIngrediente.set(item.precioUnitario);
+              return;
+            }
+          }
+          this.precioIngrediente.set(null);
+        },
+        error: () => this.precioIngrediente.set(null)
+      });
+    }
+  }
+
+  setCantidadIngrediente(val: number | null): void {
+    this.cantidadIngrediente.set(val == null || val <= 0 ? 1 : val);
+  }
+
+  setPrecioIngrediente(val: number | null): void {
+    this.precioIngrediente.set(val == null || val < 0 ? null : val);
+  }
+
+  confirmarAgregarIngrediente(): void {
+    const proveedorId = this.proveedorAgregarIngredienteId();
+    const productoId = this.productoExtraSeleccionadoId();
+    if (proveedorId === null || !productoId) return;
+
+    const producto = this.productosDisponiblesPedido().find(p => p.productoId.toString() === productoId);
+    if (!producto) return;
+
+    const cantidad = this.cantidadIngrediente();
+    const precio = this.precioIngrediente() ?? 0;
+    const key = proveedorId.toString();
+
+    const nuevoItem: SugerenciaPedidoItem = {
+      ...producto,
+      cantidadSugerida: cantidad,
+      precioUnitario: precio
+    };
+
+    this.pedidosPorProveedor.update(pedidos => ({
+      ...pedidos,
+      [key]: [...(pedidos[key] ?? []), nuevoItem]
+    }));
+
+    this.cerrarAgregarIngrediente();
+  }
+  // ============================================================
+  // FIN TODO REFACTOR
+  // ============================================================
 
   enviarPedido(proveedor: Proveedor, onSuccess: () => void): void {
     this.mensajeError.set(null);
