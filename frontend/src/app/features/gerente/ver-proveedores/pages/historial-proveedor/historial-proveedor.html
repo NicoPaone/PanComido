@@ -125,7 +125,7 @@
       </div>
 
       <div class="pedido-modal-meta">
-        <span>{{ pedido.fecha | date:'dd/MM/yyyy HH:mm' }}</span>
+        <span>{{ pedido.fecha | date:'dd/MM/yyyy' }}</span>
         <span class="estado-pill" [class]="getEstadoClase(pedido.estado)">{{ pedido.estado }}</span>
       </div>
 
@@ -224,7 +224,7 @@
                   <small>{{ producto.stockActual }} {{ nombreUnidad(producto.unidadMedida) }} disponibles</small>
                 </div>
 
-                <label>
+<label>
                   <span>Cantidad ({{ nombreUnidad(producto.unidadMedida) }})</span>
                   <input
                     type="number"
@@ -237,6 +237,17 @@
                   @if (equivalenciaIngrediente(); as equivalencia) {
                     <strong class="quantity-equivalence">{{ equivalencia }}</strong>
                   }
+                </label>
+
+                <label>
+                  <span>Precio c/u ($)</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    min="0"
+                    placeholder="0"
+                    [value]="precioIngrediente() ?? ''"
+                    (input)="updatePrecioIngrediente($event)">
                 </label>
               </div>
             } @else {
