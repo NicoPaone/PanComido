@@ -45,6 +45,7 @@
 
 .toast-notificacion.error { background-color: #e74c3c; }
 .toast-notificacion.exito { background-color: #2ecc71; }
+.toast-notificacion.info { background-color: #34495e; } /* Gris/Azul oscuro */
 
 @keyframes slideDown {
   from { top: -50px; opacity: 0; }

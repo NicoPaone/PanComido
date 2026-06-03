@@ -1,6 +1,6 @@
 <div class="mapa-readonly-wrapper">
   @if (state.notificacion(); as notif) {
-    <div class="toast-notificacion" [class.error]="notif.tipo === 'error'" [class.exito]="notif.tipo === 'exito'">
+    <div class="toast-notificacion" [class.error]="notif.tipo === 'error'" [class.exito]="notif.tipo === 'exito'" [class.info]="notif.tipo === 'info'">
       {{ notif.mensaje }}
     </div>
   }
@@ -27,16 +27,55 @@
     }
   </div>
 
-  <!-- VISTA MOBILE (GRILLA 3 COLUMNAS) -->
-  <div class="d-block d-md-none mobile-grid p-2">
-    <div class="row g-3">
-      @for (mesa of mesasOrdenadas(); track mesa.id) {
-        <div class="col-4">
-          <button class="btn w-100 mobile-mesa-btn" [ngClass]="getMobileClass(mesa.estadoMesa)">
-            {{ mesa.numeroMesa }}
+  <!-- VISTA MOBILE -->
+  <div class="d-block d-md-none mobile-view-container p-2">
+    @if (!mesaMobileSeleccionada) {
+      <div class="row g-3">
+        <!-- Ordenamos las mesas por número para la grilla -->
+        @for (mesa of mesasOrdenadas(); track mesa.id) {
+          <div class="col-4">
+            <button class="btn w-100 mobile-mesa-btn" [ngClass]="getMobileClass(mesa.estadoMesa)" (click)="seleccionarMesaMobile(mesa)">
+              {{ mesa.numeroMesa }}
+            </button>
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- DETALLE DE MESA MOBILE -->
+      <div class="mobile-mesa-detalle p-3">
+        <div class="header-detalle d-flex align-items-center mb-4">
+          <button class="btn btn-link text-dark p-0 me-3" (click)="volverGridMobile()">
+            <span class="material-symbols-outlined fs-1 fw-bold">arrow_back_ios</span>
           </button>
+          <div class="flex-grow-1 text-center">
+            <h3 class="mb-1 fw-bold">MESA N° {{ mesaMobileSeleccionada.numeroMesa }}</h3>
+            <div class="estado-badge mt-2">
+              <span class="badge px-3 py-2 fs-6 rounded-pill" [ngClass]="getMobileClass(mesaMobileSeleccionada.estadoMesa)">
+                Estado: {{ mesaMobileSeleccionada.estadoMesa }}
+              </span>
+            </div>
+          </div>
+          <div style="width: 32px;"></div> <!-- Spacer para centrar el título -->
         </div>
-      }
-    </div>
+
+        <hr class="mb-4">
+
+        <div class="d-flex flex-column gap-3">
+          @if (mesaMobileSeleccionada.estadoMesa === 'Disponible') {
+            <button class="btn btn-success btn-lg py-3 fw-bold rounded-3" (click)="abrirMesaMobile()">ABRIR MESA</button>
+            <button class="btn btn-dark btn-lg py-3 fw-bold rounded-3" (click)="deshabilitarMesaMobile()">DESHABILITAR</button>
+          }
+
+          @if (mesaMobileSeleccionada.estadoMesa === 'Ocupada') {
+            <button class="btn btn-success btn-lg py-3 fw-bold rounded-3" (click)="verComandaMobile()">VER COMANDA</button>
+            <button class="btn btn-danger btn-lg py-3 fw-bold rounded-3" (click)="cerrarMesaMobile()">CERRAR MESA</button>
+          }
+
+          @if (mesaMobileSeleccionada.estadoMesa === 'Deshabilitada') {
+            <button class="btn btn-warning btn-lg py-3 fw-bold rounded-3" (click)="habilitarMesaMobile()">HABILITAR</button>
+          }
+        </div>
+      </div>
+    }
   </div>
 </div>

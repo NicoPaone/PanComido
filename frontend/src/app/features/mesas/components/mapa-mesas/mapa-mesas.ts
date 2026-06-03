@@ -1,9 +1,10 @@
-import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CdkDragEnd, DragDropModule } from '@angular/cdk/drag-drop';
 import { MesaStateService } from '../../services/mesa.state';
-import { EstadoMesa, FormaMesa } from '../../../../core/models/mesa.model';
+import { EstadoMesa, FormaMesa, Mesa } from '../../../../core/models/mesa.model';
 import { MesaItem } from '../../../../shared/components/mesa-item/mesa-item';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-mapa-mesas',
@@ -15,9 +16,64 @@ import { MesaItem } from '../../../../shared/components/mesa-item/mesa-item';
 })
 export class MapaMesas implements OnInit {
   state = inject(MesaStateService);
+  auth = inject(AuthService);
   FormaMesa = FormaMesa;
+  mesaMobileSeleccionada: Mesa | null = null;
+
+  // Modal de ocupar mesa
+  mostrarModalOcupar = signal<boolean>(false);
+  mesaSeleccionadaId = signal<number | null>(null);
+  cantidadComensales = signal<number>(2);
+
+  // Modal de comanda
+  mostrarModalComanda = signal<boolean>(false);
+  mesaComandaId = signal<number | null>(null);
+
   ngOnInit() {
     this.state.cargarMesas(); // Dispara la carga inicial al mock
+  }
+
+  seleccionarMesaMobile(mesa: Mesa) {
+    this.mesaMobileSeleccionada = mesa;
+  }
+
+  volverGridMobile() {
+    this.mesaMobileSeleccionada = null;
+  }
+
+  abrirMesaMobile() {
+    if (this.mesaMobileSeleccionada) {
+      this.ejecutarAccion(this.mesaMobileSeleccionada.id, 'ocupar');
+      this.mesaMobileSeleccionada = null; // Volvemos al grid automáticamente
+    }
+  }
+
+  cerrarMesaMobile() {
+    if (this.mesaMobileSeleccionada) {
+      this.ejecutarAccion(this.mesaMobileSeleccionada.id, 'cerrar');
+      this.mesaMobileSeleccionada = null;
+    }
+  }
+
+  habilitarMesaMobile() {
+    if (this.mesaMobileSeleccionada) {
+      this.ejecutarAccion(this.mesaMobileSeleccionada.id, 'cerrar');
+      this.mesaMobileSeleccionada = null;
+    }
+  }
+
+  deshabilitarMesaMobile() {
+    if (this.mesaMobileSeleccionada) {
+      this.ejecutarAccion(this.mesaMobileSeleccionada.id, 'deshabilitar');
+      this.mesaMobileSeleccionada = null;
+    }
+  }
+
+  verComandaMobile() {
+    if (this.mesaMobileSeleccionada) {
+      // this.ejecutarAccion(this.mesaMobileSeleccionada.id, 'detalles');
+      this.state.mostrarNotificacion('Esperando comanda de los comensales...', 'info');
+    }
   }
 
   gridSize = 15; // El tamaño de tu grilla en píxeles
@@ -38,7 +94,8 @@ export class MapaMesas implements OnInit {
   ejecutarAccion(id: number, accion: string) {
     switch (accion) {
       case 'ocupar':
-        this.state.cambiarEstadoMesa(id, EstadoMesa.Ocupada);
+        this.mesaSeleccionadaId.set(id);
+        this.mostrarModalOcupar.set(true);
         break;
       case 'cerrar':
         this.state.cambiarEstadoMesa(id, EstadoMesa.Disponible);
@@ -47,18 +104,37 @@ export class MapaMesas implements OnInit {
         this.state.cambiarEstadoMesa(id, EstadoMesa.Deshabilitada);
         break;
       case 'detalles':
-        console.log('Próximamente: Abrir modal de detalles para la mesa', id);
-        this.state.seleccionarMesa(null); 
+        this.state.mostrarNotificacion('Esperando pedido de los comensales...', 'info');
+        this.state.seleccionarMesa(null);
         break;
     }
   }
-  
+
   onMesaClick(id: number) {
-    if (this.state.isEditorMode()) return; 
-    
+    if (this.state.isEditorMode()) return;
+
     // Próximamente: Llamar al backend para traer la comanda activa por MesaId
     // Ej: GET /comanda/mesa/{id}/activa
     console.log('Buscar comanda activa para mesa:', id);
+  }
+
+  confirmarOcupar() {
+    const mesaId = this.mesaSeleccionadaId();
+    const comensales = this.cantidadComensales();
+    if (mesaId === null || comensales < 1) return;
+    this.state.ocuparMesa(mesaId, comensales);
+    this.cerrarModalOcupar();
+  }
+
+  cerrarModalOcupar() {
+    this.mostrarModalOcupar.set(false);
+    this.mesaSeleccionadaId.set(null);
+    this.cantidadComensales.set(2);
+  }
+
+  cerrarModalComanda() {
+    this.mostrarModalComanda.set(false);
+    this.mesaComandaId.set(null);
   }
 
   mesasOrdenadas() {

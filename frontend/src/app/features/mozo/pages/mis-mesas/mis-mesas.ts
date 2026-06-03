@@ -12,7 +12,7 @@ export class MisMesasPage {
 
 
   private mesaState = inject(MesaLecturaState);
-    // Modal de ocupar mesa
+  // Modal de ocupar mesa
   mostrarModalOcupar = signal<boolean>(false);
   mesaSeleccionadaId = signal<number | null>(null);
   cantidadComensales = signal<number>(2);
@@ -33,15 +33,14 @@ export class MisMesasPage {
   }
 
   onVerDetalles(mesaId: number) {
-    this.mesaComandaId.set(mesaId);
-    this.mostrarModalComanda.set(true);
+    this.mesaState.mostrarNotificacion('Esperando pedido de los comensales...', 'info');
   }
 
   confirmarOcupar() {
     const mesaId = this.mesaSeleccionadaId();
     const cantidadComensales = this.cantidadComensales();
     console.log('Confirmar ocupar mesa:', mesaId, 'para', cantidadComensales, 'comensales');
-    if( mesaId === null || cantidadComensales < 1) return;
+    if (mesaId === null || cantidadComensales < 1) return;
     this.mesaState.ocuparMesa(mesaId, cantidadComensales);
     console.log(`Ocupando mesa ${mesaId} para ${cantidadComensales} comensales`);
 

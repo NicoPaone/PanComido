@@ -12,7 +12,7 @@ export class MesaLecturaState {
   private _mesas = signal<Mesa[]>([]);
   private _loading = signal<boolean>(false);
   private _mesaSeleccionada = signal<number | null>(null);
-  private _notificacion = signal<{ mensaje: string; tipo: 'exito' | 'error' } | null>(null);
+  private _notificacion = signal<{ mensaje: string; tipo: 'exito' | 'error' | 'info' } | null>(null);
 
   mesas = this._mesas.asReadonly();
   loading = this._loading.asReadonly();
@@ -65,7 +65,7 @@ export class MesaLecturaState {
     });
   }
 
-  mostrarNotificacion(mensaje: string, tipo: 'exito' | 'error'): void {
+  mostrarNotificacion(mensaje: string, tipo: 'exito' | 'error' | 'info'): void {
     this._notificacion.set({ mensaje, tipo });
     setTimeout(() => this._notificacion.set(null), 3000);
   }
