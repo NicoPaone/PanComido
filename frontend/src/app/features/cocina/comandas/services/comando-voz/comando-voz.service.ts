@@ -1,9 +1,9 @@
 import { Injectable, signal } from '@angular/core';
 
 export interface ComandoVoz {
-  comandaId: number;
+  mesaNumero: number;
   accion: 'aceptar' | 'finalizar';
-  nuevoEstadoId:number
+  nuevoEstadoId: number
   timestamp: number;
 }
 
@@ -12,7 +12,7 @@ export interface ComandoVoz {
   providedIn: 'root',
 })
 export class ComandoVozService {
-  private recognition : any;
+  private recognition: any;
 
   enEscucha = signal<boolean>(false);
   comandoDetectado = signal<ComandoVoz | null>(null);
@@ -22,20 +22,20 @@ export class ComandoVozService {
     this.iniciarEscuchaApi();
   }
 
-  private iniciarEscuchaApi(){
+  private iniciarEscuchaApi() {
     const SpeechRec = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    
-    if(!SpeechRec){
+
+    if (!SpeechRec) {
       this.error.set('El navegador no soporta la API de reconocimiento de voz.');
       return;
     }
     this.recognition = new SpeechRec();
-    this.recognition.lang = 'es-AR'; 
-    this.recognition.continuous = true; 
-    this.recognition.interimResults = false; 
+    this.recognition.lang = 'es-AR';
+    this.recognition.continuous = true;
+    this.recognition.interimResults = false;
 
     this.recognition.onresult = (event: any) => {
-      const ultimoIndice  = event.results.length - 1;
+      const ultimoIndice = event.results.length - 1;
       const frase = event.results[ultimoIndice][0].transcript.toLowerCase().trim();
       this.procesarFrase(frase);
     }
@@ -55,28 +55,28 @@ export class ComandoVozService {
     };
 
   }
-  private procesarFrase(frase: string){
+  private procesarFrase(frase: string) {
     console.log('Escuchando: ', frase);
 
     const matchAceptar = frase.match(/mesa (\d+) (aceptar|aceptada)/);
     const matchFinalizar = frase.match(/mesa (\d+) (finalizar|finalizada)/);
 
-    if(matchFinalizar){
+    if (matchFinalizar) {
       this.comandoDetectado.set({
-        comandaId: Number(matchFinalizar[1]),
+        mesaNumero: Number(matchFinalizar[1]),
         accion: 'finalizar',
-        nuevoEstadoId: 3, // EstadoComandaId.Finalizada
+        nuevoEstadoId: 4, // EstadoComandaId.Finalizada
         timestamp: Date.now(),
       });
-    }else if(matchAceptar){
+    } else if (matchAceptar) {
       this.comandoDetectado.set({
-        comandaId: Number(matchAceptar[1]),
+        mesaNumero: Number(matchAceptar[1]),
         accion: 'aceptar',
         nuevoEstadoId: 2, // EstadoComandaId.EnPreparacion
         timestamp: Date.now(),
       })
-    } 
-    
+    }
+
   }
   toggleListening() {
     if (this.enEscucha()) {
