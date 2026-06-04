@@ -1,4 +1,4 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, effect, inject, untracked } from '@angular/core';
 import { ComandaState } from '../../services/comanda-state';
 import { ComandaCard } from "../../components/comanda-card/comanda-card";
 import { ComandoVoz, ComandoVozService } from '../../services/comando-voz/comando-voz.service';
@@ -14,7 +14,7 @@ import { ComandaHubService } from '../../../../../core/services/hubs/comanda/com
 })
 export class ComandaPage {
   state = inject(ComandaState);
-  
+
   vozService = inject(ComandoVozService);
 
   hub = inject(ComandaHubService);
@@ -22,21 +22,25 @@ export class ComandaPage {
   //VENIR DE SESION o authstate??
   restauranteId = 1;
 
-  constructor(){
+  constructor() {
     effect(() => {
-      const comando: ComandoVoz | null = this.vozService.comandoDetectado();
-      if(comando){
-        this.state.modificarEstadoComanda(comando.comandaId,comando.nuevoEstadoId);
-      }
+      const comando = this.vozService.comandoDetectado(); // solo esto trackea
+      if (!comando) return;
+      // untracked: lee el valor SIN suscribirse al signal
+      const comanda = untracked(() =>
+        this.state.comandas().find(c => c.mesaId === comando.mesaNumero)
+      );
+      if (!comanda) return;
+      this.state.modificarEstadoComanda(comanda.id, comando.nuevoEstadoId);
     })
     effect(() => {
       const comandaPush = this.hub.comandaModificada();
-      if(comandaPush){
+      if (comandaPush) {
         this.state.actualizarDesdeHub(comandaPush);
       }
     })
   }
-  ngOnInit(){
+  ngOnInit() {
     this.state.cargarComandasActivas();
 
     this.hub.conectarYUnirseGrupo(this.restauranteId);
@@ -47,6 +51,6 @@ export class ComandaPage {
   }
 
   procesarAccion(evento: { comandaId: number; estadoId: number }): void {
-  this.state.modificarEstadoComanda(evento.comandaId, evento.estadoId);
-}
+    this.state.modificarEstadoComanda(evento.comandaId, evento.estadoId);
+  }
 }
