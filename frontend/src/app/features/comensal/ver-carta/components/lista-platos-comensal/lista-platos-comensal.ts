@@ -1,9 +1,10 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output , ChangeDetectionStrategy} from '@angular/core';
 import { CardPlatoComensalComponent } from '../card-plato-comensal/card-plato-comensal';
 import { ItemPedido } from '../../../../../core/models/item-pedido';
 import { CartaItem } from '../../../../../core/models/carta-item';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-lista-platos-comensal',
   standalone: true,
   imports: [CardPlatoComensalComponent],

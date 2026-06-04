@@ -9,7 +9,7 @@ import { PageToolbar } from '../../../../../shared/ui/page-toolbar/page-toolbar'
 import { PedidoProveedor, EstadoPedidoProveedor } from '../../../../../core/models/proveedor';
 import { Insumo } from '../../../../../core/models/insumos/insumo';
 import { UnidadMedida } from '../../../../../core/models/unidad-medida';
-import { VerProveedoresStateService } from '../../services/ver-proveedores.state';
+import { VerProveedoresState } from '../../services/ver-proveedores.state';
 
 interface IngredientePickerItem {
   id: string;
@@ -30,7 +30,7 @@ interface IngredientePickerItem {
 export class HistorialProveedorComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly state = inject(VerProveedoresStateService);
+  private readonly state = inject(VerProveedoresState);
 
   proveedorSeleccionado = this.state.proveedorSeleccionado;
   historialProveedor = this.state.historialProveedor;

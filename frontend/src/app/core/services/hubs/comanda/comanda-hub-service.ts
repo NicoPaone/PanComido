@@ -42,5 +42,10 @@ export class ComandaHubService  {
   public detener():void{
     this.conexion.detener();
   }
+
+  /** Remueve solo el listener de EsteComandaModificada — NO detiene el hub compartido */
+  public desconectarEscucha(): void {
+    this.conexion.hub.off("EstadoComandaModificada");
+  }
  
 }

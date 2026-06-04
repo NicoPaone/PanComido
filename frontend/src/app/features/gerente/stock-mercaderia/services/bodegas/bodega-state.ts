@@ -17,7 +17,7 @@ export class BodegaState {
     this.api.obtenerBodegas().subscribe({
       next: (data) => this._bodegas.set(data),
 
-      error: (err) => console.error('Error al cargar bodegas', err)
+      error: (err) => void 0
     });
   }
   cargarBodegasConInsumos(): void {

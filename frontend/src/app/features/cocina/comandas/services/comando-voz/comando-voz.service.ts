@@ -40,7 +40,7 @@ export class ComandoVozService {
       this.procesarFrase(frase);
     }
     this.recognition.onerror = (event: any) => {
-      console.error('Error de voz:', event.error);
+      void 0;
       if (event.error !== 'no-speech') {
         this.error.set(`Error de micrófono: ${event.error}`);
         this.stop();
@@ -56,7 +56,7 @@ export class ComandoVozService {
 
   }
   private procesarFrase(frase: string) {
-    console.log('Escuchando: ', frase);
+    void 0;
 
     const matchAceptar = frase.match(/mesa (\d+) (aceptar|aceptada)/);
     const matchFinalizar = frase.match(/mesa (\d+) (finalizar|finalizada)/);

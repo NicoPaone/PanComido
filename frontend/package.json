@@ -6,8 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "test:ci": "ng test --watch=false"
+    "test": "vitest",
+    "test:ci": "vitest run",
+    "test:ui": "vitest --ui"
   },
   "private": true,
   "packageManager": "npm@11.2.0",

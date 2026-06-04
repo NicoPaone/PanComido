@@ -49,7 +49,7 @@ describe('StockMercaderiaService', () => {
 
       service.getStockMercaderia().subscribe();
 
-      expect(mockApiService.get).toHaveBeenCalledWith('Insumo');
+      expect(mockApiService.get).toHaveBeenCalledWith('insumo');
     });
 
     it('getById() debería llamar con el id correcto', () => {
@@ -57,7 +57,7 @@ describe('StockMercaderiaService', () => {
 
       service.getById(5).subscribe();
 
-      expect(mockApiService.get).toHaveBeenCalledWith('Insumo/5');
+      expect(mockApiService.get).toHaveBeenCalledWith('insumo/5');
     });
 
     it('crear() debería hacer POST', () => {
@@ -66,7 +66,7 @@ describe('StockMercaderiaService', () => {
 
       service.crear(nuevoProducto).subscribe();
 
-      expect(mockApiService.post).toHaveBeenCalledWith('Insumo', nuevoProducto);
+      expect(mockApiService.post).toHaveBeenCalledWith('insumo', nuevoProducto);
     });
 
     it('actualizar() debería hacer PUT con id', () => {
@@ -74,7 +74,7 @@ describe('StockMercaderiaService', () => {
 
       service.actualizar(10, mockInsumo).subscribe();
 
-      expect(mockApiService.put).toHaveBeenCalledWith('Insumo/10', mockInsumo);
+      expect(mockApiService.put).toHaveBeenCalledWith('insumo/10', mockInsumo);
     });
 
     it('eliminar() debería hacer DELETE', () => {
@@ -82,7 +82,7 @@ describe('StockMercaderiaService', () => {
 
       service.eliminar(7).subscribe();
 
-      expect(mockApiService.delete).toHaveBeenCalledWith('Insumo/7');
+      expect(mockApiService.delete).toHaveBeenCalledWith('insumo/7');
     });
   });
 });

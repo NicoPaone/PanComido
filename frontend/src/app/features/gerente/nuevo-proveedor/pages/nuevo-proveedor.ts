@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject , ChangeDetectionStrategy} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faXmark, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -6,9 +6,10 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Router } from '@angular/router';
 import { NuevoProveedor } from '../../../../core/models/proveedor';
-import { NuevoProveedorStateService } from '../services/nuevo-proveedor.state';
+import { NuevoProveedorState } from '../services/nuevo-proveedor.state';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-nuevo-proveedor',
   standalone: true,
   imports: [ReactiveFormsModule, FormsModule, FontAwesomeModule, Boton],
@@ -18,7 +19,7 @@ import { NuevoProveedorStateService } from '../services/nuevo-proveedor.state';
 export class NuevoProveedorComponent {
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
-  private readonly state = inject(NuevoProveedorStateService);
+  private readonly state = inject(NuevoProveedorState);
 
   proveedorForm = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(3)]],

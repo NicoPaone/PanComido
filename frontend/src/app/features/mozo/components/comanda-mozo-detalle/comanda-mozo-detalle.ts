@@ -1,8 +1,9 @@
-import { Component, computed, input, output, signal } from '@angular/core';
+import { Component, computed, input, output, signal , ChangeDetectionStrategy} from '@angular/core';
 import { KdsContadorTiempo } from '../../../../shared/ui/kds-contador-tiempo/kds-contador-tiempo';
 import { Comanda } from '../../../../core/models/comanda/comanda';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-comanda-mozo-detalle',
   imports: [KdsContadorTiempo],
   templateUrl: './comanda-mozo-detalle.html',

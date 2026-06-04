@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { EstadoMesa, Mesa } from '../../../core/models/mesa.model';
-import { MesaService } from '../../../core/services/mesa.service';
+import { MesaService } from '../services/mesa.service';
 import { MesaOcuparResponse } from '../../../core/models/mesa-ocupar-response';
 
 @Injectable({
@@ -18,6 +18,15 @@ export class MesaLecturaState {
   loading = this._loading.asReadonly();
   mesaSeleccionada = this._mesaSeleccionada.asReadonly();
   notificacion = this._notificacion.asReadonly();
+
+  // Métodos de mutación seguros para evitar bypass de TypeScript
+  setMesas(mesas: Mesa[]): void {
+    this._mesas.set(mesas);
+  }
+
+  updateMesas(updater: (mesas: Mesa[]) => Mesa[]): void {
+    this._mesas.update(updater);
+  }
 
   mesasDisponibles = computed(() =>
     this._mesas().filter(m => m.estadoMesa === EstadoMesa.Disponible)

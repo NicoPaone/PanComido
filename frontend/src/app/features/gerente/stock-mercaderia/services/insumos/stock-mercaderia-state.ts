@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Insumo } from '../../../../../core/models/insumos/insumo';
 import { StockMercaderiaService } from './stock-mercaderia-service';
-import { UnidadMedidaService } from '../../../../../core/services/unidad-medida-service';
+import { UnidadMedidaService } from '../unidad-medida.service';
 import { CategoriaInsumoService } from '../categorias/categoria-insumo.service';
 import { UnidadMedida } from '../../../../../core/models/unidad-medida';
 import { CategoriaInsumo } from '../../../../../core/models/insumos/categorias/categoria-insumo';
@@ -43,7 +43,7 @@ export class StockMercaderiaState {
         this._cargando.set(false);
       },
       error: (err) => {
-        console.error('Error al cargar mercadería', err);
+        
         this._cargando.set(false);
       }
     });
@@ -58,14 +58,14 @@ export class StockMercaderiaState {
         this._categoriasInsumos.set(response.categoriasRes);
         this._unidadMedidas.set(response.unidadesRes);
       },
-      error: (err) => console.error('Error al cargar catalogos', err)
+      error: (err) => {}
     });
   }
 
   guardarProducto(producto: CrearInsumoRequest): void {
     this._cargando.set(true);
     
-    const idEdicion = (producto as any).id;
+    const idEdicion = 'id' in producto ? (producto as any).id : null;
 
     if (idEdicion) {
       this.api.actualizar(idEdicion, producto).subscribe({
@@ -82,11 +82,11 @@ export class StockMercaderiaState {
         next: (nuevo: Insumo) => {
           this._productos.update(lista => [...lista, nuevo]);
           this._cargando.set(false);
-          console.log(nuevo);
+          
         },
         error: (err) => {
           this._cargando.set(false)
-          console.log('el error: ',err.error.error)
+          
 
         }
       });

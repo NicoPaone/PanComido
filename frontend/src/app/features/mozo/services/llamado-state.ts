@@ -1,6 +1,6 @@
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { MozoHubService } from '../../../core/services/hubs/llamados/mozo-hub-service';
-import { LlamadoService } from '../../../core/services/llamados/llamado-service';
+import { LlamadoService } from './llamado.service';
 import { Llamado } from '../../../core/models/llamados/llamado';
 
 const MS_NUEVO = 5000;
@@ -84,6 +84,10 @@ export class LlamadoState {
       this.#_hubConectado.set(false);
       this.#_error.set('No pudimos conectar al sistema de notificaciones.');
     }
+  }
+
+  desconectarHub(): void {
+    this.#hub.desconectarEscucha();
   }
 
   resolver(llamadoId: number): void {

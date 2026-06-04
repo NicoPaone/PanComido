@@ -3,7 +3,7 @@ import { MozoComandaService } from './mozo-comanda-service';
 import { Comanda } from '../../../core/models/comanda/comanda';
 import { forkJoin } from 'rxjs';
 import { ComandaHubService } from '../../../core/services/hubs/comanda/comanda-hub-service';
-import { EstadoComanda } from '../../../core/models/comanda/comanda';
+import { EstadoComanda, EstadoComandaId } from '../../../core/models/comanda/comanda';
 
 @Injectable({
   providedIn: 'root',
@@ -33,7 +33,9 @@ readonly #hubEffect = effect(() => {
 
     const normalizada = {
         ...actualizada,
-        estado: actualizada.estado.replace(/\s/g, '') as EstadoComanda
+        estado: (typeof actualizada.estado === 'string' 
+            ? actualizada.estado.replace(/\s/g, '') 
+            : EstadoComandaId[actualizada.estado as unknown as number]) as EstadoComanda
     };
 
     this._comandas.update(lista => {
@@ -54,11 +56,11 @@ readonly #hubEffect = effect(() => {
     this.api.listarComandas().subscribe({
       next: (comandas) => {
         this._comandas.set(comandas);
-        console.log('Comandas cargadas:', comandas);
+        
         this._cargando.set(false);
       },
       error: (error) => {
-        console.error('Error al cargar comandas:', error);
+        
         this._cargando.set(false);
       }
     });
@@ -73,11 +75,15 @@ readonly #hubEffect = effect(() => {
           lista.map(c => c.id === comandaActualizada.id ? comandaActualizada : c)
         );
       },
-      error: (err) => console.error('Error al entregar items', err)
+      error: (err) => {}
     });
   }
  
   async conectarHub(restauranteId: number, mozoId: number): Promise<void> {
     await this.hub.conectarComoMozo(restauranteId, mozoId);
+  }
+
+  desconectarHub(): void {
+    this.hub.desconectarEscucha();
   }
 }

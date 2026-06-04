@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { ComandaService } from './comanda-service';
-import { Comanda } from '../../../../core/models/comanda/comanda';
+import { Comanda, EstadoComandaId, EstadoComanda } from '../../../../core/models/comanda/comanda';
 
 @Injectable({
   providedIn: 'root',
@@ -15,59 +15,66 @@ export class ComandaState {
   cargando = this._cargando.asReadonly();
 
 
-  comandasNuevas = computed(() => 
+  comandasNuevas = computed(() =>
     this._comandas().filter(c => c.estado === 'Nueva')
   );
-  
-  comandasEnPreparacion = computed(() => 
+
+  comandasEnPreparacion = computed(() =>
     this._comandas().filter(c => c.estado === 'EnPreparacion')
   );
-  
-  comandasEnEspera = computed(() => 
+
+  comandasEnEspera = computed(() =>
     this._comandas().filter(c => c.estado === 'EnEspera')
   );
-   comandasfinalizadas = computed(() => 
+  comandasfinalizadas = computed(() =>
     this._comandas().filter(c => c.estado === 'Finalizada')
   );
 
-  
+
   modificarEstadoComanda(comandaId: number, tipoId: number): void {
     this.api.modificarEstadoComanda(comandaId, tipoId).subscribe({
       next: (comandaActualizada) => {
         this._comandas.update(lista =>
-          lista.map(c => c.id === comandaActualizada.id 
-            ? comandaActualizada 
+          lista.map(c => c.id === comandaActualizada.id
+            ? comandaActualizada
             : c
           )
         );
       },
-    error: (err) => console.error('Error al modificar comanda', err)
-  });
-}
+      error: (err) => console.error('Error al modificar comanda', err)
+    });
+  }
   marcarItemEntregado(comandaId: number, articuloComandaId: number): void {
-  this.api.marcarItemEntregado(comandaId, articuloComandaId).subscribe({
-    next: (comandaActualizada) => {
-      this._comandas.update(lista =>
-        lista.map(c => c.id === comandaActualizada.id ? comandaActualizada : c)
-      );
-    },
-    error: (err) => console.error('Error al marcar item', err)
-  });
-}
+    this.api.marcarItemEntregado(comandaId, articuloComandaId).subscribe({
+      next: (comandaActualizada) => {
+        this._comandas.update(lista =>
+          lista.map(c => c.id === comandaActualizada.id ? comandaActualizada : c)
+        );
+      },
+      error: (err) => console.error('Error al marcar item', err)
+    });
+  }
 
 
-  actualizarDesdeHub(comandaRecibida: Comanda): void{
+  actualizarDesdeHub(comandaRecibida: Comanda): void {
+    const normalizada = {
+      ...comandaRecibida,
+      estado: (typeof comandaRecibida.estado === 'string'
+        ? comandaRecibida.estado.replace(/\s/g, '')
+        : EstadoComandaId[comandaRecibida.estado as unknown as number]) as EstadoComanda
+    };
+
     this._comandas.update(listaActual => {
-      const existe = listaActual.some(comanda => comanda.id === comandaRecibida.id);
-      if(existe){
-        return listaActual.map(comanda => comanda.id === comandaRecibida.id ? comandaRecibida : comanda);
-      } else{ 
-        return [...listaActual, comandaRecibida];
+      const existe = listaActual.some(comanda => comanda.id === normalizada.id);
+      if (existe) {
+        return listaActual.map(comanda => comanda.id === normalizada.id ? normalizada : comanda);
+      } else {
+        return [...listaActual, normalizada];
       }
     })
   }
 
-  cargarComandasActivas():void{
+  cargarComandasActivas(): void {
     this._cargando.set(true);
     this.api.obtenerComandasActivas().subscribe({
       next: (data) => {

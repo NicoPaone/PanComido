@@ -1,19 +1,21 @@
-import { Component, HostListener, inject, input, signal } from '@angular/core';
+import { Component, HostListener, inject, input, signal , ChangeDetectionStrategy} from '@angular/core';
 import { Router } from '@angular/router';
 import { Buscador } from '../../../../../app/shared/ui/buscador/buscador';
 import { ListaPlatosComensalComponent } from '../components/lista-platos-comensal/lista-platos-comensal';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
-import { PedidoService } from '../../../../../app/core/services/pedido.service';
+import { PedidoState } from '../../services/pedido.state';
 import { ItemPedido } from '../../../../core/models/item-pedido';
 import { configuracionRestauranteMock } from '../../../../../app/core/interceptors/handlers/configuracion-restaurante.mock';
 import { CartaState } from '../service/carta-state';
 import { ComensalFooterCart } from '../../components/comensal-footer-cart/comensal-footer-cart';
 import { FiltrosCartaOverlay } from '../../components/filtros-carta-overlay/filtros-carta-overlay';
 import { CommonModule } from '@angular/common';
+import { ComensalState } from '../../services/comensal-state';
 
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ver-carta',
   standalone: true,
   imports: [
@@ -31,8 +33,9 @@ export class VerCarta {
   
 
   private router = inject(Router);
-  private pedidoService = inject(PedidoService);
+  private pedidoService = inject(PedidoState);
   state = inject(CartaState);
+  comensalState = inject(ComensalState);
 
   logoUrl = input<string>('assets/images/logo/logo_el_ferroviario.png');
 

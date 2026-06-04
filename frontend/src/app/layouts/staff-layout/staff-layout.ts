@@ -1,18 +1,32 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, viewChild } from '@angular/core';
+import { Component, computed, inject, viewChild , ChangeDetectionStrategy} from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { SidebarComponent } from '../../shared/components/sidebar/sidebar';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-staff-layout',
   imports: [CommonModule,RouterModule,SidebarComponent],
   templateUrl: './staff-layout.html',
   styleUrl: './staff-layout.css',
 })
 export class StaffLayout {
+  private authService = inject(AuthService);
 
   sidebar = viewChild(SidebarComponent);
   mainContentCollapsed = computed(() => this.sidebar()?.isCollapsed() ?? true);
 
+  currentRole = computed(() => this.authService.currentRole());
+  
+  userProfile = {
+    name: 'Juan Perez',
+    role: 'Administrador',
+    initials: 'JP',
+    avatarColor: '#f5a5a5'
+  };
 
+  logout(): void {
+    void 0;
+  }
 }

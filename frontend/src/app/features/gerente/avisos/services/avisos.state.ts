@@ -106,7 +106,7 @@ export class AvisosStateService {
             });
             this._vencimientos.set(vencimientosAvisos);
           },
-          error: (err) => console.error('Error al cargar avisos', err)
+          error: (err) => void 0
         });
     });
   }

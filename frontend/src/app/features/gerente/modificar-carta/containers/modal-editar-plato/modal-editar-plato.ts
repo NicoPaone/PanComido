@@ -5,7 +5,7 @@ import { Plato, RecetaIngrediente } from '../../../../../core/models/plato';
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
 import { ToggleComponent } from '../../../../../shared/ui/toggle/toggle';
 import { Buscador } from '../../../../../shared/ui/buscador/buscador';
-import { calcularCostoReceta } from '../../../../../core/services/plato.service';
+import { calcularCostoReceta } from '../../../services/plato.service';
 import { Insumo } from '../../../../../core/models/insumos/insumo';
 import { ModificarCartaApiService } from '../../services/modificar-carta.api';
 

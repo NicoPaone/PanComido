@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { ApiService } from './api-service';
-import { UnidadMedida } from '../models/unidad-medida';
+import { ApiService } from '../../../../core/services/api-service';
+import { UnidadMedida } from '../../../../core/models/unidad-medida';
 import { Observable } from 'rxjs';
 
 @Injectable({

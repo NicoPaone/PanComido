@@ -6,7 +6,7 @@ import { Plato } from '../../../../core/models/plato';
 import { ListaPlatosComponent } from '../components/lista-platos/lista-platos';
 import { PageToolbar } from '../../../../shared/ui/page-toolbar/page-toolbar';
 import { Dropdown } from '../../../../shared/ui/dropdown/dropdown';
-import { ModalEditarPlatoComponent } from '../components/modal-editar-plato/modal-editar-plato';
+import { ModalEditarPlatoComponent } from '../containers/modal-editar-plato/modal-editar-plato';
 import { ModalEliminarPlatoComponent } from '../components/modal-eliminar-plato/modal-eliminar-plato';
 import { ModificarCartaStateService } from '../services/modificar-carta.state';
 

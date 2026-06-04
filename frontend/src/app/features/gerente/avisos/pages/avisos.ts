@@ -10,7 +10,7 @@ import { Buscador } from '../../../../shared/ui/buscador/buscador';
 
 // Modelos y Estados
 import { Aviso } from '../../../../core/models/aviso.model';
-import { VencimientosStateService } from '../../aviso-vencimientos/services/vencimientos.state';
+import { VencimientosState } from '../../aviso-vencimientos/services/vencimientos.state';
 import { AvisosStateService } from '../services/avisos.state';
 import { UnidadMedida } from '../../../../core/models/unidad-medida';
 import { RealizarPedidoSugeridoStateService } from '../../realizar-pedido-sugerido/services/realizar-pedido-sugerido.state';
@@ -26,7 +26,7 @@ import { RealizarPedidoSugeridoStateService } from '../../realizar-pedido-sugeri
 export class AvisosPage implements OnInit {
   
   state = inject(AvisosStateService);
-  pedidoState = inject(VencimientosStateService);
+  pedidoState = inject(VencimientosState);
   pedidoSugeridoState = inject(RealizarPedidoSugeridoStateService);
   router = inject(Router);
   
@@ -138,7 +138,7 @@ abrirPreviewSugerencia(tipo: 'sistema' | 'ia') {
         this.cerrarPedidoStock();
         this.router.navigate(['/staff', 'gerente', 'ver-proveedores', proveedor.id, 'historial']);
       },
-      error: (err) => console.error('Error al confirmar pedido', err)
+      error: (err) => void 0
     });
   }
 

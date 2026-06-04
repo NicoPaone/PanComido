@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
-import { Plato, RecetaIngrediente } from '../models/plato';
+import { Plato, RecetaIngrediente } from '../../../core/models/plato';
 import { Observable, of, delay } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
 
 export const PLATO_ENDPOINTS = {
   base: `${environment.apiUrl}/platos`,

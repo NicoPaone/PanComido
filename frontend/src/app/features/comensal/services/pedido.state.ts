@@ -1,10 +1,10 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { ItemPedido } from '../models/item-pedido';
+import { ItemPedido } from '../../../core/models/item-pedido';
 
 @Injectable({
   providedIn: 'root'
 })
-export class PedidoService {
+export class PedidoState {
 
   // Signal reactivo para los pedidos
   private pedidosSignal = signal<ItemPedido[]>([]);
@@ -26,14 +26,8 @@ export class PedidoService {
   });
 
   agregarPedido(item: ItemPedido) {
-    console.log('Agregando:', item.plato.nombre, 'Cantidad:', item.cantidad);
-    
     // Agregar al signal (Angular detectará el cambio automáticamente)
     this.pedidosSignal.update(pedidos => [...pedidos, item]);
-    
-    console.log('Pedidos actuales:', this.pedidosSignal().length);
-    console.log('Total items:', this.cantidadTotal());
-    console.log('Total precio:', this.totalPrecio());
   }
 
   obtenerPedidos(): ItemPedido[] {

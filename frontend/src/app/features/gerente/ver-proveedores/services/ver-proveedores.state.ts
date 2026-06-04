@@ -7,7 +7,7 @@ import { UnidadMedida } from '../../../../core/models/unidad-medida';
 import { Bodega } from '../../../../core/models/bodega/bodega';
 
 @Injectable({ providedIn: 'root' })
-export class VerProveedoresStateService {
+export class VerProveedoresState {
   private api = inject(VerProveedoresApiService);
   private destroyRef = inject(DestroyRef);
 

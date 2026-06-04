@@ -1,17 +1,17 @@
 import { inject, Injectable, signal, computed } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { ComandaService } from './comanda.service';
-import { PedidoService } from '../../../core/services/pedido.service';
+import { PedidoState } from './pedido.state';
 import { ComandaClienteResponse } from '../../../core/models/comanda-cliente-response';
 import { Mesa } from '../../../core/models/mesa.model';
 import { ItemPedidoRequest } from '../../../core/models/confirmar-pedido-request';
 
 @Injectable({ providedIn: 'root' })
-export class ComandaStateService {
+export class ComandaState {
   private comandaService = inject(ComandaService);
-  private pedidoService = inject(PedidoService);
+  private pedidoService = inject(PedidoState);
 
-  // Signals de estado
- // Signals de estado (inicializan desde sessionStorage si existe)
+  // Signals de estado (inicializan desde sessionStorage si existe)
   private _comandaId = signal<number | null>(this.leerNumeroDeStorage('comandaId'));
   private _mesaId = signal<number | null>(this.leerNumeroDeStorage('mesaId'));
   private _mesaInfo = signal<Mesa | null>(null);
@@ -34,36 +34,30 @@ export class ComandaStateService {
    * Ocupar mesa y crear comanda
    * Llamar DESPUÉS de que el usuario ingrese la cantidad de personas
    */
-ocuparMesa(mesaId: number, cantidadComensales: number): Promise<void> {
+  async ocuparMesa(mesaId: number, cantidadComensales: number): Promise<void> {
     this._mesaId.set(mesaId);
     this._cargando.set(true);
     this._error.set(null);
 
-    return new Promise((resolve, reject) => {
-      this.comandaService.ocuparMesa(mesaId, cantidadComensales).subscribe({
-        next: (response) => {
-          this._mesaInfo.set(response.mesa);
-          this._comandaId.set(response.idComandaGenerada);
-          // Persistir para que sobreviva refresh / navegación directa
-          sessionStorage.setItem('comandaId', String(response.idComandaGenerada));
-          sessionStorage.setItem('mesaId', String(mesaId));
-          this._cargando.set(false);
-          resolve();
-        },
-        error: (err) => {
-          console.error('Error al ocupar mesa:', err);
-          this._error.set('No se pudo ocupar la mesa. Intenta nuevamente.');
-          this._cargando.set(false);
-          reject(err);
-        }
-      });
-    });
+    try {
+      const response = await firstValueFrom(this.comandaService.ocuparMesa(mesaId, cantidadComensales));
+      this._mesaInfo.set(response.mesa);
+      this._comandaId.set(response.idComandaGenerada);
+      sessionStorage.setItem('comandaId', String(response.idComandaGenerada));
+      sessionStorage.setItem('mesaId', String(mesaId));
+      this._cargando.set(false);
+    } catch (err: any) {
+      void 0;
+      this._error.set('No se pudo ocupar la mesa. Intenta nuevamente.');
+      this._cargando.set(false);
+      throw err;
+    }
   }
 
   /**
    * PASO 2: Confirmar pedido (envía items al backend)
    */
-  confirmarPedido(): Promise<ComandaClienteResponse> {
+  async confirmarPedido(): Promise<ComandaClienteResponse> {
     const comandaId = this._comandaId();
     
     if (!comandaId) {
@@ -88,47 +82,38 @@ ocuparMesa(mesaId: number, cantidadComensales: number): Promise<void> {
       observacionesGenerales: p.observacionesGenerales ?? null
     }));
 
-    return new Promise((resolve, reject) => {
-      this.comandaService.confirmarPedido(comandaId, { items }).subscribe({
-        next: (response) => {
-          this._estadoPedido.set(response);
-          this._cargando.set(false);
-          // Limpiamos el carrito después de confirmar
-          this.pedidoService.limpiarPedidos();
-          resolve(response);
-        },
-        error: (err) => {
-          console.error('Error al confirmar pedido:', err);
-          this._error.set('Error al confirmar el pedido. Intenta nuevamente.');
-          this._cargando.set(false);
-          reject(err);
-        }
-      });
-    });
+    try {
+      const response = await firstValueFrom(this.comandaService.confirmarPedido(comandaId, { items }));
+      this._estadoPedido.set(response);
+      this._cargando.set(false);
+      this.pedidoService.limpiarPedidos();
+      return response;
+    } catch (err: any) {
+      void 0;
+      this._error.set('Error al confirmar el pedido. Intenta nuevamente.');
+      this._cargando.set(false);
+      throw err;
+    }
   }
 
   /**
    * PASO 3: Consultar estado del pedido
    */
-  consultarEstado(): Promise<ComandaClienteResponse> {
+  async consultarEstado(): Promise<ComandaClienteResponse> {
     const comandaId = this._comandaId();
     
     if (!comandaId) {
       return Promise.reject('No hay comanda activa');
     }
 
-    return new Promise((resolve, reject) => {
-      this.comandaService.obtenerEstado(comandaId).subscribe({
-        next: (response) => {
-          this._estadoPedido.set(response);
-          resolve(response);
-        },
-        error: (err) => {
-          console.error('Error al consultar estado:', err);
-          reject(err);
-        }
-      });
-    });
+    try {
+      const response = await firstValueFrom(this.comandaService.obtenerEstado(comandaId));
+      this._estadoPedido.set(response);
+      return response;
+    } catch (err: any) {
+      void 0;
+      throw err;
+    }
   }
 
   /**

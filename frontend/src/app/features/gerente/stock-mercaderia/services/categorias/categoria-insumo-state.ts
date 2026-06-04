@@ -15,7 +15,7 @@ export class CategoriaState {
   cargarCategorias(): void {
     this.api.obtenerCategorias().subscribe((categorias) => {
       this._categorias.set(categorias);
-      console.log(categorias);
+      void 0;
     });
   }
 

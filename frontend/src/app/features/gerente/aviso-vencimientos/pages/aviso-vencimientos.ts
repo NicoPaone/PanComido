@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { VencimientosStateService } from '../services/vencimientos.state';
+import { VencimientosState } from '../services/vencimientos.state';
 import { PageToolbar } from '../../../../shared/ui/page-toolbar/page-toolbar';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { UnidadMedida } from '../../../../core/models/unidad-medida';
@@ -14,7 +14,7 @@ import { UnidadMedida } from '../../../../core/models/unidad-medida';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VencimientosPage implements OnInit {
-  state = inject(VencimientosStateService);
+  state = inject(VencimientosState);
 
   ngOnInit() {
     this.state.cargarIngredientes();

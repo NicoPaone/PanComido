@@ -1,11 +1,12 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject , ChangeDetectionStrategy} from '@angular/core';
 import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
-import { ComandaStateService } from '../../services/comanda-state.service';
+import { ComandaState } from '../../services/comanda-state';
 import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-pago-confirmado',
   standalone: true,
   imports: [DecimalPipe, BotonComensal],
@@ -14,7 +15,7 @@ import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boto
 })
 export class PagoConfirmado {
   private router = inject(Router);
-  private comandaState = inject(ComandaStateService);
+  private comandaState = inject(ComandaState);
 
   configuracion = configuracionRestauranteMock;
   estado = this.comandaState.estadoPedido;
@@ -27,6 +28,6 @@ export class PagoConfirmado {
 
   puntuarPlatos(): void {
     // Para futura implementación
-    console.log("Navegando a puntuar platos...");
+    void 0;
   }
 }

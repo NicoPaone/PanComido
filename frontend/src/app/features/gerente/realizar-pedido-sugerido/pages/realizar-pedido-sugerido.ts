@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject , ChangeDetectionStrategy} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -9,6 +9,7 @@ import { UnidadMedida } from '../../../../core/models/unidad-medida';
 import { RealizarPedidoSugeridoStateService } from '../services/realizar-pedido-sugerido.state';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-realizar-pedido-sugerido',
   standalone: true,
   imports: [DecimalPipe, FormsModule, Boton, Buscador],

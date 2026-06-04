@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { LlamadoService } from './llamado-service';
+import { UnidadMedidaService } from './unidad-medida.service';
 
-describe('LlamadoService', () => {
-  let service: LlamadoService;
+describe('UnidadMedidaService', () => {
+  let service: UnidadMedidaService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(LlamadoService);
+    service = TestBed.inject(UnidadMedidaService);
   });
 
   it('should be created', () => {

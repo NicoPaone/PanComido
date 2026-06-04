@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiService } from './api-service';
-import { Llamado } from '../models/llamados/llamado';
+import { ApiService } from '../../../core/services/api-service';
+import { Llamado } from '../../../core/models/llamados/llamado';
 
 @Injectable({ providedIn: 'root' })
 export class PagoService {

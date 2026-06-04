@@ -11,7 +11,7 @@ import { PedidoProveedor, EstadoPedidoProveedor, Proveedor } from '../../../../c
 import { Router, RouterModule } from '@angular/router';
 import { ProveedorListComponent } from '../components/proveedor-list/proveedor-list';
 import { Insumo as ProductoStockMock } from '../../../../core/models/insumos/insumo';
-import { VerProveedoresStateService } from '../services/ver-proveedores.state';
+import { VerProveedoresState } from '../services/ver-proveedores.state';
 import { UnidadMedida } from '../../../../core/models/unidad-medida';
 import { CategoriaInsumo } from '../../../../core/models/insumos/categorias/categoria-insumo';
 
@@ -25,7 +25,7 @@ import { CategoriaInsumo } from '../../../../core/models/insumos/categorias/cate
 })
 export class VerProveedoresComponent implements OnInit {
   private readonly router = inject(Router);
-  private readonly state = inject(VerProveedoresStateService);
+  private readonly state = inject(VerProveedoresState);
 
   private readonly pedidoModalCard = viewChild<ElementRef<HTMLElement>>('pedidoModalCard');
 

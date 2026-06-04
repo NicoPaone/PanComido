@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { VerProveedoresStateService } from './ver-proveedores.state';
+import { VerProveedoresState } from './ver-proveedores.state';
 import { VerProveedoresApiService } from './ver-proveedores.api';
 import { Proveedor, PedidoProveedor } from '../../../../core/models/proveedor';
 import { Insumo as ProductoStockMock } from '../../../../core/models/producto-stock';
 import { vi } from 'vitest';
 
-describe('VerProveedoresStateService', () => {
-  let service: VerProveedoresStateService;
+describe('VerProveedoresState', () => {
+  let service: VerProveedoresState;
   let apiServiceMock: any;
 
   const mockProveedores: Proveedor[] = [
@@ -71,12 +71,12 @@ describe('VerProveedoresStateService', () => {
 
     TestBed.configureTestingModule({
       providers: [
-        VerProveedoresStateService,
+        VerProveedoresState,
         { provide: VerProveedoresApiService, useValue: apiServiceMock }
       ]
     });
 
-    service = TestBed.inject(VerProveedoresStateService);
+    service = TestBed.inject(VerProveedoresState);
   });
 
   it('debería crearse correctamente', () => {

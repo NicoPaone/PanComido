@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, inject, input, output , ChangeDetectionStrategy} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Insumo } from '../../../../../core/models/insumos/insumo';
 import { Bodega } from '../../../../../core/models/bodega/bodega';
@@ -19,6 +19,7 @@ export const stockMinimoValidator: ValidatorFn = (control: AbstractControl): Val
 };
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-producto-form',
   imports: [ReactiveFormsModule],
   templateUrl: './producto-form.html',
@@ -61,7 +62,7 @@ export class ProductoForm {
       tipo: ['Ingrediente'] 
     }, { validators: stockMinimoValidator });
 
-    console.log(this.form);
+    void 0;
   }
 onSubmit(): void {
     if (this.form.valid) {
@@ -79,7 +80,7 @@ onSubmit(): void {
         fechaVencimiento: formValue.fechaVencimiento 
         // input type="date" deberia devolver YYYY-MM-DD
       };
-      console.log("el payloadd: ",payload);
+      void 0;
       this.guardar.emit(payload);
       this.form.reset({
         stockMinimo: 0,

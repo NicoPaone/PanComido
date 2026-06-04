@@ -4,7 +4,7 @@ import { NuevoProveedorApiService } from './nuevo-proveedor.api';
 import { NuevoProveedor } from '../../../../core/models/proveedor';
 
 @Injectable({ providedIn: 'root' })
-export class NuevoProveedorStateService {
+export class NuevoProveedorState {
   private api = inject(NuevoProveedorApiService);
   private destroyRef = inject(DestroyRef);
 

@@ -1,4 +1,4 @@
-import { Component, inject, effect } from '@angular/core';
+import { Component, inject, effect , ChangeDetectionStrategy} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -7,9 +7,10 @@ import { ToggleComponent } from '../../../../shared/ui/toggle/toggle';
 import { DetalleRecetaComponent } from '../components/detalle-receta/detalle-receta';
 import { RecetaIngrediente } from '../../../../core/models/plato';
 import { computed } from '@angular/core';
-import { CrearPlatoStateService } from '../services/crear-plato.state';
+import { CrearPlatoState } from '../services/crear-plato.state';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-crear-plato',
   standalone: true,
   imports: [ReactiveFormsModule, FormsModule, Boton, ToggleComponent, DetalleRecetaComponent],
@@ -19,7 +20,7 @@ import { CrearPlatoStateService } from '../services/crear-plato.state';
 export class CrearPlatoComponent {
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
-  private readonly state = inject(CrearPlatoStateService);
+  private readonly state = inject(CrearPlatoState);
 
   platoForm = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(3)]],

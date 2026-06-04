@@ -2,9 +2,10 @@ import { FormsModule } from '@angular/forms';
 import { Buscador } from '../../../../../shared/ui/buscador/buscador';
 import { RecetaIngrediente } from '../../../../../core/models/plato';
 import { Insumo, INSUMOS_MOCK } from '../../../../../core/models/insumos/insumo';
-import { Component, output, signal, computed, input, OnInit } from '@angular/core';
+import { Component, output, signal, computed, input, OnInit , ChangeDetectionStrategy} from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-detalle-receta',
   standalone: true,
   imports: [FormsModule, Buscador],

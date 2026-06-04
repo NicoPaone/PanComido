@@ -9,7 +9,7 @@ export const GERENTE_ROUTES: Routes = [
   },
   {
     path: 'mapa-de-mesas',
-    loadComponent: () => import('../mesas/components/mapa-mesas/mapa-mesas').then(m => m.MapaMesas)
+    loadComponent: () => import('../mesas/pages/mapa-mesas/mapa-mesas').then(m => m.MapaMesas)
   },
   {
     path: 'modificar-carta',

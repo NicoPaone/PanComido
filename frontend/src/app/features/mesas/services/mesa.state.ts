@@ -1,11 +1,10 @@
-import { App } from './../../../app';
 import { Injectable, inject, signal } from '@angular/core';
-import { MesaService } from '../../../core/services/mesa.service';
+import { MesaService } from './mesa.service';
 import { Mesa, EstadoMesa, FormaMesa } from '../../../core/models/mesa.model';
 import { MesaLecturaState } from '../shared/mesa-lectura-state';
 
 @Injectable({ providedIn: 'root' })
-export class MesaStateService {
+export class MesaState {
   private lectura = inject(MesaLecturaState);
   private mesaService = inject(MesaService);
 
@@ -36,7 +35,7 @@ export class MesaStateService {
   }
 
   cancelarEdicion(): void {
-    this.lectura['_mesas'].set(JSON.parse(JSON.stringify(this._mesasBackup)));
+    this.lectura.setMesas(JSON.parse(JSON.stringify(this._mesasBackup)));
     this._isEditorMode.set(false);
   }
 
@@ -45,7 +44,7 @@ export class MesaStateService {
     const mesa = mesas.find(m => m.id === id);
     if (!mesa) return;
 
-    this.lectura['_mesas'].update(mesas =>
+    this.lectura.updateMesas(mesas =>
       mesas.map(m => m.id === id ? {
         ...m,
         posicionXInicio: m.posicionXInicio + deltaX,
@@ -77,7 +76,7 @@ export class MesaStateService {
       posicionYInicio: 15, posicionYFin: 15 + alto
     };
 
-    this.lectura['_mesas'].update(m => [...m, nuevaMesa]);
+    this.lectura.updateMesas(m => [...m, nuevaMesa]);
   }
 
   eliminarMesa(id: number): void {
@@ -89,11 +88,11 @@ export class MesaStateService {
       return;
     }
 
-    this.lectura['_mesas'].update(mesas => mesas.filter(m => m.id !== id));
+    this.lectura.updateMesas(mesas => mesas.filter(m => m.id !== id));
   }
 
   actualizarNumero(id: number, nuevoNumero: number): void {
-    this.lectura['_mesas'].update(mesas =>
+    this.lectura.updateMesas(mesas =>
       mesas.map(m => m.id === id ? { ...m, numeroMesa: nuevoNumero } : m)
     );
   }

@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { HistorialProveedorComponent } from './historial-proveedor';
-import { VerProveedoresStateService } from '../../services/ver-proveedores.state';
+import { VerProveedoresState } from '../../services/ver-proveedores.state';
 import { Proveedor, PedidoProveedor } from '../../../../../core/models/proveedor';
 import { vi } from 'vitest';
 
@@ -56,7 +56,7 @@ describe('HistorialProveedorComponent', () => {
     TestBed.configureTestingModule({
       imports: [HistorialProveedorComponent],
       providers: [
-        { provide: VerProveedoresStateService, useValue: stateMock },
+        { provide: VerProveedoresState, useValue: stateMock },
         { provide: Router, useValue: routerMock },
         {
           provide: ActivatedRoute,
@@ -96,7 +96,7 @@ describe('HistorialProveedorComponent', () => {
       TestBed.configureTestingModule({
         imports: [HistorialProveedorComponent],
         providers: [
-          { provide: VerProveedoresStateService, useValue: stateMock },
+          { provide: VerProveedoresState, useValue: stateMock },
           { provide: Router, useValue: routerMock },
           {
             provide: ActivatedRoute,

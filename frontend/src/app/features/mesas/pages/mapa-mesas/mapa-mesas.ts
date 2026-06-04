@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CdkDragEnd, DragDropModule } from '@angular/cdk/drag-drop';
-import { MesaStateService } from '../../services/mesa.state';
+import { MesaState } from '../../services/mesa.state';
 import { EstadoMesa, FormaMesa, Mesa } from '../../../../core/models/mesa.model';
 import { MesaItem } from '../../../../shared/components/mesa-item/mesa-item';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -15,10 +15,10 @@ import { AuthService } from '../../../../core/services/auth.service';
   styleUrl: './mapa-mesas.css'
 })
 export class MapaMesas implements OnInit {
-  state = inject(MesaStateService);
+  state = inject(MesaState);
   auth = inject(AuthService);
   FormaMesa = FormaMesa;
-  mesaMobileSeleccionada: Mesa | null = null;
+  mesaMobileSeleccionada = signal<Mesa | null>(null);
 
   // Modal de ocupar mesa
   mostrarModalOcupar = signal<boolean>(false);
@@ -34,44 +34,43 @@ export class MapaMesas implements OnInit {
   }
 
   seleccionarMesaMobile(mesa: Mesa) {
-    this.mesaMobileSeleccionada = mesa;
+    this.mesaMobileSeleccionada.set(mesa);
   }
 
   volverGridMobile() {
-    this.mesaMobileSeleccionada = null;
+    this.mesaMobileSeleccionada.set(null);
   }
 
   abrirMesaMobile() {
-    if (this.mesaMobileSeleccionada) {
-      this.ejecutarAccion(this.mesaMobileSeleccionada.id, 'ocupar');
-      this.mesaMobileSeleccionada = null; // Volvemos al grid automáticamente
+    if (this.mesaMobileSeleccionada()) {
+      this.ejecutarAccion(this.mesaMobileSeleccionada()!.id, 'ocupar');
+      this.mesaMobileSeleccionada.set(null); // Volvemos al grid automáticamente
     }
   }
 
   cerrarMesaMobile() {
-    if (this.mesaMobileSeleccionada) {
-      this.ejecutarAccion(this.mesaMobileSeleccionada.id, 'cerrar');
-      this.mesaMobileSeleccionada = null;
+    if (this.mesaMobileSeleccionada()) {
+      this.ejecutarAccion(this.mesaMobileSeleccionada()!.id, 'cerrar');
+      this.mesaMobileSeleccionada.set(null);
     }
   }
 
   habilitarMesaMobile() {
-    if (this.mesaMobileSeleccionada) {
-      this.ejecutarAccion(this.mesaMobileSeleccionada.id, 'cerrar');
-      this.mesaMobileSeleccionada = null;
+    if (this.mesaMobileSeleccionada()) {
+      this.ejecutarAccion(this.mesaMobileSeleccionada()!.id, 'cerrar');
+      this.mesaMobileSeleccionada.set(null);
     }
   }
 
   deshabilitarMesaMobile() {
-    if (this.mesaMobileSeleccionada) {
-      this.ejecutarAccion(this.mesaMobileSeleccionada.id, 'deshabilitar');
-      this.mesaMobileSeleccionada = null;
+    if (this.mesaMobileSeleccionada()) {
+      this.ejecutarAccion(this.mesaMobileSeleccionada()!.id, 'deshabilitar');
+      this.mesaMobileSeleccionada.set(null);
     }
   }
 
   verComandaMobile() {
-    if (this.mesaMobileSeleccionada) {
-      // this.ejecutarAccion(this.mesaMobileSeleccionada.id, 'detalles');
+    if (this.mesaMobileSeleccionada()) {
       this.state.mostrarNotificacion('Esperando comanda de los comensales...', 'info');
     }
   }
@@ -115,7 +114,7 @@ export class MapaMesas implements OnInit {
 
     // Próximamente: Llamar al backend para traer la comanda activa por MesaId
     // Ej: GET /comanda/mesa/{id}/activa
-    console.log('Buscar comanda activa para mesa:', id);
+    void 0;
   }
 
   confirmarOcupar() {

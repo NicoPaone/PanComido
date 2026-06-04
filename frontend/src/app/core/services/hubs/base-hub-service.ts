@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
@@ -26,10 +26,10 @@ export class SignalRConexionService {
     if (!this.promesaInicio) {
       this.promesaInicio = this.hub.start()
         .then(() => {
-          console.log("Conexión ÚNICA establecida con el servidor");
+          
         })
         .catch(error => {
-          console.error("Error al iniciar el hub: ", error);
+          
           this.promesaInicio = null; // Reseteamos para que se pueda reintentar
           throw error; // Propagamos el error al servicio de dominio
         });
@@ -40,7 +40,7 @@ export class SignalRConexionService {
     if(this.hub.state === signalR.HubConnectionState.Connected){
       this.hub.stop();
       this.promesaInicio =null;
-      console.log("SignalR DESCONECTADO")
+      
     }
   }
 
