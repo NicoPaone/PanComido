@@ -1,5 +1,5 @@
 import { Component, computed, input, output , ChangeDetectionStrategy} from '@angular/core';
-import { Comanda, EstadoComandaId } from '../../../../../core/models/comanda/comanda';
+import { Comanda, EstadoComandaId } from '../../../../../core/models/domain/comanda';
 import { KdsContadorTiempo } from '../../../../../shared/ui/kds-contador-tiempo/kds-contador-tiempo';
 
 @Component({

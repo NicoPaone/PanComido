@@ -1,7 +1,9 @@
 import { HttpRequest, HttpResponse, HttpHandlerFn } from "@angular/common/http";
 import { delay, Observable, of } from "rxjs";
-import { Proveedor, NuevoPedidoProveedor, NuevoProveedor, PedidoProveedor } from "../../models/proveedor";
-import { INSUMOS_MOCK, Insumo } from "../../models/insumos/insumo";
+import { Proveedor, PedidoProveedor, PedidoProveedorItem } from "../../models/domain/proveedor";
+import { NuevoPedidoProveedor, NuevoProveedor } from "../../models/dtos/requests/proveedor.request";
+import { Insumo } from "../../models/domain/insumo";
+import { INSUMOS_MOCK } from "../../../infra/mocks/insumo.mock";
 
 const preciosMock: Record<string, number> = {
   '1': 1200, '2': 900, '3': 1500, '4': 600, '5': 1100,

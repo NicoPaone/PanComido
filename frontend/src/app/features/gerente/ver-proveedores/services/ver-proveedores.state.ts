@@ -1,10 +1,11 @@
 import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { VerProveedoresApiService } from './ver-proveedores.api';
-import { Proveedor, PedidoProveedor, PedidoProveedorItem, PreRecepcionPedidoItem } from '../../../../core/models/proveedor';
-import { Insumo } from '../../../../core/models/insumos/insumo';
-import { UnidadMedida } from '../../../../core/models/unidad-medida';
-import { Bodega } from '../../../../core/models/bodega/bodega';
+import { Proveedor, PedidoProveedor, PedidoProveedorItem } from '../../../../core/models/domain/proveedor';
+import { PreRecepcionPedidoItem } from '../../../../core/models/dtos/requests/proveedor.request';
+import { Insumo } from '../../../../core/models/domain/insumo';
+import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
+import { Bodega } from '../../../../core/models/domain/bodega';
 
 @Injectable({ providedIn: 'root' })
 export class VerProveedoresState {

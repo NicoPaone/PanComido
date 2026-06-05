@@ -2,7 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../../../core/services/api-service';
 import { AuthService } from '../../../../core/services/auth.service';
-import { NuevoProveedor, Proveedor } from '../../../../core/models/proveedor';
+import { Proveedor } from '../../../../core/models/domain/proveedor';
+import { NuevoProveedor } from '../../../../core/models/dtos/requests/proveedor.request';
 
 @Injectable({ providedIn: 'root' })
 export class NuevoProveedorApiService {

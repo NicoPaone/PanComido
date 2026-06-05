@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { SignalRConexionService } from '../base-hub-service';
-import { Llamado } from '../../../models/llamados/llamado';
+import { Llamado } from '../../../models/domain/llamado';
 
 @Injectable({
   providedIn: 'root',

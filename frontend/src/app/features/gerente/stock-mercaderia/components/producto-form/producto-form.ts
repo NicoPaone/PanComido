@@ -1,12 +1,12 @@
 import { Component, inject, input, output , ChangeDetectionStrategy} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Insumo } from '../../../../../core/models/insumos/insumo';
-import { Bodega } from '../../../../../core/models/bodega/bodega';
-import { CrearInsumoRequest } from '../../../../../core/models/insumos/crear-insumo-request';
+import { Insumo } from '../../../../../core/models/domain/insumo';
+import { Bodega } from '../../../../../core/models/domain/bodega';
+import { CrearInsumoRequest } from '../../../../../core/models/dtos/requests/crear-insumo.request';
 
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { CategoriaInsumo } from '../../../../../core/models/insumos/categorias/categoria-insumo';
-import { UnidadMedida } from '../../../../../core/models/unidad-medida';
+import { CategoriaInsumo } from '../../../../../core/models/domain/categoria-insumo';
+import { UnidadMedida } from '../../../../../core/models/domain/unidad-medida';
 
 export const stockMinimoValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const stockMinimo = control.get('stockMinimo')?.value;

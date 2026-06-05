@@ -5,7 +5,7 @@ import { faCheck, faXmark, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Router } from '@angular/router';
-import { NuevoProveedor } from '../../../../core/models/proveedor';
+import { NuevoProveedor } from '../../../../core/models/dtos/requests/proveedor.request';
 import { NuevoProveedorState } from '../services/nuevo-proveedor.state';
 
 @Component({

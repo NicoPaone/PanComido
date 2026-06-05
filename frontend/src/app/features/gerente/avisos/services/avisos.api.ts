@@ -1,10 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../../../core/services/api-service';
-import { Plato } from '../../../../core/models/plato';
-import { AvisosResponseDto } from '../../../../core/models/aviso.model';
-import { Insumo } from '../../../../core/models/insumos/insumo';
-import { SugerenciaIA } from '../../../../core/models/sugerencia-ia.model';
+import { Plato } from '../../../../core/models/domain/plato';
+import { AvisosResponseDto } from '../../../../core/models/dtos/responses/avisos.response';
+import { Insumo } from '../../../../core/models/domain/insumo';
+import { SugerenciaIA } from '../../../../core/models/dtos/responses/sugerencia-ia.response';
 
 @Injectable({ providedIn: 'root' })
 export class AvisosApiService {

@@ -1,9 +1,9 @@
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { MozoComandaService } from './mozo-comanda-service';
-import { Comanda } from '../../../core/models/comanda/comanda';
+import { Comanda } from '../../../core/models/domain/comanda';
 import { forkJoin } from 'rxjs';
 import { ComandaHubService } from '../../../core/services/hubs/comanda/comanda-hub-service';
-import { EstadoComanda, EstadoComandaId } from '../../../core/models/comanda/comanda';
+import { EstadoComanda, EstadoComandaId } from '../../../core/models/domain/comanda';
 
 @Injectable({
   providedIn: 'root',

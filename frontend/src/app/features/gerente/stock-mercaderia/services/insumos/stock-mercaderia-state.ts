@@ -1,12 +1,12 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { Insumo } from '../../../../../core/models/insumos/insumo';
+import { Insumo } from '../../../../../core/models/domain/insumo';
 import { StockMercaderiaService } from './stock-mercaderia-service';
 import { UnidadMedidaService } from '../unidad-medida.service';
 import { CategoriaInsumoService } from '../categorias/categoria-insumo.service';
-import { UnidadMedida } from '../../../../../core/models/unidad-medida';
-import { CategoriaInsumo } from '../../../../../core/models/insumos/categorias/categoria-insumo';
+import { UnidadMedida } from '../../../../../core/models/domain/unidad-medida';
+import { CategoriaInsumo } from '../../../../../core/models/domain/categoria-insumo';
 import { forkJoin } from 'rxjs';
-import { CrearInsumoRequest } from '../../../../../core/models/insumos/crear-insumo-request';
+import { CrearInsumoRequest } from '../../../../../core/models/dtos/requests/crear-insumo.request';
 
 
 @Injectable({

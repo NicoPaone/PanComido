@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ModificarCartaApiService } from './modificar-carta.api';
-import { Plato } from '../../../../core/models/plato';
+import { Plato } from '../../../../core/models/domain/plato';
 
 @Injectable({ providedIn: 'root' })
 export class ModificarCartaStateService {

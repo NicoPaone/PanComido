@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { MesaService } from './mesa.service';
-import { Mesa, EstadoMesa, FormaMesa } from '../../../core/models/mesa.model';
+import { Mesa, EstadoMesa, FormaMesa } from '../../../core/models/domain/mesa';
 import { MesaLecturaState } from '../shared/mesa-lectura-state';
 
 @Injectable({ providedIn: 'root' })

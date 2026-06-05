@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ComandaCard } from './comanda-card';
-import { Comanda } from '../../../../../core/models/comanda/comanda';
+import { Comanda } from '../../../../../core/models/domain/comanda';
 import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('ComandaCard', () => {

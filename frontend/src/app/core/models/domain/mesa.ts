@@ -17,15 +17,16 @@ export enum EstadoMesa {
   Reservada = 'Reservada',
   Deshabilitada = 'Deshabilitada'
 }
+
 export interface Mesa {
   id: number;
   codigoInvitacion: string;
   cantidadPersonasMax: number;
   numeroMesa: number;
-  posicionXInicio: number;  
+  posicionXInicio: number;
   posicionXFin: number;
   posicionYInicio: number;
   posicionYFin: number;
   dimensionMesa: DimensionMesa;
-  estadoMesa: string;  
+  estadoMesa: string;
 }

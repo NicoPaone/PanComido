@@ -1,11 +1,11 @@
 import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Aviso, AvisoTipo } from '../../../../core/models/aviso.model';
-import { Plato } from '../../../../core/models/plato';
+import { Aviso, AvisoTipo } from '../../../../core/models/domain/aviso';
+import { Plato } from '../../../../core/models/domain/plato';
 import { AvisosApiService } from './avisos.api';
-import { SugerenciaIA } from '../../../../core/models/sugerencia-ia.model';
-import { PlatoSugeridoIA } from '../../../../core/models/sugerencia-ia.model';
-
+import { SugerenciaIA } from '../../../../core/models/dtos/responses/sugerencia-ia.response';
+import { PlatoSugeridoIA } from '../../../../core/models/dtos/responses/sugerencia-ia.response';
+import { mapAvisosResponseToDomain } from '../../../../infra/http/mappers/aviso.mapper';
 @Injectable({ providedIn: 'root' })
 export class AvisosStateService {
   private api = inject(AvisosApiService);
@@ -77,34 +77,11 @@ export class AvisosStateService {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: ({ avisos, insumos }) => {
-            const stockAvisos: Aviso[] = avisos.insumosConStockCritico.map(insumo => ({
-              id: insumo.id.toString(),
-              tipo: 'stock',
-              titulo: insumo.nombre || 'Insumo sin nombre',
-              subtitulo: `Stock: ${insumo.stockActual} ${insumo.unidadMedida}`,
-              info: `Punto mínimo: ${insumo.stockMinimo} ${insumo.unidadMedida}`,
-              payloadStock: insumo
-            }));
-            this._stockBajo.set(stockAvisos);
-
-            const vencimientosAvisos: Aviso[] = [];
-            Object.entries(avisos.insumosConVencimientoProximo).forEach(([insumoIdStr, lotes]) => {
-              const insumoId = Number(insumoIdStr);
-              const insumoData = insumos.find(i => i.id === insumoId);
-              const nombreInsumo = insumoData?.nombre || `Insumo ${insumoIdStr}`;
-
-              lotes.forEach(lote => {
-                vencimientosAvisos.push({
-                  id: lote.id.toString(),
-                  tipo: 'vencimiento',
-                  titulo: lote.nombre || `Lote de ${nombreInsumo}`,
-                  subtitulo: `Vence: ${lote.fechaVencimiento === '0001-01-01' ? 'Sin fecha' : lote.fechaVencimiento}`,
-                  info: `Cantidad: ${lote.cantidad}`,
-                  payloadVencimiento: lote
-                });
-              });
-            });
-            this._vencimientos.set(vencimientosAvisos);
+            const insumosMap = new Map(insumos.map(i => [i.id, i]));
+            const { vencimientos, stockBajo } = mapAvisosResponseToDomain(avisos, insumosMap);
+            
+            this._stockBajo.set(stockBajo);
+            this._vencimientos.set(vencimientos);
           },
           error: (err) => void 0
         });

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Mesa, EstadoMesa } from '../../../core/models/mesa.model';
-import { MesaOcuparResponse } from '../../../core/models/mesa-ocupar-response';
+import { Mesa, EstadoMesa } from '../../../core/models/domain/mesa';
+import { MesaOcuparResponse } from '../../../core/models/dtos/responses/mesa-ocupar.response';
 import { ApiService } from '../../../core/services/api-service';
 
 @Injectable({ providedIn: 'root' })

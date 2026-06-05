@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { VencimientosApiService } from './vencimientos.api';
-import { IngredienteVencimiento, VencimientoProveedor, VencimientoPedidoActivo } from '../../../../core/models/vencimientos.model';
-import { NuevoPedidoProveedor } from '../../../../core/models/proveedor';
+import { IngredienteVencimiento, VencimientoProveedor, VencimientoPedidoActivo } from '../../../../core/models/domain/vencimiento';
+import { NuevoPedidoProveedor } from '../../../../core/models/dtos/requests/proveedor.request';
 import { map, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })

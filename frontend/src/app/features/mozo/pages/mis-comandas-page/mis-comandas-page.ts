@@ -1,5 +1,5 @@
 import {  Component, effect, inject, signal , ChangeDetectionStrategy, OnDestroy } from '@angular/core';
-import { Comanda } from '../../../../core/models/comanda/comanda';
+import { Comanda } from '../../../../core/models/domain/comanda';
 import { MozoComandaState } from '../../services/mozo-comanda-state';
 import { ComandaMozoCard } from "../../components/comanda-mozo-card/comanda-mozo-card";
 import { ComandaMozoDetalle } from "../../components/comanda-mozo-detalle/comanda-mozo-detalle";

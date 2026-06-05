@@ -3,13 +3,13 @@ import { catchError, forkJoin, map, Observable, of } from 'rxjs';
 import { ApiService } from '../../../../core/services/api-service';
 
 // Modelos de Dominio
-import { Proveedor, PedidoProveedor, NuevoPedidoProveedor, PreRecepcionPedidoItem } from '../../../../core/models/proveedor';
-import { Insumo } from '../../../../core/models/insumos/insumo';
-import { CategoriaInsumo } from '../../../../core/models/insumos/categorias/categoria-insumo';
-import { UnidadMedida } from '../../../../core/models/unidad-medida';
-import { Bodega } from '../../../../core/models/bodega/bodega';
+import { Proveedor, PedidoProveedor } from '../../../../core/models/domain/proveedor';
+import { NuevoPedidoProveedor, PreRecepcionPedidoItem } from '../../../../core/models/dtos/requests/proveedor.request';
+import { Insumo } from '../../../../core/models/domain/insumo';
+import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo';
+import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
+import { Bodega } from '../../../../core/models/domain/bodega';
 
-// DTOs (Lo que escupe la red)
 interface ProveedorResponseDto {
   id: number;
   nombre: string | null;

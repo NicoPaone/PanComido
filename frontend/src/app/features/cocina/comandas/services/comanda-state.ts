@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { ComandaService } from './comanda-service';
-import { Comanda, EstadoComandaId, EstadoComanda } from '../../../../core/models/comanda/comanda';
+import { Comanda, EstadoComandaId, EstadoComanda } from '../../../../core/models/domain/comanda';
 
 @Injectable({
   providedIn: 'root',

@@ -1,7 +1,7 @@
 import { Component, input, output , ChangeDetectionStrategy} from '@angular/core';
 import { CardPlatoComensalComponent } from '../card-plato-comensal/card-plato-comensal';
-import { ItemPedido } from '../../../../../core/models/item-pedido';
-import { CartaItem } from '../../../../../core/models/carta-item';
+import { ItemPedido } from '../../../../../core/models/domain/item-pedido';
+import { CartaItem } from '../../../../../core/models/domain/carta-item';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

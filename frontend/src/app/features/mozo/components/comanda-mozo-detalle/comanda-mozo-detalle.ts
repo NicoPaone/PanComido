@@ -1,6 +1,6 @@
 import { Component, computed, input, output, signal , ChangeDetectionStrategy} from '@angular/core';
 import { KdsContadorTiempo } from '../../../../shared/ui/kds-contador-tiempo/kds-contador-tiempo';
-import { Comanda } from '../../../../core/models/comanda/comanda';
+import { Comanda } from '../../../../core/models/domain/comanda';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

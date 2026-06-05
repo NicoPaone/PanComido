@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NuevoProveedorApiService } from './nuevo-proveedor.api';
-import { NuevoProveedor } from '../../../../core/models/proveedor';
+import { NuevoProveedor } from '../../../../core/models/dtos/requests/proveedor.request';
 
 @Injectable({ providedIn: 'root' })
 export class NuevoProveedorState {

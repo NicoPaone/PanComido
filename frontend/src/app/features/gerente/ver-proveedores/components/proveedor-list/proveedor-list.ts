@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
-import { Proveedor } from '../../../../../core/models/proveedor';
+import { Proveedor } from '../../../../../core/models/domain/proveedor';
 
 @Component({
   selector: 'app-proveedor-list',

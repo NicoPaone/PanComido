@@ -2,7 +2,7 @@ import { Component, inject, OnInit, ChangeDetectionStrategy, signal } from '@ang
 import { CommonModule } from '@angular/common';
 import { CdkDragEnd, DragDropModule } from '@angular/cdk/drag-drop';
 import { MesaState } from '../../services/mesa.state';
-import { EstadoMesa, FormaMesa, Mesa } from '../../../../core/models/mesa.model';
+import { EstadoMesa, FormaMesa, Mesa } from '../../../../core/models/domain/mesa';
 import { MesaItem } from '../../../../shared/components/mesa-item/mesa-item';
 import { AuthService } from '../../../../core/services/auth.service';
 

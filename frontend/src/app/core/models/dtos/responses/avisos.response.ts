@@ -1,5 +1,3 @@
-export type AvisoTipo = 'vencimiento' | 'stock' | 'sugerencia';
-
 export interface InsumoStockCriticoDto {
   id: number;
   nombre: string;
@@ -24,14 +22,4 @@ export interface LoteVencimientoDto {
 export interface AvisosResponseDto {
   insumosConStockCritico: InsumoStockCriticoDto[];
   insumosConVencimientoProximo: Record<string, LoteVencimientoDto[]>;
-}
-
-export interface Aviso {
-  id: string;
-  tipo: AvisoTipo;
-  titulo: string;
-  subtitulo?: string;
-  info?: string;
-  payloadStock?: InsumoStockCriticoDto;
-  payloadVencimiento?: LoteVencimientoDto;
 }

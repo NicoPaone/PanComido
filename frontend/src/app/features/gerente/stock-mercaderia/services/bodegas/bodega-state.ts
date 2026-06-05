@@ -1,5 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { Bodega } from '../../../../../core/models/bodega/bodega';
+import { Bodega } from '../../../../../core/models/domain/bodega';
 import { BodegaService } from './bodega-service';
 
 @Injectable({

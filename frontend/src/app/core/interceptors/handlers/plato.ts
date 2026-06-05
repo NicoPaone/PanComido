@@ -1,6 +1,6 @@
 import { HttpRequest, HttpResponse, HttpHandlerFn } from "@angular/common/http";
 import { delay, Observable, of } from "rxjs";
-import { Plato } from "../../models/plato";
+import { Plato } from "../../models/domain/plato";
 import { calcularCostoReceta } from "../../../features/gerente/services/plato.service";
 
 let dbPlatos: Plato[] = [

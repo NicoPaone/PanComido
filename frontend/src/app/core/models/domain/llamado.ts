@@ -8,9 +8,5 @@ export interface Llamado {
   descripcion: string;
   resuelto: boolean;
 }
-export interface LlamarMozoRequest{
-   mesaId: number;
-   categoriaLlamadoId: number;
-   descripcion: string;
-}
+
 export type TipoLlamado = 'admin' | 'cocina' | 'mesa';

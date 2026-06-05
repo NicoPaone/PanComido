@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { Plato, RecetaIngrediente } from '../../../core/models/plato';
+import { Plato, RecetaIngrediente } from '../../../core/models/domain/plato';
 import { Observable, of, delay } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 

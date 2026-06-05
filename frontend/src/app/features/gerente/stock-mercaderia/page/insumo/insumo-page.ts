@@ -9,8 +9,8 @@ import { Modal } from "../../../../../shared/ui/modal/modal";
 import { StockMercaderiaState } from '../../services/insumos/stock-mercaderia-state';
 import { BodegaState } from '../../services/bodegas/bodega-state';
 import { ProductoForm } from "../../components/producto-form/producto-form";
-import { Insumo } from '../../../../../core/models/insumos/insumo';
-import { CrearInsumoRequest } from '../../../../../core/models/insumos/crear-insumo-request';
+import { Insumo } from '../../../../../core/models/domain/insumo';
+import { CrearInsumoRequest } from '../../../../../core/models/dtos/requests/crear-insumo.request';
 
 @Component({
   selector: 'app-insumo',

@@ -2,9 +2,9 @@ import { inject, Injectable, signal, computed } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ComandaService } from './comanda.service';
 import { PedidoState } from './pedido.state';
-import { ComandaClienteResponse } from '../../../core/models/comanda-cliente-response';
-import { Mesa } from '../../../core/models/mesa.model';
-import { ItemPedidoRequest } from '../../../core/models/confirmar-pedido-request';
+import { ComandaClienteResponse } from '../../../core/models/dtos/responses/comanda-cliente.response';
+import { Mesa } from '../../../core/models/domain/mesa';
+import { ItemPedidoRequest } from '../../../core/models/dtos/requests/confirmar-pedido.request';
 
 @Injectable({ providedIn: 'root' })
 export class ComandaState {

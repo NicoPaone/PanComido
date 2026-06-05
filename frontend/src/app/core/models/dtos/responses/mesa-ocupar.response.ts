@@ -1,4 +1,4 @@
-import { Mesa } from './mesa.model';
+import { Mesa } from '../../domain/mesa';
 
 export interface MesaOcuparResponse {
   mesa: Mesa;

@@ -1,6 +1,6 @@
 import { Component, inject, input, output, signal , ChangeDetectionStrategy} from '@angular/core';
 import { Router } from '@angular/router';
-import { ComandaClienteResponse } from '../../../../core/models/comanda-cliente-response';
+import { ComandaClienteResponse } from '../../../../core/models/dtos/responses/comanda-cliente.response';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

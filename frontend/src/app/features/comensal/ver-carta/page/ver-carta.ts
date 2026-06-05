@@ -5,7 +5,7 @@ import { ListaPlatosComensalComponent } from '../components/lista-platos-comensa
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { PedidoState } from '../../services/pedido.state';
-import { ItemPedido } from '../../../../core/models/item-pedido';
+import { ItemPedido } from '../../../../core/models/domain/item-pedido';
 import { configuracionRestauranteMock } from '../../../../../app/core/interceptors/handlers/configuracion-restaurante.mock';
 import { CartaState } from '../service/carta-state';
 import { ComensalFooterCart } from '../../components/comensal-footer-cart/comensal-footer-cart';

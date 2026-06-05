@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, input, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { Plato, RecetaIngrediente } from '../../../../../core/models/plato';
+import { Plato, RecetaIngrediente } from '../../../../../core/models/domain/plato';
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
 import { ToggleComponent } from '../../../../../shared/ui/toggle/toggle';
 import { Buscador } from '../../../../../shared/ui/buscador/buscador';
 import { calcularCostoReceta } from '../../../services/plato.service';
-import { Insumo } from '../../../../../core/models/insumos/insumo';
+import { Insumo } from '../../../../../core/models/domain/insumo';
 import { ModificarCartaApiService } from '../../services/modificar-carta.api';
 
 @Component({

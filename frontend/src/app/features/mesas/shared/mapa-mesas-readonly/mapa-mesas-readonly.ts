@@ -2,7 +2,7 @@ import { Component, inject, input, output , ChangeDetectionStrategy} from '@angu
 import { CommonModule } from '@angular/common';
 import { MesaLecturaState } from '../mesa-lectura-state';
 import { MesaItem } from '../../../../shared/components/mesa-item/mesa-item';
-import { EstadoMesa, Mesa } from '../../../../core/models/mesa.model';
+import { EstadoMesa, Mesa } from '../../../../core/models/domain/mesa';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

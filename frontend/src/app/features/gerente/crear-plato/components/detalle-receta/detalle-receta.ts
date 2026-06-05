@@ -1,7 +1,8 @@
 import { FormsModule } from '@angular/forms';
 import { Buscador } from '../../../../../shared/ui/buscador/buscador';
-import { RecetaIngrediente } from '../../../../../core/models/plato';
-import { Insumo, INSUMOS_MOCK } from '../../../../../core/models/insumos/insumo';
+import { RecetaIngrediente } from '../../../../../core/models/domain/plato';
+import { Insumo } from '../../../../../core/models/domain/insumo';
+import { INSUMOS_MOCK } from '../../../../../infra/mocks/insumo.mock';
 import { Component, output, signal, computed, input, OnInit , ChangeDetectionStrategy} from '@angular/core';
 
 @Component({

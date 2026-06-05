@@ -10,7 +10,7 @@ import {
   faBreadSlice,
   IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
-import { LlamarMozoRequest } from '../../../../core/models/llamados/llamado';
+import { LlamarMozoRequest } from '../../../../core/models/dtos/requests/llamar-mozo.request';
 
 
 interface CategoriaLlamado {

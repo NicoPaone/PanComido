@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from '../../../../../core/services/api-service';
-import { Bodega } from '../../../../../core/models/bodega/bodega';
+import { Bodega } from '../../../../../core/models/domain/bodega';
 import { Observable } from 'rxjs';
 
 @Injectable({

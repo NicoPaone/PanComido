@@ -2,7 +2,7 @@ import { Component, input, output , ChangeDetectionStrategy} from '@angular/core
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
 import { faCog, faSort } from '@fortawesome/free-solid-svg-icons';
-import { Insumo } from '../../../../../core/models/insumos/insumo';
+import { Insumo } from '../../../../../core/models/domain/insumo';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

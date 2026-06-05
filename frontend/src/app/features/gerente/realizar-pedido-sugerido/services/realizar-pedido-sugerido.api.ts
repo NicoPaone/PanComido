@@ -2,10 +2,11 @@ import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { ApiService } from '../../../../core/services/api-service';
 
-import { Proveedor, SugerenciaPedidoItem, NuevoPedidoProveedor } from '../../../../core/models/proveedor';
-import { Insumo } from '../../../../core/models/insumos/insumo';
-import { UnidadMedida } from '../../../../core/models/unidad-medida';
-import { CategoriaInsumo } from '../../../../core/models/insumos/categorias/categoria-insumo';
+import { Proveedor, SugerenciaPedidoItem } from '../../../../core/models/domain/proveedor';
+import { NuevoPedidoProveedor } from '../../../../core/models/dtos/requests/proveedor.request';
+import { Insumo } from '../../../../core/models/domain/insumo';
+import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
+import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo';
 
 @Injectable({ providedIn: 'root' })
 export class RealizarPedidoSugeridoApiService {

@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from '../../../core/services/api-service';
-import { Llamado } from '../../../core/models/llamados/llamado';
+import { Llamado } from '../../../core/models/domain/llamado';
 import { Observable } from 'rxjs';
 
 @Injectable({

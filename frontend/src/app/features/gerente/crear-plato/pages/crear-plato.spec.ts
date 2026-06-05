@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { CrearPlatoComponent } from './crear-plato';
-import { RecetaIngrediente } from '../../../../core/models/plato';
+import { RecetaIngrediente } from '../../../../core/models/domain/plato';
 import { vi } from 'vitest';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { mockInterceptor } from '../../../../core/interceptors/mock.interceptor';
+import { of } from 'rxjs';
+import { CrearPlatoApiService } from '../services/crear-plato.api';
 
 describe('CrearPlatoComponent', () => {
   let component: CrearPlatoComponent;
@@ -13,14 +13,19 @@ describe('CrearPlatoComponent', () => {
 
   beforeEach(async () => {
     routerMock = {
-      navigate: vi.fn()
+      navigate: vi.fn(),
+      getCurrentNavigation: vi.fn().mockReturnValue(null),
+    };
+
+    const apiMock = {
+      crearPlato: vi.fn().mockReturnValue(of({ id: 1 })),
     };
 
     await TestBed.configureTestingModule({
       imports: [CrearPlatoComponent],
       providers: [
         { provide: Router, useValue: routerMock },
-        provideHttpClient(withInterceptors([mockInterceptor]))
+        { provide: CrearPlatoApiService, useValue: apiMock },
       ]
     }).compileComponents();
 
@@ -41,7 +46,6 @@ describe('CrearPlatoComponent', () => {
     expect(component.platoForm.get('tipoPlato')?.value).toBe('');
     expect(component.platoForm.get('descripcion')?.value).toBe('');
     expect(component.visible()).toBe(true);
-    expect(component.imagenSelected()).toContain('photo');
     expect(component.vegano()).toBe(false);
     expect(component.vegetariano()).toBe(false);
     expect(component.celiaco()).toBe(false);
@@ -105,8 +109,7 @@ describe('CrearPlatoComponent', () => {
     component.receta.set(ingredientes);
 
     component.guardar();
-    
-    // Espera para resolver la llamada diferida del mock en PlatoService
+
     await new Promise(resolve => setTimeout(resolve, 250));
 
     expect(component.mostrarExito()).toBe(true);

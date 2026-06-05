@@ -8,14 +8,12 @@ export enum EstadoComandaId {
   Abierta = 5,
 }
 
-// Mapa para convertir string → number
 export const ESTADO_COMANDA_MAP: Record<EstadoComanda, EstadoComandaId> = {
   'Nueva': EstadoComandaId.Nueva,
   'EnPreparacion': EstadoComandaId.EnPreparacion,
   'EnEspera': EstadoComandaId.EnEspera,
   'Finalizada': EstadoComandaId.Finalizada,
 };
-
 
 export interface PlatoComanda {
   id: number;

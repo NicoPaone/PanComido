@@ -1,7 +1,7 @@
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { MozoHubService } from '../../../core/services/hubs/llamados/mozo-hub-service';
 import { LlamadoService } from './llamado.service';
-import { Llamado } from '../../../core/models/llamados/llamado';
+import { Llamado } from '../../../core/models/domain/llamado';
 
 const MS_NUEVO = 5000;
 const MS_SALIDA = 400;

@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { EstadoMesa, Mesa } from '../../../core/models/mesa.model';
+import { EstadoMesa, Mesa } from '../../../core/models/domain/mesa';
 import { MesaService } from '../services/mesa.service';
-import { MesaOcuparResponse } from '../../../core/models/mesa-ocupar-response';
+import { MesaOcuparResponse } from '../../../core/models/dtos/responses/mesa-ocupar.response';
 
 @Injectable({
   providedIn: 'root',

@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CrearPlatoApiService } from './crear-plato.api';
-import { Plato, RecetaIngrediente } from '../../../../core/models/plato';
+import { Plato, RecetaIngrediente } from '../../../../core/models/domain/plato';
 import { calcularCostoReceta } from '../../services/plato.service';
 
 @Injectable({ providedIn: 'root' })

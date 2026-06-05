@@ -1,7 +1,7 @@
 import { Component, signal, computed, HostListener, inject, ChangeDetectionStrategy, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { MenuItem, UserProfile } from '../../../core/models/menu-item.model';
+import { MenuItem, UserProfile } from '../../../core/models/domain/menu-item';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AuthService } from '../../../core/services/auth.service';
 import {
@@ -55,7 +55,7 @@ export class SidebarComponent {
   readonly faListCheck = faListCheck;
 
 
-  isCollapsed = signal(true); // Colapsado por defecto como Gmail
+  isCollapsed = signal(true);
   isHovered = signal(false);
   expandedMenus = signal<string[]>([]);
   currentRole = input.required<string>();

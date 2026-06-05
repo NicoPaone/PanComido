@@ -2,17 +2,17 @@ import { Component, ChangeDetectionStrategy, OnInit, inject, signal } from '@ang
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { take } from 'rxjs';
-import { PlatoSugeridoIA } from '../../../../core/models/sugerencia-ia.model';
+import { PlatoSugeridoIA } from '../../../../core/models/dtos/responses/sugerencia-ia.response';
 // Componentes UI
 import { PageToolbar } from '../../../../shared/ui/page-toolbar/page-toolbar';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Buscador } from '../../../../shared/ui/buscador/buscador';
 
 // Modelos y Estados
-import { Aviso } from '../../../../core/models/aviso.model';
+import { Aviso } from '../../../../core/models/domain/aviso';
 import { VencimientosState } from '../../aviso-vencimientos/services/vencimientos.state';
 import { AvisosStateService } from '../services/avisos.state';
-import { UnidadMedida } from '../../../../core/models/unidad-medida';
+import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
 import { RealizarPedidoSugeridoStateService } from '../../realizar-pedido-sugerido/services/realizar-pedido-sugerido.state';
 
 @Component({

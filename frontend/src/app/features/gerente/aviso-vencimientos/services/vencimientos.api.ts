@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map, switchMap, of } from 'rxjs';
 import { ApiService } from '../../../../core/services/api-service';
-import { IngredienteVencimiento, VencimientoProveedor, VencimientoPedidoActivo } from '../../../../core/models/vencimientos.model';
-import { Insumo } from '../../../../core/models/insumos/insumo';
-import { NuevoPedidoProveedor, PedidoProveedor } from '../../../../core/models/proveedor';
+import { IngredienteVencimiento, VencimientoProveedor, VencimientoPedidoActivo } from '../../../../core/models/domain/vencimiento';
+import { Insumo } from '../../../../core/models/domain/insumo';
+import { PedidoProveedor } from '../../../../core/models/domain/proveedor';
+import { NuevoPedidoProveedor } from '../../../../core/models/dtos/requests/proveedor.request';
 
 interface ProveedorResponseDto {
   id: number;

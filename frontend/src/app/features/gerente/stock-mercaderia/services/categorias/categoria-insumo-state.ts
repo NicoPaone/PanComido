@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { CategoriaInsumoService } from './categoria-insumo.service';
-import { CategoriaInsumo } from '../../../../../core/models/insumos/categorias/categoria-insumo';
+import { CategoriaInsumo } from '../../../../../core/models/domain/categoria-insumo';
 
 @Injectable({
   providedIn: 'root',

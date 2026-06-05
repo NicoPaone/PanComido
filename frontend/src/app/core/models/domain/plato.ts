@@ -1,4 +1,4 @@
-import { UnidadMedida } from "./unidad-medida";
+import { UnidadMedida } from './unidad-medida';
 
 export interface RecetaIngrediente {
   id: number | string;

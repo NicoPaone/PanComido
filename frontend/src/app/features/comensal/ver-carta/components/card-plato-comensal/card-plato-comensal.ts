@@ -1,8 +1,8 @@
 import { Component, EventEmitter, input, Input, output, Output, signal , ChangeDetectionStrategy} from '@angular/core';
 
-import { ItemPedido } from '../../../../../core/models/item-pedido';
+import { ItemPedido } from '../../../../../core/models/domain/item-pedido';
 import { BotonComensal } from '../../../../../shared/ui/botones/boton-comensal/boton-comensal';
-import { CartaItem } from '../../../../../core/models/carta-item';
+import { CartaItem } from '../../../../../core/models/domain/carta-item';
 
 
 

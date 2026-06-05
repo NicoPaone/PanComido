@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { LlamadoService } from './llamado.service';
-import { LlamarMozoRequest } from '../../../core/models/llamados/llamado';
+import { LlamarMozoRequest } from '../../../core/models/dtos/requests/llamar-mozo.request';
 
 @Injectable({
   providedIn: 'root',

@@ -6,9 +6,9 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FormsModule } from '@angular/forms';
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
 import { PageToolbar } from '../../../../../shared/ui/page-toolbar/page-toolbar';
-import { PedidoProveedor, EstadoPedidoProveedor } from '../../../../../core/models/proveedor';
-import { Insumo } from '../../../../../core/models/insumos/insumo';
-import { UnidadMedida } from '../../../../../core/models/unidad-medida';
+import { PedidoProveedor, EstadoPedidoProveedor } from '../../../../../core/models/domain/proveedor';
+import { Insumo } from '../../../../../core/models/domain/insumo';
+import { UnidadMedida } from '../../../../../core/models/domain/unidad-medida';
 import { VerProveedoresState } from '../../services/ver-proveedores.state';
 
 interface IngredientePickerItem {

@@ -1,5 +1,5 @@
 import { Component, effect, inject, input, output , ChangeDetectionStrategy} from '@angular/core';
-import { Plato } from '../../../../../core/models/plato';
+import { Plato } from '../../../../../core/models/domain/plato';
 import { Boton } from "../../../../../shared/ui/botones/boton/boton";
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';

@@ -10,7 +10,7 @@ import {
   faSpinner,
   IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
-import { Llamado } from '../../../../core/models/llamados/llamado';
+import { Llamado } from '../../../../core/models/domain/llamado';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgClass } from '@angular/common';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';

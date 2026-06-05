@@ -5,7 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { ToggleComponent } from '../../../../shared/ui/toggle/toggle';
 import { DetalleRecetaComponent } from '../components/detalle-receta/detalle-receta';
-import { RecetaIngrediente } from '../../../../core/models/plato';
+import { RecetaIngrediente } from '../../../../core/models/domain/plato';
 import { computed } from '@angular/core';
 import { CrearPlatoState } from '../services/crear-plato.state';
 

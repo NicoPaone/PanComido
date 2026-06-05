@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from '../../../core/services/api-service';
-import { Llamado, LlamarMozoRequest } from '../../../core/models/llamados/llamado';
+import { Llamado } from '../../../core/models/domain/llamado';
+import { LlamarMozoRequest } from '../../../core/models/dtos/requests/llamar-mozo.request';
 import { Observable } from 'rxjs';
 
 @Injectable({

@@ -1,5 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { Comanda } from '../../../models/comanda/comanda';
+import { Comanda } from '../../../models/domain/comanda';
 import { SignalRConexionService } from '../base-hub-service';
 
 @Injectable({

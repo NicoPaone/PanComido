@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { CartaItem } from '../../../../core/models/carta-item';
+import { CartaItem } from '../../../../core/models/domain/carta-item';
 import { CartaService } from './carta-service';
 
 @Injectable({
