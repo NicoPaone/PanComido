@@ -1,4 +1,5 @@
-import { computed, effect, inject, Injectable, signal } from '@angular/core';
+import { computed, DestroyRef, effect, inject, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MozoHubService } from '../../../core/services/hubs/llamados/mozo-hub-service';
 import { LlamadoService } from './llamado.service';
 import { Llamado } from '../../../core/models/domain/llamado';
@@ -12,6 +13,7 @@ const MS_SALIDA = 400;
 export class LlamadoState {
   readonly #api = inject(LlamadoService);
   readonly #hub = inject(MozoHubService);
+  readonly #destroyRef = inject(DestroyRef);
 
   readonly #_llamados = signal<Llamado[]>([]);
   readonly #_cargando = signal<boolean>(true);
@@ -58,6 +60,7 @@ export class LlamadoState {
     this.#_cargando.set(true);
     this.#api
       .listarPendientesDelMozo()
+      .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe({
         next: (lista) => {
           const ordenados = [...lista].sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
@@ -96,6 +99,7 @@ export class LlamadoState {
     this.#_resolviendoId.set(llamadoId);
 
     this.#api.resolver(llamadoId)
+      .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe({
         next: () => {
           this.#_resolviendoId.set(null);

@@ -1,4 +1,5 @@
-import { computed, effect, inject, Injectable, signal } from '@angular/core';
+import { computed, DestroyRef, effect, inject, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MozoComandaService } from './mozo-comanda-service';
 import { Comanda } from '../../../core/models/domain/comanda';
 import { forkJoin } from 'rxjs';
@@ -12,6 +13,7 @@ export class MozoComandaState {
 
   private api = inject(MozoComandaService);
   private hub = inject(ComandaHubService);
+  private destroyRef = inject(DestroyRef);
   private _comandas = signal<Comanda[]>([]);
   private _cargando = signal<boolean>(false);
 
@@ -53,7 +55,7 @@ readonly #hubEffect = effect(() => {
 
   cargarComandas(): void{ 
     this._cargando.set(true);
-    this.api.listarComandas().subscribe({
+    this.api.listarComandas().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (comandas) => {
         this._comandas.set(comandas);
         
@@ -69,7 +71,7 @@ readonly #hubEffect = effect(() => {
   entregarItems(comandaId: number, articuloComandaIds: number[]): void {
     if (articuloComandaIds.length === 0) return;
 
-    this.api.entregarItems(comandaId, articuloComandaIds).subscribe({
+    this.api.entregarItems(comandaId, articuloComandaIds).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (comandaActualizada) => {
         this._comandas.update(lista =>
           lista.map(c => c.id === comandaActualizada.id ? comandaActualizada : c)

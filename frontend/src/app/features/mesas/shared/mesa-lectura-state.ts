@@ -1,13 +1,14 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
-import { EstadoMesa, Mesa } from '../../../core/models/domain/mesa';
+import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { EstadoMesa, Mesa, MesaOcupar } from '../../../core/models/domain/mesa';
 import { MesaService } from '../services/mesa.service';
-import { MesaOcuparResponse } from '../../../core/models/dtos/responses/mesa-ocupar.response';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MesaLecturaState {
     private api = inject(MesaService);
+    private destroyRef = inject(DestroyRef);
 
   private _mesas = signal<Mesa[]>([]);
   private _loading = signal<boolean>(false);
@@ -38,7 +39,7 @@ export class MesaLecturaState {
 
   cargarMesas(): void {
     this._loading.set(true);
-    this.api.getMesas().subscribe({
+    this.api.getMesas().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => { this._mesas.set(data); this._loading.set(false); },
       error: () => this._loading.set(false)
     });
@@ -48,8 +49,8 @@ export class MesaLecturaState {
     this._mesaSeleccionada.update(actual => actual === id ? null : id);
   }
   ocuparMesa(mesaId:number,cantidadComensales:number):void{
-    this.api.ocuparMesa(mesaId, cantidadComensales).subscribe({
-      next: (response: MesaOcuparResponse) => {
+    this.api.ocuparMesa(mesaId, cantidadComensales).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (response: MesaOcupar) => {
         this._mesas.update(mesas => mesas.map(m => m.id === mesaId ? response.mesa : m));
         this._mesaSeleccionada.set(null);
         this.mostrarNotificacion('Mesa ocupada exitosamente', 'exito');
@@ -59,7 +60,7 @@ export class MesaLecturaState {
   }
 
   cambiarEstadoMesa(id: number, nuevoEstado: EstadoMesa): void {
-    this.api.cambiarEstado(id, nuevoEstado).subscribe({
+    this.api.cambiarEstado(id, nuevoEstado).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (mesaActualizada: Mesa) => {
         this._mesas.update(mesas =>
           mesas.map(m => m.id === id ? mesaActualizada : m)

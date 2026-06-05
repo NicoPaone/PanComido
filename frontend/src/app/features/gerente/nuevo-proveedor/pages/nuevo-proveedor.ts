@@ -5,7 +5,7 @@ import { faCheck, faXmark, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Router } from '@angular/router';
-import { NuevoProveedor } from '../../../../core/models/dtos/requests/proveedor.request';
+import { ProveedorNuevo } from '../../../../core/models/domain/proveedor';
 import { NuevoProveedorState } from '../services/nuevo-proveedor.state';
 
 @Component({
@@ -95,7 +95,7 @@ export class NuevoProveedorComponent {
     if (!this.puedeGuardar()) return;
     
     const formVal = this.proveedorForm.value;
-    const proveedor: NuevoProveedor = {
+    const proveedor: ProveedorNuevo = {
       nombre: formVal.nombre!,
       contacto: formVal.contacto!,
       telefono: formVal.telefono ?? '',

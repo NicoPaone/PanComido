@@ -1,12 +1,14 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LlamadoService } from './llamado.service';
-import { LlamarMozoRequest } from '../../../core/models/dtos/requests/llamar-mozo.request';
+import { LlamadoMozo } from '../../../core/models/domain/llamado';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ComensalState {
   readonly #api = inject(LlamadoService);
+  readonly #destroyRef = inject(DestroyRef);
   readonly #_enviando = signal<boolean>(false);
   readonly #_exito = signal<boolean>(false);
   readonly #_error = signal<string | null>(null);
@@ -15,12 +17,12 @@ export class ComensalState {
   readonly exito = this.#_exito.asReadonly();
   readonly error = this.#_error.asReadonly();
 
-  solicitarMozo(request: LlamarMozoRequest): void {
+  solicitarMozo(request: LlamadoMozo): void {
     this.#_enviando.set(true);
     this.#_error.set(null);
     this.#_exito.set(false);
 
-    this.#api.crearLlamado(request).subscribe({
+    this.#api.crearLlamado(request).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe({
       next: () => {
         this.#_enviando.set(false);
         this.#_exito.set(true);

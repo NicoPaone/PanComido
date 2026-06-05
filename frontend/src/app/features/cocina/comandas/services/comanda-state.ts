@@ -1,4 +1,5 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ComandaService } from './comanda-service';
 import { Comanda, EstadoComandaId, EstadoComanda } from '../../../../core/models/domain/comanda';
 
@@ -8,6 +9,7 @@ import { Comanda, EstadoComandaId, EstadoComanda } from '../../../../core/models
 export class ComandaState {
 
   private api = inject(ComandaService);
+  private destroyRef = inject(DestroyRef);
   private _comandas = signal<Comanda[]>([]);
   private _cargando = signal<boolean>(false);
 
@@ -32,7 +34,7 @@ export class ComandaState {
 
 
   modificarEstadoComanda(comandaId: number, tipoId: number): void {
-    this.api.modificarEstadoComanda(comandaId, tipoId).subscribe({
+    this.api.modificarEstadoComanda(comandaId, tipoId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (comandaActualizada) => {
         this._comandas.update(lista =>
           lista.map(c => c.id === comandaActualizada.id
@@ -45,7 +47,7 @@ export class ComandaState {
     });
   }
   marcarItemEntregado(comandaId: number, articuloComandaId: number): void {
-    this.api.marcarItemEntregado(comandaId, articuloComandaId).subscribe({
+    this.api.marcarItemEntregado(comandaId, articuloComandaId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (comandaActualizada) => {
         this._comandas.update(lista =>
           lista.map(c => c.id === comandaActualizada.id ? comandaActualizada : c)
@@ -76,7 +78,7 @@ export class ComandaState {
 
   cargarComandasActivas(): void {
     this._cargando.set(true);
-    this.api.obtenerComandasActivas().subscribe({
+    this.api.obtenerComandasActivas().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this._comandas.set(data);
         this._cargando.set(false);

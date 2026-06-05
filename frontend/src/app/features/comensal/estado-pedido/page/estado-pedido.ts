@@ -2,7 +2,6 @@ import { Component, inject, OnInit, OnDestroy, effect , ChangeDetectionStrategy}
 import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { ComandaState } from '../../services/comanda-state';
-import { ComandaClienteResponse } from '../../../../core/models/dtos/responses/comanda-cliente.response';
 import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
 import { ComandaHubService } from '../../../../core/services/hubs/comanda/comanda-hub-service';

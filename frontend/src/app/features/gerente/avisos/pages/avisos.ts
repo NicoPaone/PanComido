@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, OnInit, inject, signal } from '@ang
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { take } from 'rxjs';
-import { PlatoSugeridoIA } from '../../../../core/models/dtos/responses/sugerencia-ia.response';
+import { PlatoSugerido } from '../../../../core/models/domain/sugerencia-ia';
 // Componentes UI
 import { PageToolbar } from '../../../../shared/ui/page-toolbar/page-toolbar';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
@@ -180,14 +180,14 @@ nombreUnidad(unidadMedida: UnidadMedida | string | null | undefined): string {
   }
 
   // ← PEGÁ ACÁ ↓
-  crearPlatoDesdeIA(plato: PlatoSugeridoIA) {
+  crearPlatoDesdeIA(plato: PlatoSugerido) {
     this.router.navigate(['/staff/gerente/crear-plato'], {
       state: {
         desde_ia: true,
         nombre: plato.nombre,
         descripcion: plato.descripcion,
         tiempoPreparacion: plato.tiempoPreparacion,
-        ingredientes: plato.ingredientesSugeridosIA.map(ing => ({
+        ingredientes: plato.ingredientesSugeridos.map(ing => ({
           insumoId: ing.insumoId,
           nombre: ing.nombre,
           cantidad: ing.cantidad,

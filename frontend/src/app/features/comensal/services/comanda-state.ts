@@ -2,9 +2,8 @@ import { inject, Injectable, signal, computed } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ComandaService } from './comanda.service';
 import { PedidoState } from './pedido.state';
-import { ComandaClienteResponse } from '../../../core/models/dtos/responses/comanda-cliente.response';
+import { EstadoPedido } from '../../../core/models/domain/comanda';
 import { Mesa } from '../../../core/models/domain/mesa';
-import { ItemPedidoRequest } from '../../../core/models/dtos/requests/confirmar-pedido.request';
 
 @Injectable({ providedIn: 'root' })
 export class ComandaState {
@@ -15,7 +14,7 @@ export class ComandaState {
   private _comandaId = signal<number | null>(this.leerNumeroDeStorage('comandaId'));
   private _mesaId = signal<number | null>(this.leerNumeroDeStorage('mesaId'));
   private _mesaInfo = signal<Mesa | null>(null);
-  private _estadoPedido = signal<ComandaClienteResponse | null>(null);
+  private _estadoPedido = signal<EstadoPedido | null>(null);
   private _cargando = signal(false);
   private _error = signal<string | null>(null);
 
@@ -57,7 +56,7 @@ export class ComandaState {
   /**
    * PASO 2: Confirmar pedido (envía items al backend)
    */
-  async confirmarPedido(): Promise<ComandaClienteResponse> {
+  async confirmarPedido(): Promise<EstadoPedido> {
     const comandaId = this._comandaId();
     
     if (!comandaId) {
@@ -75,7 +74,7 @@ export class ComandaState {
     this._cargando.set(true);
     this._error.set(null);
 
-    const items: ItemPedidoRequest[] = pedidos.map(p => ({
+    const items = pedidos.map(p => ({
       articuloId: p.plato.articuloId,
       cantidad: p.cantidad,
       observacionesIngredientes: p.observacionesIngredientes ?? null,
@@ -84,10 +83,16 @@ export class ComandaState {
 
     try {
       const response = await firstValueFrom(this.comandaService.confirmarPedido(comandaId, { items }));
-      this._estadoPedido.set(response);
+      const estado: EstadoPedido = {
+        comandaId: response.comandaId,
+        estadoUI: response.estadoUI,
+        totalAPagar: response.totalAPagar,
+        items: response.items
+      };
+      this._estadoPedido.set(estado);
       this._cargando.set(false);
       this.pedidoService.limpiarPedidos();
-      return response;
+      return estado;
     } catch (err: any) {
       void 0;
       this._error.set('Error al confirmar el pedido. Intenta nuevamente.');
@@ -99,7 +104,7 @@ export class ComandaState {
   /**
    * PASO 3: Consultar estado del pedido
    */
-  async consultarEstado(): Promise<ComandaClienteResponse> {
+  async consultarEstado(): Promise<EstadoPedido> {
     const comandaId = this._comandaId();
     
     if (!comandaId) {
@@ -108,8 +113,14 @@ export class ComandaState {
 
     try {
       const response = await firstValueFrom(this.comandaService.obtenerEstado(comandaId));
-      this._estadoPedido.set(response);
-      return response;
+      const estado: EstadoPedido = {
+        comandaId: response.comandaId,
+        estadoUI: response.estadoUI,
+        totalAPagar: response.totalAPagar,
+        items: response.items
+      };
+      this._estadoPedido.set(estado);
+      return estado;
     } catch (err: any) {
       void 0;
       throw err;

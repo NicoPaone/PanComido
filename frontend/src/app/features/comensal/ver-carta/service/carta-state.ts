@@ -1,4 +1,5 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CartaItem } from '../../../../core/models/domain/carta-item';
 import { CartaService } from './carta-service';
 
@@ -8,6 +9,7 @@ import { CartaService } from './carta-service';
 export class CartaState {
 
   private api = inject(CartaService);
+  private destroyRef = inject(DestroyRef);
   private _items = signal<CartaItem[]>([]);
   private _cargando = signal(false);
 
@@ -70,7 +72,7 @@ export class CartaState {
 
   cargarCarta(): void {
     this._cargando.set(true);
-    this.api.obtenerCarta().subscribe({
+    this.api.obtenerCarta().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this._items.set(data);
         this._cargando.set(false);

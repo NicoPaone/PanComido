@@ -3,8 +3,7 @@ import { Observable, map, switchMap, of } from 'rxjs';
 import { ApiService } from '../../../../core/services/api-service';
 import { IngredienteVencimiento, VencimientoProveedor, VencimientoPedidoActivo } from '../../../../core/models/domain/vencimiento';
 import { Insumo } from '../../../../core/models/domain/insumo';
-import { PedidoProveedor } from '../../../../core/models/domain/proveedor';
-import { NuevoPedidoProveedor } from '../../../../core/models/dtos/requests/proveedor.request';
+import { PedidoProveedor, PedidoProveedorRequest } from '../../../../core/models/domain/proveedor';
 
 interface ProveedorResponseDto {
   id: number;
@@ -87,11 +86,11 @@ export class VencimientosApiService {
     );
   }
 
-  crearPedidoProveedor(proveedorId: string | number, pedido: NuevoPedidoProveedor): Observable<PedidoProveedor> {
+  crearPedidoProveedor(proveedorId: string | number, pedido: PedidoProveedorRequest): Observable<PedidoProveedor> {
     return this.api.post<PedidoProveedor>(`pedido-proveedor/${proveedorId}/crear-pedido`, this.mapCrearPedidoRequest(pedido));
   }
 
-  private mapCrearPedidoRequest(pedido: NuevoPedidoProveedor): CrearPedidoRequestDto {
+  private mapCrearPedidoRequest(pedido: PedidoProveedorRequest): CrearPedidoRequestDto {
     return {
       items: pedido.items.map(item => ({
         insumoId: Number(item.id),

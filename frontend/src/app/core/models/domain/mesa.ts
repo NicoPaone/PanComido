@@ -30,3 +30,8 @@ export interface Mesa {
   dimensionMesa: DimensionMesa;
   estadoMesa: string;
 }
+
+export interface MesaOcupar {
+  mesa: Mesa;
+  idComandaGenerada: number;
+}

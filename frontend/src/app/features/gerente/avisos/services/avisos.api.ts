@@ -1,10 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { ApiService } from '../../../../core/services/api-service';
 import { Plato } from '../../../../core/models/domain/plato';
 import { AvisosResponseDto } from '../../../../core/models/dtos/responses/avisos.response';
 import { Insumo } from '../../../../core/models/domain/insumo';
 import { SugerenciaIA } from '../../../../core/models/dtos/responses/sugerencia-ia.response';
+import { Sugerencia } from '../../../../core/models/domain/sugerencia-ia';
 
 @Injectable({ providedIn: 'root' })
 export class AvisosApiService {
@@ -26,8 +27,24 @@ export class AvisosApiService {
     return this.api.get<Insumo[]>('insumo');
   }
 
-  generarSugerenciasIA(): Observable<SugerenciaIA> {
-    return this.api.post<SugerenciaIA>('avisos/sugerencias-ia', {});
+  generarSugerenciasIA(): Observable<Sugerencia> {
+    return this.api.post<SugerenciaIA>('avisos/sugerencias-ia', {}).pipe(
+      map((dto) => ({
+        fechaSugerencia: dto.fechaSugerencia,
+        platosSugeridos: dto.platosSugeridos.map((p) => ({
+          id: p.id,
+          nombre: p.nombre,
+          descripcion: p.descripcion,
+          tiempoPreparacion: p.tiempoPreparacion,
+          porcionesPosibles: p.porcionesPosibles,
+          ingredientesSugeridos: p.ingredientesSugeridosIA.map((ing) => ({
+            insumoId: ing.insumoId,
+            nombre: ing.nombre,
+            cantidad: ing.cantidad,
+          })),
+        })),
+      }))
+    );
   }
 
   crearPlatoDesdeIA(plato: any): Observable<any> {

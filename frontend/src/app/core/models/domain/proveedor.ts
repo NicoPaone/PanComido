@@ -49,3 +49,31 @@ export interface SugerenciaPedidoItem {
   cantidadSugerida: number;
   precioUnitario: number;
 }
+
+export interface ProveedorNuevo {
+  nombre: string;
+  contacto: string;
+  telefono: string;
+  email: string;
+  calle?: string;
+  numero?: string;
+  ciudad?: string;
+  categorias?: string[];
+}
+
+export interface PedidoProveedorRequest {
+  proveedorId: number | string;
+  concepto: string;
+  monto: number;
+  observacion: string;
+  items: PedidoProveedorItem[];
+}
+
+export interface RecepcionPedidoItem {
+  insumoId: number;
+  nombreInsumo: string;
+  cantidad: number;
+  nombreLote: string;
+  bodegaId: number;
+  fechaVencimiento: string;
+}

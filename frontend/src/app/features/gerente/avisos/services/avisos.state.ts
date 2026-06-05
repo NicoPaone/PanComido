@@ -3,8 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Aviso, AvisoTipo } from '../../../../core/models/domain/aviso';
 import { Plato } from '../../../../core/models/domain/plato';
 import { AvisosApiService } from './avisos.api';
-import { SugerenciaIA } from '../../../../core/models/dtos/responses/sugerencia-ia.response';
-import { PlatoSugeridoIA } from '../../../../core/models/dtos/responses/sugerencia-ia.response';
+import { Sugerencia, PlatoSugerido } from '../../../../core/models/domain/sugerencia-ia';
 import { mapAvisosResponseToDomain } from '../../../../infra/http/mappers/aviso.mapper';
 @Injectable({ providedIn: 'root' })
 export class AvisosStateService {
@@ -20,7 +19,7 @@ export class AvisosStateService {
 
   private _vencimientos = signal<Aviso[]>([]);
   private _stockBajo = signal<Aviso[]>([]);
-  private _sugerenciasIA = signal<SugerenciaIA | null>(null);
+  private _sugerenciasIA = signal<Sugerencia | null>(null);
   private _loadingIA = signal<boolean>(false);
   private _errorIA = signal<string | null>(null);
   private _creandoPlato = signal<number | null>(null);
@@ -183,7 +182,7 @@ export class AvisosStateService {
       });
   }
 
-  crearPlatoDesdeIA(plato: PlatoSugeridoIA): void {
+  crearPlatoDesdeIA(plato: PlatoSugerido): void {
   this._creandoPlato.set(plato.id);
 
   const request = {
@@ -195,7 +194,7 @@ export class AvisosStateService {
     categoriaPlatoId: 2,
     urlImagen: '',
     restriccionesIds: [],
-    ingredientes: plato.ingredientesSugeridosIA.map(ing => ({
+    ingredientes: plato.ingredientesSugeridos.map(ing => ({
       insumoId: ing.insumoId,
       cantidad: ing.cantidad,
       opcional: false

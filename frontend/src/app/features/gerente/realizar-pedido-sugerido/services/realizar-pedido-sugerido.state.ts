@@ -255,7 +255,7 @@ seleccionarIngredienteExtra(productoId: string): void {
     // Buscar el último precio en el historial del proveedor seleccionado
     const proveedorId = this.proveedorAgregarIngredienteId();
     if (proveedorId !== null) {
-      this.api.getHistorialPedidos(proveedorId).subscribe({
+      this.api.getHistorialPedidos(proveedorId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: pedidos => {
           const ordenados = [...pedidos].sort((a, b) => {
             const fa = new Date(a.fecha).getTime();

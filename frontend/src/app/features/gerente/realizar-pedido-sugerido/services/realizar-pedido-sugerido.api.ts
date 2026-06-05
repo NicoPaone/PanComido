@@ -2,8 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { ApiService } from '../../../../core/services/api-service';
 
-import { Proveedor, SugerenciaPedidoItem } from '../../../../core/models/domain/proveedor';
-import { NuevoPedidoProveedor } from '../../../../core/models/dtos/requests/proveedor.request';
+import { Proveedor, SugerenciaPedidoItem, PedidoProveedorRequest } from '../../../../core/models/domain/proveedor';
 import { Insumo } from '../../../../core/models/domain/insumo';
 import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
 import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo';
@@ -56,7 +55,7 @@ export class RealizarPedidoSugeridoApiService {
     );
   }
 
-  crearPedidoProveedor(id: number | string, pedido: NuevoPedidoProveedor): Observable<unknown> {
+  crearPedidoProveedor(id: number | string, pedido: PedidoProveedorRequest): Observable<unknown> {
     return this.api.post<unknown>(`pedido-proveedor/${id}/crear-pedido`, {
       items: pedido.items.map(item => ({
         insumoId: Number(item.id),

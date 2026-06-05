@@ -39,3 +39,21 @@ export interface Comanda {
   tiempoEstimadoTotal: number;
   items: PlatoComanda[];
 }
+
+export interface ItemEstadoPedido {
+  articuloId: number;
+  nombre: string;
+  cantidad: number;
+  entregado: boolean;
+  precioUnitario: number;
+  subtotal: number;
+  observacionesIngredientes: string | null;
+  observacionesGenerales: string | null;
+}
+
+export interface EstadoPedido {
+  comandaId: number;
+  estadoUI: string;
+  totalAPagar: number;
+  items: ItemEstadoPedido[];
+}

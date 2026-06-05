@@ -1,4 +1,5 @@
-import { Component, inject, signal, effect, OnDestroy, OnInit , ChangeDetectionStrategy} from '@angular/core';
+import { Component, DestroyRef, inject, signal, effect, OnDestroy, OnInit , ChangeDetectionStrategy} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { ComandaState } from '../../services/comanda-state';
@@ -20,6 +21,7 @@ export class PagoCheckout implements OnInit, OnDestroy {
   private comandaState = inject(ComandaState);
   private pagoService = inject(PagoService);
   private comandaHub = inject(ComandaHubService);
+  private destroyRef = inject(DestroyRef);
 
   configuracion = configuracionRestauranteMock;
   estado = this.comandaState.estadoPedido;
@@ -67,7 +69,7 @@ export class PagoCheckout implements OnInit, OnDestroy {
     this.cargandoPago.set(true);
     this.error.set(null);
 
-    this.pagoService.solicitarPagoEfectivo(comandaId).subscribe({
+    this.pagoService.solicitarPagoEfectivo(comandaId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.cargandoPago.set(false);
         this.pagoSolicitado.set(true);

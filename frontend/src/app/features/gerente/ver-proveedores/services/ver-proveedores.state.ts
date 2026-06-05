@@ -2,7 +2,7 @@ import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { VerProveedoresApiService } from './ver-proveedores.api';
 import { Proveedor, PedidoProveedor, PedidoProveedorItem } from '../../../../core/models/domain/proveedor';
-import { PreRecepcionPedidoItem } from '../../../../core/models/dtos/requests/proveedor.request';
+import { RecepcionPedidoItem } from '../../../../core/models/domain/proveedor';
 import { Insumo } from '../../../../core/models/domain/insumo';
 import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
 import { Bodega } from '../../../../core/models/domain/bodega';
@@ -31,7 +31,7 @@ export class VerProveedoresState {
   pedidoItems = signal<PedidoProveedorItem[]>([]);
   pedidoHistorialSeleccionado = signal<PedidoProveedor | null>(null);
   recepcionPedido = signal<PedidoProveedor | null>(null);
-  recepcionItems = signal<PreRecepcionPedidoItem[]>([]);
+  recepcionItems = signal<RecepcionPedidoItem[]>([]);
   bodegas = signal<Bodega[]>([]);
 
   private _loading = signal(false);
@@ -465,7 +465,7 @@ seleccionarProducto(producto: Insumo): void {
     this.recepcionItems.set([]);
   }
 
-  actualizarRecepcionItem(insumoId: number, cambios: Partial<PreRecepcionPedidoItem>): void {
+  actualizarRecepcionItem(insumoId: number, cambios: Partial<RecepcionPedidoItem>): void {
     this.recepcionItems.update(items =>
       items.map(item => item.insumoId === insumoId ? { ...item, ...cambios } : item)
     );

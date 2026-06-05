@@ -1,4 +1,5 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MesaService } from './mesa.service';
 import { Mesa, EstadoMesa, FormaMesa } from '../../../core/models/domain/mesa';
 import { MesaLecturaState } from '../shared/mesa-lectura-state';
@@ -7,6 +8,7 @@ import { MesaLecturaState } from '../shared/mesa-lectura-state';
 export class MesaState {
   private lectura = inject(MesaLecturaState);
   private mesaService = inject(MesaService);
+  private destroyRef = inject(DestroyRef);
 
   // Expone lo que ya tiene MesaLecturaState
   mesas = this.lectura.mesas;
@@ -128,7 +130,7 @@ export class MesaState {
       }
     }
 
-    this.mesaService.guardarMapa(mesas).subscribe({
+    this.mesaService.guardarMapa(mesas).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this._isEditorMode.set(false);
         this.lectura.mostrarNotificacion('Mapa guardado con éxito', 'exito');

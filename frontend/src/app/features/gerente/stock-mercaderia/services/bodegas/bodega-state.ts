@@ -1,4 +1,5 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Bodega } from '../../../../../core/models/domain/bodega';
 import { BodegaService } from './bodega-service';
 
@@ -8,20 +9,21 @@ import { BodegaService } from './bodega-service';
 export class BodegaState {
 
   private api = inject(BodegaService);
+  private destroyRef = inject(DestroyRef);
 
   private _bodegas = signal<Bodega[]>([]);
 
   bodegas = this._bodegas.asReadonly();
 
   cargarBodegas(): void {
-    this.api.obtenerBodegas().subscribe({
+    this.api.obtenerBodegas().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => this._bodegas.set(data),
 
       error: (err) => void 0
     });
   }
   cargarBodegasConInsumos(): void {
-    this.api.obtenerBodegasConInsumos().subscribe({
+    this.api.obtenerBodegasConInsumos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => this._bodegas.set(data),    
     });
   }

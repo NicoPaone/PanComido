@@ -10,7 +10,7 @@ import { StockMercaderiaState } from '../../services/insumos/stock-mercaderia-st
 import { BodegaState } from '../../services/bodegas/bodega-state';
 import { ProductoForm } from "../../components/producto-form/producto-form";
 import { Insumo } from '../../../../../core/models/domain/insumo';
-import { CrearInsumoRequest } from '../../../../../core/models/dtos/requests/crear-insumo.request';
+import { CrearInsumo } from '../../../../../core/models/domain/insumo';
 
 @Component({
   selector: 'app-insumo',
@@ -113,7 +113,7 @@ export class InsumoPage {
       this.productoEditandoId.set(null);
       this.modalAbierto.set(false);
     }
-    guardarCambios(datosProducto: CrearInsumoRequest, modal:Modal){
+    guardarCambios(datosProducto: CrearInsumo, modal:Modal){
       this.state.guardarProducto(datosProducto);
       modal.cerrar();
       this.limpiarEstadoModal();

@@ -10,7 +10,7 @@ import {
   faBreadSlice,
   IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
-import { LlamarMozoRequest } from '../../../../core/models/dtos/requests/llamar-mozo.request';
+import { LlamadoMozo } from '../../../../core/models/domain/llamado';
 
 
 interface CategoriaLlamado {
@@ -43,7 +43,7 @@ export class LlamarAlMozo {
   enviado = input<boolean>(false);
   error = input<string | null>(null);
 
-  llamadoMozo = output<LlamarMozoRequest>();
+  llamadoMozo = output<LlamadoMozo>();
   modalCerrado = output<void>();
 
   readonly categorias = CATEGORIAS;

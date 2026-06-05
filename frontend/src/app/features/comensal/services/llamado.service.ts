@@ -1,7 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from '../../../core/services/api-service';
-import { Llamado } from '../../../core/models/domain/llamado';
-import { LlamarMozoRequest } from '../../../core/models/dtos/requests/llamar-mozo.request';
+import { Llamado, LlamadoMozo } from '../../../core/models/domain/llamado';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -11,7 +10,7 @@ export class LlamadoService {
   private api = inject(ApiService)
   private endpoint = 'llamado'
 
-  crearLlamado(request: LlamarMozoRequest): Observable<Llamado> {
+  crearLlamado(request: LlamadoMozo): Observable<Llamado> {
     return this.api.post<Llamado>(`${this.endpoint}/generar-llamado`, request);
   }
 }

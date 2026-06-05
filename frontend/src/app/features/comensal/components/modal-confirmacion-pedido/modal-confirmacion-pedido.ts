@@ -1,6 +1,6 @@
 import { Component, inject, input, output, signal , ChangeDetectionStrategy} from '@angular/core';
 import { Router } from '@angular/router';
-import { ComandaClienteResponse } from '../../../../core/models/dtos/responses/comanda-cliente.response';
+import { EstadoPedido } from '../../../../core/models/domain/comanda';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,7 +14,7 @@ export class ModalConfirmacionPedido {
 
   cargando = input<boolean>(false);
   error = input<string | null>(null);
-  estadoPedido = input<ComandaClienteResponse | null>(null);
+  estadoPedido = input<EstadoPedido | null>(null);
 
   confirmar = output<void>();
 

@@ -10,3 +10,15 @@ export interface Insumo {
   categoriaIngrediente: CategoriaInsumo;
   stockMinimo: number;
 }
+
+export interface CrearInsumo {
+  nombre: string;
+  descripcion: string;
+  precioVentaFinal: number;
+  stockMinimo: number;
+  categoriaId: number;
+  unidadDeMedidaId: number;
+  bodegaId: number;
+  cantidadInicial: number;
+  fechaVencimiento: string;
+}

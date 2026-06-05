@@ -9,4 +9,10 @@ export interface Llamado {
   resuelto: boolean;
 }
 
+export interface LlamadoMozo {
+  mesaId: number;
+  categoriaLlamadoId: number;
+  descripcion: string;
+}
+
 export type TipoLlamado = 'admin' | 'cocina' | 'mesa';

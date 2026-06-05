@@ -1,8 +1,7 @@
 import { Component, inject, input, output , ChangeDetectionStrategy} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Insumo } from '../../../../../core/models/domain/insumo';
+import { Insumo, CrearInsumo } from '../../../../../core/models/domain/insumo';
 import { Bodega } from '../../../../../core/models/domain/bodega';
-import { CrearInsumoRequest } from '../../../../../core/models/dtos/requests/crear-insumo.request';
 
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { CategoriaInsumo } from '../../../../../core/models/domain/categoria-insumo';
@@ -32,7 +31,7 @@ export class ProductoForm {
   bodegas = input<Bodega[]>([]);
   categorias = input<CategoriaInsumo[]>([]);
   unidadesMedida = input<UnidadMedida[]>([]);
-  guardar = output<CrearInsumoRequest>();
+  guardar = output<CrearInsumo>();
   cancelado = output<void>();
 
   form!: FormGroup;
@@ -68,7 +67,7 @@ onSubmit(): void {
     if (this.form.valid) {
       const formValue = this.form.value;
       
-      const payload: CrearInsumoRequest = {
+      const payload: CrearInsumo = {
         nombre: formValue.nombre,
         descripcion: formValue.descripcion || '',
         precioVentaFinal: Number(formValue.precioVentaFinal) || 0,
