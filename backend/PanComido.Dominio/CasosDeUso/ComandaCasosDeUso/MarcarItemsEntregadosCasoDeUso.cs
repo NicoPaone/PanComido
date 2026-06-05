@@ -24,6 +24,9 @@ public class MarcarItemsEntregadosCasoDeUso
         Comanda comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
         if (comanda == null) throw new KeyNotFoundException("Comanda no encontrada");
 
+        if (comanda.Estado == EstadoComanda.Finalizada)
+            throw new InvalidOperationException("La comanda ya está finalizada.");
+
         foreach (int articuloComandaId in articuloComandaIds)
         {
             if (!comanda.Items.Any(ac => ac.Id == articuloComandaId))
@@ -33,23 +36,15 @@ public class MarcarItemsEntregadosCasoDeUso
                 throw new InvalidOperationException("El ítem ya fue entregado.");
         }
 
-        if (comanda.Estado == EstadoComanda.Finalizada)
-            throw new InvalidOperationException("La comanda ya está finalizada.");
-
         await _comandaRepositorio.MarcarItemsEntregadosAsync(comandaId, articuloComandaIds);
         Comanda comandaDespuesDeEntregados = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
 
         if (comandaDespuesDeEntregados.Items.All(i => i.Entregado))
-        {
             await _comandaRepositorio.ModificarEstadoComandaAsync(comandaDespuesDeEntregados.MesaId, (int)EstadoComanda.EnEspera);
-            var comandaFinal = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
-            var mozoIds = await _mesaRepositorio.ObtenerMozoIdsPorMesaAsync(comandaDespuesDeEntregados.MesaId);
-            await _comandaNotificador.NotificarEstadoModificadoAsync(comandaFinal, mozoIds);
-            return comandaFinal;
-        }
 
-        var mozoIdsParcial = await _mesaRepositorio.ObtenerMozoIdsPorMesaAsync(comandaDespuesDeEntregados.MesaId);
-        await _comandaNotificador.NotificarEstadoModificadoAsync(comandaDespuesDeEntregados, mozoIdsParcial);
-        return comandaDespuesDeEntregados;
+        Comanda comandaFinal = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaDespuesDeEntregados.Id);
+        var mozoIds = await _mesaRepositorio.ObtenerMozoIdsPorMesaAsync(comandaFinal.MesaId);
+        await _comandaNotificador.NotificarEstadoModificadoAsync(comandaFinal, mozoIds);
+        return comandaFinal;
     }
 }

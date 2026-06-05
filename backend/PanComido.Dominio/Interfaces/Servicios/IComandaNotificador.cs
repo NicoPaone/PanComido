@@ -10,6 +10,10 @@ namespace PanComido.Dominio.Interfaces.Servicios
     public interface IComandaNotificador
     {
         Task NotificarEstadoModificadoAsync(Comanda comanda, List<int> mozoIds);
+<<<<<<< HEAD
+=======
+
+>>>>>>> b32a5e1 (cambios no actualizados)
         Task NotificarLlamadoCocinaAsync(Comanda comanda, List<int> mozoIds);
     }
 }
