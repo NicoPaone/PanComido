@@ -40,7 +40,7 @@ public class MarcarItemsEntregadosCasoDeUso
         Comanda comandaDespuesDeEntregados = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
 
         if (comandaDespuesDeEntregados.Items.All(i => i.Entregado))
-            await _comandaRepositorio.ModificarEstadoComandaAsync(comandaDespuesDeEntregados.MesaId, (int)EstadoComanda.EnEspera);
+            await _comandaRepositorio.ModificarEstadoComandaAsync(comandaDespuesDeEntregados.Id, (int)EstadoComanda.EnEspera);
 
         Comanda comandaFinal = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaDespuesDeEntregados.Id);
         var mozoIds = await _mesaRepositorio.ObtenerMozoIdsPorMesaAsync(comandaFinal.MesaId);
