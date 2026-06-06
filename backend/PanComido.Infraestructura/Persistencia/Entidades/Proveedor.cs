@@ -22,6 +22,9 @@ public partial class Proveedor
     [Column("numero_telefono_wsp")]
     public string? NumeroTelefonoWsp { get; set; }
 
+    [Column("eliminado")]
+    public bool Eliminado { get; set; }
+
     [InverseProperty("Proveedor")]
     public virtual ICollection<Pedido> Pedidos { get; set; } = new List<Pedido>();
 

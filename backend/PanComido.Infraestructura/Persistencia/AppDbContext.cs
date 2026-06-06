@@ -110,6 +110,8 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("articulo_pkey");
 
+            entity.Property(e => e.Eliminado).HasDefaultValue(false);
+
             entity.HasOne(d => d.Carta).WithMany(p => p.Articulos).HasConstraintName("articulo_carta_id_fkey");
 
             entity.HasOne(d => d.Restaurante).WithMany(p => p.Articulos)
@@ -155,6 +157,8 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<Bodega>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("bodega_pkey");
+
+            entity.Property(e => e.Eliminado).HasDefaultValue(false);
 
             entity.HasOne(d => d.Restaurante).WithMany(p => p.Bodegas)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -268,6 +272,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("empleado_pkey");
 
+            entity.Property(e => e.Eliminado).HasDefaultValue(false);
             entity.Property(e => e.Estado).HasDefaultValueSql("'activo'::text");
 
             entity.HasOne(d => d.Restaurante).WithMany(p => p.Empleados)
@@ -312,6 +317,8 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<FilaVirtual>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("fila_virtual_pkey");
+
+            entity.Property(e => e.Habilitada).HasDefaultValue(true);
 
             entity.HasOne(d => d.Restaurante).WithMany(p => p.FilaVirtuals)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -580,6 +587,8 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<Proveedor>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("proveedor_pkey");
+
+            entity.Property(e => e.Eliminado).HasDefaultValue(false);
 
             entity.HasOne(d => d.Restaurante).WithMany(p => p.Proveedors)
                 .OnDelete(DeleteBehavior.ClientSetNull)

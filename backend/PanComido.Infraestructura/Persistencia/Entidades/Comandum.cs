@@ -35,7 +35,7 @@ public partial class Comandum
     public DateTime? HoraFin { get; set; }
 
     [Column("hora_ultimo_cambio_estado", TypeName = "timestamp without time zone")]
-    public DateTime? HoraUltimoCambioEstado { get; set; }
+    public DateTime HoraUltimoCambioEstado { get; set; }
 
     [InverseProperty("Comanda")]
     public virtual ICollection<ArticuloComandum> ArticuloComanda { get; set; } = new List<ArticuloComandum>();
