@@ -13,10 +13,10 @@
   </app-page-toolbar>
 
   @if (state.mensaje()) {
-    <div class="avisos-toast">
-      <span class="material-symbols-outlined">check_circle</span>
-      {{ state.mensaje() }}
-    </div>
+  <div class="avisos-toast">
+    <span class="material-symbols-outlined">check_circle</span>
+    {{ state.mensaje() }}
+  </div>
   }
 
   <div class="avisos-sections">
@@ -33,7 +33,7 @@
         </div>
         <div class="d-flex align-items-center gap-2">
           @if (state.stockBajo().length > 0) {
-            <span class="accordion-badge badge-stock">{{ state.stockBajo().length }}</span>
+          <span class="accordion-badge badge-stock">{{ state.stockBajo().length }}</span>
           }
           <span class="accordion-chevron material-symbols-outlined">
             {{ isStockExpanded() ? 'expand_less' : 'expand_more' }}
@@ -42,37 +42,37 @@
       </button>
 
       @if (isStockExpanded()) {
-        <div class="accordion-body">
-          @if (state.stockBajo().length === 0) {
-            <div class="accordion-empty">
-              <span class="material-symbols-outlined">check_circle</span>
-              <span>No hay insumos con stock crítico</span>
+      <div class="accordion-body">
+        @if (state.stockBajo().length === 0) {
+        <div class="accordion-empty">
+          <span class="material-symbols-outlined">check_circle</span>
+          <span>No hay insumos con stock crítico</span>
+        </div>
+        } @else {
+        <div class="avisos-list">
+          @for (a of state.stockBajo(); track a.id) {
+          <div class="aviso-item">
+            <div class="aviso-item-icon tipo-stock">
+              <span class="material-symbols-outlined">inventory_2</span>
             </div>
-          } @else {
-            <div class="avisos-list">
-              @for (a of state.stockBajo(); track a.id) {
-                <div class="aviso-item">
-                  <div class="aviso-item-icon tipo-stock">
-                    <span class="material-symbols-outlined">inventory_2</span>
-                  </div>
-                  <div class="aviso-item-content">
-                    <span class="aviso-item-title">{{ a.titulo }}</span>
-                    <span class="aviso-item-sub">{{ a.subtitulo }}</span>
-                    <span class="aviso-item-info">{{ a.info }}</span>
-                  </div>
-                  <div class="aviso-item-actions">
-                    <app-boton variante="warning" tamanio="sm" (clicked)="abrirPedidoStock(a)">
-                      <div class="d-flex align-items-center gap-1 text-dark">
-                        <span class="material-symbols-outlined" style="font-size: 1rem;">shopping_cart</span>
-                        <span class="fw-bold">Pedir</span>
-                      </div>
-                    </app-boton>
-                  </div>
+            <div class="aviso-item-content">
+              <span class="aviso-item-title">{{ a.titulo }}</span>
+              <span class="aviso-item-sub">{{ a.subtitulo }}</span>
+              <span class="aviso-item-info">{{ a.info }}</span>
+            </div>
+            <div class="aviso-item-actions">
+              <app-boton variante="warning" tamanio="sm" (clicked)="abrirPedidoStock(a)">
+                <div class="d-flex align-items-center gap-1 text-dark">
+                  <span class="material-symbols-outlined" style="font-size: 1rem;">shopping_cart</span>
+                  <span class="fw-bold">Pedir</span>
                 </div>
-              }
+              </app-boton>
             </div>
+          </div>
           }
         </div>
+        }
+      </div>
       }
     </div>
 
@@ -88,7 +88,7 @@
         </div>
         <div class="d-flex align-items-center gap-2">
           @if (state.vencimientos().length > 0) {
-            <span class="accordion-badge badge-vencimiento">{{ state.vencimientos().length }}</span>
+          <span class="accordion-badge badge-vencimiento">{{ state.vencimientos().length }}</span>
           }
           <span class="accordion-chevron material-symbols-outlined">
             {{ isVencimientosExpanded() ? 'expand_less' : 'expand_more' }}
@@ -97,37 +97,37 @@
       </button>
 
       @if (isVencimientosExpanded()) {
-        <div class="accordion-body">
-          @if (state.vencimientos().length === 0) {
-            <div class="accordion-empty">
-              <span class="material-symbols-outlined">check_circle</span>
-              <span>No hay vencimientos próximos</span>
+      <div class="accordion-body">
+        @if (state.vencimientos().length === 0) {
+        <div class="accordion-empty">
+          <span class="material-symbols-outlined">check_circle</span>
+          <span>No hay vencimientos próximos</span>
+        </div>
+        } @else {
+        <div class="avisos-list">
+          @for (a of state.vencimientos(); track a.id) {
+          <div class="aviso-item" (click)="abrirAviso(a)" style="cursor: pointer;">
+            <div class="aviso-item-icon tipo-vencimiento">
+              <span class="material-symbols-outlined">event_busy</span>
             </div>
-          } @else {
-            <div class="avisos-list">
-              @for (a of state.vencimientos(); track a.id) {
-                <div class="aviso-item" (click)="abrirAviso(a)" style="cursor: pointer;">
-                  <div class="aviso-item-icon tipo-vencimiento">
-                    <span class="material-symbols-outlined">event_busy</span>
-                  </div>
-                  <div class="aviso-item-content">
-                    <span class="aviso-item-title">{{ a.titulo }}</span>
-                    <span class="aviso-item-sub">{{ a.subtitulo }}</span>
-                    <span class="aviso-item-info">{{ a.info }}</span>
-                  </div>
-                  <div class="aviso-item-actions">
-                    <app-boton variante="success" tamanio="sm" (clicked)="$event.stopPropagation(); state.avisarCocina(a.id)">
-                      <div class="d-flex align-items-center gap-1 text-white">
-                        <span class="material-symbols-outlined" style="font-size: 1rem;">send</span>
-                        <span class="fw-bold">Avisar a cocina</span>
-                      </div>
-                    </app-boton>
-                  </div>
+            <div class="aviso-item-content">
+              <span class="aviso-item-title">{{ a.titulo }}</span>
+              <span class="aviso-item-sub">{{ a.subtitulo }}</span>
+              <span class="aviso-item-info">{{ a.info }}</span>
+            </div>
+            <div class="aviso-item-actions">
+              <app-boton variante="success" tamanio="sm" (clicked)="$event.stopPropagation(); state.avisarCocina(a.id)">
+                <div class="d-flex align-items-center gap-1 text-white">
+                  <span class="material-symbols-outlined" style="font-size: 1rem;">send</span>
+                  <span class="fw-bold">Avisar a cocina</span>
                 </div>
-              }
+              </app-boton>
             </div>
+          </div>
           }
         </div>
+        }
+      </div>
       }
     </div>
 
@@ -171,7 +171,8 @@
         </div>
       </div>
       <p class="sugerencia-card-desc">
-        La IA analiza los insumos con vencimiento próximo y genera sugerencias de platos para aprovecharlos antes de que venzan.
+        La IA analiza los insumos con vencimiento próximo y genera sugerencias de platos para aprovecharlos antes de que
+        venzan.
       </p>
       <app-boton variante="outline" tamanio="md" (clicked)="abrirPreviewSugerencia('ia')">
         <div class="d-flex align-items-center gap-2 fw-bold">
@@ -183,17 +184,17 @@
 
     <!-- ─── Panel Vista Previa ─── -->
     @if (panelPreviewAbierto()) {
-      <div class="sugerencia-preview-panel mt-4 p-4 bg-white border rounded-4 shadow-sm">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h4 class="fw-bold m-0 text-dark">
-            <span class="material-symbols-outlined fs-5 align-middle me-1">preview</span>
-            Sugerencias de IA
-          </h4>
-          <button class="btn-close" (click)="panelPreviewAbierto.set(null)"></button>
-        </div>
+    <div class="sugerencia-preview-panel mt-4 p-4 bg-white border rounded-4 shadow-sm">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold m-0 text-dark">
+          <span class="material-symbols-outlined fs-5 align-middle me-1">preview</span>
+          Sugerencias de IA
+        </h4>
+        <button class="btn-close" (click)="panelPreviewAbierto.set(null)"></button>
+      </div>
 
-        <!-- PANEL SUGERENCIAS DEL SISTEMA: comentado temporalmente, retomar en próxima iteración -->
-        <!--
+      <!-- PANEL SUGERENCIAS DEL SISTEMA: comentado temporalmente, retomar en próxima iteración -->
+      <!--
         @if (panelPreviewAbierto() === 'sistema') {
           @if (pedidoSugeridoState.loading()) {
             <div class="text-center p-4 text-muted">
@@ -249,194 +250,199 @@
         } @else {
         -->
 
-        @if (state.loadingIA()) {
-          <div class="text-center p-4 text-muted">
-            <div class="spinner-border text-secondary" role="status"></div>
-            <p class="mt-2 mb-0">Generando sugerencias con IA...</p>
-          </div>
-        } @else if (state.errorIA()) {
-          <div class="alert alert-danger border-0 rounded-3 d-flex align-items-center gap-2">
-            <span class="material-symbols-outlined">error</span>
-            {{ state.errorIA() }}
-          </div>
-        } @else if (state.sugerenciasIA()) {
-          <div class="mb-3 text-muted small">
-            <span class="material-symbols-outlined align-middle me-1" style="font-size: 1rem;">calendar_today</span>
-            Generado el {{ state.sugerenciasIA()!.fechaSugerencia | date:'dd/MM/yyyy HH:mm' }}
-          </div>
-          <div class="row row-cols-1 row-cols-md-2 g-3">
-            @for (plato of state.sugerenciasIA()!.platosSugeridos; track plato.id) {
-              <div class="col">
-                <div class="border rounded-3 p-3 bg-light d-flex flex-column h-100">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div class="fw-bold fs-6 text-dark">{{ plato.nombre }}</div>
-                    <span class="badge bg-white text-secondary border ms-2" style="font-size: 0.75rem; white-space: nowrap;">
-                      <span class="material-symbols-outlined align-middle" style="font-size: 0.85rem;">timer</span>
-                      {{ plato.tiempoPreparacion }} min
-                    </span>
-                  </div>
-                  <p class="text-muted small mb-2" style="line-height: 1.4;">{{ plato.descripcion }}</p>
-                  <div class="small text-muted mb-2">
-                    <span class="material-symbols-outlined align-middle" style="font-size: 0.9rem;">restaurant</span>
-                    {{ plato.porcionesPosibles }} porciones posibles
-                  </div>
-                  <div class="d-flex flex-wrap gap-1 pt-2 border-top mb-3">
-                    @for (ing of plato.ingredientesSugeridosIA; track ing.insumoId) {
-                      <span class="badge bg-white text-secondary border fw-normal border-secondary-subtle px-2 py-1" style="font-size: 0.75rem;">
-                        {{ ing.nombre }} ({{ ing.cantidad }})
-                      </span>
-                    }
-                  </div>
-                  <app-boton variante="warning" tamanio="sm" (clicked)="crearPlatoDesdeIA(plato)">
-                    <div class="d-flex align-items-center gap-1 text-dark fw-bold">
-                      <span class="material-symbols-outlined" style="font-size: 1rem;">add_circle</span>
-                      <span>Crear plato</span>
-                    </div>
-                  </app-boton>
-                </div>
-              </div>
-            }
-          </div>
-        } @else {
-          <div class="alert alert-secondary border-0 rounded-3 text-center py-5">
-            <span class="material-symbols-outlined fs-1 text-muted mb-3">psychology</span>
-            <h5 class="mb-1 text-dark">Generando sugerencias...</h5>
-            <p class="text-muted mb-0">Aguardá un momento mientras la IA analiza los insumos.</p>
-          </div>
-        }
-
-        <!-- } -->
-        <!-- fin bloque sistema comentado -->
-
+      @if (state.loadingIA()) {
+      <div class="text-center p-4 text-muted">
+        <div class="spinner-border text-secondary" role="status"></div>
+        <p class="mt-2 mb-0">Generando sugerencias con IA...</p>
       </div>
+      } @else if (state.errorIA()) {
+      <div class="alert alert-danger border-0 rounded-3 d-flex align-items-center gap-2">
+        <span class="material-symbols-outlined">error</span>
+        {{ state.errorIA() }}
+      </div>
+      } @else if (state.sugerenciasIA()) {
+      <div class="mb-3 text-muted small">
+        <span class="material-symbols-outlined align-middle me-1" style="font-size: 1rem;">calendar_today</span>
+        Generado el {{ state.sugerenciasIA()!.fechaSugerencia | date:'dd/MM/yyyy HH:mm' }}
+      </div>
+      <div class="row row-cols-1 row-cols-md-2 g-3">
+        @for (plato of state.sugerenciasIA()!.platosSugeridos; track plato.id) {
+        <div class="col">
+          <div class="border rounded-3 p-3 bg-light d-flex flex-column h-100">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div class="fw-bold fs-6 text-dark">{{ plato.nombre }}</div>
+              <span class="badge bg-white text-secondary border ms-2" style="font-size: 0.75rem; white-space: nowrap;">
+                <span class="material-symbols-outlined align-middle" style="font-size: 0.85rem;">timer</span>
+                {{ plato.tiempoPreparacion }} min
+              </span>
+            </div>
+            <p class="text-muted small mb-2" style="line-height: 1.4;">{{ plato.descripcion }}</p>
+            <div class="small text-muted mb-2">
+              <span class="material-symbols-outlined align-middle" style="font-size: 0.9rem;">restaurant</span>
+              {{ plato.porcionesPosibles }} porciones posibles
+            </div>
+            <div class="d-flex flex-wrap gap-1 pt-2 border-top mb-3">
+              @for (ing of plato.ingredientesSugeridos; track ing.insumoId) {
+              <span class="badge bg-white text-secondary border fw-normal border-secondary-subtle px-2 py-1"
+                style="font-size: 0.75rem;">
+                {{ ing.nombre }} ({{ ing.cantidad }})
+              </span>
+              }
+            </div>
+            <app-boton variante="warning" tamanio="sm" (clicked)="crearPlatoDesdeIA(plato)">
+              <div class="d-flex align-items-center gap-1 text-dark fw-bold">
+                <span class="material-symbols-outlined" style="font-size: 1rem;">add_circle</span>
+                <span>Crear plato</span>
+              </div>
+            </app-boton>
+          </div>
+        </div>
+        }
+      </div>
+      } @else {
+      <div class="alert alert-secondary border-0 rounded-3 text-center py-5">
+        <span class="material-symbols-outlined fs-1 text-muted mb-3">psychology</span>
+        <h5 class="mb-1 text-dark">Generando sugerencias...</h5>
+        <p class="text-muted mb-0">Aguardá un momento mientras la IA analiza los insumos.</p>
+      </div>
+      }
+
+      <!-- } -->
+      <!-- fin bloque sistema comentado -->
+
+    </div>
     }
 
     @if (state.platoIACreado()) {
-      <div class="avisos-toast mt-3">
-        <span class="material-symbols-outlined">check_circle</span>
-        "{{ state.platoIACreado() }}" fue agregado al sistema como nuevo plato.
-      </div>
+    <div class="avisos-toast mt-3">
+      <span class="material-symbols-outlined">check_circle</span>
+      "{{ state.platoIACreado() }}" fue agregado al sistema como nuevo plato.
+    </div>
     }
 
   </div>
 
   <!-- ─── Modal confirmación carta ─── -->
   @if (state.platoAgregadoACarta(); as platoAgregado) {
-    <div class="avisos-modal-overlay" (click)="cerrarConfirmacionCarta()">
-      <div class="avisos-modal-card shadow border p-4 text-center bg-white" role="dialog" aria-modal="true"
-        aria-labelledby="plato-agregado-title" (click)="$event.stopPropagation()">
-        <div class="avisos-modal-success mb-3">
-          <span class="material-symbols-outlined">check</span>
-        </div>
-        <h3 id="plato-agregado-title" class="avisos-modal-title mb-2">Plato agregado a la carta</h3>
-        <p class="avisos-modal-text text-muted mb-4">{{ platoAgregado.nombre }} ya está visible para el cliente.</p>
-        <div class="d-flex justify-content-center gap-2 flex-wrap">
-          <app-boton variante="outline" tamanio="md" (clicked)="cerrarConfirmacionCarta()">
-            <div class="fw-bold">Cerrar</div>
-          </app-boton>
-          <app-boton variante="success" tamanio="md" (clicked)="irAModificarCarta()">
-            <div class="d-flex align-items-center gap-1 text-dark">
-              <span class="material-symbols-outlined" style="font-size: 1.2rem; line-height: 1;">restaurant_menu</span>
-              <span class="fw-bold">Ver en modificar carta</span>
-            </div>
-          </app-boton>
-        </div>
+  <div class="avisos-modal-overlay" (click)="cerrarConfirmacionCarta()">
+    <div class="avisos-modal-card shadow border p-4 text-center bg-white" role="dialog" aria-modal="true"
+      aria-labelledby="plato-agregado-title" (click)="$event.stopPropagation()">
+      <div class="avisos-modal-success mb-3">
+        <span class="material-symbols-outlined">check</span>
+      </div>
+      <h3 id="plato-agregado-title" class="avisos-modal-title mb-2">Plato agregado a la carta</h3>
+      <p class="avisos-modal-text text-muted mb-4">{{ platoAgregado.nombre }} ya está visible para el cliente.</p>
+      <div class="d-flex justify-content-center gap-2 flex-wrap">
+        <app-boton variante="outline" tamanio="md" (clicked)="cerrarConfirmacionCarta()">
+          <div class="fw-bold">Cerrar</div>
+        </app-boton>
+        <app-boton variante="success" tamanio="md" (clicked)="irAModificarCarta()">
+          <div class="d-flex align-items-center gap-1 text-dark">
+            <span class="material-symbols-outlined" style="font-size: 1.2rem; line-height: 1;">restaurant_menu</span>
+            <span class="fw-bold">Ver en modificar carta</span>
+          </div>
+        </app-boton>
       </div>
     </div>
+  </div>
   }
 
   <!-- ─── Modal Detalle Vencimiento ─── -->
   @if (vencimientoSeleccionado) {
-    <div class="avisos-modal-overlay" (click)="cerrarModalVencimiento()">
-      <div class="avisos-modal-card shadow border p-4 bg-white text-start" role="dialog" aria-modal="true"
-        aria-labelledby="vencimiento-modal-title" (click)="$event.stopPropagation()">
-        <div class="d-flex align-items-center mb-3 text-warning">
-          <span class="material-symbols-outlined fs-2 me-2">event_busy</span>
-          <h4 id="vencimiento-modal-title" class="mb-0 fw-bold">Detalle de Lote</h4>
+  <div class="avisos-modal-overlay" (click)="cerrarModalVencimiento()">
+    <div class="avisos-modal-card shadow border p-4 bg-white text-start" role="dialog" aria-modal="true"
+      aria-labelledby="vencimiento-modal-title" (click)="$event.stopPropagation()">
+      <div class="d-flex align-items-center mb-3 text-warning">
+        <span class="material-symbols-outlined fs-2 me-2">event_busy</span>
+        <h4 id="vencimiento-modal-title" class="mb-0 fw-bold">Detalle de Lote</h4>
+      </div>
+      <div class="mb-4">
+        <h5 class="fw-bold mb-3 text-dark">{{ vencimientoSeleccionado.titulo }}</h5>
+        <div class="d-flex justify-content-between py-2 border-bottom">
+          <span class="text-muted fw-medium">Cantidad:</span>
+          <span class="fw-bold">{{ vencimientoSeleccionado.payloadVencimiento?.cantidad }}</span>
         </div>
-        <div class="mb-4">
-          <h5 class="fw-bold mb-3 text-dark">{{ vencimientoSeleccionado.titulo }}</h5>
-          <div class="d-flex justify-content-between py-2 border-bottom">
-            <span class="text-muted fw-medium">Cantidad:</span>
-            <span class="fw-bold">{{ vencimientoSeleccionado.payloadVencimiento?.cantidad }}</span>
-          </div>
-          <div class="d-flex justify-content-between py-2 border-bottom">
-            <span class="text-muted fw-medium">Fecha de Vencimiento:</span>
-            <span class="fw-bold text-danger">{{
-              vencimientoSeleccionado.payloadVencimiento?.fechaVencimiento === '0001-01-01'
-                ? 'Sin fecha especificada'
-                : vencimientoSeleccionado.payloadVencimiento?.fechaVencimiento
+        <div class="d-flex justify-content-between py-2 border-bottom">
+          <span class="text-muted fw-medium">Fecha de Vencimiento:</span>
+          <span class="fw-bold text-danger">{{
+            vencimientoSeleccionado.payloadVencimiento?.fechaVencimiento === '0001-01-01'
+            ? 'Sin fecha especificada'
+            : vencimientoSeleccionado.payloadVencimiento?.fechaVencimiento
             }}</span>
-          </div>
-        </div>
-        <div class="d-flex justify-content-end gap-2 mt-4">
-          <app-boton variante="outline" tamanio="md" (clicked)="cerrarModalVencimiento()">
-            <div class="fw-bold">Cerrar</div>
-          </app-boton>
-          <app-boton variante="success" tamanio="md" (clicked)="state.avisarCocina(vencimientoSeleccionado.id); cerrarModalVencimiento()">
-            <div class="d-flex align-items-center gap-1 text-white">
-              <span class="material-symbols-outlined fs-6">send</span>
-              <span class="fw-bold">Avisar a cocina</span>
-            </div>
-          </app-boton>
         </div>
       </div>
+      <div class="d-flex justify-content-end gap-2 mt-4">
+        <app-boton variante="outline" tamanio="md" (clicked)="cerrarModalVencimiento()">
+          <div class="fw-bold">Cerrar</div>
+        </app-boton>
+        <app-boton variante="success" tamanio="md"
+          (clicked)="state.avisarCocina(vencimientoSeleccionado.id); cerrarModalVencimiento()">
+          <div class="d-flex align-items-center gap-1 text-white">
+            <span class="material-symbols-outlined fs-6">send</span>
+            <span class="fw-bold">Avisar a cocina</span>
+          </div>
+        </app-boton>
+      </div>
     </div>
+  </div>
   }
 
   <!-- ─── Offcanvas pedido por stock ─── -->
   @if (isPedidoOffcanvasOpen) {
-    <div class="offcanvas-backdrop fade show" (click)="cerrarPedidoStock()"></div>
+  <div class="offcanvas-backdrop fade show" (click)="cerrarPedidoStock()"></div>
 
-    <div class="offcanvas offcanvas-end show shadow" tabindex="-1" style="width: 400px; z-index: 1050;">
-      <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title fw-bold">Crear pedido por stock bajo</h5>
-        <button type="button" class="btn-close" (click)="cerrarPedidoStock()"></button>
-      </div>
-      <div class="offcanvas-body">
-        @if (pedidoState.ingredienteSeleccionado(); as ingrediente) {
-          <div class="alert alert-warning border-0 rounded-3 mb-4">
-            <div class="fw-bold">{{ ingrediente.nombre }}</div>
-            <div class="small">Stock actual: {{ ingrediente.stockDisponible }} {{ nombreUnidad(ingrediente.unidadMedida) }}</div>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label fw-medium small text-muted">Proveedor de este ingrediente</label>
-            <select class="form-select" (change)="seleccionarProveedor($event)">
-              <option value="" selected disabled>-- Seleccione proveedor --</option>
-              @for (prov of pedidoState.proveedoresDisponibles(); track prov.id) {
-                <option [value]="prov.id">{{ prov.nombre }}</option>
-              }
-            </select>
-          </div>
-
-          @if (pedidoState.proveedorSeleccionado(); as prov) {
-            <div class="mb-3">
-              <label class="form-label fw-medium small text-muted">Pedido inicial para {{ prov.nombre }}</label>
-
-              @if (pedidoState.pedidosActivos().length > 0) {
-                <div class="text-muted small bg-light p-2 rounded-2 mb-3">
-                  {{ prov.nombre }} ya tiene {{ pedidoState.pedidosActivos().length }} pedido(s) pendiente(s). Se creará uno nuevo para esta reposición.
-                </div>
-              } @else {
-                <div class="text-muted small bg-light p-2 rounded-2 mb-3">
-                  Se creará un pedido nuevo en estado pendiente.
-                </div>
-              }
-
-              <div class="mb-4 mt-3">
-                <label class="form-label fw-medium small text-muted">Cantidad ({{ nombreUnidad(ingrediente.unidadMedida) }})</label>
-                <input type="number" class="form-control" [value]="cantidadAgregar" (input)="updateCantidad($event)" min="1">
-              </div>
-
-              <app-boton variante="success" tamanio="md" (clicked)="confirmarPedidoStock()">
-                <div class="w-100 text-center fw-bold text-dark">Crear pedido pendiente</div>
-              </app-boton>
-            </div>
-          }
-        }
-      </div>
+  <div class="offcanvas offcanvas-end show shadow" tabindex="-1" style="width: 400px; z-index: 1050;">
+    <div class="offcanvas-header border-bottom">
+      <h5 class="offcanvas-title fw-bold">Crear pedido por stock bajo</h5>
+      <button type="button" class="btn-close" (click)="cerrarPedidoStock()"></button>
     </div>
+    <div class="offcanvas-body">
+      @if (pedidoState.ingredienteSeleccionado(); as ingrediente) {
+      <div class="alert alert-warning border-0 rounded-3 mb-4">
+        <div class="fw-bold">{{ ingrediente.nombre }}</div>
+        <div class="small">Stock actual: {{ ingrediente.stockDisponible }} {{ nombreUnidad(ingrediente.unidadMedida) }}
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-medium small text-muted">Proveedor de este ingrediente</label>
+        <select class="form-select" (change)="seleccionarProveedor($event)">
+          <option value="" selected disabled>-- Seleccione proveedor --</option>
+          @for (prov of pedidoState.proveedoresDisponibles(); track prov.id) {
+          <option [value]="prov.id">{{ prov.nombre }}</option>
+          }
+        </select>
+      </div>
+
+      @if (pedidoState.proveedorSeleccionado(); as prov) {
+      <div class="mb-3">
+        <label class="form-label fw-medium small text-muted">Pedido inicial para {{ prov.nombre }}</label>
+
+        @if (pedidoState.pedidosActivos().length > 0) {
+        <div class="text-muted small bg-light p-2 rounded-2 mb-3">
+          {{ prov.nombre }} ya tiene {{ pedidoState.pedidosActivos().length }} pedido(s) pendiente(s). Se creará uno
+          nuevo para esta reposición.
+        </div>
+        } @else {
+        <div class="text-muted small bg-light p-2 rounded-2 mb-3">
+          Se creará un pedido nuevo en estado pendiente.
+        </div>
+        }
+
+        <div class="mb-4 mt-3">
+          <label class="form-label fw-medium small text-muted">Cantidad ({{ nombreUnidad(ingrediente.unidadMedida)
+            }})</label>
+          <input type="number" class="form-control" [value]="cantidadAgregar" (input)="updateCantidad($event)" min="1">
+        </div>
+
+        <app-boton variante="success" tamanio="md" (clicked)="confirmarPedidoStock()">
+          <div class="w-100 text-center fw-bold text-dark">Crear pedido pendiente</div>
+        </app-boton>
+      </div>
+      }
+      }
+    </div>
+  </div>
   }
 
 </div>

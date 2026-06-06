@@ -1,4 +1,4 @@
-import { Component, computed, input, output, signal , ChangeDetectionStrategy} from '@angular/core';
+import { Component, computed, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { KdsContadorTiempo } from '../../../../shared/ui/kds-contador-tiempo/kds-contador-tiempo';
 import { Comanda } from '../../../../core/models/domain/comanda';
 
@@ -10,7 +10,7 @@ import { Comanda } from '../../../../core/models/domain/comanda';
   styleUrl: './comanda-mozo-detalle.css',
 })
 export class ComandaMozoDetalle {
- comanda = input.required<Comanda>();
+  comanda = input.required<Comanda>();
   cerrar = output<void>();
   entregar = output<{ comandaId: number; articuloComandaIds: number[] }>();
 
@@ -59,6 +59,8 @@ export class ComandaMozoDetalle {
       comandaId: this.comanda().id,
       articuloComandaIds: Array.from(this.seleccionados()),
     });
+    console.log('Comanda ID:', this.comanda().id);
+    console.log('Articulo Comanda IDs:', Array.from(this.seleccionados()));
 
     this.seleccionados.set(new Set());
   }
@@ -67,6 +69,6 @@ export class ComandaMozoDetalle {
     this.cancelar();
     this.cerrar.emit();
   }
-} 
+}
 
 

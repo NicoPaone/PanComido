@@ -40,7 +40,7 @@ export default defineConfig({
 
       //importante que lo mantengamos en un 70 aprox
       thresholds: {
-        statements: 35,   // Estás en 36.35%, 
+        statements: 40,   // Estás en 36.35%, 
         branches: 14,     // Estás en 14.46%,
         functions: 25,    // Estás en 25.69%,
         lines: 37         // Estás en 37.09%, 
