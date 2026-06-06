@@ -27,7 +27,6 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             EF.Llamado efLlamado = _llamadoMapper.paraEntidad(llamado);
             await _ctx.Llamados.AddAsync(efLlamado);
             await _ctx.SaveChangesAsync();
-            Console.WriteLine("llamado veeeeRRRR " + efLlamado.Id);
 
             var completo = await _ctx.Llamados
                 .AsNoTracking()
