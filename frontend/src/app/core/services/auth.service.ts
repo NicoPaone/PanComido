@@ -7,7 +7,7 @@ import { ROLE_ROUTES, DEFAULT_ROUTE } from '../../app.constants';
   providedIn: 'root'
 })
 export class AuthService {
-  currentRole = signal<string>('Mozo');
+  currentRole = signal<string>('Gerente');
 
   // TODO: sacar ids harcodeados
   get currentRestauranteId(): number { return 1; }

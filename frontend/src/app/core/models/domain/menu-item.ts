@@ -4,6 +4,7 @@ export interface MenuItem {
   route?: string;
   roles: string[];
   children?: MenuItem[];
+  dividerAfter?: boolean;
 }
 
 export interface UserProfile {

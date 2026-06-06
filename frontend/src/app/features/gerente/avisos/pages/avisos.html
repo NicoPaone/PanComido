@@ -21,116 +21,6 @@
 
   <div class="avisos-sections">
 
-    <!-- ─── Stock Crítico ─── -->
-    <div class="accordion-section" [class.expanded]="isStockExpanded()">
-      <button class="accordion-header" (click)="toggleStock()" type="button">
-        <div class="accordion-header-left">
-          <span class="accordion-icon material-symbols-outlined stock">inventory_2</span>
-          <div>
-            <span class="accordion-title">Stock crítico</span>
-            <span class="accordion-subtitle">Insumos por debajo del mínimo</span>
-          </div>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-          @if (state.stockBajo().length > 0) {
-          <span class="accordion-badge badge-stock">{{ state.stockBajo().length }}</span>
-          }
-          <span class="accordion-chevron material-symbols-outlined">
-            {{ isStockExpanded() ? 'expand_less' : 'expand_more' }}
-          </span>
-        </div>
-      </button>
-
-      @if (isStockExpanded()) {
-      <div class="accordion-body">
-        @if (state.stockBajo().length === 0) {
-        <div class="accordion-empty">
-          <span class="material-symbols-outlined">check_circle</span>
-          <span>No hay insumos con stock crítico</span>
-        </div>
-        } @else {
-        <div class="avisos-list">
-          @for (a of state.stockBajo(); track a.id) {
-          <div class="aviso-item">
-            <div class="aviso-item-icon tipo-stock">
-              <span class="material-symbols-outlined">inventory_2</span>
-            </div>
-            <div class="aviso-item-content">
-              <span class="aviso-item-title">{{ a.titulo }}</span>
-              <span class="aviso-item-sub">{{ a.subtitulo }}</span>
-              <span class="aviso-item-info">{{ a.info }}</span>
-            </div>
-            <div class="aviso-item-actions">
-              <app-boton variante="warning" tamanio="sm" (clicked)="abrirPedidoStock(a)">
-                <div class="d-flex align-items-center gap-1 text-dark">
-                  <span class="material-symbols-outlined" style="font-size: 1rem;">shopping_cart</span>
-                  <span class="fw-bold">Pedir</span>
-                </div>
-              </app-boton>
-            </div>
-          </div>
-          }
-        </div>
-        }
-      </div>
-      }
-    </div>
-
-    <!-- ─── Vencimientos próximos ─── -->
-    <div class="accordion-section" [class.expanded]="isVencimientosExpanded()">
-      <button class="accordion-header" (click)="toggleVencimientos()" type="button">
-        <div class="accordion-header-left">
-          <span class="accordion-icon material-symbols-outlined vencimiento">event_busy</span>
-          <div>
-            <span class="accordion-title">Vencimientos próximos</span>
-            <span class="accordion-subtitle">Insumos con fecha de vencimiento cercana</span>
-          </div>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-          @if (state.vencimientos().length > 0) {
-          <span class="accordion-badge badge-vencimiento">{{ state.vencimientos().length }}</span>
-          }
-          <span class="accordion-chevron material-symbols-outlined">
-            {{ isVencimientosExpanded() ? 'expand_less' : 'expand_more' }}
-          </span>
-        </div>
-      </button>
-
-      @if (isVencimientosExpanded()) {
-      <div class="accordion-body">
-        @if (state.vencimientos().length === 0) {
-        <div class="accordion-empty">
-          <span class="material-symbols-outlined">check_circle</span>
-          <span>No hay vencimientos próximos</span>
-        </div>
-        } @else {
-        <div class="avisos-list">
-          @for (a of state.vencimientos(); track a.id) {
-          <div class="aviso-item" (click)="abrirAviso(a)" style="cursor: pointer;">
-            <div class="aviso-item-icon tipo-vencimiento">
-              <span class="material-symbols-outlined">event_busy</span>
-            </div>
-            <div class="aviso-item-content">
-              <span class="aviso-item-title">{{ a.titulo }}</span>
-              <span class="aviso-item-sub">{{ a.subtitulo }}</span>
-              <span class="aviso-item-info">{{ a.info }}</span>
-            </div>
-            <div class="aviso-item-actions">
-              <app-boton variante="success" tamanio="sm" (clicked)="$event.stopPropagation(); state.avisarCocina(a.id)">
-                <div class="d-flex align-items-center gap-1 text-white">
-                  <span class="material-symbols-outlined" style="font-size: 1rem;">send</span>
-                  <span class="fw-bold">Avisar a cocina</span>
-                </div>
-              </app-boton>
-            </div>
-          </div>
-          }
-        </div>
-        }
-      </div>
-      }
-    </div>
-
     <!-- ─── Sugerencias ─── -->
 
     <!-- SUGERENCIAS DEL SISTEMA: comentado temporalmente, retomar en próxima iteración -->
@@ -251,9 +141,23 @@
         -->
 
       @if (state.loadingIA()) {
-      <div class="text-center p-4 text-muted">
-        <div class="spinner-border text-secondary" role="status"></div>
-        <p class="mt-2 mb-0">Generando sugerencias con IA...</p>
+      <div class="row row-cols-1 row-cols-md-2 g-3 mt-2">
+        <div class="col">
+          <div class="skeleton-card">
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text short"></div>
+            <div class="skeleton skeleton-text" style="height: 32px; margin-top: 16px;"></div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="skeleton-card">
+            <div class="skeleton skeleton-title" style="width: 50%"></div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text short"></div>
+            <div class="skeleton skeleton-text" style="height: 32px; margin-top: 16px;"></div>
+          </div>
+        </div>
       </div>
       } @else if (state.errorIA()) {
       <div class="alert alert-danger border-0 rounded-3 d-flex align-items-center gap-2">
@@ -312,6 +216,120 @@
 
     </div>
     }
+    <!-- ─── Stock Crítico ─── -->
+    <div class="accordion-section" [class.expanded]="isStockExpanded()">
+      <button class="accordion-header header-stock" (click)="toggleStock()" type="button">
+        <div class="accordion-header-left">
+          <span class="accordion-icon material-symbols-outlined stock">inventory_2</span>
+          <div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="accordion-title">Stock crítico</span>
+              @if (state.stockBajo().length > 0) {
+              <span class="accordion-badge badge-stock">{{ state.stockBajo().length }} alertas</span>
+              }
+            </div>
+            <span class="accordion-subtitle">Insumos por debajo del mínimo</span>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="accordion-chevron material-symbols-outlined">
+            {{ isStockExpanded() ? 'expand_less' : 'expand_more' }}
+          </span>
+        </div>
+      </button>
+
+      @if (isStockExpanded()) {
+      <div class="accordion-body">
+        @if (state.stockBajo().length === 0) {
+        <div class="accordion-empty">
+          <span class="material-symbols-outlined">check_circle</span>
+          <span>No hay insumos con stock crítico</span>
+        </div>
+        } @else {
+        <div class="avisos-list">
+          @for (a of state.stockBajo(); track a.id) {
+          <div class="aviso-item">
+            <div class="aviso-item-icon tipo-stock">
+              <span class="material-symbols-outlined">inventory_2</span>
+            </div>
+            <div class="aviso-item-content">
+              <span class="aviso-item-title">{{ a.titulo }}</span>
+              <span class="aviso-item-sub">{{ a.subtitulo }}</span>
+              <span class="aviso-item-info">{{ a.info }}</span>
+            </div>
+            <div class="aviso-item-actions">
+              <app-boton variante="warning" tamanio="sm" (clicked)="abrirPedidoStock(a)">
+                <div class="d-flex align-items-center gap-1 text-dark">
+                  <span class="material-symbols-outlined" style="font-size: 1rem;">shopping_cart</span>
+                  <span class="fw-bold">Pedir</span>
+                </div>
+              </app-boton>
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </div>
+      }
+    </div>
+
+    <!-- ─── Vencimientos próximos ─── -->
+    <div class="accordion-section" [class.expanded]="isVencimientosExpanded()">
+      <button class="accordion-header header-vencimiento" (click)="toggleVencimientos()" type="button">
+        <div class="accordion-header-left">
+          <span class="accordion-icon material-symbols-outlined vencimiento">event_busy</span>
+          <div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="accordion-title">Vencimientos próximos</span>
+              @if (state.vencimientos().length > 0) {
+              <span class="accordion-badge badge-vencimiento">{{ state.vencimientos().length }} alertas</span>
+              }
+            </div>
+            <span class="accordion-subtitle">Insumos con fecha de vencimiento cercana</span>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="accordion-chevron material-symbols-outlined">
+            {{ isVencimientosExpanded() ? 'expand_less' : 'expand_more' }}
+          </span>
+        </div>
+      </button>
+
+      @if (isVencimientosExpanded()) {
+      <div class="accordion-body">
+        @if (state.vencimientos().length === 0) {
+        <div class="accordion-empty">
+          <span class="material-symbols-outlined">check_circle</span>
+          <span>No hay vencimientos próximos</span>
+        </div>
+        } @else {
+        <div class="avisos-list">
+          @for (a of state.vencimientos(); track a.id) {
+          <div class="aviso-item" (click)="abrirAviso(a)" style="cursor: pointer;">
+            <div class="aviso-item-icon tipo-vencimiento">
+              <span class="material-symbols-outlined">event_busy</span>
+            </div>
+            <div class="aviso-item-content">
+              <span class="aviso-item-title">{{ a.titulo }}</span>
+              <span class="aviso-item-sub">{{ a.subtitulo }}</span>
+              <span class="aviso-item-info">{{ a.info }}</span>
+            </div>
+            <div class="aviso-item-actions">
+              <app-boton variante="success" tamanio="sm" (clicked)="$event.stopPropagation(); state.avisarCocina(a.id)">
+                <div class="d-flex align-items-center gap-1 text-white">
+                  <span class="material-symbols-outlined" style="font-size: 1rem;">send</span>
+                  <span class="fw-bold">Avisar a cocina</span>
+                </div>
+              </app-boton>
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </div>
+      }
+    </div>
+
 
     @if (state.platoIACreado()) {
     <div class="avisos-toast mt-3">
