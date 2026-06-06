@@ -14,3 +14,131 @@
   stroke-linejoin: round;
   stroke-linecap: round;
 }
+/* === NEW HEADER BUTTON STYLES === */
+
+/* Push Nuevo Plato button to the right edge */
+::ng-deep .toolbar-actions {
+  flex: 1;
+}
+
+::ng-deep [acciones] {
+  margin-left: auto;
+}
+
+/* Primary "Nuevo Plato" Button */
+.btn-premium-primary {
+  background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+  color: white;
+  border: none;
+  border-radius: 10px; /* Pill shape */
+  padding: 8px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+}
+
+.btn-premium-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-premium-primary:active {
+  transform: translateY(0);
+}
+
+/* Segmented Control (Grid/List) */
+.segmented-control {
+  display: inline-flex;
+  background-color: #f1f5f9;
+  padding: 4px;
+  border-radius: 12px;
+  gap: 4px;
+}
+
+.segmented-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.segmented-btn:hover {
+  color: #334155;
+}
+
+.segmented-btn.active {
+  background-color: #1691ac;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.15);
+}
+
+/* Soft Filter Button */
+.btn-soft-filter {
+  background-color: #1691ac;
+  border: 1px solid #0c839e;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(13, 148, 136, 0.05);
+}
+
+.btn-soft-filter:hover {
+  background-color: #d1fae5;
+  border-color: #6ee7b7;
+  color: #0f766e;
+}
+
+/* === PILL FILTER BUTTONS === */
+.btn-pill-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background-color: #f1f5f9;
+  border: none;
+  border-radius: 10px;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-pill-filter:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+.btn-pill-filter.active {
+  background-color: #1691ac;
+  color: #ffffff;
+  box-shadow: 0 2px 5px rgba(13, 148, 136, 0.2);
+}
+
+.btn-pill-filter .filter-badge {
+  background-color: #e2e8f0;
+  color: #64748b;
+  font-size: 0.75rem;
+  padding: 2px 7px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-pill-filter.active .filter-badge {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.btn-pill-filter .material-symbols-outlined {
+  font-size: 1.1rem;
+  color: inherit;
+}

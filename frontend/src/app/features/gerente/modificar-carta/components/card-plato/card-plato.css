@@ -5,22 +5,25 @@
   height: 100%;
 }
 
-/* === WRAPPER PRINCIPAL DE LA TARJETA === */
+/* === CARD WRAPPER === */
 ::ng-deep .dish-card-wrapper {
   background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  border: 1px solid #f1f5f9;
+  /* Efecto Tinted Naranja desde abajo (Más intenso) */
+  background: linear-gradient(to top, rgba(245, 158, 11, 0.11) 0%, rgba(245, 158, 11, 0.06) 30%, #ffffff 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
   overflow: hidden;
   animation: cardFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  transition: transform 0.4s ease, opacity 0.4s ease;
+  transition: all 0.3s ease;
   width: 100%;
   height: 100%;
 }
 
-/* Por defecto en modo vertical: padding interno en el wrapper */
-::ng-deep .dish-card-wrapper:not(.list-layout) {
-  padding: 1rem;
+::ng-deep .dish-card-wrapper:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+  border-color: rgba(2, 89, 108, 0.15);
 }
 
 ::ng-deep .dish-card-wrapper.exploding-card {
@@ -28,329 +31,231 @@
   pointer-events: none;
 }
 
-/* === DISEÑO DE CONTENIDO Y ACCIONES (Por defecto modo vertical < 510px) === */
-::ng-deep .dish-grid-container {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 1rem;
-  height: 100%;
-  text-align: left;
+/* === HERO IMAGE (Grid Mode) === */
+::ng-deep .dish-hero-wrapper {
+  height: 260px;
   width: 100%;
-}
-
-::ng-deep .dish-content-box {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0.85rem;
-  width: 100%;
-  text-align: left;
-}
-
-::ng-deep .dish-image-wrapper {
-  position: relative;
-  display: block;
-  margin: 0;
-  width: 100%;
-}
-
-::ng-deep .dish-img {
-  width: 100%;
-  max-width: 100%;
-  height: 170px;
-  object-fit: contain;
+  overflow: hidden;
   background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  transition: filter 0.4s ease, opacity 0.4s ease, width 0.3s ease, height 0.3s ease;
+  border-bottom: 1px solid #f1f5f9;
 }
 
-::ng-deep .dish-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+::ng-deep .dish-hero-img {
   width: 100%;
-  min-width: 0;
-  text-align: left;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
 }
 
-/* Visibilidad de layouts (Vertical vs Horizontal) */
-::ng-deep .vertical-layout-info {
-  display: block;
-  width: 100%;
+::ng-deep .dish-card-wrapper:hover .dish-hero-img {
+  transform: scale(1.05);
 }
 
-::ng-deep .horizontal-layout-info {
-  display: none;
-  width: 100%;
+/* Glassmorphism Badges over Image */
+.dish-hero-badges {
+  background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 100%);
 }
 
-/* === ESTILOS DEL CONTENEDOR VERTICAL COMPONENTES === */
-::ng-deep .dish-price-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-::ng-deep .dish-price {
-  font-size: 1.45rem;
-  font-weight: 800;
-  color: #0f172a; /* Slate-900 */
-}
-
-::ng-deep .dish-sales-badge {
-  background-color: #f1f5f9;
-  padding: 0.25rem 0.6rem;
-  border-radius: 9999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #475569; /* Slate-600 */
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-::ng-deep .dish-title-vertical {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #1e293b; /* Slate-800 */
-  margin-bottom: 0.5rem;
-  line-height: 1.3;
-  width: 100%;
-  text-align: left;
-}
-
-::ng-deep .dish-meta-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-::ng-deep .dish-title {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  width: 100%;
-}
-
-::ng-deep .dish-title span.text-truncate {
-  max-width: 100%;
+.visibility-glass-badge {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 4px 8px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: inline-block;
 }
 
-::ng-deep .dish-sales {
-  justify-content: center;
-}
-
-::ng-deep .dish-toggle-wrapper {
-  display: inline-flex;
-  align-items: center;
-}
-
-::ng-deep .dish-actions-box {
-  display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
-  justify-content: center;
-  margin-top: auto;
-  padding-top: 0.75rem;
-  width: 100%;
-  border-top: 1px solid #f1f5f9;
-}
-
-/* === HORIZONTAL ROW LAYOUT - INTEGRADO CON COLUMNA DE ACCIONES GRIS (>= 510px de ancho) === */
-@container (min-width: 510px) {
-
-  ::ng-deep .vertical-layout-info {
-    display: none;
-  }
-
-  ::ng-deep .horizontal-layout-info {
-    display: block;
-  }
-
-  /* El wrapper ya no tiene padding interno para que las acciones toquen los bordes */
-  ::ng-deep .dish-card-wrapper:not(.list-layout) {
-    padding: 0 !important;
-  }
-
-  ::ng-deep .dish-grid-container {
-    flex-direction: row;
-    align-items: stretch;
-    /* Alto total */
-    gap: 0;
-    text-align: left;
-  }
-
-  /* Caja de contenido: tiene el padding aquí en horizontal */
-  ::ng-deep .dish-content-box {
-    flex-direction: row;
-    align-items: center;
-    gap: 1.25rem;
-    text-align: left;
-    height: 100%;
-    padding: 1.25rem;
-  }
-
-  ::ng-deep .dish-image-wrapper {
-    width: auto;
-    display: block;
-    margin: 0;
-  }
-
-  ::ng-deep .dish-img {
-    width: 110px;
-    height: 95px;
-    max-width: 110px;
-  }
-
-  ::ng-deep .dish-info {
-    align-items: flex-start;
-    text-align: left;
-    display: flex;
-  }
-
-  ::ng-deep .dish-title {
-    justify-content: flex-start;
-  }
-
-  ::ng-deep .dish-sales {
-    justify-content: flex-start;
-  }
-
-  ::ng-deep .dish-toggle-wrapper {
-    justify-content: flex-start;
-    width: auto;
-  }
-
-  /* Caja de acciones: ocupa la columna derecha con fondo gris oscuro */
-  ::ng-deep .dish-actions-box {
-    background-color: #b7b7b7;
-    border-left: 1px solid #a2a1a1;
-    padding: 1.25rem 0.85rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    width: auto;
-    margin-top: 0;
-    border-top: none;
-    height: 100%;
-  }
-}
-
-/* === GENERAL ICON BUTTON STYLING === */
-::ng-deep app-boton.btn-icon .btn {
-  width: 42px;
-  height: 42px;
-  padding: 0;
+.star-glass-badge {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+}
+
+/* === IMAGES (Compact/List Mode) === */
+::ng-deep .dish-img-compact {
+  width: 65px;
+  height: 65px;
+  min-width: 65px;
+  object-fit: cover;
+  background-color: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+}
+
+/* === TITLE === */
+::ng-deep .dish-title {
+  color: #1e293b;
+  line-height: 1.2;
+}
+
+/* === PILLS / BADGES === */
+::ng-deep .badge-price {
+  background-color: #f0fdf4;
+  color: #166534;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+::ng-deep .badge-cost {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+::ng-deep .badge-sales {
+  background-color: transparent;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 4px 0;
+}
+
+/* === SOFT BUTTONS === */
+::ng-deep .btn-soft {
+  border: none;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  cursor: pointer;
   transition: all 0.2s ease;
+  padding: 0;
 }
 
-::ng-deep app-boton.btn-icon .btn .material-symbols-outlined {
-  font-size: 22px;
-  margin: 0;
+::ng-deep .btn-soft .material-symbols-outlined {
+  font-size: 20px;
 }
 
-/* === COMPATIBILIDAD CON TARJETAS RECOMENDADAS (Borde Destacado) === */
+::ng-deep .btn-soft.btn-sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+}
+
+::ng-deep .btn-soft.btn-sm .material-symbols-outlined {
+  font-size: 18px;
+}
+
+/* Primary (Blue) */
+::ng-deep .btn-soft-primary {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+::ng-deep .btn-soft-primary:hover {
+  background-color: #0284c7;
+  color: #ffffff;
+}
+
+/* Warning (Yellow/Orange) */
+::ng-deep .btn-soft-warning {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+::ng-deep .btn-soft-warning:hover {
+  background-color: #d97706;
+  color: #ffffff;
+}
+::ng-deep .btn-soft-warning.active {
+  background-color: #f59e0b;
+  color: #ffffff;
+}
+
+/* Danger (Red) */
+::ng-deep .btn-soft-danger {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+::ng-deep .btn-soft-danger:hover {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+/* === STAR BADGE (Image Corner - Compact List) === */
+.dish-star-badge-compact {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  border: 1px solid #f59e0b;
+  width: 24px;
+  height: 24px;
+}
+
+.star-icon-filled {
+  color: #f59e0b;
+  font-variation-settings: 'FILL' 1;
+}
+
+.dish-star-badge-compact .star-icon-filled { font-size: 14px; }
+
+/* === RECOMMENDED HIGHLIGHT === */
 .dish-card-wrapper.recommended-card {
-  border: 3px solid #ff9900 !important;
-  box-shadow: 0 4px 15px rgba(255, 153, 0, 0.08) !important;
+  border: 2px solid #fcd34d !important;
+  box-shadow: 0 8px 20px rgba(252, 211, 77, 0.15) !important;
 }
 
-/* === COMPATIBILIDAD CON TARJETAS DESHABILITADAS === */
+/* === LIST LAYOUT FLAT OVERRIDE === */
+::ng-deep .dish-card-wrapper.list-layout {
+  background: linear-gradient(to right, rgba(245, 158, 11, 0.15) 0%, rgba(231, 150, 10, 0.05) 20%, #ffffff 100%) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+}
+
+::ng-deep .dish-card-wrapper.list-layout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* === DISABLED STATE === */
 .dish-card-wrapper.disabled-card {
-  background-color: #f9fafb !important;
-  border: 1px dashed #d1d5db !important;
+  background-color: #f8fafc !important;
+  background-image: none !important;
+  border: 1px dashed #cbd5e1 !important;
+  box-shadow: none !important;
 }
 
-.dish-card-wrapper.disabled-card .dish-img {
+.dish-card-wrapper.disabled-card:hover {
+  transform: none;
+}
+
+.dish-card-wrapper.disabled-card .dish-hero-img,
+.dish-card-wrapper.disabled-card .dish-img-compact {
   filter: grayscale(1);
-  opacity: 0.55;
+  opacity: 0.5;
 }
 
-.dish-card-wrapper.disabled-card h5,
-.dish-card-wrapper.disabled-card p,
-.dish-card-wrapper.disabled-card app-boton {
-  opacity: 0.55;
+.dish-card-wrapper.disabled-card .dish-info-body,
+.dish-card-wrapper.disabled-card .dish-price-large,
+.dish-card-wrapper.disabled-card h6 {
+  opacity: 0.5;
 }
 
 .dish-card-wrapper.disabled-card app-toggle {
   opacity: 1 !important;
-  filter: none !important;
 }
 
+/* Keep the toggle styled clearly when disabled */
 ::ng-deep .dish-card-wrapper.disabled-card app-toggle .custom-toggle {
-  box-shadow: inset 0 0 0 2px var(--primary-teal, #02596C) !important;
-  background-color: #e5e7eb !important;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s ease;
-}
-
-::ng-deep .dish-card-wrapper.disabled-card app-toggle .custom-toggle:hover {
-  transform: scale(1.1);
-}
-
-::ng-deep .dish-card-wrapper.disabled-card app-toggle .custom-toggle .toggle-circle {
-  background-color: var(--primary-teal, #02596C) !important;
-}
-
-::ng-deep .dish-card-wrapper.disabled-card app-toggle span {
-  color: var(--primary-teal, #02596C) !important;
-  font-weight: 700 !important;
-}
-
-/* Acciones en tarjeta deshabilitada en horizontal: hereda fondo para no sobreescribir el gris */
-.dish-card-wrapper.disabled-card .dish-actions-box {
-  background-color: rgba(0, 0, 0, 0.02) !important;
-}
-
-/* === LIST LAYOUT SPECIFICS === */
-.dish-card-wrapper.list-layout {
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  border: 1px solid #f1f5f9;
-  padding: 0.75rem 1rem !important;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-::ng-deep .dish-img-compact {
-  width: 55px;
-  height: 55px;
-  object-fit: contain;
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-}
-
-::ng-deep app-boton.btn-icon-sm .btn {
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-}
-
-::ng-deep app-boton.btn-icon-sm .btn .material-symbols-outlined {
-  font-size: 18px;
-  margin: 0;
-}
-
-::ng-deep .star-active .btn {
-  color: #fff !important;
-  background-color: #ff9900 !important;
-  border-color: #ff9900 !important;
+  background-color: #e2e8f0 !important;
 }
 
 /* === SKELETON LOADERS === */
@@ -360,145 +265,59 @@
 
 ::ng-deep .skeleton-image {
   width: 100%;
-  max-width: 100%;
-  height: 170px;
-  background-color: var(--gray-200, #e5e7eb);
-  border-radius: 10px;
+  height: 260px;
+  background-color: #e2e8f0;
   animation: skeleton-pulse 1.5s infinite ease-in-out;
 }
 
 ::ng-deep .skeleton-image-compact {
-  width: 55px;
-  height: 55px;
-  background-color: var(--gray-200, #e5e7eb);
-  border-radius: 8px;
+  width: 65px;
+  height: 65px;
+  background-color: #e2e8f0;
+  border-radius: 10px;
   animation: skeleton-pulse 1.5s infinite ease-in-out;
 }
 
-::ng-deep .skeleton-title {
-  height: 1.25rem;
-  background-color: var(--gray-200, #e5e7eb);
-  border-radius: 4px;
-  animation: skeleton-pulse 1.5s infinite ease-in-out;
-}
-
-::ng-deep .skeleton-text {
-  height: 0.85rem;
-  background-color: var(--gray-200, #e5e7eb);
-  border-radius: 4px;
-  animation: skeleton-pulse 1.5s infinite ease-in-out;
-}
-
-::ng-deep .skeleton-toggle {
-  height: 24px;
-  width: 110px;
-  background-color: var(--gray-200, #e5e7eb);
-  border-radius: 12px;
-  animation: skeleton-pulse 1.5s infinite ease-in-out;
-}
-
-::ng-deep .skeleton-btn {
-  width: 42px;
-  height: 42px;
-  background-color: var(--gray-200, #e5e7eb);
-  border-radius: 8px;
-  animation: skeleton-pulse 1.5s infinite ease-in-out;
-}
-
+::ng-deep .skeleton-title,
+::ng-deep .skeleton-text,
+::ng-deep .skeleton-toggle,
+::ng-deep .skeleton-btn,
 ::ng-deep .skeleton-btn-sm {
-  width: 34px;
-  height: 34px;
-  background-color: var(--gray-200, #e5e7eb);
+  background-color: #e2e8f0;
   border-radius: 6px;
   animation: skeleton-pulse 1.5s infinite ease-in-out;
 }
 
-@container (min-width: 510px) {
-  ::ng-deep .skeleton-card.dish-card-wrapper:not(.list-layout) {
-    padding: 0 !important;
-  }
-
-  ::ng-deep .skeleton-card .skeleton-image {
-    width: 110px;
-    height: 95px;
-    max-width: 110px;
-  }
-}
-
-/* Estrella de plato destacado sobre la imagen (en la esquina superior izquierda) */
-.dish-star-badge {
-  position: absolute;
-  top: -12px;
-  left: -12px;
-  width: 34px;
-  height: 34px;
-  z-index: 10;
-  pointer-events: none;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-}
-
-.dish-star-badge-compact {
-  position: absolute;
-  top: -7px;
-  left: -7px;
-  width: 20px;
-  height: 20px;
-  z-index: 10;
-  pointer-events: none;
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.25));
-}
-
-.dish-star-badge svg,
-.dish-star-badge-compact svg {
-  width: 100%;
-  height: 100%;
-  fill: #ff9900;
-  stroke: #ff9900;
-  stroke-width: 2.2px;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
+::ng-deep .skeleton-title { height: 24px; margin-bottom: 12px; }
+::ng-deep .skeleton-text { height: 16px; margin-bottom: 8px; }
+::ng-deep .skeleton-toggle { height: 24px; width: 40px; border-radius: 12px; }
+::ng-deep .skeleton-btn { width: 40px; height: 40px; border-radius: 10px; }
+::ng-deep .skeleton-btn-sm { width: 32px; height: 32px; border-radius: 6px; }
 
 @keyframes skeleton-pulse {
-  0% {
-    opacity: 0.55;
-  }
-
-  50% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0.55;
-  }
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
 }
 
-/* === KEYFRAMES GENERALES === */
+/* === KEYFRAMES === */
 @keyframes cardFadeIn {
-  from {
-    opacity: 0.8;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes cardExplodeSimple {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
+  0% { transform: scale(1); opacity: 1; }
+  35% { transform: scale(1.04); box-shadow: 0 10px 25px rgba(220, 38, 38, 0.2); }
+  100% { transform: scale(1.15); opacity: 0; }
+}
 
-  35% {
-    transform: scale(1.04);
-    box-shadow: 0 10px 25px rgba(220, 38, 38, 0.2), 0 0 40px rgba(245, 158, 11, 0.1);
-  }
+/* === ESTILOS ESPECIALES PARA BEBIDAS === */
+::ng-deep .dish-card-wrapper.is-bebida .dish-hero-wrapper {
+  height: 260px;
+}
 
-  100% {
-    transform: scale(1.15);
-    opacity: 0;
-  }
+::ng-deep .dish-card-wrapper.is-bebida .dish-hero-img {
+  object-fit: contain;
+  padding: 10px;
 }

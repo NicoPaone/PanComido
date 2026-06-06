@@ -1,6 +1,6 @@
 import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CrearPlatoApiService } from './crear-plato.api';
+import { CrearPlatoApiService, ItemDesplegableDto, IngredienteDisponibleDto } from './crear-plato.api';
 import { Plato, RecetaIngrediente } from '../../../../core/models/domain/plato';
 import { calcularCostoReceta } from '../../services/plato.service';
 
@@ -9,12 +9,17 @@ export class CrearPlatoState {
   private api = inject(CrearPlatoApiService);
   private destroyRef = inject(DestroyRef);
 
-  // Estado centralizado - expuestos como writeable signals para permitir manipulación en tests/vistas
+  // Estado centralizado
   visible = signal<boolean>(true);
   imagenSelected = signal<string>('');
-  vegano = signal<boolean>(false);
-  vegetariano = signal<boolean>(false);
-  celiaco = signal<boolean>(false);
+  
+  // Opciones desde el backend
+  tiposPlato = signal<ItemDesplegableDto[]>([]);
+  categoriasPlato = signal<ItemDesplegableDto[]>([]);
+  restricciones = signal<ItemDesplegableDto[]>([]);
+  ingredientesDisponibles = signal<IngredienteDisponibleDto[]>([]);
+  
+  restriccionesSeleccionadas = signal<number[]>([]);
   receta = signal<RecetaIngrediente[]>([]);
   mostrarExito = signal<boolean>(false);
   mostrarSelectorImagen = signal<boolean>(false);
@@ -22,19 +27,34 @@ export class CrearPlatoState {
   private _loading = signal<boolean>(false);
   loading = this._loading.asReadonly();
 
-  // Variables Derivadas
   costoSugerido = computed(() => {
     return calcularCostoReceta(this.receta());
   });
 
-  // Métodos de Negocio
-  toggleTag(tag: 'vegano' | 'vegetariano' | 'celiaco'): void {
-    if (tag === 'vegano') {
-      this.vegano.update(v => !v);
-    } else if (tag === 'vegetariano') {
-      this.vegetariano.update(v => !v);
-    } else if (tag === 'celiaco') {
-      this.celiaco.update(v => !v);
+  cargarDatosFormulario(): void {
+    this._loading.set(true);
+    this.api.getDatosFormulario()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.tiposPlato.set(res.tiposPlato);
+          this.categoriasPlato.set(res.categoriasPlato);
+          this.restricciones.set(res.restricciones);
+          this.ingredientesDisponibles.set(res.ingredientes);
+          this._loading.set(false);
+        },
+        error: () => {
+          this._loading.set(false);
+        }
+      });
+  }
+
+  toggleRestriccion(id: number): void {
+    const current = this.restriccionesSeleccionadas();
+    if (current.includes(id)) {
+      this.restriccionesSeleccionadas.set(current.filter(x => x !== id));
+    } else {
+      this.restriccionesSeleccionadas.set([...current, id]);
     }
   }
 
@@ -63,23 +83,18 @@ export class CrearPlatoState {
     this.mostrarExito.set(val);
   }
 
-  guardarPlato(platoData: { nombre: string; costo: number; precioVenta: number; tiempoPreparacion: number; tipoPlato: string; descripcion: string; }, callback: () => void): void {
+  guardarPlato(platoData: { nombre: string; costo: number; precioVenta: number; tiempoPreparacion: number; tipoPlatoId: number; categoriaPlatoId: number; descripcion: string; }, callback: () => void): void {
     this._loading.set(true);
-
-    const restriccionesIds: number[] = [];
-    if (this.vegano()) restriccionesIds.push(1);
-    if (this.vegetariano()) restriccionesIds.push(2);
-    if (this.celiaco()) restriccionesIds.push(3);
 
     const request = {
       nombre: platoData.nombre,
       descripcion: platoData.descripcion,
       precioVentaFinal: platoData.precioVenta,
       tiempoPreparacionBase: platoData.tiempoPreparacion,
-      tipoPlatoId: 2,
-      categoriaPlatoId: 2,
+      tipoPlatoId: platoData.tipoPlatoId,
+      categoriaPlatoId: platoData.categoriaPlatoId,
       urlImagen: this.imagenSelected() || '',
-      restriccionesIds,
+      restriccionesIds: this.restriccionesSeleccionadas(),
       ingredientes: this.receta().map(ing => ({
         insumoId: Number(ing.id),
         cantidad: ing.cantidad,

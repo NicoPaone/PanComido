@@ -2,6 +2,7 @@ import { Component, inject, effect , ChangeDetectionStrategy} from '@angular/cor
 import { FormBuilder, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { UpperCasePipe } from '@angular/common';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { ToggleComponent } from '../../../../shared/ui/toggle/toggle';
 import { DetalleRecetaComponent } from '../components/detalle-receta/detalle-receta';
@@ -13,7 +14,7 @@ import { CrearPlatoState } from '../services/crear-plato.state';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-crear-plato',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, Boton, ToggleComponent, DetalleRecetaComponent],
+  imports: [ReactiveFormsModule, FormsModule, Boton, ToggleComponent, DetalleRecetaComponent, UpperCasePipe],
   templateUrl: './crear-plato.html',
   styleUrl: './crear-plato.css'
 })
@@ -27,15 +28,18 @@ export class CrearPlatoComponent {
     costo: [0, [Validators.required, Validators.min(0.01)]],
     precioVenta: [0, [Validators.required, Validators.min(0.01)]],
     tiempoPreparacion: [15, [Validators.required, Validators.min(1)]],
-    tipoPlato: ['', [Validators.required]],
+    tipoPlatoId: ['', [Validators.required]],
+    categoriaPlatoId: ['', [Validators.required]],
     descripcion: ['', [Validators.required, Validators.minLength(8)]]
   });
 
   visible = this.state.visible;
   imagenSelected = this.state.imagenSelected;
-  vegano = this.state.vegano;
-  vegetariano = this.state.vegetariano;
-  celiaco = this.state.celiaco;
+  tiposPlato = this.state.tiposPlato;
+  categoriasPlato = this.state.categoriasPlato;
+  restricciones = this.state.restricciones;
+  restriccionesSeleccionadas = this.state.restriccionesSeleccionadas;
+  ingredientesDisponibles = this.state.ingredientesDisponibles;
   receta = this.state.receta;
   mostrarExito = this.state.mostrarExito;
   mostrarSelectorImagen = this.state.mostrarSelectorImagen;
@@ -70,6 +74,8 @@ export class CrearPlatoComponent {
   });
 
   constructor() {
+    this.state.cargarDatosFormulario();
+
     effect(() => {
       const sugerido = this.costoSugerido();
       if (sugerido > 0) {
@@ -101,8 +107,12 @@ export class CrearPlatoComponent {
     }
   }
 
-  toggleTag(tag: 'vegano' | 'vegetariano' | 'celiaco') {
-    this.state.toggleTag(tag);
+  toggleRestriccion(id: number) {
+    this.state.toggleRestriccion(id);
+  }
+
+  isRestriccionSelected(id: number): boolean {
+    return this.restriccionesSeleccionadas().includes(id);
   }
 
   onToggleVisible() {
@@ -125,6 +135,21 @@ export class CrearPlatoComponent {
     this.state.seleccionarImagen(url);
   }
 
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result as string;
+        this.seleccionarImagen(dataUrl);
+      };
+      
+      reader.readAsDataURL(file);
+    }
+  }
+
 guardar() {
   if (this.platoForm.invalid) {
     this.platoForm.markAllAsTouched();
@@ -137,7 +162,8 @@ guardar() {
     costo: formVal.costo!,
     precioVenta: formVal.precioVenta!,
     tiempoPreparacion: formVal.tiempoPreparacion!,
-    tipoPlato: formVal.tipoPlato!,
+    tipoPlatoId: Number(formVal.tipoPlatoId!),
+    categoriaPlatoId: Number(formVal.categoriaPlatoId!),
     descripcion: formVal.descripcion!,
   };
 

@@ -1,9 +1,28 @@
 .receta-container {
-  background-color: #ffffff !important;
-  border-radius: 12px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
   padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
   height: 100%;
+}
+
+.badge-unidad {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
+  color: #0369a1;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid #bae6fd;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  min-width: 44px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(3, 105, 161, 0.08);
 }
 
 .receta-title {

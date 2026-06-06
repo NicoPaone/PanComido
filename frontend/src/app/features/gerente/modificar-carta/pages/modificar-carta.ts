@@ -36,16 +36,39 @@ export class ModificarCartaComponent implements OnInit {
   platos = this.state.platos;
   filteredPlatos = this.state.filteredPlatos;
   platosRecomendados = this.state.platosRecomendados;
-  platosNormales = this.state.platosNormales;
+  platosComidas = this.state.platosComidas;
+  platosBebidas = this.state.platosBebidas;
   explodingPlatoId = this.state.explodingPlatoId;
   platoAEditar = this.state.platoAEditar;
   platoAEliminar = this.state.platoAEliminar;
   selectedCategoria = this.state.selectedCategoria;
   loading = this.state.loading;
   categoriasDisponibles = this.state.categoriasDisponibles;
+  tiposBebidaDisponibles = this.state.tiposBebidaDisponibles;
+  selectedTipoBebida = this.state.selectedTipoBebida;
+  totalBebidasCount = this.state.totalBebidasCount;
+
+  tiposComidaDisponibles = this.state.tiposComidaDisponibles;
+  selectedTipoComida = this.state.selectedTipoComida;
+  totalComidasCount = this.state.totalComidasCount;
+
+  sortOrder = this.state.sortOrder;
 
   ngOnInit() {
     this.state.cargarPlatos();
+  }
+
+  onTipoBebidaSeleccionado(tipo: string | null) {
+    this.state.setTipoBebida(tipo);
+  }
+
+  onTipoComidaSeleccionado(tipo: string | null) {
+    this.state.setTipoComida(tipo);
+  }
+
+  onSortChanged(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    this.state.setSortOrder(select.value as 'default' | 'ventas-desc' | 'ventas-asc');
   }
 
   toggleRecomendado(plato: Plato) {

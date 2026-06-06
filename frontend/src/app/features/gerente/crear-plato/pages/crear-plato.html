@@ -1,40 +1,45 @@
 <div class="crear-plato-page p-4">
-  <div class="row mb-4 header-section">
-    <div class="col-12">
-      <h1 class="page-title mb-1">Crear un plato</h1>
-      <p class="page-subtitle text-muted mb-0">Registra tus platos en el sistema</p>
+  <div class="row mb-4 header-section align-items-center">
+    <div class="col-12 d-flex gap-3 align-items-center">
+      <button class="btn btn-light rounded-circle shadow-sm border-0 d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; color: #475569;" (click)="cancelar()" title="Volver a la carta">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
+      <div>
+        <h1 class="page-title mb-0" style="font-size: 1.5rem; line-height: 1.2;">Crear un plato</h1>
+        <p class="page-subtitle text-muted mb-0" style="font-size: 0.85rem;">Registra tus platos en el sistema</p>
+      </div>
     </div>
   </div>
 
   <div class="row g-4 main-content-row" [formGroup]="platoForm">
     <!-- Left Column: Image & Visibility -->
-    <div class="col-12 col-lg-2 text-center d-flex flex-column align-items-center gap-3">
-      <div class="image-preview-card shadow-sm border p-2 bg-white w-100">
+    <div class="col-12 col-lg-3 text-center d-flex flex-column gap-3">
+      <div class="image-preview-card p-2 w-100">
         @if (imagenSelected()) {
-        <img [src]="imagenSelected()" class="dish-image-large img-fluid" alt="Vista previa del plato">
+        <img [src]="imagenSelected()" class="dish-image-large img-fluid shadow-sm" alt="Vista previa del plato">
         } @else {
         <div class="image-placeholder d-flex flex-column align-items-center justify-content-center w-100">
-          <span class="material-symbols-outlined placeholder-icon">add_a_photo</span>
-          <span class="placeholder-text small mt-1">Sin imagen</span>
+          <span class="material-symbols-outlined placeholder-icon">add_photo_alternate</span>
+          <span class="placeholder-text small mt-2">Añadir foto</span>
         </div>
         }
       </div>
 
-      <app-boton label="Editar foto" variante="warning" tamanio="md" (clicked)="abrirSelectorImagen()"
+      <app-boton label="Editar foto" variante="outline" tamanio="md" (clicked)="abrirSelectorImagen()"
         class="w-100 edit-photo-btn">
-        <span class="material-symbols-outlined me-2 fs-5">edit</span>
+        <span class="material-symbols-outlined me-2 fs-5">image</span>
       </app-boton>
 
       <div
-        class="visibility-toggle-wrapper w-100 bg-white border p-3 rounded-3 shadow-sm d-flex justify-content-center">
+        class="visibility-toggle-wrapper w-100 p-3 d-flex justify-content-center">
         <app-toggle [active]="visible()" label="Visible en carta" (toggled)="onToggleVisible()">
         </app-toggle>
       </div>
     </div>
 
     <!-- Middle Column: Form Inputs -->
-    <div class="col-12 col-lg-5">
-      <div class="form-card shadow-sm border p-4 bg-white rounded-3 h-100">
+    <div class="col-12 col-lg-4">
+      <div class="form-card p-4 h-100">
         <!-- Nombre -->
         <div class="mb-3">
           <label class="form-label font-bold">Nombre <strong class="field-required">*</strong></label>
@@ -54,7 +59,7 @@
           <div class="col-6">
             <label class="form-label font-bold">Costo <strong class="field-required">*</strong></label>
             <div class="input-group">
-              <span class="input-group-text">$</span>
+              <span class="input-group-text border-end-0 bg-white"><span class="material-symbols-outlined fs-6">payments</span></span>
               <input type="number" class="form-control custom-input border-start-0"
                 [class.is-invalid]="platoForm.get('costo')?.touched && platoForm.get('costo')?.invalid"
                 formControlName="costo">
@@ -69,7 +74,7 @@
           <div class="col-6">
             <label class="form-label font-bold">Venta <strong class="field-required">*</strong></label>
             <div class="input-group">
-              <span class="input-group-text">$</span>
+              <span class="input-group-text border-end-0 bg-white"><span class="material-symbols-outlined fs-6">sell</span></span>
               <input type="number" class="form-control custom-input border-start-0"
                 [class.is-invalid]="platoForm.get('precioVenta')?.touched && platoForm.get('precioVenta')?.invalid"
                 formControlName="precioVenta">
@@ -81,44 +86,58 @@
         </div>
 
         @if (precioEsMenorQueCosto()) {
-        <div class="alert alert-warning py-2 px-3 small mb-3">
-          <strong>Advertencia comercial:</strong> El precio de venta es menor o igual al costo de preparación del plato.
+        <div class="alert alert-warning py-2 px-3 small mb-3 border-0 shadow-sm d-flex align-items-center gap-2" style="border-radius: 10px;">
+          <span class="material-symbols-outlined">warning</span>
+          <div><strong>Advertencia:</strong> El precio de venta es menor o igual al costo.</div>
         </div>
         }
 
         <!-- Tiempo de preparación -->
         <div class="mb-3">
-          <label class="form-label font-bold">Tiempo de preparación <strong class="field-required">*</strong></label>
+          <label class="form-label font-bold">Tiempo <strong class="field-required">*</strong></label>
           <div class="input-group">
-            <span class="input-group-text">
-              <span class="material-symbols-outlined text-muted">schedule</span>
+            <span class="input-group-text border-end-0 bg-white">
+              <span class="material-symbols-outlined text-muted fs-5">schedule</span>
             </span>
             <input type="number" class="form-control custom-input border-start-0"
               [class.is-invalid]="platoForm.get('tiempoPreparacion')?.touched && platoForm.get('tiempoPreparacion')?.invalid"
               formControlName="tiempoPreparacion">
-            <span class="input-group-text bg-white border-start-0 text-muted">minutos</span>
+            <span class="input-group-text bg-white border-start-0 text-muted" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">min</span>
           </div>
           @if (platoForm.get('tiempoPreparacion')?.touched && platoForm.get('tiempoPreparacion')?.hasError('min')) {
-          <span class="error-text">Debe ser al menos 1 minuto.</span>
+          <span class="error-text">Mínimo 1 minuto.</span>
           }
         </div>
 
         <!-- Tipo de plato -->
         <div class="mb-3">
           <label class="form-label font-bold">Tipo de plato <strong class="field-required">*</strong></label>
-          <div class="select-wrapper">
-            <select class="form-select custom-input"
-              [class.is-invalid]="platoForm.get('tipoPlato')?.touched && platoForm.get('tipoPlato')?.invalid"
-              formControlName="tipoPlato">
-              <option value="" disabled selected>Seleccione tipo...</option>
-              <option value="Entrada">Entrada</option>
-              <option value="Plato Principal">Plato Principal</option>
-              <option value="Postre">Postre</option>
-              <option value="Bebida">Bebida</option>
-            </select>
-          </div>
-          @if (platoForm.get('tipoPlato')?.touched && platoForm.get('tipoPlato')?.hasError('required')) {
-          <span class="error-text">Debe seleccionar una categoría de plato.</span>
+          <select class="form-select custom-input"
+            [class.is-invalid]="platoForm.get('tipoPlatoId')?.touched && platoForm.get('tipoPlatoId')?.invalid"
+            formControlName="tipoPlatoId">
+            <option value="" disabled selected>Seleccione tipo...</option>
+            @for (tipo of tiposPlato(); track tipo.id) {
+              <option [value]="tipo.id">{{ tipo.descripcion }}</option>
+            }
+          </select>
+          @if (platoForm.get('tipoPlatoId')?.touched && platoForm.get('tipoPlatoId')?.hasError('required')) {
+          <span class="error-text">Seleccione un tipo de plato.</span>
+          }
+        </div>
+
+        <!-- Categoría de plato -->
+        <div class="mb-3">
+          <label class="form-label font-bold">Categoría <strong class="field-required">*</strong></label>
+          <select class="form-select custom-input"
+            [class.is-invalid]="platoForm.get('categoriaPlatoId')?.touched && platoForm.get('categoriaPlatoId')?.invalid"
+            formControlName="categoriaPlatoId">
+            <option value="" disabled selected>Seleccione categoría...</option>
+            @for (cat of categoriasPlato(); track cat.id) {
+              <option [value]="cat.id">{{ cat.descripcion }}</option>
+            }
+          </select>
+          @if (platoForm.get('categoriaPlatoId')?.touched && platoForm.get('categoriaPlatoId')?.hasError('required')) {
+          <span class="error-text">Seleccione una categoría.</span>
           }
         </div>
 
@@ -130,28 +149,31 @@
             formControlName="descripcion">
           </textarea>
           @if (platoForm.get('descripcion')?.touched && platoForm.get('descripcion')?.hasError('minlength')) {
-          <span class="error-text">La descripción debe tener al menos 8 caracteres.</span>
+          <span class="error-text">Al menos 8 caracteres.</span>
           }
         </div>
 
-        <!-- Diet Tags -->
+        <!-- Restricciones dietéticas dinámicas -->
+        @if (restricciones().length > 0) {
         <div class="d-flex flex-wrap gap-2 justify-content-start">
-          <button type="button" class="diet-tag-btn" [class.active]="vegano()" (click)="toggleTag('vegano')">
-            VEGANO
+          @for (rest of restricciones(); track rest.id) {
+          <button type="button" class="diet-tag-btn"
+            [class.active]="isRestriccionSelected(rest.id)"
+            (click)="toggleRestriccion(rest.id)">
+            {{ rest.descripcion | uppercase }}
           </button>
-          <button type="button" class="diet-tag-btn" [class.active]="vegetariano()" (click)="toggleTag('vegetariano')">
-            VEGETARIANO
-          </button>
-          <button type="button" class="diet-tag-btn" [class.active]="celiaco()" (click)="toggleTag('celiaco')">
-            CELÍACO
-          </button>
+          }
         </div>
+        }
       </div>
     </div>
 
     <!-- Right Column: Recipe Details -->
     <div class="col-12 col-lg-5">
-      <app-detalle-receta [ingredientesIniciales]="receta()" (recetaCambiada)="onRecetaCambiada($event)">
+      <app-detalle-receta
+        [ingredientesIniciales]="receta()"
+        [ingredientesDisponibles]="ingredientesDisponibles()"
+        (recetaCambiada)="onRecetaCambiada($event)">
       </app-detalle-receta>
     </div>
   </div>
@@ -191,22 +213,39 @@
 <div class="modal-overlay" (click)="cerrarSelectorImagen()">
   <div class="modal-card shadow border p-4 text-center bg-white" (click)="$event.stopPropagation()"
     style="max-width: 520px;">
-    <h3 class="modal-title mb-3">Selecciona una imagen</h3>
-    <p class="text-muted small mb-3">Elige una foto representativa para la carta física y digital.</p>
-    <div class="row row-cols-3 g-2 mb-4">
-      @for (img of mockImages; track img.url) {
-      <div class="col">
-        <div class="image-option border rounded p-1" (click)="seleccionarImagen(img.url)"
-          style="cursor: pointer; background-color: #f9fafb;">
-          <img [src]="img.url" class="img-fluid rounded" style="height: 64px; width: 100%; object-fit: cover;"
-            [alt]="img.label">
-          <div class="small text-truncate mt-1" style="font-size: 0.75rem; font-weight: 600;">{{ img.label }}</div>
-        </div>
+    <h3 class="modal-title mb-2">Selecciona una imagen</h3>
+    <p class="text-muted small mb-4">Sube una foto propia o elige una de nuestra galería.</p>
+
+    <div class="d-flex flex-column gap-3 mb-4">
+      <!-- Upload Box -->
+      <div class="upload-box border rounded p-3 d-flex flex-column align-items-center justify-content-center"
+           style="background-color: #f8fafc; border: 2px dashed #cbd5e1 !important; cursor: pointer; transition: all 0.2s;"
+           onclick="document.getElementById('dishFileInput').click()">
+        <span class="material-symbols-outlined mb-2" style="font-size: 32px; color: #1691ac;">cloud_upload</span>
+        <span class="fw-bold" style="color: #0f172a;">Subir desde tu computadora</span>
+        <span class="small text-muted">Formatos soportados: JPG, PNG, WEBP</span>
       </div>
-      }
+      <input type="file" id="dishFileInput" accept="image/*" style="display: none" (change)="onFileSelected($event)">
+
+      <div class="text-muted small fw-bold">O ELIGE UNA FOTO GENÉRICA</div>
+      
+      <!-- Generic Images -->
+      <div class="row row-cols-3 g-2">
+        @for (img of mockImages; track img.url) {
+        <div class="col">
+          <div class="image-option border rounded p-1" (click)="seleccionarImagen(img.url)"
+            style="cursor: pointer; background-color: #f9fafb;">
+            <img [src]="img.url" class="img-fluid rounded" style="height: 64px; width: 100%; object-fit: cover;"
+              [alt]="img.label">
+            <div class="small text-truncate mt-1" style="font-size: 0.75rem; font-weight: 600;">{{ img.label }}</div>
+          </div>
+        </div>
+        }
+      </div>
     </div>
+
     <div class="d-flex justify-content-end">
-      <app-boton label="Cancelar" variante="outline" tamanio="md" (clicked)="cerrarSelectorImagen()">
+      <app-boton label="Cerrar" variante="outline" tamanio="md" (clicked)="cerrarSelectorImagen()">
       </app-boton>
     </div>
   </div>
