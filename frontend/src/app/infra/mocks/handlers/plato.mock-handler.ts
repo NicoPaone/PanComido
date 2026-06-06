@@ -1,6 +1,6 @@
-import { HttpRequest, HttpResponse, HttpHandlerFn } from "@angular/common/http";
+import { HttpRequest, HttpResponse, HttpEvent, HttpHandlerFn } from "@angular/common/http";
 import { delay, Observable, of } from "rxjs";
-import { Plato } from "../../models/domain/plato";
+import { Plato } from "../../../core/models/domain/plato";
 import { calcularCostoReceta } from "../../../features/gerente/services/plato.service";
 
 let dbPlatos: Plato[] = [
@@ -206,7 +206,7 @@ let dbPlatos: Plato[] = [
   }
 ];
 
-export const handlePlatoMock = (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<any> => {
+export const handlePlatoMock = (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> => {
   const method = req.method;
   const url = req.url;
 
@@ -228,7 +228,7 @@ export const handlePlatoMock = (req: HttpRequest<unknown>, next: HttpHandlerFn):
     const id = parseInt(url.split('/').pop() || '0', 10);
     const index = dbPlatos.findIndex(p => p.id === id);
     if (index !== -1) {
-      const updatedData = req.body as any;
+      const updatedData = req.body as Partial<Plato>;
       const merged = { ...dbPlatos[index], ...updatedData };
       if (updatedData.receta) {
         merged.costo = calcularCostoReceta(updatedData.receta);

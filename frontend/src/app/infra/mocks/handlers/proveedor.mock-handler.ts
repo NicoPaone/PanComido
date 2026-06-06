@@ -1,9 +1,9 @@
-import { HttpRequest, HttpResponse, HttpHandlerFn } from "@angular/common/http";
+import { HttpRequest, HttpResponse, HttpEvent, HttpHandlerFn } from "@angular/common/http";
 import { delay, Observable, of } from "rxjs";
-import { Proveedor, PedidoProveedor, PedidoProveedorItem } from "../../models/domain/proveedor";
-import { NuevoPedidoProveedor, NuevoProveedor } from "../../models/dtos/requests/proveedor.request";
-import { Insumo } from "../../models/domain/insumo";
-import { INSUMOS_MOCK } from "../../../infra/mocks/insumo.mock";
+import { Proveedor, PedidoProveedor, PedidoProveedorItem } from "../../../core/models/domain/proveedor";
+import { NuevoPedidoProveedor, NuevoProveedor } from "../../../core/models/dtos/requests/proveedor.request";
+import { Insumo } from "../../../core/models/domain/insumo";
+import { INSUMOS_MOCK } from "../insumo.mock-data";
 
 const preciosMock: Record<string, number> = {
   '1': 1200, '2': 900, '3': 1500, '4': 600, '5': 1100,
@@ -74,7 +74,7 @@ let dbProveedores: Proveedor[] = [
   }
 ];
 
-export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<any> => {
+export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> => {
   const method = req.method;
   const url = req.url;
 
@@ -144,7 +144,7 @@ export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandler
       const index = dbProveedores.findIndex(p => p.id === proveedorId);
 
       if (index !== -1) {
-        const historialPedidos = (dbProveedores[index].historialPedidos ?? []).map(pedido =>
+        const historialPedidos = (dbProveedores[index].historialPedidos ?? []).map((pedido: PedidoProveedor) =>
           pedido.id.toString() === pedidoId ? { ...pedido, estado: 'Enviado' as const } : pedido
         );
 
@@ -167,24 +167,24 @@ export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandler
       const index = dbProveedores.findIndex(p => p.id === proveedorId);
 
       if (index !== -1) {
-        const body = req.body as any;
+        const body = req.body as { id?: string | number; nombre?: string; cantidad: number; precioUnitario?: number };
         const item = {
           ...body,
-          precioUnitario: body.precioUnitario ?? preciosMock[body.id?.toString()] ?? 500
+          precioUnitario: body.precioUnitario ?? preciosMock[body.id?.toString() ?? ''] ?? 500
         };
 
-        const historialPedidos = (dbProveedores[index].historialPedidos ?? []).map(pedido => {
+        const historialPedidos = (dbProveedores[index].historialPedidos ?? []).map((pedido: PedidoProveedor) => {
           if (pedido.id.toString() !== pedidoId || pedido.estado !== 'Pendiente') {
             return pedido;
           }
 
-          const itemExistente = pedido.items.find(pedidoItem => pedidoItem.id.toString() === item.id.toString());
+          const itemExistente = pedido.items.find((pedidoItem: PedidoProveedorItem) => pedidoItem.id.toString() === item.id?.toString());
           const items = itemExistente
-            ? pedido.items.map(pedidoItem => pedidoItem.id.toString() === item.id.toString()
-              ? { ...pedidoItem, cantidad: pedidoItem.cantidad + item.cantidad, precioUnitario: item.precioUnitario }
+            ? pedido.items.map((pedidoItem: PedidoProveedorItem) => pedidoItem.id.toString() === item.id?.toString()
+              ? { ...pedidoItem, cantidad: pedidoItem.cantidad + item.cantidad, precioUnitario: item.precioUnitario ?? 0 }
               : pedidoItem)
-            : [...pedido.items, item];
-          const monto = items.reduce((total, pedidoItem) => total + ((pedidoItem.precioUnitario ?? preciosMock[pedidoItem.id.toString()] ?? 500) * pedidoItem.cantidad), 0);
+            : [...pedido.items, item as PedidoProveedorItem];
+          const monto = items.reduce((total: number, pedidoItem: PedidoProveedorItem) => total + ((pedidoItem.precioUnitario ?? preciosMock[pedidoItem.id.toString()] ?? 500) * pedidoItem.cantidad), 0);
 
           return {
             ...pedido,
@@ -212,7 +212,7 @@ export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandler
       if (index !== -1) {
         const body = req.body as NuevoPedidoProveedor;
         const fechaPedido = new Date().toISOString();
-        const monto = body.items.reduce((total, item) => total + ((item.precioUnitario ?? 0) * item.cantidad), 0);
+        const monto = body.items.reduce((total: number, item: PedidoProveedorItem) => total + ((item.precioUnitario ?? 0) * item.cantidad), 0);
         const nuevoPedido: PedidoProveedor = {
           id: Date.now(),
           fecha: fechaPedido,
@@ -221,7 +221,7 @@ export const handleProveedorMock = (req: HttpRequest<unknown>, next: HttpHandler
           estado: 'Pendiente',
           observacion: body.observacion,
           
-          items: body.items.map(item => ({
+          items: body.items.map((item: PedidoProveedorItem) => ({
              id: Number(item.id),
              nombre: item.nombre ?? 'Insumo',
              cantidad: item.cantidad,

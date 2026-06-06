@@ -2,7 +2,7 @@ import { Component, inject, OnInit , ChangeDetectionStrategy} from '@angular/cor
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
-import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
+import { configuracionRestauranteMock } from '../../../../infra/mocks/configuracion-restaurante.mock-data';
 import { PedidoState } from '../../services/pedido.state';
 import { ItemPedido } from '../../../../core/models/domain/item-pedido';
 import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';

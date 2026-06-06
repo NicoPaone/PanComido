@@ -5,7 +5,7 @@ import { Plato } from '../../../../core/models/domain/plato';
 import { Insumo } from '../../../../core/models/domain/insumo';
 import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
 import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo';
-import { environment } from '../../../../../environments/environment.development';
+import { environment } from '../../../../../environments/environment';
 
 interface InsumoResponseDto {
   id: number;
@@ -18,12 +18,23 @@ interface InsumoResponseDto {
   categoria: string | CategoriaInsumo | null;
 }
 
+interface PlatoArticuloBackend {
+  articuloId: number;
+  nombre: string;
+  precioVentaFinal: number;
+  costo: number;
+  visibleEnCarta: boolean;
+  urlImagen: string | null;
+  tipoArticulo: string;
+  categoria: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ModificarCartaApiService {
   private api = inject(ApiService);
 
   getPlatos(): Observable<Plato[]> {
-    return this.api.get<any[]>('carta/obtener-articulos').pipe(
+    return this.api.get<PlatoArticuloBackend[]>('carta/obtener-articulos').pipe(
       map(articulos => articulos.map(dto => ({
         id: dto.articuloId,
         nombre: dto.nombre,
@@ -44,22 +55,22 @@ export class ModificarCartaApiService {
   }
 
   updatePlato(id: number, data: Partial<Plato>): Observable<Plato> {
-    // Map frontend specific fields to the ones backend expects
-    const payload: any = { ...data };
+    // Mapeo de campos del frontend a los que espera el backend
+    const payload: Record<string, unknown> = { ...data };
     if (data.visible !== undefined) {
-      payload.visibleEnCarta = data.visible;
-      delete payload.visible;
+      payload['visibleEnCarta'] = data.visible;
+      delete payload['visible'];
     }
     if (data.precioVenta !== undefined) {
-      payload.precioVentaFinal = data.precioVenta;
-      delete payload.precioVenta;
+      payload['precioVentaFinal'] = data.precioVenta;
+      delete payload['precioVenta'];
     }
     if (data.imagen !== undefined) {
-      payload.urlImagen = data.imagen;
-      delete payload.imagen;
+      payload['urlImagen'] = data.imagen;
+      delete payload['imagen'];
     }
 
-    return this.api.patch<any>(`carta/articulos/${id}`, payload).pipe(
+    return this.api.patch<PlatoArticuloBackend>(`carta/articulos/${id}`, payload).pipe(
       map(dto => {
         const result: Partial<Plato> = { ...data };
         if (dto) {
