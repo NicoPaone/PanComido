@@ -1,6 +1,7 @@
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, input, signal , ChangeDetectionStrategy, inject, NgZone, DestroyRef} from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-kds-contador-tiempo',
   imports: [],
   template: `{{ tiempoFormateado() }}`,
@@ -11,12 +12,17 @@ export class KdsContadorTiempo {
   fechaInicio = input.required<string>();
 
   private tick = signal(0);
-  private intervaloId: ReturnType<typeof setInterval> | null = null;
+  private ngZone = inject(NgZone);
+  private destroyRef = inject(DestroyRef);
 
   constructor(){
-    this.intervaloId = setInterval(() => {
-      this.tick.update(t => t + 1);
-    }, 1000);
+    this.ngZone.runOutsideAngular(() => {
+      const intervaloId = setInterval(() => {
+        this.tick.update(t => t + 1);
+      }, 1000);
+
+      this.destroyRef.onDestroy(() => clearInterval(intervaloId));
+    });
   }
   
   tiempoFormateado = computed(() => {
@@ -34,9 +40,4 @@ export class KdsContadorTiempo {
 
     return `${h}:${m}:${s}`;
   });
-  ngOnDestroy() {
-    if (this.intervaloId) {
-      clearInterval(this.intervaloId);
-    }
-  }
 }

@@ -2,17 +2,17 @@ import { Component, ChangeDetectionStrategy, OnInit, inject, signal } from '@ang
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { take } from 'rxjs';
-import { PlatoSugeridoIA } from '../../../../core/models/sugerencia-ia.model';
+import { PlatoSugerido } from '../../../../core/models/domain/sugerencia-ia';
 // Componentes UI
 import { PageToolbar } from '../../../../shared/ui/page-toolbar/page-toolbar';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Buscador } from '../../../../shared/ui/buscador/buscador';
 
 // Modelos y Estados
-import { Aviso } from '../../../../core/models/aviso.model';
-import { VencimientosStateService } from '../../aviso-vencimientos/services/vencimientos.state';
+import { Aviso } from '../../../../core/models/domain/aviso';
+import { VencimientosState } from '../../aviso-vencimientos/services/vencimientos.state';
 import { AvisosStateService } from '../services/avisos.state';
-import { UnidadMedida } from '../../../../core/models/unidad-medida';
+import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
 import { RealizarPedidoSugeridoStateService } from '../../realizar-pedido-sugerido/services/realizar-pedido-sugerido.state';
 
 @Component({
@@ -26,7 +26,7 @@ import { RealizarPedidoSugeridoStateService } from '../../realizar-pedido-sugeri
 export class AvisosPage implements OnInit {
   
   state = inject(AvisosStateService);
-  pedidoState = inject(VencimientosStateService);
+  pedidoState = inject(VencimientosState);
   pedidoSugeridoState = inject(RealizarPedidoSugeridoStateService);
   router = inject(Router);
   
@@ -138,7 +138,7 @@ abrirPreviewSugerencia(tipo: 'sistema' | 'ia') {
         this.cerrarPedidoStock();
         this.router.navigate(['/staff', 'gerente', 'ver-proveedores', proveedor.id, 'historial']);
       },
-      error: (err) => console.error('Error al confirmar pedido', err)
+      error: (err) => console.error('Error al confirmar pedido de stock:', err)
     });
   }
 
@@ -180,14 +180,14 @@ nombreUnidad(unidadMedida: UnidadMedida | string | null | undefined): string {
   }
 
   // ← PEGÁ ACÁ ↓
-  crearPlatoDesdeIA(plato: PlatoSugeridoIA) {
+  crearPlatoDesdeIA(plato: PlatoSugerido) {
     this.router.navigate(['/staff/gerente/crear-plato'], {
       state: {
         desde_ia: true,
         nombre: plato.nombre,
         descripcion: plato.descripcion,
         tiempoPreparacion: plato.tiempoPreparacion,
-        ingredientes: plato.ingredientesSugeridosIA.map(ing => ({
+        ingredientes: plato.ingredientesSugeridos.map(ing => ({
           insumoId: ing.insumoId,
           nombre: ing.nombre,
           cantidad: ing.cantidad,

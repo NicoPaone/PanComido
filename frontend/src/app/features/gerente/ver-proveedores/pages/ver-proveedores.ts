@@ -7,13 +7,13 @@ import { Buscador } from '../../../../shared/ui/buscador/buscador';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Dropdown } from '../../../../shared/ui/dropdown/dropdown';
 import { PageToolbar } from '../../../../shared/ui/page-toolbar/page-toolbar';
-import { PedidoProveedor, EstadoPedidoProveedor, Proveedor } from '../../../../core/models/proveedor';
+import { PedidoProveedor, EstadoPedidoProveedor, Proveedor } from '../../../../core/models/domain/proveedor';
 import { Router, RouterModule } from '@angular/router';
 import { ProveedorListComponent } from '../components/proveedor-list/proveedor-list';
-import { Insumo as ProductoStockMock } from '../../../../core/models/insumos/insumo';
-import { VerProveedoresStateService } from '../services/ver-proveedores.state';
-import { UnidadMedida } from '../../../../core/models/unidad-medida';
-import { CategoriaInsumo } from '../../../../core/models/insumos/categorias/categoria-insumo';
+import { Insumo as ProductoStockMock } from '../../../../core/models/domain/insumo';
+import { VerProveedoresState } from '../services/ver-proveedores.state';
+import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
+import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo';
 
 @Component({
   selector: 'app-ver-proveedores',
@@ -25,7 +25,7 @@ import { CategoriaInsumo } from '../../../../core/models/insumos/categorias/cate
 })
 export class VerProveedoresComponent implements OnInit {
   private readonly router = inject(Router);
-  private readonly state = inject(VerProveedoresStateService);
+  private readonly state = inject(VerProveedoresState);
 
   private readonly pedidoModalCard = viewChild<ElementRef<HTMLElement>>('pedidoModalCard');
 

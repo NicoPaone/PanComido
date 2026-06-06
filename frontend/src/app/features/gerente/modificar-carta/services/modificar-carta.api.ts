@@ -1,10 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { ApiService } from '../../../../core/services/api-service';
-import { Plato } from '../../../../core/models/plato';
-import { Insumo } from '../../../../core/models/insumos/insumo';
-import { UnidadMedida } from '../../../../core/models/unidad-medida';
-import { CategoriaInsumo } from '../../../../core/models/insumos/categorias/categoria-insumo';
+import { Plato } from '../../../../core/models/domain/plato';
+import { Insumo } from '../../../../core/models/domain/insumo';
+import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
+import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo';
 import { environment } from '../../../../../environments/environment.development';
 
 interface InsumoResponseDto {

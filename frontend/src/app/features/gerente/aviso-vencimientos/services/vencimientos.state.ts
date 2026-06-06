@@ -1,12 +1,14 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { VencimientosApiService } from './vencimientos.service';
-import { IngredienteVencimiento, VencimientoProveedor, VencimientoPedidoActivo } from '../../../../core/models/vencimientos.model';
-import { NuevoPedidoProveedor } from '../../../../core/models/proveedor';
+import { DestroyRef, Injectable, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { VencimientosApiService } from './vencimientos.api';
+import { IngredienteVencimiento, VencimientoProveedor, VencimientoPedidoActivo } from '../../../../core/models/domain/vencimiento';
+import { PedidoProveedorRequest } from '../../../../core/models/domain/proveedor';
 import { map, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
-export class VencimientosStateService {
+export class VencimientosState {
   private api = inject(VencimientosApiService);
+  private destroyRef = inject(DestroyRef);
   private readonly preciosIngredientes: Record<string, number> = {
     '1': 1200,
     '2': 900,
@@ -41,7 +43,7 @@ export class VencimientosStateService {
 
   cargarIngredientes() {
     this._loadingIngredientes.set(true);
-    this.api.getIngredientesProximosVencer().subscribe(data => {
+    this.api.getIngredientesProximosVencer().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => {
       this._ingredientes.set(data);
       this._loadingIngredientes.set(false);
     });
@@ -51,14 +53,14 @@ export class VencimientosStateService {
     this._ingredienteSeleccionado.set(ingrediente);
     this._proveedorSeleccionado.set(null);
     this._pedidosActivos.set([]);
-    this.api.getProveedoresPorIngrediente(ingrediente.id).subscribe(provs => {
+    this.api.getProveedoresPorIngrediente(ingrediente.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(provs => {
       this._proveedoresDisponibles.set(provs);
     });
   }
 
   seleccionarProveedor(proveedor: VencimientoProveedor) {
     this._proveedorSeleccionado.set(proveedor);
-    this.api.getPedidosActivosPorProveedor(proveedor.id).subscribe(pedidos => {
+    this.api.getPedidosActivosPorProveedor(proveedor.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(pedidos => {
       this._pedidosActivos.set(pedidos);
     });
   }
@@ -92,7 +94,7 @@ export class VencimientosStateService {
 
     const precioUnitario = this.preciosIngredientes[ingrediente.id.toString()] ?? 500;
 
-    const pedido: NuevoPedidoProveedor = {
+    const pedido: PedidoProveedorRequest = {
       proveedorId: proveedor.id,
       concepto: `Pedido por vencimiento: ${ingrediente.nombre}`,
       monto: precioUnitario * cantidad,

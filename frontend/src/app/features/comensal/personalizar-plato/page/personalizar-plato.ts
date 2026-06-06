@@ -1,13 +1,16 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit , ChangeDetectionStrategy} from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
-import { PedidoService } from '../../../../core/services/pedido.service';
-import { ItemPedido } from '../../../../core/models/item-pedido';
+import { PedidoState } from '../../services/pedido.state';
+import { ItemPedido } from '../../../../core/models/domain/item-pedido';
 import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
+import { ComensalState } from '../../services/comensal-state';
+import { ComandaState } from '../../services/comanda-state';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-personalizar-plato',
   standalone: true,
   imports: [FormsModule, DecimalPipe, LlamarAlMozo],
@@ -16,7 +19,9 @@ import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
 })
 export class PersonalizarPlato implements OnInit {
   private router = inject(Router);
-  private pedidoService = inject(PedidoService);
+  private pedidoService = inject(PedidoState);
+  comensalState = inject(ComensalState);
+  comandaState = inject(ComandaState);
 
   plato: ItemPedido | null = null;
   itemIndex: number = -1;

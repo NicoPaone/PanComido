@@ -1,8 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal , ChangeDetectionStrategy} from '@angular/core';
 import { MapaMesasReadonly } from "../../../mesas/shared/mapa-mesas-readonly/mapa-mesas-readonly";
 import { MesaLecturaState } from '../../../mesas/shared/mesa-lectura-state';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-mis-mesas',
   imports: [MapaMesasReadonly],
   templateUrl: './mis-mesas.html',
@@ -22,12 +23,10 @@ export class MisMesasPage {
   mesaComandaId = signal<number | null>(null);
 
   onMesaSeleccionada(mesaId: number) {
-    // Lógica cuando selecciona una mesa en el mapa
-    console.log('Mesa seleccionada:', mesaId);
+    console.warn('onMesaSeleccionada no implementado aún');
   }
 
   onOcuparMesa(mesaId: number) {
-    console.log('Ocupar mesa:', mesaId);
     this.mesaSeleccionadaId.set(mesaId);
     this.mostrarModalOcupar.set(true);
   }
@@ -39,10 +38,8 @@ export class MisMesasPage {
   confirmarOcupar() {
     const mesaId = this.mesaSeleccionadaId();
     const cantidadComensales = this.cantidadComensales();
-    console.log('Confirmar ocupar mesa:', mesaId, 'para', cantidadComensales, 'comensales');
     if (mesaId === null || cantidadComensales < 1) return;
     this.mesaState.ocuparMesa(mesaId, cantidadComensales);
-    console.log(`Ocupando mesa ${mesaId} para ${cantidadComensales} comensales`);
 
     this.cerrarModalOcupar();
   }

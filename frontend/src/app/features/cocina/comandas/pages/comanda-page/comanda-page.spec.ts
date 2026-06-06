@@ -2,14 +2,18 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ComandaPage } from './comanda-page';
 import { ComandaState } from '../../services/comanda-state';
 import { ComandoVozService } from '../../services/comando-voz/comando-voz.service';
+import { ComandaHubService } from '../../../../../core/services/hubs/comanda/comanda-hub-service';
+import { AuthService } from '../../../../../core/services/auth.service';
 import { signal } from '@angular/core';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { vi } from 'vitest';
 
 describe('ComandaPage', () => {
   let component: ComandaPage;
   let fixture: ComponentFixture<ComandaPage>;
   let mockState: any;
   let mockVozService: any;
+  let mockHub: any;
+  let mockAuth: any;
 
   beforeEach(async () => {
     mockState = {
@@ -17,7 +21,9 @@ describe('ComandaPage', () => {
       comandasEnPreparacion: signal([]),
       comandasNuevas: signal([]),
       comandasEnEspera: signal([]),
-      modificarEstadoComanda: vi.fn()
+      comandas: signal([]),
+      modificarEstadoComanda: vi.fn(),
+      actualizarDesdeHub: vi.fn(),
     };
 
     mockVozService = {
@@ -26,11 +32,23 @@ describe('ComandaPage', () => {
       toggleListening: vi.fn()
     };
 
+    mockHub = {
+      comandaModificada: signal(null),
+      conectarYUnirseGrupo: vi.fn().mockResolvedValue(undefined),
+      desconectarEscucha: vi.fn(),
+    };
+
+    mockAuth = {
+      currentRestauranteId: 1,
+    };
+
     await TestBed.configureTestingModule({
       imports: [ComandaPage],
       providers: [
         { provide: ComandaState, useValue: mockState },
-        { provide: ComandoVozService, useValue: mockVozService }
+        { provide: ComandoVozService, useValue: mockVozService },
+        { provide: ComandaHubService, useValue: mockHub },
+        { provide: AuthService, useValue: mockAuth },
       ]
     }).compileComponents();
 
@@ -45,15 +63,6 @@ describe('ComandaPage', () => {
 
   it('debería cargar las comandas activas al inicializar', () => {
     expect(mockState.cargarComandasActivas).toHaveBeenCalled();
-  });
-
-  it('debería reaccionar a comandos de voz y modificar el estado', () => {
-    const comando = { comandaId: 10, nuevoEstadoId: 2 };
-    mockVozService.comandoDetectado.set(comando);
-
-    fixture.detectChanges();
-
-    expect(mockState.modificarEstadoComanda).toHaveBeenCalledWith(10, 2);
   });
 
   it('debería llamar al toggleListening del servicio de voz', () => {

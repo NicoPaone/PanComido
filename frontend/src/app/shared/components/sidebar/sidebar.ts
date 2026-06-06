@@ -1,7 +1,7 @@
-import { Component, signal, computed, HostListener, inject } from '@angular/core';
+import { Component, signal, computed, HostListener, inject, ChangeDetectionStrategy, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { MenuItem, UserProfile } from '../../../core/models/menu-item.model';
+import { MenuItem, UserProfile } from '../../../core/models/domain/menu-item';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AuthService } from '../../../core/services/auth.service';
 import {
@@ -25,6 +25,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-sidebar',
   standalone: true,
   imports: [CommonModule, RouterModule, FontAwesomeModule],
@@ -54,18 +55,12 @@ export class SidebarComponent {
   readonly faListCheck = faListCheck;
 
 
-  isCollapsed = signal(true); // Colapsado por defecto como Gmail
+  isCollapsed = signal(true);
   isHovered = signal(false);
   expandedMenus = signal<string[]>([]);
-  currentRole = computed(() => this.authService.currentRole());
-
-  // Perfil de usuario
-  userProfile = signal<UserProfile>({
-    name: 'Juan Perez',
-    role: 'Administrador',
-    initials: 'JP',
-    avatarColor: '#f5a5a5'
-  });
+  currentRole = input.required<string>();
+  userProfile = input.required<UserProfile>();
+  onLogout = output<void>();
 
   // Configuración de menú por rol
   private menuConfig: Record<string, MenuItem[]> = {
@@ -167,8 +162,7 @@ export class SidebarComponent {
   }
 
   logout(): void {
-    //xd
-    console.log('Logout');
+    this.onLogout.emit();
   }
 
   getIconComponent(iconName: string): any {

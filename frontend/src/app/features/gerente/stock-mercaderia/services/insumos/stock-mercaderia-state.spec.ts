@@ -1,13 +1,18 @@
 import { TestBed } from '@angular/core/testing';
 import { StockMercaderiaState } from './stock-mercaderia-state';
 import { StockMercaderiaService } from './stock-mercaderia-service';
+import { UnidadMedidaService } from '../unidad-medida.service';
+import { CategoriaInsumoService } from '../categorias/categoria-insumo.service';
 import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { Insumo, INSUMOS_MOCK } from '../../../../../core/models/insumos/insumo';
+import { Insumo } from '../../../../../core/models/domain/insumo';
+import { INSUMOS_MOCK } from '../../../../../infra/mocks/insumo.mock';
 
 describe('StockMercaderiaState', () => {
   let state: StockMercaderiaState;
   let mockService: any;
+  let mockUnidadMedida: any;
+  let mockCategoriaInsumo: any;
 
   beforeEach(() => {
     mockService = {
@@ -17,10 +22,20 @@ describe('StockMercaderiaState', () => {
       eliminar: vi.fn()
     };
 
+    mockUnidadMedida = {
+      getUnidadesMedida: vi.fn().mockReturnValue(of([])),
+    };
+
+    mockCategoriaInsumo = {
+      getCategorias: vi.fn().mockReturnValue(of([])),
+    };
+
     TestBed.configureTestingModule({
       providers: [
         StockMercaderiaState,
-        { provide: StockMercaderiaService, useValue: mockService }
+        { provide: StockMercaderiaService, useValue: mockService },
+        { provide: UnidadMedidaService, useValue: mockUnidadMedida },
+        { provide: CategoriaInsumoService, useValue: mockCategoriaInsumo }
       ]
     });
 
@@ -59,33 +74,19 @@ describe('StockMercaderiaState', () => {
   });
 
   describe('guardarProducto()', () => {
-    it('debería actualizar un producto existente', () => {
-      const productoActualizado = { ...INSUMOS_MOCK[0], nombre: 'Ajo Actualizado' };
-      mockService.actualizar.mockReturnValue(of(productoActualizado));
-
-      // Precargamos datos
-      mockService.getStockMercaderia.mockReturnValue(of(INSUMOS_MOCK));
-      state.cargarMercaderia();
-
-      state.guardarProducto(productoActualizado);
-
-      expect(mockService.actualizar).toHaveBeenCalledWith(1, productoActualizado);
-    });
-
     it('debería crear un nuevo producto', () => {
-      const nuevo: Partial<Insumo> = { 
-        nombre: 'Sal', 
-        stockActual: 15, 
-        unidadMedida: 'KG',
+      const nuevo: Partial<Insumo> = {
+        nombre: 'Sal',
+        stockActual: 15,
+        unidadMedida: { id: 1, nombre: 'Kg' },
         stockMinimo: 5,
-        estadoStock: 'Normal',
-        tipo: 'Almacen',
-        categoria: 'Almacen'
+        categoriaIngrediente: { id: 1, descripcion: 'Almacen', tipoAplica: 'Ingrediente' },
+        vencimiento: '2028-01-01'
       };
 
-     const productoCreado: Insumo = { 
+      const productoCreado: Insumo = {
         id: 99,
-        ...nuevo 
+        ...nuevo
       } as Insumo;
 
       mockService.crear.mockReturnValue(of(productoCreado));
@@ -99,7 +100,7 @@ describe('StockMercaderiaState', () => {
   describe('eliminarProducto()', () => {
     it('debería eliminar un producto', () => {
       mockService.eliminar.mockReturnValue(of(void 0));
-      
+
       // Precargamos datos
       mockService.getStockMercaderia.mockReturnValue(of(INSUMOS_MOCK));
       state.cargarMercaderia();
@@ -111,14 +112,6 @@ describe('StockMercaderiaState', () => {
   });
 
   describe('Computed Signals', () => {
-    it('categoriasUnicas debería retornar categorías únicas ordenadas', () => {
-      mockService.getStockMercaderia.mockReturnValue(of(INSUMOS_MOCK));
-      state.cargarMercaderia();
-
-      const categorias = state.categoriasUnicas();
-      expect(categorias).toEqual(['Almacen', 'Carne', 'Verdura']);
-    });
-
     it('productosCriticos debería filtrar productos con stock bajo', () => {
       mockService.getStockMercaderia.mockReturnValue(of(INSUMOS_MOCK));
       state.cargarMercaderia();

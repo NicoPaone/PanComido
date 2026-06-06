@@ -3,8 +3,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, of, switchMap } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { RealizarPedidoSugeridoApiService } from './realizar-pedido-sugerido.api';
-import { Proveedor, SugerenciaPedidoItem } from '../../../../core/models/proveedor';
-import { Insumo } from '../../../../core/models/insumos/insumo';
+import { Proveedor, SugerenciaPedidoItem } from '../../../../core/models/domain/proveedor';
+import { Insumo } from '../../../../core/models/domain/insumo';
 
 @Injectable({ providedIn: 'root' })
 export class RealizarPedidoSugeridoStateService {
@@ -255,7 +255,7 @@ seleccionarIngredienteExtra(productoId: string): void {
     // Buscar el último precio en el historial del proveedor seleccionado
     const proveedorId = this.proveedorAgregarIngredienteId();
     if (proveedorId !== null) {
-      this.api.getHistorialPedidos(proveedorId).subscribe({
+      this.api.getHistorialPedidos(proveedorId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: pedidos => {
           const ordenados = [...pedidos].sort((a, b) => {
             const fa = new Date(a.fecha).getTime();

@@ -33,7 +33,7 @@ describe('ComandaService', () => {
 
     service.obtenerComandasActivas().subscribe();
 
-    expect(mockApi.get).toHaveBeenCalledWith('Comanda/activas');
+    expect(mockApi.get).toHaveBeenCalledWith('comanda/activas');
   });
 
   it('modificarEstadoComanda() debería llamar con los parámetros correctos', () => {
@@ -41,6 +41,6 @@ describe('ComandaService', () => {
 
     service.modificarEstadoComanda(5, 2).subscribe();
 
-    expect(mockApi.put).toHaveBeenCalledWith('Comanda/activas/5/2');
+    expect(mockApi.put).toHaveBeenCalledWith('comanda/activas/5/2');
   });
 });

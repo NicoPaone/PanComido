@@ -1,11 +1,10 @@
 import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Aviso, AvisoTipo } from '../../../../core/models/aviso.model';
-import { Plato } from '../../../../core/models/plato';
+import { Aviso, AvisoTipo } from '../../../../core/models/domain/aviso';
+import { Plato } from '../../../../core/models/domain/plato';
 import { AvisosApiService } from './avisos.api';
-import { SugerenciaIA } from '../../../../core/models/sugerencia-ia.model';
-import { PlatoSugeridoIA } from '../../../../core/models/sugerencia-ia.model';
-
+import { Sugerencia, PlatoSugerido } from '../../../../core/models/domain/sugerencia-ia';
+import { mapAvisosResponseToDomain } from '../../../../infra/http/mappers/aviso.mapper';
 @Injectable({ providedIn: 'root' })
 export class AvisosStateService {
   private api = inject(AvisosApiService);
@@ -20,7 +19,7 @@ export class AvisosStateService {
 
   private _vencimientos = signal<Aviso[]>([]);
   private _stockBajo = signal<Aviso[]>([]);
-  private _sugerenciasIA = signal<SugerenciaIA | null>(null);
+  private _sugerenciasIA = signal<Sugerencia | null>(null);
   private _loadingIA = signal<boolean>(false);
   private _errorIA = signal<string | null>(null);
   private _creandoPlato = signal<number | null>(null);
@@ -77,36 +76,13 @@ export class AvisosStateService {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: ({ avisos, insumos }) => {
-            const stockAvisos: Aviso[] = avisos.insumosConStockCritico.map(insumo => ({
-              id: insumo.id.toString(),
-              tipo: 'stock',
-              titulo: insumo.nombre || 'Insumo sin nombre',
-              subtitulo: `Stock: ${insumo.stockActual} ${insumo.unidadMedida}`,
-              info: `Punto mínimo: ${insumo.stockMinimo} ${insumo.unidadMedida}`,
-              payloadStock: insumo
-            }));
-            this._stockBajo.set(stockAvisos);
-
-            const vencimientosAvisos: Aviso[] = [];
-            Object.entries(avisos.insumosConVencimientoProximo).forEach(([insumoIdStr, lotes]) => {
-              const insumoId = Number(insumoIdStr);
-              const insumoData = insumos.find(i => i.id === insumoId);
-              const nombreInsumo = insumoData?.nombre || `Insumo ${insumoIdStr}`;
-
-              lotes.forEach(lote => {
-                vencimientosAvisos.push({
-                  id: lote.id.toString(),
-                  tipo: 'vencimiento',
-                  titulo: lote.nombre || `Lote de ${nombreInsumo}`,
-                  subtitulo: `Vence: ${lote.fechaVencimiento === '0001-01-01' ? 'Sin fecha' : lote.fechaVencimiento}`,
-                  info: `Cantidad: ${lote.cantidad}`,
-                  payloadVencimiento: lote
-                });
-              });
-            });
-            this._vencimientos.set(vencimientosAvisos);
+            const insumosMap = new Map(insumos.map(i => [i.id, i]));
+            const { vencimientos, stockBajo } = mapAvisosResponseToDomain(avisos, insumosMap);
+            
+            this._stockBajo.set(stockBajo);
+            this._vencimientos.set(vencimientos);
           },
-          error: (err) => console.error('Error al cargar avisos', err)
+          error: (err) => console.error('Error al cargar avisos:', err)
         });
     });
   }
@@ -206,7 +182,7 @@ export class AvisosStateService {
       });
   }
 
-  crearPlatoDesdeIA(plato: PlatoSugeridoIA): void {
+  crearPlatoDesdeIA(plato: PlatoSugerido): void {
   this._creandoPlato.set(plato.id);
 
   const request = {
@@ -218,7 +194,7 @@ export class AvisosStateService {
     categoriaPlatoId: 2,
     urlImagen: '',
     restriccionesIds: [],
-    ingredientes: plato.ingredientesSugeridosIA.map(ing => ({
+    ingredientes: plato.ingredientesSugeridos.map(ing => ({
       insumoId: ing.insumoId,
       cantidad: ing.cantidad,
       opcional: false

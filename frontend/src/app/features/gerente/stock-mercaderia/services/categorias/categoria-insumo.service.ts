@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from '../../../../../core/services/api-service';
-import { CategoriaInsumo } from '../../../../../core/models/insumos/categorias/categoria-insumo';
+import { CategoriaInsumo } from '../../../../../core/models/domain/categoria-insumo';
 import { Observable } from 'rxjs';
 
 @Injectable({

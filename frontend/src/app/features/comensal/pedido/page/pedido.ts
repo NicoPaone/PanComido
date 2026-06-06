@@ -1,12 +1,15 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed , ChangeDetectionStrategy} from '@angular/core';
 import { Router } from '@angular/router';
-import { PedidoService } from '../../../../core/services/pedido.service';
-import { ItemPedido } from '../../../../core/models/item-pedido';
+import { PedidoState } from '../../services/pedido.state';
+import { ItemPedido } from '../../../../core/models/domain/item-pedido';
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
 import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
 import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
+import { ComensalState } from '../../services/comensal-state';
+import { ComandaState } from '../../services/comanda-state';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-pedido',
   standalone: true,
   imports: [BotonComensal, LlamarAlMozo],
@@ -14,7 +17,9 @@ import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
 })
 export class Pedido {
   private router = inject(Router);
-  private pedidoService = inject(PedidoService);
+  private pedidoService = inject(PedidoState);
+  comensalState = inject(ComensalState);
+  comandaState = inject(ComandaState);
 
   // Usar el signal del servicio directamente (reactivo)
   pedidos = this.pedidoService.pedidos;

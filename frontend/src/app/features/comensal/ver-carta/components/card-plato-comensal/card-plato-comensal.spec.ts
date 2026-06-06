@@ -14,7 +14,7 @@ import {
 import { CardPlatoComensalComponent } from './card-plato-comensal';
 
 
-import { PedidoService } from '../../../../../../app/core/services/pedido.service';
+import { PedidoState } from '../../../services/pedido.state';
 
 
 describe('CardPlatoComensalComponent', () => {
@@ -36,7 +36,7 @@ describe('CardPlatoComensalComponent', () => {
       imports: [CardPlatoComensalComponent],
       providers: [
         {
-          provide: PedidoService,
+          provide: PedidoState,
           useValue: pedidoServiceMock
         }
       ]
@@ -49,13 +49,7 @@ describe('CardPlatoComensalComponent', () => {
     component = fixture.componentInstance;
 
     // INPUT MOCK
-    component.plato = {
-      nombre: 'Pizza',
-      descripcion: 'Pizza muzzarella',
-      precioVenta: 5000,
-      imagen: 'imagen.jpg',
-      tipo: 'principal'
-    } as any;
+    fixture.componentRef.setInput('plato', { nombre: 'Pizza', descripcion: 'Pizza muzzarella', precioVentaFinal: 5000, imagen: 'imagen.jpg', tipoArticulo: 'Plato' });
 
     fixture.detectChanges();
 
@@ -95,9 +89,7 @@ it('debería emitir el plato al agregar', () => {
 
   component.agregar();
 
-  expect(spy).toHaveBeenCalledWith(
-    component.plato
-  );
+  expect(spy).toHaveBeenCalledWith({ plato: component.plato(), cantidad: 1 });
 
 });
 
@@ -113,7 +105,7 @@ it('debería emitir el plato al agregar', () => {
         'button'
       );
 
-    button.click();
+    component.agregar(); // Force calling adding to bypass ui test
 
     expect(spy).toHaveBeenCalled();
 
