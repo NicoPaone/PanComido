@@ -1,14 +1,16 @@
-import { inject, Injectable, signal, computed } from '@angular/core';
+import { inject, Injectable, signal, computed, effect } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ComandaService } from './comanda.service';
 import { PedidoState } from './pedido.state';
 import { EstadoPedido } from '../../../core/models/domain/comanda';
 import { Mesa } from '../../../core/models/domain/mesa';
+import { ComandaHubService } from '../../../core/services/hubs/comanda/comanda-hub-service';
 
 @Injectable({ providedIn: 'root' })
 export class ComandaState {
   private comandaService = inject(ComandaService);
   private pedidoService = inject(PedidoState);
+  private comandaHub = inject(ComandaHubService);
 
   // Signals de estado (inicializan desde sessionStorage si existe)
   private _comandaId = signal<number | null>(this.leerNumeroDeStorage('comandaId'));
@@ -29,6 +31,23 @@ export class ComandaState {
   // Computed
   tieneComandaActiva = computed(() => this._comandaId() !== null);
 
+  constructor() {
+    effect(() => {
+      const modificada = this.comandaHub.comandaModificada();
+      if (modificada) {
+        this.consultarEstado();
+      }
+    });
+  }
+
+  async iniciarEscucha(mesaId: number): Promise<void> {
+    await this.comandaHub.conectarComoComensal(mesaId);
+  }
+
+  detenerEscucha(): void {
+    this.comandaHub.desconectarEscucha();
+  }
+
   /**
    * Ocupar mesa y crear comanda
    * Llamar DESPUÉS de que el usuario ingrese la cantidad de personas
@@ -46,7 +65,7 @@ export class ComandaState {
       sessionStorage.setItem('mesaId', String(mesaId));
       this._cargando.set(false);
     } catch (err: any) {
-      void 0;
+      console.error('Error al ocupar mesa:', err);
       this._error.set('No se pudo ocupar la mesa. Intenta nuevamente.');
       this._cargando.set(false);
       throw err;
@@ -94,7 +113,7 @@ export class ComandaState {
       this.pedidoService.limpiarPedidos();
       return estado;
     } catch (err: any) {
-      void 0;
+      console.error('Error al confirmar pedido:', err);
       this._error.set('Error al confirmar el pedido. Intenta nuevamente.');
       this._cargando.set(false);
       throw err;
@@ -122,7 +141,7 @@ export class ComandaState {
       this._estadoPedido.set(estado);
       return estado;
     } catch (err: any) {
-      void 0;
+      console.error('Error al consultar estado:', err);
       throw err;
     }
   }
@@ -130,7 +149,7 @@ export class ComandaState {
   /**
    * Limpiar estado (para nueva comanda)
    */
-limpiarEstado(): void {
+  limpiarEstado(): void {
     this._comandaId.set(null);
     this._mesaId.set(null);
     this._mesaInfo.set(null);

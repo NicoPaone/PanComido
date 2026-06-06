@@ -23,12 +23,10 @@ export class MisMesasPage {
   mesaComandaId = signal<number | null>(null);
 
   onMesaSeleccionada(mesaId: number) {
-    // Lógica cuando selecciona una mesa en el mapa
-    void 0;
+    console.warn('onMesaSeleccionada no implementado aún');
   }
 
   onOcuparMesa(mesaId: number) {
-    void 0;
     this.mesaSeleccionadaId.set(mesaId);
     this.mostrarModalOcupar.set(true);
   }
@@ -40,10 +38,8 @@ export class MisMesasPage {
   confirmarOcupar() {
     const mesaId = this.mesaSeleccionadaId();
     const cantidadComensales = this.cantidadComensales();
-    void 0;
     if (mesaId === null || cantidadComensales < 1) return;
     this.mesaState.ocuparMesa(mesaId, cantidadComensales);
-    void 0;
 
     this.cerrarModalOcupar();
   }

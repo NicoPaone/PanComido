@@ -27,7 +27,6 @@ export class PagoConfirmado {
   }
 
   puntuarPlatos(): void {
-    // Para futura implementación
-    void 0;
+    console.warn('puntuarPlatos no implementado aún');
   }
 }

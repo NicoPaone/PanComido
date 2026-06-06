@@ -60,10 +60,8 @@ export class ProductoForm {
       fechaVencimiento: ['', Validators.required], 
       tipo: ['Ingrediente'] 
     }, { validators: stockMinimoValidator });
-
-    void 0;
   }
-onSubmit(): void {
+ onSubmit(): void {
     if (this.form.valid) {
       const formValue = this.form.value;
       
@@ -79,7 +77,6 @@ onSubmit(): void {
         fechaVencimiento: formValue.fechaVencimiento 
         // input type="date" deberia devolver YYYY-MM-DD
       };
-      void 0;
       this.guardar.emit(payload);
       this.form.reset({
         stockMinimo: 0,

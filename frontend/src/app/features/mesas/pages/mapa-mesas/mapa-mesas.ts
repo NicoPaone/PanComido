@@ -114,7 +114,7 @@ export class MapaMesas implements OnInit {
 
     // Próximamente: Llamar al backend para traer la comanda activa por MesaId
     // Ej: GET /comanda/mesa/{id}/activa
-    void 0;
+    console.warn('onMesaClick no implementado aún');
   }
 
   confirmarOcupar() {

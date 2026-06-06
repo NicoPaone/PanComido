@@ -27,6 +27,6 @@ export class StaffLayout {
   };
 
   logout(): void {
-    void 0;
+    console.warn('logout no implementado aún');
   }
 }

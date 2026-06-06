@@ -17,7 +17,6 @@ export class CategoriaState {
   cargarCategorias(): void {
     this.api.obtenerCategorias().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((categorias) => {
       this._categorias.set(categorias);
-      void 0;
     });
   }
 

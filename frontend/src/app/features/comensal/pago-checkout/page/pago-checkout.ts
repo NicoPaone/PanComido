@@ -48,7 +48,7 @@ export class PagoCheckout implements OnInit, OnDestroy {
     const mesaId = this.comandaState.mesaId();
     if (mesaId) {
       this.comandaHub.conectarComoComensal(mesaId).catch(err =>
-        void 0
+        console.error('Error al conectar hub de comanda:', err)
       );
     }
   }

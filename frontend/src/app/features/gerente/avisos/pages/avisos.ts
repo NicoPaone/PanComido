@@ -138,7 +138,7 @@ abrirPreviewSugerencia(tipo: 'sistema' | 'ia') {
         this.cerrarPedidoStock();
         this.router.navigate(['/staff', 'gerente', 'ver-proveedores', proveedor.id, 'historial']);
       },
-      error: (err) => void 0
+      error: (err) => console.error('Error al confirmar pedido de stock:', err)
     });
   }
 

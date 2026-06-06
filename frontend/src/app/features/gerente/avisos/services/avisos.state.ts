@@ -82,7 +82,7 @@ export class AvisosStateService {
             this._stockBajo.set(stockBajo);
             this._vencimientos.set(vencimientos);
           },
-          error: (err) => void 0
+          error: (err) => console.error('Error al cargar avisos:', err)
         });
     });
   }

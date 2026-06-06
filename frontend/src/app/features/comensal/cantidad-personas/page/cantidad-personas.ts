@@ -49,7 +49,7 @@ export class CantidadPersonas {
         state: { mesaId: this.mesaId, cantidadPersonas: this.cantidadPersonas }
       });
     } catch (error) {
-      void 0;
+      console.error('Error al ocupar mesa:', error);
     }
   }
 

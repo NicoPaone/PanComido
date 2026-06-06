@@ -26,7 +26,7 @@ export class ScanQr implements AfterViewInit, OnDestroy {
     try {
       const devices = await BrowserMultiFormatReader.listVideoInputDevices();
       if (devices.length === 0) {
-        void 0;
+        console.warn('No se encontraron dispositivos de cámara');
         return;
       }
 
@@ -47,7 +47,7 @@ export class ScanQr implements AfterViewInit, OnDestroy {
         }
       );
     } catch (e) {
-      void 0;
+      console.error('Error al inicializar escáner:', e);
     }
   }
 

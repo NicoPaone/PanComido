@@ -1,10 +1,9 @@
-import { Component, inject, OnInit, OnDestroy, effect , ChangeDetectionStrategy} from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectionStrategy} from '@angular/core';
 import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { ComandaState } from '../../services/comanda-state';
 import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
-import { ComandaHubService } from '../../../../core/services/hubs/comanda/comanda-hub-service';
 import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
 import { ComensalState } from '../../services/comensal-state';
 
@@ -19,7 +18,6 @@ import { ComensalState } from '../../services/comensal-state';
 export class EstadoPedido implements OnInit, OnDestroy {
   private router = inject(Router);
   private comandaState = inject(ComandaState);
-  private comandaHub = inject(ComandaHubService);
   comensalState = inject(ComensalState);
 
   configuracion = configuracionRestauranteMock;
@@ -28,30 +26,20 @@ export class EstadoPedido implements OnInit, OnDestroy {
   cargando = this.comandaState.cargando;
   error = this.comandaState.error;
 
-  constructor() {
-    effect(() => {
-      const modificada = this.comandaHub.comandaModificada();
-      if (modificada) {
-        // recargo si llega un push de signalr
-        this.comandaState.consultarEstado();
-      }
-    });
-  }
-
   ngOnInit() {
     if (!this.estado()) {
       this.comandaState.consultarEstado();
     }
     const mesaId = this.comandaState.mesaId();
     if (mesaId) {
-      this.comandaHub.conectarComoComensal(mesaId).catch(err => 
-        void 0
+      this.comandaState.iniciarEscucha(mesaId).catch(err =>
+        console.error('Error al conectar hub de comanda:', err)
       );
     }
   }
 
   ngOnDestroy() {
-    this.comandaHub.desconectarEscucha();
+    this.comandaState.detenerEscucha();
   }
 
   get estadoColor(): string {
