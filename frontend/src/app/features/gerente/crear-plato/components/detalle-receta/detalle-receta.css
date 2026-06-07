@@ -8,21 +8,15 @@
 }
 
 .badge-unidad {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
-  color: #0369a1;
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 20px;
-  border: 1px solid #bae6fd;
+  display: inline-block;
+  background-color: #f1f5f9;
+  color: #475569;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  min-width: 44px;
-  text-align: center;
-  box-shadow: 0 1px 3px rgba(3, 105, 161, 0.08);
+  letter-spacing: 0.03em;
 }
 
 .receta-title {

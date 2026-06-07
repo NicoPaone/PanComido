@@ -1,94 +1,169 @@
-.table-wrapper {
-  width: 100%;
-  overflow-x: auto;
+/* ── Wrapper ── */
+.proveedor-list-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.proveedor-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 10px;
-}
-
-.proveedor-table th {
-  color: #334155;
-  font-size: 0.75rem;
-  padding: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.proveedor-table tr {
-  background: #f8fafc;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-}
-
-.proveedor-table tbody tr {
+/* ── Fila de proveedor (efecto tinted como avisos) ── */
+.proveedor-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  background: #ffffff;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.04);
   cursor: pointer;
+  transition: all 0.18s ease;
 }
 
-.proveedor-table tbody tr:hover {
+.proveedor-row:hover {
+  background: rgba(245, 158, 11, 0.04);
+  border-color: rgba(245, 158, 11, 0.2);
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.07);
 }
 
-.selected-row {
-  background: rgba(2, 89, 108, 0.08) !important;
+.proveedor-row.selected {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.35);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.12);
 }
 
-.proveedor-table td {
-  padding: 16px 10px;
-  border-top: 1px solid #e2e8f0;
-  border-bottom: 1px solid #e2e8f0;
+/* ── Dot de estado ── */
+.proveedor-estado-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background-color: #cbd5e1;
+  transition: background-color 0.2s;
 }
 
-.proveedor-table td:first-child {
-  border-left: 1px solid #e2e8f0;
-  border-radius: 10px 0 0 10px;
+.proveedor-estado-dot.activo {
+  background-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
 }
 
-.proveedor-table td:last-child {
-  border-right: 1px solid #e2e8f0;
-  border-radius: 0 10px 10px 0;
+/* ── Info del proveedor ── */
+.proveedor-info {
+  min-width: 0;
 }
 
-.nombre-proveedor {
-  font-weight: 800;
+.proveedor-nombre {
+  font-weight: 700;
+  font-size: 0.95rem;
   color: #111827;
+  line-height: 1.3;
 }
 
-.detalle-proveedor,
-.fecha-pedido {
+.proveedor-contacto {
+  font-size: 0.82rem;
   color: #64748b;
+  margin-top: 2px;
+}
+
+/* ── Fecha / chip ── */
+.proveedor-fecha {
+  flex-shrink: 0;
+  min-width: 74px;
+  text-align: center;
+}
+
+.fecha-label {
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.chip-sin-pedidos {
+  display: inline-block;
+  background-color: #f1f5f9;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+/* ── Botones de acción (icon-only) ── */
+.proveedor-acciones {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.icon-btn .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.icon-btn-teal {
+  background-color: rgba(22, 145, 172, 0.1);
+  color: #1691ac;
+  border-color: rgba(22, 145, 172, 0.2);
+}
+
+.icon-btn-teal:hover {
+  background-color: #1691ac;
+  color: #ffffff;
+  border-color: #1691ac;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(22, 145, 172, 0.25);
+}
+
+.icon-btn-amber {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.icon-btn-amber:hover {
+  background-color: #d97706;
+  color: #ffffff;
+  border-color: #d97706;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(217, 119, 6, 0.25);
+}
+
+.icon-btn-outline {
+  background-color: #f8fafc;
+  color: #64748b;
+  border-color: #e2e8f0;
+}
+
+.icon-btn-outline:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+/* ── Empty state ── */
+.proveedor-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 40px 0;
+  color: #94a3b8;
   font-size: 0.9rem;
 }
 
-.acciones-cell {
-  width: 220px;
-}
-
-.acciones-grupo {
-  display: inline-flex;
-  gap: 0.5rem;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-}
-
-.empty-row {
-  color: #64748b;
-  text-align: center;
-  padding: 24px 10px;
-}
-
-::ng-deep .acciones-grupo app-boton .btn {
-  min-width: 92px;
-}
-
-@media (max-width: 767.98px) {
-  .acciones-cell {
-    width: auto;
-  }
-
-  .acciones-grupo {
-    justify-content: flex-start;
-  }
+.proveedor-empty .material-symbols-outlined {
+  font-size: 2.5rem;
+  opacity: 0.5;
 }

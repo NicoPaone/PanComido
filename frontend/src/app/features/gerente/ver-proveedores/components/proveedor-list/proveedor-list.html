@@ -1,46 +1,41 @@
-<div class="table-wrapper">
-  <table class="proveedor-table">
-    <thead>
-      <tr>
-        <th>Proveedor</th>
-        <th class="text-center">Último pedido</th>
-        <th class="text-end">Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      @if (proveedores().length > 0) {
-        @for (proveedor of proveedores(); track trackPorId($index, proveedor)) {
-          <tr [class.selected-row]="esSeleccionado(proveedor.id)" (click)="seleccionar.emit(proveedor)">
-            <td>
-              <div class="nombre-proveedor">{{ proveedor.nombre }}</div>
-              <div class="detalle-proveedor">{{ proveedor.contacto }}</div>
-            </td>
-            <td class="text-center fecha-pedido">
-              {{ proveedor.fechaUltimoPedido ? (proveedor.fechaUltimoPedido | date:'dd/MM/yyyy') : 'Sin pedidos' }}
-            </td>
-            <td class="text-end acciones-cell">
-              <div class="acciones-grupo">
-                <app-boton
-                  label="Pedido"
-                  variante="secondary"
-                  tamanio="sm"
-                  (clicked)="crearPedido.emit(proveedor)">
-                </app-boton>
-                <app-boton
-                  label="Historial"
-                  variante="outline"
-                  tamanio="sm"
-                  (clicked)="verHistorial.emit(proveedor)">
-                </app-boton>
-              </div>
-            </td>
-          </tr>
-        }
-      } @else {
-        <tr>
-          <td colspan="3" class="empty-row">No se encontraron proveedores.</td>
-        </tr>
-      }
-    </tbody>
-  </table>
+<div class="proveedor-list-wrapper">
+  @if (proveedores().length > 0) {
+    @for (proveedor of proveedores(); track trackPorId($index, proveedor)) {
+      <div
+        class="proveedor-row"
+        [class.selected]="esSeleccionado(proveedor.id)"
+        (click)="seleccionar.emit(proveedor)">
+
+        <div class="proveedor-estado-dot" [class.activo]="proveedor.activo" title="{{ proveedor.activo ? 'Activo' : 'Inactivo' }}"></div>
+
+        <div class="proveedor-info flex-grow-1 overflow-hidden">
+          <div class="proveedor-nombre text-truncate">{{ proveedor.nombre }}</div>
+          <div class="proveedor-contacto text-truncate">{{ proveedor.contacto }}</div>
+        </div>
+
+        <div class="proveedor-fecha">
+          @if (proveedor.fechaUltimoPedido) {
+            <span class="fecha-label">{{ proveedor.fechaUltimoPedido | date:'dd/MM/yy' }}</span>
+          } @else {
+            <span class="chip-sin-pedidos">Sin pedidos</span>
+          }
+        </div>
+
+        <div class="proveedor-acciones" (click)="$event.stopPropagation()">
+          <button class="icon-btn icon-btn-amber" title="Nuevo pedido" (click)="crearPedido.emit(proveedor)">
+            <span class="material-symbols-outlined">add_shopping_cart</span>
+          </button>
+          <button class="icon-btn icon-btn-outline" title="Ver historial" (click)="verHistorial.emit(proveedor)">
+            <span class="material-symbols-outlined">history</span>
+          </button>
+        </div>
+
+      </div>
+    }
+  } @else {
+    <div class="proveedor-empty">
+      <span class="material-symbols-outlined">storefront</span>
+      <span>No se encontraron proveedores</span>
+    </div>
+  }
 </div>

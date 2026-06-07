@@ -84,11 +84,9 @@ body {
 
 .panel-card,
 .info-card,
-.nested-section,
 .predictive-item,
 .predictive-empty,
-.proveedor-form .form-control,
-.panel-section {
+.proveedor-form .form-control {
   background: #ffffff !important;
 }
 
@@ -102,8 +100,7 @@ body {
 
 /* Ensure panel cards remain white on hover */
 .panel-card:hover,
-.info-card:hover,
-.nested-section:hover {
+.info-card:hover {
   background: #ffffff !important;
 }
 

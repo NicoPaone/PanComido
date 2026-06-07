@@ -18,6 +18,7 @@ export class VerProveedoresState {
   };*/
 
   termino = signal('');
+  filtroEstado = signal<'Todos' | 'Activos' | 'Inactivos'>('Todos');
   proveedores = signal<Proveedor[]>([]);
   productos = signal<Insumo[]>([]);
   proveedorSeleccionadoId = signal<number | string | null>(null);
@@ -54,7 +55,13 @@ export class VerProveedoresState {
 
   proveedoresFiltrados = computed(() => {
     const texto = this.termino().toLowerCase().trim();
-    const lista = [...this.proveedores()].sort((a, b) => {
+    const filtro = this.filtroEstado();
+
+    const lista = [...this.proveedores()].filter(prov => {
+      if (filtro === 'Activos' && !prov.activo) return false;
+      if (filtro === 'Inactivos' && prov.activo) return false;
+      return true;
+    }).sort((a, b) => {
       const fechaA = a.fechaUltimoPedido ? new Date(a.fechaUltimoPedido).getTime() : 0;
       const fechaB = b.fechaUltimoPedido ? new Date(b.fechaUltimoPedido).getTime() : 0;
       return fechaB - fechaA;

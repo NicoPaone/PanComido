@@ -6,25 +6,39 @@
       (busquedaCambiada)="termino.set($event)">
     </app-buscador>
 
-    <app-boton
-      acciones
-      label="Pedido sugerido"
-      variante="teal"
-      tamanio="md"
-      (clicked)="irARealizarPedidoSugeridoGeneral()">
-    </app-boton>
+    <div filtros class="d-flex align-items-center">
+      <app-dropdown #filtroDropdown>
+        <button trigger class="btn-pill-filter text-nowrap" style="white-space: nowrap; outline: none;" [class.active]="filtroEstado() !== 'Todos'">
+          <span class="material-symbols-outlined" style="font-size: 18px;">filter_alt</span>
+          <span>Estado: {{ filtroEstado() }}</span>
+        </button>
+        <ul menu class="m-0 p-0 list-unstyled w-100">
+          <li (click)="setFiltroEstado('Todos'); filtroDropdown.cerrar()" [style.color]="filtroEstado() === 'Todos' ? '#1691ac' : ''" [style.background-color]="filtroEstado() === 'Todos' ? '#f0fdfa' : ''">Todos</li>
+          <li (click)="setFiltroEstado('Activos'); filtroDropdown.cerrar()" [style.color]="filtroEstado() === 'Activos' ? '#1691ac' : ''" [style.background-color]="filtroEstado() === 'Activos' ? '#f0fdfa' : ''">Activos</li>
+          <li (click)="setFiltroEstado('Inactivos'); filtroDropdown.cerrar()" [style.color]="filtroEstado() === 'Inactivos' ? '#1691ac' : ''" [style.background-color]="filtroEstado() === 'Inactivos' ? '#f0fdfa' : ''">Inactivos</li>
+        </ul>
+      </app-dropdown>
+    </div>
 
-    <app-boton
-      acciones
-      label="Nuevo proveedor"
-      variante="secondary"
-      tamanio="md"
-      (clicked)="abrirNuevoProveedorRoute()">
-    </app-boton>
+    <div acciones class="d-flex gap-2 ms-auto">
+      <button 
+        class="btn-premium-teal d-flex align-items-center gap-2"
+        (click)="irARealizarPedidoSugeridoGeneral()">
+        <span class="material-symbols-outlined fs-5">auto_awesome</span>
+        <span class="fw-semibold">Pedido sugerido</span>
+      </button>
+
+      <button 
+        class="btn-premium-primary d-flex align-items-center gap-2"
+        (click)="abrirNuevoProveedorRoute()">
+        <span class="material-symbols-outlined fs-5">person_add</span>
+        <span class="fw-semibold">Nuevo proveedor</span>
+      </button>
+    </div>
   </app-page-toolbar>
 
   <div class="proveedores-layout mt-4">
-    <section class="panel-card list-panel">
+    <app-glass-card class="list-panel d-block h-100">
       <div class="panel-header">
         <div>
           <h1 class="page-title mb-1">Ver proveedores</h1>
@@ -65,17 +79,12 @@
           (verHistorial)="abrirHistorial($event)">
         </app-proveedor-list>
       }
-    </section>
+    </app-glass-card>
 
-    <aside class="panel-card detail-panel">
+    <app-glass-card class="detail-panel d-block">
       @if (proveedorSeleccionado(); as proveedor) {
         <div class="detail-top">
-          <div>
-            <p class="detail-kicker mb-1">Proveedor seleccionado</p>
-            <h2 class="detail-title mb-1">{{ proveedor.nombre }}</h2>
-            <p class="detail-text mb-0">{{ proveedor.contacto }}</p>
-          </div>
-
+          <h2 class="detail-title">{{ proveedor.nombre }}</h2>
           <span class="status-pill" [class.inactivo]="!proveedor.activo">{{ proveedor.activo ? 'Activo' : 'Inactivo' }}</span>
         </div>
 
@@ -117,226 +126,196 @@
           </div>
         }
 
-        <div class="action-row">
-          <app-boton
-            label="Agregar pedido"
-            variante="secondary"
-            tamanio="md"
-            (clicked)="abrirPedido(proveedor)">
-          </app-boton>
-
-          <app-boton
-            label="Ver historial"
-            variante="outline"
-            tamanio="md"
-            (clicked)="abrirHistorial(proveedor)">
-          </app-boton>
-        </div>
+        @if (panelModo() === 'historial') {
+          <div class="action-row">
+            <app-boton
+              label="Agregar pedido"
+              variante="secondary"
+              tamanio="md"
+              (clicked)="abrirPedido(proveedor)">
+            </app-boton>
+          </div>
+        }
 
         @if (panelModo() === 'pedido') {
           <div class="panel-section">
+            <!-- Header del pedido -->
             <div class="section-header">
               <div>
                 <h3 class="section-title mb-1">Nuevo pedido</h3>
-                <p class="section-subtitle mb-0">Selecciona el proveedor, agrega productos y confirma la lista antes de enviar.</p>
+                <p class="section-subtitle mb-0">para <strong>{{ proveedor.nombre }}</strong></p>
               </div>
-
-              <div class="d-flex gap-2 align-items-center">
-                <app-boton
-                  label="Ver historial"
-                  variante="outline"
-                  tamanio="sm"
-                  (clicked)="abrirHistorial(proveedor)">
-                </app-boton>
-              </div>
+              <app-boton
+                label="Ver historial"
+                variante="outline"
+                tamanio="sm"
+                (clicked)="abrirHistorial(proveedor)">
+              </app-boton>
             </div>
 
-            <div class="field-group field-group-wide">
-              <span>Proveedor</span>
-              <app-dropdown #proveedorDropdown>
-                <div trigger class="selector-row selector-trigger">
+            <!-- Cinta de búsqueda de producto -->
+            <div class="add-product-strip">
+              <div class="add-product-fields">
+                <!-- Buscar producto -->
+                <label class="field-group product-field flex-grow-1">
+                  <span>Buscar producto</span>
                   <input
                     type="text"
-                    class="form-control custom-input readonly-input"
-                    [value]="proveedorSeleccionadoPedido?.nombre ?? ''"
-                    readonly>
-                </div>
+                    class="form-control custom-input"
+                    placeholder="Escribí el nombre del insumo..."
+                    [ngModel]="productoTexto()"
+                    (ngModelChange)="onProductoTextoChange($event)">
 
-                <div menu>
-                  <ul class="dropdown-list">
-                    @for (item of proveedores(); track item.id) {
-                      <li (click)="cambiarProveedorDesdePedido(item, proveedorDropdown)">
-                        <strong>{{ item.nombre }}</strong>
-                        <span>{{ item.contacto }}</span>
-                      </li>
-                    }
-                  </ul>
-                </div>
-              </app-dropdown>
-            </div>
-
-            <div class="picker-grid">
-              <!-- Producto -->
-              <label class="field-group product-field">
-                <span>Producto</span>
-                <input
-                  type="text"
-                  class="form-control custom-input"
-                  placeholder="Nombre de producto"
-                  [ngModel]="productoTexto()"
-                  (ngModelChange)="onProductoTextoChange($event)">
-
-                @if (productoTexto().trim().length > 0) {
-                  <div class="predictive-list">
-                    @if (loadingInsumos()) {
-                      <div class="predictive-empty">Cargando insumos...</div>
-                    } @else if (errorInsumos()) {
-                      <div class="predictive-empty">{{ errorInsumos() }}</div>
-                    } @else if (productosFiltrados().length > 0) {
-                      @for (producto of productosFiltrados(); track producto.id) {
-                        <button type="button" class="predictive-item" (click)="seleccionarProducto(producto)">
-                          <div class="predictive-item-main">
-                            <strong>{{ producto.nombre }}</strong>
-                            <span>{{ nombreCategoria(producto.categoriaIngrediente) }}</span>
-                          </div>
-
-                          <div class="predictive-item-meta">
-                            <span>{{ producto.stockActual }} {{ nombreUnidad(producto.unidadMedida) }}</span>
-                          </div>
-                        </button>
+                  @if (productoTexto().trim().length > 0) {
+                    <div class="predictive-list">
+                      @if (loadingInsumos()) {
+                        <div class="predictive-empty">Cargando insumos...</div>
+                      } @else if (errorInsumos()) {
+                        <div class="predictive-empty">{{ errorInsumos() }}</div>
+                      } @else if (productosFiltrados().length > 0) {
+                        @for (producto of productosFiltrados(); track producto.id) {
+                          <button type="button" class="predictive-item" (click)="seleccionarProducto(producto)">
+                            <div class="predictive-item-main">
+                              <strong>{{ producto.nombre }}</strong>
+                              <span>{{ nombreCategoria(producto.categoriaIngrediente) }}</span>
+                            </div>
+                            <div class="predictive-item-meta">
+                              <span>Stock: {{ producto.stockActual }} {{ nombreUnidad(producto.unidadMedida) }}</span>
+                            </div>
+                          </button>
+                        }
+                      } @else {
+                        <div class="predictive-empty">No hay coincidencias</div>
                       }
+                    </div>
+                  }
+                </label>
+
+                <!-- Precio del proveedor (solo lectura) -->
+                <div class="field-group price-display-field">
+                  <span>Precio del proveedor</span>
+                  <div class="price-display">
+                    @if (precioProductoManual(); as precio) {
+                      <span class="price-value">${{ precio | number:'1.0-0' }}</span>
                     } @else {
-                      <div class="predictive-empty">No hay coincidencias</div>
+                      <span class="price-no-data">Sin historial</span>
                     }
                   </div>
-                }
-              </label>
+                </div>
 
-              <!-- Precio Unitario -->
-              <label class="field-group price-field">
-                <span>Precio ($)</span>
-                <input
-                  type="number"
-                  class="form-control custom-input"
-                  min="1"
-                  placeholder="Ej. 150"
-                  [ngModel]="precioProductoManual()"
-                  (ngModelChange)="precioProductoManual.set($event === null || $event === '' ? null : +$event)">
-              </label>
+                <!-- Cantidad con stepper -->
+                <div class="field-group quantity-stepper-field">
+                  <span>Cant. {{ productoBaseActual()?.unidadMedida ? '(' + nombreUnidad(productoBaseActual()!.unidadMedida) + ')' : '' }}</span>
+                  <div class="quantity-stepper">
+                    <button type="button" class="step-btn" (click)="cantidadProducto.set(Math.max((cantidadProducto() ?? 1) - 1, 1))">−</button>
+                    <input
+                      type="number"
+                      class="form-control custom-input step-input"
+                      [min]="cantidadMinimaProducto"
+                      [step]="cantidadPasoProducto"
+                      [placeholder]="cantidadPlaceholderProducto"
+                      [ngModel]="cantidadProducto()"
+                      (ngModelChange)="cantidadProducto.set($event === null || $event === '' ? null : +$event)">
+                    <button type="button" class="step-btn" (click)="cantidadProducto.set((cantidadProducto() ?? 0) + 1)">+</button>
+                  </div>
+                  @if (equivalenciaCantidad(); as equivalencia) {
+                    <strong class="quantity-equivalence">{{ equivalencia }}</strong>
+                  }
+                </div>
 
-              <!-- Cantidad -->
-              <label class="field-group quantity-field">
-                <span>Cant. {{ productoBaseActual()?.unidadMedida ? '(' + nombreUnidad(productoBaseActual()!.unidadMedida) + ')' : '' }}</span>
-                <input
-                  type="number"
-                  class="form-control custom-input"
-                  [min]="cantidadMinimaProducto"
-                  [step]="cantidadPasoProducto"
-                  [placeholder]="cantidadPlaceholderProducto"
-                  [ngModel]="cantidadProducto()"
-                  (ngModelChange)="cantidadProducto.set($event === null || $event === '' ? null : +$event)">
-                @if (equivalenciaCantidad(); as equivalencia) {
-                  <strong class="quantity-equivalence">{{ equivalencia }}</strong>
-                }
-              </label>
-
-              <!-- Confirmar -->
-              <div class="confirm-field">
-                <span class="confirm-label">Confirmar</span>
-                <app-boton
-                  label=""
-                  variante="success"
-                  tamanio="md"
-                  [disabled]="!productoTexto().trim() || !cantidadProducto() || cantidadProducto()! <= 0 || !precioProductoManual() || precioProductoManual()! <= 0"
-                  (clicked)="agregarItemPedido()">
-                  <fa-icon [icon]="faCheck"></fa-icon>
-                </app-boton>
+                <!-- Botón Añadir -->
+                <div class="field-group add-btn-field">
+                  <span>&nbsp;</span>
+                  <button
+                    type="button"
+                    class="add-item-btn"
+                    [disabled]="!productoTexto().trim() || !cantidadProducto() || cantidadProducto()! <= 0"
+                    (click)="agregarItemPedido()">
+                    <span class="material-symbols-outlined">add</span>
+                    Añadir
+                  </button>
+                </div>
               </div>
             </div>
 
-            <div class="panel-section nested-section">
-              <div class="section-header compact">
-                <div>
-                  <h3 class="section-title mb-1">Ingredientes agregados</h3>
-                  <p class="section-subtitle mb-0">Edita cantidades o elimina ítems antes de enviar el pedido.</p>
+            <!-- Carrito de ingredientes -->
+            <div class="cart-section">
+              <div class="cart-header">
+                <div class="cart-title-group">
+                  <span class="material-symbols-outlined cart-icon">shopping_basket</span>
+                  <span class="cart-title">Productos del pedido</span>
                 </div>
-
                 <span class="counter-pill small">{{ pedidoItems().length }} ítems</span>
               </div>
 
               @if (pedidoItems().length > 0) {
-                <div class="ingredients-list">
+                <div class="cart-list">
                   @for (item of pedidoItems(); track item.id) {
-                    <article class="ingredient-card">
-                      <div class="ingredient-card-top">
-                        <div>
-                          <strong>{{ item.nombre }}</strong>
-                          <div class="ingredient-meta">
-                            {{ item.cantidad }} {{ nombreUnidad(item.unidadMedida) }}
-                            @if (item.precioUnitario) {
-                              <span> • Est: ${{ item.precioUnitario | number:'1.0-0' }} c/u</span>
-                            }
-                          </div>
-                        </div>
-
-                        <app-boton
-                          label=""
-                          variante="danger"
-                          tamanio="sm"
-                          (clicked)="eliminarItemPedido(item.id)">
-                          <fa-icon [icon]="faXmark"></fa-icon>
-                        </app-boton>
+                    <div class="cart-row">
+                      <div class="cart-row-info">
+                        <strong class="cart-item-name">{{ item.nombre }}</strong>
+                        <span class="cart-item-unit">{{ nombreUnidad(item.unidadMedida) }}</span>
                       </div>
 
-                      <label class="field-group ingredient-quantity-field">
-                        <span>Cantidad</span>
-                        <input
-                          type="number"
-                          class="form-control custom-input"
-                          min="0.01"
-                          step="0.01"
-                          [ngModel]="item.cantidad"
-                          (ngModelChange)="actualizarCantidadItem(item.id, $event === null || $event === '' ? null : +$event)">
-                      </label>
-                    </article>
+                      <div class="cart-row-qty">
+                        <button type="button" class="step-btn sm" (click)="actualizarCantidadItem(item.id, Math.max((item.cantidad) - 1, 1))">−</button>
+                        <span class="qty-display">{{ item.cantidad }}</span>
+                        <button type="button" class="step-btn sm" (click)="actualizarCantidadItem(item.id, item.cantidad + 1)">+</button>
+                      </div>
+
+                      @if (item.precioUnitario) {
+                        <span class="cart-row-subtotal">${{ (item.cantidad * item.precioUnitario) | number:'1.0-0' }}</span>
+                      } @else {
+                        <span class="cart-row-subtotal no-price">—</span>
+                      }
+
+                      <button type="button" class="cart-remove-btn" title="Eliminar" (click)="eliminarItemPedido(item.id)">
+                        <span class="material-symbols-outlined">close</span>
+                      </button>
+                    </div>
                   }
                 </div>
               } @else {
-                <div class="empty-ingredients-state">
+                <div class="cart-empty-state">
+                  <span class="material-symbols-outlined cart-empty-icon">shopping_basket</span>
                   @if (loadingInsumos()) {
-                    Cargando insumos disponibles...
+                    <p>Cargando insumos disponibles...</p>
                   } @else if (errorInsumos()) {
-                    {{ errorInsumos() }}
+                    <p>{{ errorInsumos() }}</p>
                   } @else if (productos().length === 0) {
-                    Este proveedor no tiene insumos asociados.
+                    <p>Este proveedor no tiene insumos asociados.</p>
                   } @else {
-                    Todavía no agregaste ingredientes al pedido.
+                    <p>Buscá un producto arriba y hacé clic en <strong>Añadir</strong>.</p>
                   }
                 </div>
               }
             </div>
 
+            <!-- Observación + Footer -->
             <label class="field-group field-group-wide mt-3">
-              <span>Observación</span>
+              <span>Nota al proveedor <span class="optional-tag">(opcional)</span></span>
               <textarea
-                rows="3"
+                rows="2"
                 class="form-control custom-input custom-textarea"
+                placeholder="Ej: Entregar los martes a la mañana"
                 [ngModel]="observacionPedido()"
                 (ngModelChange)="observacionPedido.set($event)">
               </textarea>
             </label>
 
-            <div class="panel-footer-actions pedido-actions">
-              <div class="estimated-pill">Monto estimado: ${{ montoEstimado | number:'1.0-0' }}</div>
+            <div class="pedido-footer">
+              <app-boton
+                label="Limpiar"
+                variante="outline"
+                tamanio="md"
+                (clicked)="limpiarPedido()">
+              </app-boton>
 
-              <div class="footer-buttons">
-                <app-boton
-                  label="Limpiar"
-                  variante="outline"
-                  tamanio="md"
-                  (clicked)="limpiarPedido()">
-                </app-boton>
-
+              <div class="pedido-footer-right">
+                <div class="total-block">
+                  <span class="total-label">Total estimado</span>
+                  <span class="total-value">${{ montoEstimado | number:'1.0-0' }}</span>
+                </div>
                 <app-boton
                   label="Crear pedido"
                   variante="secondary"
@@ -366,7 +345,7 @@
           }
         </div>
       }
-    </aside>
+    </app-glass-card>
   </div>
 
   @if (pedidoHistorialSeleccionado(); as pedido) {

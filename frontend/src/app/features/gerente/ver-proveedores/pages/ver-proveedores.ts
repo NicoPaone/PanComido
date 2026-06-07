@@ -7,6 +7,7 @@ import { Buscador } from '../../../../shared/ui/buscador/buscador';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Dropdown } from '../../../../shared/ui/dropdown/dropdown';
 import { PageToolbar } from '../../../../shared/ui/page-toolbar/page-toolbar';
+import { GlassCard } from '../../../../shared/ui/glass-card/glass-card';
 import { PedidoProveedor, EstadoPedidoProveedor, Proveedor } from '../../../../core/models/domain/proveedor';
 import { Router, RouterModule } from '@angular/router';
 import { ProveedorListComponent } from '../components/proveedor-list/proveedor-list';
@@ -18,7 +19,7 @@ import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo
 @Component({
   selector: 'app-ver-proveedores',
   standalone: true,
-  imports: [DatePipe, DecimalPipe, FormsModule, FontAwesomeModule, Buscador, Boton, Dropdown, PageToolbar, ProveedorListComponent, RouterModule],
+  imports: [DatePipe, DecimalPipe, FormsModule, FontAwesomeModule, Buscador, Boton, Dropdown, PageToolbar, GlassCard, ProveedorListComponent, RouterModule],
   templateUrl: './ver-proveedores.html',
   styleUrls: ['./ver-proveedores.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -31,6 +32,7 @@ export class VerProveedoresComponent implements OnInit {
 
   // Exponer señales del State Service para que la plantilla HTML y los tests sigan funcionando sin cambios
   termino = this.state.termino;
+  filtroEstado = this.state.filtroEstado;
   proveedores = this.state.proveedores;
   productos = this.state.productos;
   proveedorSeleccionadoId = this.state.proveedorSeleccionadoId;
@@ -60,6 +62,7 @@ export class VerProveedoresComponent implements OnInit {
 
   faCheck = faCheck;
   faXmark = faXmark;
+  readonly Math = Math;
 
   ngOnInit(): void {
     this.state.cargarDatos();
@@ -77,6 +80,10 @@ export class VerProveedoresComponent implements OnInit {
 
   irARealizarPedidoSugeridoGeneral(): void {
     this.router.navigate(['/staff', 'gerente', 'realizar-pedido-sugerido']);
+  }
+
+  setFiltroEstado(estado: 'Todos' | 'Activos' | 'Inactivos'): void {
+    this.filtroEstado.set(estado);
   }
 
   irARealizarPedidoSugerido(proveedor: Proveedor): void {
