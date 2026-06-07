@@ -62,7 +62,7 @@
           <div class="cost-readonly-box">
             {{ costo() | arsCurrency }}
           </div>
-          <small class="text-muted" style="font-size: 0.75rem;">Suma de insumos de la receta x cantidad usada.</small>
+          <app-price-note text="Suma de insumos de la receta x cantidad usada." [compact]="true" />
         </div>
         
         <!-- PRICE -->

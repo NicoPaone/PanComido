@@ -1,7 +1,6 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Buscador } from '../../../../shared/ui/buscador/buscador';
-import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Plato } from '../../../../core/models/domain/plato';
 import { ListaPlatosComponent } from '../components/lista-platos/lista-platos';
 import { PageToolbar } from '../../../../shared/ui/page-toolbar/page-toolbar';
@@ -15,7 +14,6 @@ import { ModificarCartaStateService } from '../services/modificar-carta.state';
   standalone: true,
   imports: [
     Buscador, 
-    Boton, 
     ListaPlatosComponent, 
     Dropdown, 
     PageToolbar,

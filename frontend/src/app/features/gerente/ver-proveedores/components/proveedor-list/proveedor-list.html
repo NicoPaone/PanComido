@@ -10,7 +10,10 @@
 
         <div class="proveedor-info flex-grow-1 overflow-hidden">
           <div class="proveedor-nombre text-truncate">{{ proveedor.nombre }}</div>
-          <div class="proveedor-contacto text-truncate">{{ proveedor.contacto }}</div>
+          <div class="proveedor-contacto text-truncate">
+            <span class="material-symbols-outlined">call</span>
+            {{ contactoProveedor(proveedor) }}
+          </div>
         </div>
 
         <div class="proveedor-fecha">

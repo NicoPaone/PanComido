@@ -76,9 +76,17 @@
 }
 
 .proveedor-contacto {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 0.82rem;
   color: #64748b;
   margin-top: 2px;
+}
+
+.proveedor-contacto .material-symbols-outlined {
+  color: #1691ac;
+  font-size: 0.92rem;
 }
 
 /* ── Fecha / chip ── */

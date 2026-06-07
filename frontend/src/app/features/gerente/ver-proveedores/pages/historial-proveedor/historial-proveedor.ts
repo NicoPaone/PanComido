@@ -11,6 +11,7 @@ import { Insumo } from '../../../../../core/models/domain/insumo';
 import { UnidadMedida } from '../../../../../core/models/domain/unidad-medida';
 import { VerProveedoresState } from '../../services/ver-proveedores.state';
 import { ArsCurrencyPipe } from '../../../../../shared/pipes/ars-currency.pipe';
+import { PriceNoteComponent } from '../../../../../shared/ui/price-note/price-note';
 
 interface IngredientePickerItem {
   id: string;
@@ -23,7 +24,7 @@ interface IngredientePickerItem {
 @Component({
   selector: 'app-historial-proveedor',
   standalone: true,
-  imports: [DatePipe, FormsModule, FontAwesomeModule, Boton, PageToolbar, ArsCurrencyPipe],
+  imports: [DatePipe, FormsModule, FontAwesomeModule, Boton, PageToolbar, ArsCurrencyPipe, PriceNoteComponent],
   templateUrl: './historial-proveedor.html',
   styleUrls: ['./historial-proveedor.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -49,6 +50,18 @@ export class HistorialProveedorComponent implements OnInit {
   productoSeleccionadoId = signal('');
   cantidadIngrediente = signal(1);
   precioIngrediente = signal<number | null>(null);
+
+  totalHistorial = computed(() =>
+    this.historialProveedor().reduce((total, pedido) => total + pedido.monto, 0)
+  );
+
+  pedidosPendientes = computed(() =>
+    this.historialProveedor().filter(pedido => pedido.estado === 'Pendiente').length
+  );
+
+  totalItemsHistorial = computed(() =>
+    this.historialProveedor().reduce((total, pedido) => total + pedido.items.length, 0)
+  );
 
   ingredientesParaAgregar = computed<IngredientePickerItem[]>(() => {
     const texto = this.busquedaIngrediente().toLowerCase().trim();

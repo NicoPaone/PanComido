@@ -124,15 +124,6 @@
   padding: 4px 0;
 }
 
-.cost-explain {
-  display: block;
-  margin-top: 0.55rem;
-  color: #8a5a22;
-  font-size: 0.76rem;
-  font-weight: 700;
-  line-height: 1.25;
-}
-
 /* === SOFT BUTTONS === */
 ::ng-deep .btn-soft {
   border: none;

@@ -1290,11 +1290,3 @@
   transform: translateY(-2px);
   box-shadow: 0 5px 12px rgba(249, 115, 22, 0.12);
 }
-.price-helper {
-  display: block;
-  margin-top: 0.25rem;
-  color: #64748b;
-  font-size: 0.72rem;
-  font-weight: 700;
-  line-height: 1.2;
-}

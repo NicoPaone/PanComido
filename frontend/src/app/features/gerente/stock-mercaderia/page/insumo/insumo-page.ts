@@ -11,13 +11,14 @@ import { BodegaState } from '../../services/bodegas/bodega-state';
 import { ProductoForm } from "../../components/producto-form/producto-form";
 import { Insumo, LoteInsumo } from '../../../../../core/models/domain/insumo';
 import { CrearInsumo } from '../../../../../core/models/domain/insumo';
+import { PriceNoteComponent } from '../../../../../shared/ui/price-note/price-note';
 
 type EstadoStockFiltro = 'todos' | 'criticos' | 'bajos' | 'ok';
 
 @Component({
   selector: 'app-insumo',
   standalone: true,
-  imports: [InsumoList, CommonModule, Boton, PageToolbar, Buscador, Dropdown, Modal, ProductoForm],
+  imports: [InsumoList, CommonModule, Boton, PageToolbar, Buscador, Dropdown, Modal, ProductoForm, PriceNoteComponent],
   templateUrl: './insumo-page.html',
   styleUrl: './insumo-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

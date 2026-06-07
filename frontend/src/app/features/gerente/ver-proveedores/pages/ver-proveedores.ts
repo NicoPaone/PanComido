@@ -16,11 +16,12 @@ import { VerProveedoresState } from '../services/ver-proveedores.state';
 import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
 import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo';
 import { ArsCurrencyPipe } from '../../../../shared/pipes/ars-currency.pipe';
+import { PriceNoteComponent } from '../../../../shared/ui/price-note/price-note';
 
 @Component({
   selector: 'app-ver-proveedores',
   standalone: true,
-  imports: [DatePipe, FormsModule, FontAwesomeModule, Buscador, Boton, Dropdown, PageToolbar, GlassCard, ProveedorListComponent, RouterModule, ArsCurrencyPipe],
+  imports: [DatePipe, FormsModule, FontAwesomeModule, Buscador, Boton, Dropdown, PageToolbar, GlassCard, ProveedorListComponent, RouterModule, ArsCurrencyPipe, PriceNoteComponent],
   templateUrl: './ver-proveedores.html',
   styleUrls: ['./ver-proveedores.css'],
   changeDetection: ChangeDetectionStrategy.OnPush

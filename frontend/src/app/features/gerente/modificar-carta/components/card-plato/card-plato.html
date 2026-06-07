@@ -2,7 +2,7 @@
      [class.disabled-card]="!plato().visible"
      [class.exploding-card]="isExploding()"
      [class.recommended-card]="plato().recomendado"
-     [class.is-bebida]="(plato().categoria?.toLowerCase() || '').includes('bebida') || (plato().tipo?.toLowerCase() || '').includes('bebida') || !!plato().bebida"
+     [class.is-bebida]="(plato().categoria?.toLowerCase() || '').includes('bebida') || plato().tipo.toLowerCase().includes('bebida') || !!plato().bebida"
      [class.list-layout]="layoutMode() === 'list'">
   
   @if (layoutMode() === 'grid') {
@@ -46,7 +46,7 @@
             {{ plato().ventas || 0 }} vtas
           </span>
         </div>
-        <span class="cost-explain">Costo calculado por receta: suma de insumos x cantidad usada.</span>
+        <app-price-note text="Costo calculado por receta: suma de insumos x cantidad usada." [compact]="true" />
       </div>
       
       <!-- FOOTER -->

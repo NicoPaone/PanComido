@@ -141,13 +141,6 @@
   font-size: 1rem;
 }
 
-.stock-price-note {
-  margin: 0.16rem 0 0;
-  color: #64748b;
-  font-size: 0.78rem;
-  font-weight: 700;
-}
-
 .stock-metrics {
   display: flex;
   flex-wrap: wrap;
@@ -424,6 +417,7 @@
   ::ng-deep .stock-page .page-toolbar {
     align-items: stretch;
     max-width: none;
+    gap: 0.75rem;
   }
 
   ::ng-deep .stock-page .toolbar-search {
@@ -433,17 +427,38 @@
 
   ::ng-deep .stock-page .toolbar-actions {
     width: 100%;
-    flex-wrap: nowrap;
+    display: grid;
+    grid-template-columns: minmax(118px, 0.8fr) minmax(0, 1.45fr);
+    gap: 0.55rem;
+    align-items: stretch;
   }
 
   ::ng-deep .stock-page .toolbar-actions app-dropdown {
-    flex: 1 1 auto;
+    display: block;
+    width: 100%;
     min-width: 0;
   }
 
   ::ng-deep .stock-page [acciones] {
-    flex: 0 0 auto;
+    width: 100%;
     margin-left: 0;
+  }
+
+  ::ng-deep .stock-page .toolbar-actions .dropdown-container,
+  ::ng-deep .stock-page .toolbar-actions .dropdown-trigger,
+  ::ng-deep .stock-page app-dropdown[filtros] app-boton,
+  ::ng-deep .stock-page app-dropdown[filtros] .btn,
+  ::ng-deep .stock-page app-dropdown[filtros] button {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  ::ng-deep .stock-page app-dropdown[filtros] .btn,
+  ::ng-deep .stock-page app-dropdown[filtros] button,
+  .btn-premium-primary {
+    min-height: 40px !important;
+    justify-content: center;
+    white-space: nowrap;
   }
 
   .btn-premium-primary {

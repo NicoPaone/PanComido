@@ -270,7 +270,7 @@
                         <span class="price-no-data">Sin historial de precio</span>
                       }
                     </div>
-                    <small class="price-helper">Último precio de compra registrado para este proveedor.</small>
+                    <app-price-note text="Último precio de compra registrado para este proveedor." [compact]="true" />
                   </div>
 
                   <!-- Cantidad con stepper -->
@@ -393,7 +393,7 @@
                 <div class="total-block">
                   <span class="total-label">Total estimado</span>
                   <span class="total-value">{{ montoEstimado | arsCurrency }}</span>
-                  <small class="price-helper">Cantidad x precio c/u de compra.</small>
+                  <app-price-note text="Cantidad x precio c/u de compra." [compact]="true" />
                 </div>
                 <app-boton
                   label="Crear pedido"

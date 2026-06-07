@@ -2,11 +2,12 @@ import { Component, output, input, ChangeDetectionStrategy } from '@angular/core
 import { Plato } from '../../../../../core/models/domain/plato';
 import { ToggleComponent } from '../../../../../shared/ui/toggle/toggle';
 import { ArsCurrencyPipe } from '../../../../../shared/pipes/ars-currency.pipe';
+import { PriceNoteComponent } from '../../../../../shared/ui/price-note/price-note';
 
 @Component({
   selector: 'app-card-plato',
   standalone: true,
-  imports: [ToggleComponent, ArsCurrencyPipe],
+  imports: [ToggleComponent, ArsCurrencyPipe, PriceNoteComponent],
   templateUrl: './card-plato.html',
   styleUrls: ['./card-plato.css'],
   changeDetection: ChangeDetectionStrategy.OnPush

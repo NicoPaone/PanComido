@@ -8,73 +8,15 @@ import { Insumo } from '../../../../core/models/domain/insumo';
 import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo';
 import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
 import { Bodega } from '../../../../core/models/domain/bodega';
-
-interface ProveedorResponseDto {
-  id: number;
-  nombre: string | null;
-  numeroTelefonoWsp: string | null;
-  numeroTelefonoWSP?: string | null;
-  telefono?: string | null;
-  email?: string | null;
-  correo?: string | null;
-  fechaUltimoPedido: string | null;
-  categorias: string[] | null;
-}
-
-interface PedidoInsumoResponseDto {
-  insumoId: number;
-  nombreInsumo: string | null;
-  cantidad: number;
-  precioCompra: number;
-}
-
-interface PedidoResponseDto {
-  id: number;
-  fecha: string | null;
-  estado: string | null;
-  itemsInsumo: PedidoInsumoResponseDto[] | null;
-}
-
-interface CrearPedidoResponseDto extends PedidoResponseDto {
-  proveedorId: number;
-  proveedorNombre: string | null;
-  proveedorTelefono: string | null;
-}
-
-interface CrearPedidoRequestDto {
-  items: {
-    insumoId: number;
-    cantidad: number;
-    precioCompra: number;
-  }[];
-}
-
-interface ConfirmarPedidoResponseDto {
-  pedidoConfirmado: PedidoResponseDto;
-  linkWpp: string;
-}
-
-interface PreRecepcionItemResponseDto {
-  insumoId: number;
-  nombreInsumo: string | null;
-  cantidad: number;
-  nombreLote: string | null;
-  bodegaIdSug: number;
-  fechaVencimientoSug: string | null;
-}
-
-interface InsumoResponseDto {
-  id: number;
-  nombre: string | null;
-  stockActual: number;
-  unidadMedida: string | null;
-  vencimiento: string | null;
-  stockMinimo: number;
-  precioVentaFinal?: number;
-  estadoStock: string | null;
-  tipo: string | null;
-  categoria: string | null;
-}
+import { InsumoResponseDto } from '../../../../core/models/dtos/responses/insumo.response';
+import {
+  ConfirmarPedidoResponseDto,
+  CrearPedidoResponseDto,
+  PedidoResponseDto,
+  PreRecepcionItemResponseDto,
+  ProveedorResponseDto,
+} from '../../../../core/models/dtos/responses/proveedor.response';
+import { CrearPedidoProveedorRequestDto } from '../../../../core/models/dtos/requests/crear-pedido-proveedor.request';
 
 @Injectable({ providedIn: 'root' })
 export class VerProveedoresApiService {
@@ -116,7 +58,7 @@ export class VerProveedoresApiService {
             ...dto,
             stockActual,
             vencimiento: dto.vencimiento || insumoConStock?.vencimiento || null,
-            estadoStock: dto.estadoStock || insumoConStock?.estadoStock || null
+            estadoStock: dto.estadoStock || insumoConStock?.estadoStock || ''
           });
         });
       })
@@ -130,11 +72,13 @@ export class VerProveedoresApiService {
   }
 
   private mapProveedor(dto: ProveedorResponseDto): Proveedor {
+    const telefono = dto.numeroTelefonoWsp ?? dto.numeroTelefonoWSP ?? dto.telefono ?? '';
+
     return {
       id: dto.id,
       nombre: dto.nombre ?? 'Sin Nombre',
       contacto: dto.nombre ?? 'Sin Contacto',
-      telefono: dto.numeroTelefonoWsp ?? '',
+      telefono,
       email: dto.email ?? dto.correo ?? '',
       direccion: '', 
       activo: true,
@@ -144,7 +88,7 @@ export class VerProveedoresApiService {
   }
 
   confirmarPedido(pedido: PedidoProveedor): Observable<{ pedido: PedidoProveedor; linkWpp: string }> {
-return this.api.put<ConfirmarPedidoResponseDto>(`pedido-proveedor/${pedido.id}/confirmar`, {
+    return this.api.put<ConfirmarPedidoResponseDto>(`pedido-proveedor/${pedido.id}/confirmar`, {
       listaInsumosPedido: pedido.items.map(item => ({
         insumoId: Number(item.id),
         cantidad: item.cantidad,
@@ -172,7 +116,7 @@ return this.api.put<ConfirmarPedidoResponseDto>(`pedido-proveedor/${pedido.id}/c
   }
 
   recibirPedido(pedidoId: number | string, items: RecepcionPedidoItem[]): Observable<unknown> {
-return this.api.put<unknown>(`pedido-proveedor/${pedidoId}/recibir`, {
+    return this.api.put<unknown>(`pedido-proveedor/${pedidoId}/recibir`, {
       itemsPedidoRecibido: items.map(item => ({
         insumoId: item.insumoId,
         nombreLote: item.nombreLote,
@@ -187,7 +131,7 @@ return this.api.put<unknown>(`pedido-proveedor/${pedidoId}/recibir`, {
     return this.api.get<Bodega[]>('Bodega');
   }
 
-  private mapCrearPedidoRequest(pedido: PedidoProveedorRequest): CrearPedidoRequestDto {
+  private mapCrearPedidoRequest(pedido: PedidoProveedorRequest): CrearPedidoProveedorRequestDto {
     return {
       items: pedido.items.map(item => ({
         insumoId: Number(item.id),
@@ -197,7 +141,7 @@ return this.api.put<unknown>(`pedido-proveedor/${pedidoId}/recibir`, {
     };
   }
 
- private mapPedido(dto: PedidoResponseDto): PedidoProveedor {
+  private mapPedido(dto: PedidoResponseDto): PedidoProveedor {
     const items = dto.itemsInsumo ?? [];
     return {
       id: dto.id,
@@ -220,6 +164,7 @@ return this.api.put<unknown>(`pedido-proveedor/${pedidoId}/recibir`, {
       }))
     };
   }
+
   private mapInsumo(dto: InsumoResponseDto): Insumo {
    
     return {
