@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy, computed, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FormsModule } from '@angular/forms';
@@ -10,6 +10,7 @@ import { PedidoProveedor, EstadoPedidoProveedor } from '../../../../../core/mode
 import { Insumo } from '../../../../../core/models/domain/insumo';
 import { UnidadMedida } from '../../../../../core/models/domain/unidad-medida';
 import { VerProveedoresState } from '../../services/ver-proveedores.state';
+import { ArsCurrencyPipe } from '../../../../../shared/pipes/ars-currency.pipe';
 
 interface IngredientePickerItem {
   id: string;
@@ -22,7 +23,7 @@ interface IngredientePickerItem {
 @Component({
   selector: 'app-historial-proveedor',
   standalone: true,
-  imports: [DatePipe, DecimalPipe, FormsModule, FontAwesomeModule, Boton, PageToolbar],
+  imports: [DatePipe, FormsModule, FontAwesomeModule, Boton, PageToolbar, ArsCurrencyPipe],
   templateUrl: './historial-proveedor.html',
   styleUrls: ['./historial-proveedor.css'],
   changeDetection: ChangeDetectionStrategy.OnPush

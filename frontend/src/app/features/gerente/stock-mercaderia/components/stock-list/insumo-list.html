@@ -11,6 +11,7 @@
       <span>Categoría</span>
       <span class="text-end">Stock</span>
       <span class="text-end">Mínimo</span>
+      <span class="text-end">Precio venta</span>
       <span>Vencimiento</span>
       <span>Estado</span>
       <span class="text-end">Acción</span>
@@ -34,6 +35,7 @@
         <div class="stock-cell">{{ fila.categoria }}</div>
         <div class="stock-cell text-end strong-number">{{ fila.stock }}</div>
         <div class="stock-cell text-end">{{ fila.minimo }}</div>
+        <div class="stock-cell text-end">{{ fila.precioVentaFinal | arsCurrency }}</div>
         <div class="stock-cell">{{ fila.vencimiento }}</div>
         <div class="stock-cell">
           <span

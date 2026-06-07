@@ -5,6 +5,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { Insumo } from '../../../../../core/models/domain/insumo';
+import { ArsCurrencyPipe } from '../../../../../shared/pipes/ars-currency.pipe';
 
 type StockStatus = 'critical' | 'warning' | 'success';
 
@@ -14,6 +15,7 @@ interface StockRow {
   categoria: string;
   stock: string;
   minimo: string;
+  precioVentaFinal: number;
   vencimiento: string;
   estado: StockStatus;
   estadoLabel: string;
@@ -22,7 +24,7 @@ interface StockRow {
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-insumo-list',
-  imports: [CommonModule, ScrollingModule],
+  imports: [CommonModule, ScrollingModule, ArsCurrencyPipe],
   templateUrl: './insumo-list.html',
   styleUrl: './insumo-list.css',
 })
@@ -33,7 +35,7 @@ export class InsumoList {
   private readonly breakpointObserver = inject(BreakpointObserver);
   readonly itemSize = toSignal(
     this.breakpointObserver.observe('(max-width: 820px)').pipe(
-      map((result) => result.matches ? 152 : 56),
+      map((result) => result.matches ? 180 : 56),
     ),
     { initialValue: 56 },
   );
@@ -54,6 +56,7 @@ export class InsumoList {
       categoria: item.categoriaIngrediente?.descripcion || 'Sin categoría',
       stock: `${item.stockActual} ${unidad}`.trim(),
       minimo: `${item.stockMinimo} ${unidad}`.trim(),
+      precioVentaFinal: item.precioVentaFinal ?? 0,
       vencimiento: this.formatearFecha(item.vencimiento),
       estado,
       estadoLabel: this.estadoLabel(estado),

@@ -14,11 +14,12 @@ import { VencimientosState } from '../../aviso-vencimientos/services/vencimiento
 import { AvisosStateService } from '../services/avisos.state';
 import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
 import { RealizarPedidoSugeridoStateService } from '../../realizar-pedido-sugerido/services/realizar-pedido-sugerido.state';
+import { ArsCurrencyPipe } from '../../../../shared/pipes/ars-currency.pipe';
 
 @Component({
   selector: 'app-avisos',
   standalone: true,
-  imports: [CommonModule, DatePipe, PageToolbar, Boton, Buscador],
+  imports: [CommonModule, DatePipe, PageToolbar, Boton, Buscador, ArsCurrencyPipe],
   templateUrl: './avisos.html',
   styleUrls: ['./avisos.css'],
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -5,6 +5,7 @@ export interface InsumoStockCriticoDto {
   unidadMedida: string;
   vencimiento?: string | null;
   stockMinimo: number;
+  precioVentaFinal?: number;
   estadoStock: string;
   tipo: string;
   categoria?: string | null;

@@ -12,6 +12,7 @@ export function mapAvisosResponseToDomain(dto: AvisosResponseDto, insumosMap: Ma
       unidadMedida: insumo.unidadMedida,
       vencimiento: insumo.vencimiento,
       stockMinimo: insumo.stockMinimo,
+      precioVentaFinal: insumo.precioVentaFinal ?? 0,
       estadoStock: insumo.estadoStock,
       tipo: insumo.tipo,
       categoria: insumo.categoria,
@@ -40,6 +41,7 @@ export function mapAvisosResponseToDomain(dto: AvisosResponseDto, insumosMap: Ma
         cantidad: lote.cantidad,
         fechaVencimiento: lote.fechaVencimiento,
         bodegaId: lote.bodegaId,
+        precioVentaFinal: insumoData?.precioVentaFinal ?? 0,
       };
       vencimientos.push({
         id: lote.id.toString(),

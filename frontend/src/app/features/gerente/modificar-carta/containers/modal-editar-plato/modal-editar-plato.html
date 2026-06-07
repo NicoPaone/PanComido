@@ -59,15 +59,10 @@
         <!-- COST -->
         <div class="col-6">
           <label class="form-label soft-label">Costo Total</label>
-          <div class="input-group soft-input-group readonly">
-            <span class="input-group-text fw-bold text-muted">$</span>
-            <input 
-              type="number" 
-              class="form-control soft-input text-muted" 
-              [ngModel]="costo()" 
-              readonly>
+          <div class="cost-readonly-box">
+            {{ costo() | arsCurrency }}
           </div>
-          <small class="text-muted" style="font-size: 0.75rem;">Calculado de receta</small>
+          <small class="text-muted" style="font-size: 0.75rem;">Suma de insumos de la receta x cantidad usada.</small>
         </div>
         
         <!-- PRICE -->

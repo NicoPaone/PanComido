@@ -173,7 +173,7 @@
                     </div>
                     <div class="history-card-side">
                       <span class="estado-pill" [class]="getEstadoClase(pedido.estado)">{{ pedido.estado }}</span>
-                      <strong>${{ pedido.monto | number:'1.0-0' }}</strong>
+                      <strong>{{ pedido.monto | arsCurrency }}</strong>
                     </div>
                   </button>
                 }
@@ -265,11 +265,12 @@
                     <span>Precio del proveedor</span>
                     <div class="price-display">
                       @if (precioProductoManual(); as precio) {
-                        <span class="price-value">${{ precio | number:'1.0-0' }}</span>
+                        <span class="price-value">{{ precio | arsCurrency }}</span>
                       } @else {
                         <span class="price-no-data">Sin historial de precio</span>
                       }
                     </div>
+                    <small class="price-helper">Último precio de compra registrado para este proveedor.</small>
                   </div>
 
                   <!-- Cantidad con stepper -->
@@ -341,7 +342,7 @@
                       </div>
 
                       @if (item.precioUnitario) {
-                        <span class="cart-row-subtotal">${{ (item.cantidad * item.precioUnitario) | number:'1.0-0' }}</span>
+                        <span class="cart-row-subtotal">{{ (item.cantidad * item.precioUnitario) | arsCurrency }}</span>
                       } @else {
                         <span class="cart-row-subtotal no-price">—</span>
                       }
@@ -391,7 +392,8 @@
               <div class="pedido-footer-right">
                 <div class="total-block">
                   <span class="total-label">Total estimado</span>
-                  <span class="total-value">${{ montoEstimado | number:'1.0-0' }}</span>
+                  <span class="total-value">{{ montoEstimado | arsCurrency }}</span>
+                  <small class="price-helper">Cantidad x precio c/u de compra.</small>
                 </div>
                 <app-boton
                   label="Crear pedido"
@@ -448,13 +450,13 @@
           <div class="pedido-modal-summary-row">
             <span>{{ pedido.items.length }} ítems</span>
             <span class="summary-dot">•</span>
-            <strong class="summary-amount">Monto: ${{ pedido.monto | number:'1.0-0' }}</strong>
+            <strong class="summary-amount">Monto: {{ pedido.monto | arsCurrency }}</strong>
           </div>
 
           <div class="pedido-modal-grid">
             <article class="pedido-modal-info">
               <span class="info-label">Monto</span>
-              <strong>${{ pedido.monto | number:'1.0-0' }}</strong>
+              <strong>{{ pedido.monto | arsCurrency }}</strong>
             </article>
 
             <article class="pedido-modal-info">
@@ -478,7 +480,7 @@
                   <div class="history-date">
                     ID: {{ item.id }}
                     @if (item.precioUnitario) {
-                      <span> • Precio: ${{ item.precioUnitario | number:'1.0-0' }} c/u</span>
+                      <span> • Precio: {{ item.precioUnitario | arsCurrency }} c/u</span>
                     }
                   </div>
                 </div>

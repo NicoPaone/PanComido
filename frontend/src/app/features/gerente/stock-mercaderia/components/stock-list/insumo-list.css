@@ -15,13 +15,14 @@
 
 .stock-grid-head,
 .stock-row {
-  min-width: 900px;
+  min-width: 1020px;
   display: grid;
   grid-template-columns:
     minmax(170px, 1.24fr)
     minmax(180px, 1.18fr)
     minmax(96px, 0.7fr)
     minmax(96px, 0.7fr)
+    minmax(120px, 0.82fr)
     minmax(120px, 0.82fr)
     minmax(92px, 0.62fr)
     64px;
@@ -48,7 +49,7 @@
 
 .stock-viewport {
   width: 100%;
-  min-width: 900px;
+  min-width: 1020px;
   height: min(620px, calc(100vh - 330px));
   min-height: 312px;
   background: rgba(255, 255, 255, 0.7);
@@ -206,11 +207,12 @@
   .stock-row {
     width: 100%;
     min-width: 0;
-    height: 136px;
+    height: 164px;
     grid-template-columns: 1fr auto;
     grid-template-areas:
       "product status"
       "stock action"
+      "price action"
       "category action"
       "expiry min";
     gap: 0.48rem 0.78rem;
@@ -272,6 +274,24 @@
   }
 
   .stock-cell:nth-child(5) {
+    grid-area: price;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    color: #9a3412;
+    font-weight: 900;
+    text-align: left;
+  }
+
+  .stock-cell:nth-child(5)::before {
+    content: "Precio";
+    color: #64748b;
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .stock-cell:nth-child(6) {
     grid-area: expiry;
     align-self: center;
     justify-self: start;
@@ -279,17 +299,17 @@
     text-align: left;
   }
 
-  .stock-cell:nth-child(5)::before {
+  .stock-cell:nth-child(6)::before {
     content: "Vence ";
     font-weight: 900;
   }
 
-  .stock-cell:nth-child(6) {
+  .stock-cell:nth-child(7) {
     grid-area: status;
     justify-self: end;
   }
 
-  .stock-cell:nth-child(7) {
+  .stock-cell:nth-child(8) {
     grid-area: action;
   }
 

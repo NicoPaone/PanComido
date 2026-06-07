@@ -81,7 +81,7 @@
                 </span>
               </div>
               <div class="history-meta">
-                <span>${{ pedido.monto | number:'1.0-0' }}</span>
+                <span>{{ pedido.monto | arsCurrency }}</span>
                 <span>{{ pedido.observacion }}</span>
                 <span class="history-items">{{ pedido.items.length }} ítems</span>
               </div>
@@ -132,13 +132,13 @@
       <div class="pedido-modal-summary-row">
         <span>{{ pedido.items.length }} ítems</span>
         <span class="summary-dot">•</span>
-        <strong class="summary-amount">Monto: ${{ pedido.monto | number:'1.0-0' }}</strong>
+        <strong class="summary-amount">Monto: {{ pedido.monto | arsCurrency }}</strong>
       </div>
 
       <div class="pedido-modal-grid">
         <article class="pedido-modal-info">
           <span class="info-label">Monto</span>
-          <strong>${{ pedido.monto | number:'1.0-0' }}</strong>
+          <strong>{{ pedido.monto | arsCurrency }}</strong>
         </article>
         <article class="pedido-modal-info">
           <span class="info-label">Ítems</span>
@@ -158,7 +158,7 @@
               <strong>{{ item.nombre }}</strong>
               <div class="history-date">
                 @if (item.precioUnitario) {
-                  Precio: ${{ item.precioUnitario | number:'1.0-0' }} c/u
+                  Precio: {{ item.precioUnitario | arsCurrency }} c/u
                 }
               </div>
             </div>

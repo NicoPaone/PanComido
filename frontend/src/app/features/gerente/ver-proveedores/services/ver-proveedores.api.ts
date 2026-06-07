@@ -70,6 +70,7 @@ interface InsumoResponseDto {
   unidadMedida: string | null;
   vencimiento: string | null;
   stockMinimo: number;
+  precioVentaFinal?: number;
   estadoStock: string | null;
   tipo: string | null;
   categoria: string | null;
@@ -227,6 +228,7 @@ return this.api.put<unknown>(`pedido-proveedor/${pedidoId}/recibir`, {
       stockActual: dto.stockActual,
       vencimiento: this.normalizarFecha(dto.vencimiento) ?? '',
       stockMinimo: dto.stockMinimo,
+      precioVentaFinal: dto.precioVentaFinal ?? 0,
       
       unidadMedida: { 
         id: 0, 

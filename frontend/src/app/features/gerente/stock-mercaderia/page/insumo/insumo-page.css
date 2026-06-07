@@ -141,6 +141,13 @@
   font-size: 1rem;
 }
 
+.stock-price-note {
+  margin: 0.16rem 0 0;
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 .stock-metrics {
   display: flex;
   flex-wrap: wrap;

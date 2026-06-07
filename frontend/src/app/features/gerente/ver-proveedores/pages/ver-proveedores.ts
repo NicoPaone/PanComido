@@ -1,4 +1,4 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Component, OnInit, inject, ElementRef, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -15,11 +15,12 @@ import { Insumo as ProductoStockMock } from '../../../../core/models/domain/insu
 import { VerProveedoresState } from '../services/ver-proveedores.state';
 import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
 import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo';
+import { ArsCurrencyPipe } from '../../../../shared/pipes/ars-currency.pipe';
 
 @Component({
   selector: 'app-ver-proveedores',
   standalone: true,
-  imports: [DatePipe, DecimalPipe, FormsModule, FontAwesomeModule, Buscador, Boton, Dropdown, PageToolbar, GlassCard, ProveedorListComponent, RouterModule],
+  imports: [DatePipe, FormsModule, FontAwesomeModule, Buscador, Boton, Dropdown, PageToolbar, GlassCard, ProveedorListComponent, RouterModule, ArsCurrencyPipe],
   templateUrl: './ver-proveedores.html',
   styleUrls: ['./ver-proveedores.css'],
   changeDetection: ChangeDetectionStrategy.OnPush

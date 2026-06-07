@@ -8,11 +8,12 @@ import { Buscador } from '../../../../../shared/ui/buscador/buscador';
 import { calcularCostoReceta } from '../../../services/plato.service';
 import { Insumo } from '../../../../../core/models/domain/insumo';
 import { ModificarCartaApiService } from '../../services/modificar-carta.api';
+import { ArsCurrencyPipe } from '../../../../../shared/pipes/ars-currency.pipe';
 
 @Component({
   selector: 'app-modal-editar-plato',
   standalone: true,
-  imports: [FormsModule, Boton, ToggleComponent, Buscador],
+  imports: [FormsModule, Boton, ToggleComponent, Buscador, ArsCurrencyPipe],
   templateUrl: './modal-editar-plato.html',
   styleUrls: ['./modal-editar-plato.css'],
   changeDetection: ChangeDetectionStrategy.OnPush

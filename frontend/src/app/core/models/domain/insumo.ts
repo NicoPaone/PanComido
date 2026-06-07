@@ -9,6 +9,7 @@ export interface Insumo {
   unidadMedida: UnidadMedida;
   categoriaIngrediente: CategoriaInsumo;
   stockMinimo: number;
+  precioVentaFinal?: number;
 }
 
 export interface CrearInsumo {

@@ -256,6 +256,9 @@
               <span class="aviso-item-title">{{ a.titulo }}</span>
               <span class="aviso-item-sub">{{ a.subtitulo }}</span>
               <span class="aviso-item-info">{{ a.info }}</span>
+              @if (a.payloadStock?.precioVentaFinal) {
+                <span class="aviso-item-info">Precio venta: {{ a.payloadStock!.precioVentaFinal | arsCurrency }}</span>
+              }
             </div>
             <div class="aviso-item-actions">
               <app-boton variante="warning" tamanio="sm" (clicked)="abrirPedidoStock(a)">
@@ -313,6 +316,9 @@
               <span class="aviso-item-title">{{ a.titulo }}</span>
               <span class="aviso-item-sub">{{ a.subtitulo }}</span>
               <span class="aviso-item-info">{{ a.info }}</span>
+              @if (a.payloadVencimiento?.precioVentaFinal) {
+                <span class="aviso-item-info">Precio venta: {{ a.payloadVencimiento!.precioVentaFinal | arsCurrency }}</span>
+              }
             </div>
             <div class="aviso-item-actions">
               <app-boton variante="success" tamanio="sm" (clicked)="$event.stopPropagation(); state.avisarCocina(a.id)">
