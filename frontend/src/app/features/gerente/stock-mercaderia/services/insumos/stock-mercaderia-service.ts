@@ -1,8 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from '../../../../../core/services/api-service';
 import { map, Observable } from 'rxjs';
-import { Insumo } from '../../../../../core/models/domain/insumo';
+import { Insumo, LoteInsumo } from '../../../../../core/models/domain/insumo';
 import { InsumoResponseDto } from '../../../../../core/models/dtos/responses/insumo.response';
+import { LoteResponseDto } from '../../../../../core/models/dtos/responses/lote.response';
 import { CrearInsumoRequest } from '../../../../../core/models/dtos/requests/crear-insumo.request';
 
 
@@ -23,6 +24,19 @@ export class StockMercaderiaService {
   getById(id: number): Observable<Insumo> {
     return this.api.get<InsumoResponseDto>(`${this.endpoint}/${id}`).pipe(
       map(mapInsumoDtoToDomain)
+    );
+  }
+
+  getLotes(): Observable<LoteInsumo[]> {
+    return this.api.get<LoteResponseDto[]>(`${this.endpoint}/lotes`).pipe(
+      map(dtos => dtos.map(dto => ({
+        id: dto.id,
+        nombre: dto.nombre,
+        insumoId: dto.insumoId,
+        cantidad: dto.cantidad,
+        fechaVencimiento: dto.fechaVencimiento,
+        bodegaId: dto.bodegaId
+      })))
     );
   }
 

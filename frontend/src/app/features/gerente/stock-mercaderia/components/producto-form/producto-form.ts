@@ -22,7 +22,7 @@ export const stockMinimoValidator: ValidatorFn = (control: AbstractControl): Val
   selector: 'app-producto-form',
   imports: [ReactiveFormsModule],
   templateUrl: './producto-form.html',
-  styleUrl: './producto-form.css',
+  styleUrls: ['./producto-form.css'],
 })
 export class ProductoForm {
   private fb = inject(FormBuilder);

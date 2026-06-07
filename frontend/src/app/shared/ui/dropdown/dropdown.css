@@ -16,10 +16,28 @@
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
-  min-width: 160px;
+  min-width: 180px;
+  max-height: 280px;
   z-index: 100;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   box-shadow: 0 10px 25px rgba(15, 23, 42, 0.1);
+}
+
+/* Scrollbar styling for a cleaner look */
+.dropdown-menu-container::-webkit-scrollbar {
+  width: 6px;
+}
+.dropdown-menu-container::-webkit-scrollbar-track {
+  background: transparent;
+  margin-block: 4px;
+}
+.dropdown-menu-container::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.4);
+  border-radius: 10px;
+}
+.dropdown-menu-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(148, 163, 184, 0.7);
 }
 
 ::ng-deep .dropdown-menu-container ul {

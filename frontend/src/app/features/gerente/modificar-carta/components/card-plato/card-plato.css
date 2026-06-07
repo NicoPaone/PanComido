@@ -8,8 +8,7 @@
 /* === CARD WRAPPER === */
 ::ng-deep .dish-card-wrapper {
   background-color: #ffffff;
-  /* Efecto Tinted Naranja desde abajo (Más intenso) */
-  background: linear-gradient(to top, rgba(245, 158, 11, 0.11) 0%, rgba(245, 158, 11, 0.06) 30%, #ffffff 100%);
+  background: linear-gradient(to top, rgba(245, 158, 11, 0.075) 0%, rgba(245, 158, 11, 0.025) 32%, #ffffff 100%);
   border-radius: 16px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
   border: 1px solid #e2e8f0;
@@ -22,8 +21,8 @@
 
 ::ng-deep .dish-card-wrapper:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
-  border-color: rgba(2, 89, 108, 0.15);
+  box-shadow: 0 15px 30px rgba(15, 23, 42, 0.08);
+  border-color: rgba(245, 158, 11, 0.22);
 }
 
 ::ng-deep .dish-card-wrapper.exploding-card {
@@ -214,7 +213,7 @@
 
 /* === LIST LAYOUT FLAT OVERRIDE === */
 ::ng-deep .dish-card-wrapper.list-layout {
-  background: linear-gradient(to right, rgba(245, 158, 11, 0.15) 0%, rgba(231, 150, 10, 0.05) 20%, #ffffff 100%) !important;
+  background: linear-gradient(to right, rgba(245, 158, 11, 0.095) 0%, rgba(245, 158, 11, 0.03) 22%, #ffffff 100%) !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03) !important;
   border: 1px solid #f1f5f9;
   border-radius: 12px;

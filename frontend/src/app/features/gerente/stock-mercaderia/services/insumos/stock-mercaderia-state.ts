@@ -1,6 +1,6 @@
 import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Insumo, CrearInsumo } from '../../../../../core/models/domain/insumo';
+import { Insumo, CrearInsumo, LoteInsumo } from '../../../../../core/models/domain/insumo';
 import { StockMercaderiaService } from './stock-mercaderia-service';
 import { UnidadMedidaService } from '../unidad-medida.service';
 import { CategoriaInsumoService } from '../categorias/categoria-insumo.service';
@@ -19,11 +19,15 @@ export class StockMercaderiaState {
   private destroyRef = inject(DestroyRef);
   
   private _productos = signal<Insumo[]>([]);
+  private _lotes = signal<LoteInsumo[]>([]);
+  private _lotesCargados = signal<boolean>(false);
   private _unidadMedidas = signal<UnidadMedida[]>([]);
   private _categoriasInsumos = signal<CategoriaInsumo[]>([]);
   private _cargando = signal<boolean>(false);
 
   productos = this._productos.asReadonly();
+  lotes = this._lotes.asReadonly();
+  lotesCargados = this._lotesCargados.asReadonly();
   cargando = this._cargando.asReadonly();
   unidadMedidas = this._unidadMedidas.asReadonly();
   categoriasInsumos = this._categoriasInsumos.asReadonly();
@@ -46,6 +50,21 @@ export class StockMercaderiaState {
       error: (err) => {
         
         this._cargando.set(false);
+      }
+    });
+  }
+
+  cargarLotes(): void {
+    if (this._lotesCargados()) return;
+
+    this.api.getLotes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (data) => {
+        this._lotes.set(data);
+        this._lotesCargados.set(true);
+      },
+      error: () => {
+        this._lotes.set([]);
+        this._lotesCargados.set(true);
       }
     });
   }
@@ -81,7 +100,10 @@ export class StockMercaderiaState {
     } else {
       this.api.crear(producto).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (nuevo: Insumo) => {
+          const lotesEstabanCargados = this._lotesCargados();
           this._productos.update(lista => [...lista, nuevo]);
+          this._lotesCargados.set(false);
+          if (lotesEstabanCargados) this.cargarLotes();
           this._cargando.set(false);
           
         },

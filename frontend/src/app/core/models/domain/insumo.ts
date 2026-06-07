@@ -22,3 +22,12 @@ export interface CrearInsumo {
   cantidadInicial: number;
   fechaVencimiento: string;
 }
+
+export interface LoteInsumo {
+  id: number;
+  nombre: string;
+  insumoId: number;
+  cantidad: number;
+  fechaVencimiento: string | null;
+  bodegaId: number;
+}

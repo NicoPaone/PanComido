@@ -31,6 +31,7 @@ export class RealizarPedidoSugeridoComponent implements OnInit {
   busqueda = this.state.busqueda;
   busquedaProveedor = this.state.busquedaProveedor;
   mensajeError = this.state.mensajeError;
+  loading = this.state.loading;
 
   montoEstimado = this.state.montoEstimado;
 proveedoresFiltrados = this.state.proveedoresFiltrados;
@@ -94,6 +95,128 @@ proveedoresFiltrados = this.state.proveedoresFiltrados;
   nombreUnidad(unidadMedida: UnidadMedida | string | null | undefined): string {
     if (!unidadMedida) return '';
     return typeof unidadMedida === 'string' ? unidadMedida : unidadMedida.nombre;
+  }
+
+  totalItems(): number {
+    return this.proveedoresFiltrados().reduce((total, proveedor) => total + this.itemsProveedor(proveedor.id).length, 0);
+  }
+
+  totalEstimado(): number {
+    return this.proveedoresFiltrados().reduce((total, proveedor) => total + this.montoProveedor(proveedor.id), 0);
+  }
+
+  pedidosListos(): number {
+    return this.proveedoresFiltrados().filter(proveedor => this.itemsProveedor(proveedor.id).length > 0).length;
+  }
+
+  cantidadDisplay(item: SugerenciaPedidoItem): number {
+    return this.usaUnidadMenor(item) ? Math.round(item.cantidadSugerida * 1000) : item.cantidadSugerida;
+  }
+
+  setCantidadDisplay(proveedorId: string | number, item: SugerenciaPedidoItem, valor: number | string | null): void {
+    if (valor === null || valor === '') {
+      this.onCantidadCambiada(proveedorId, item, null);
+      return;
+    }
+
+    const cantidad = Number(valor);
+    if (!Number.isFinite(cantidad)) {
+      this.onCantidadCambiada(proveedorId, item, null);
+      return;
+    }
+
+    this.onCantidadCambiada(proveedorId, item, this.usaUnidadMenor(item) ? cantidad / 1000 : cantidad);
+  }
+
+  ajustarCantidadDisplay(proveedorId: string | number, item: SugerenciaPedidoItem, delta: number): void {
+    const siguiente = Math.max(this.cantidadDisplay(item) + delta, this.cantidadMinimaDisplay(item));
+    this.setCantidadDisplay(proveedorId, item, siguiente);
+  }
+
+  unidadDisplay(item: SugerenciaPedidoItem): string {
+    if (this.esUnidadPeso(item)) return 'g';
+    if (this.esUnidadGramos(item)) return 'gr';
+    if (this.esUnidadVolumen(item)) return 'ml';
+    return this.nombreUnidad(item.unidadMedida).toLowerCase() || 'un';
+  }
+
+  cantidadMinimaDisplay(item: SugerenciaPedidoItem): number {
+    return this.usaUnidadMenor(item) || this.esUnidadGramos(item) ? 1 : 1;
+  }
+
+  cantidadPasoDisplay(item: SugerenciaPedidoItem): number {
+    if (this.esUnidadGramos(item)) return 10;
+    if (this.esUnidadPeso(item) || this.esUnidadVolumen(item)) return 100;
+    return 1;
+  }
+
+  presetsCantidad(item: SugerenciaPedidoItem): Array<{ label: string; value: number }> {
+    if (this.esUnidadPeso(item)) {
+      return [
+        { label: '100 g', value: 100 },
+        { label: '250 g', value: 250 },
+        { label: '500 g', value: 500 },
+        { label: '1 kg', value: 1000 }
+      ];
+    }
+
+    if (this.esUnidadGramos(item)) {
+      return [
+        { label: '10 gr', value: 10 },
+        { label: '25 gr', value: 25 },
+        { label: '50 gr', value: 50 },
+        { label: '100 gr', value: 100 }
+      ];
+    }
+
+    if (this.esUnidadVolumen(item)) {
+      return [
+        { label: '100 ml', value: 100 },
+        { label: '250 ml', value: 250 },
+        { label: '500 ml', value: 500 },
+        { label: '1 l', value: 1000 }
+      ];
+    }
+
+    return [];
+  }
+
+  equivalenciaCantidad(item: SugerenciaPedidoItem): string | null {
+    if (this.esUnidadGramos(item)) {
+      return this.cantidadDisplay(item) >= 1000
+        ? `Equivale a ${this.formatearEquivalencia(this.cantidadDisplay(item) / 1000, 'kg', 'gr')}`
+        : null;
+    }
+
+    if (!this.usaUnidadMenor(item) || item.cantidadSugerida <= 0) return null;
+    return `Se agregara como ${this.formatearEquivalencia(item.cantidadSugerida, this.esUnidadPeso(item) ? 'kg' : 'l', this.esUnidadPeso(item) ? 'g' : 'ml')}`;
+  }
+
+  private usaUnidadMenor(item: SugerenciaPedidoItem): boolean {
+    return this.esUnidadPeso(item) || this.esUnidadVolumen(item);
+  }
+
+  private esUnidadPeso(item: SugerenciaPedidoItem): boolean {
+    const unidad = this.nombreUnidad(item.unidadMedida).trim().toUpperCase();
+    return ['KG', 'KILO', 'KILOS'].includes(unidad);
+  }
+
+  private esUnidadGramos(item: SugerenciaPedidoItem): boolean {
+    const unidad = this.nombreUnidad(item.unidadMedida).trim().toUpperCase();
+    return ['G', 'GR', 'GRAMO', 'GRAMOS'].includes(unidad);
+  }
+
+  private esUnidadVolumen(item: SugerenciaPedidoItem): boolean {
+    const unidad = this.nombreUnidad(item.unidadMedida).trim().toUpperCase();
+    return ['L', 'LT', 'LITRO', 'LITROS'].includes(unidad);
+  }
+
+  private formatearEquivalencia(cantidad: number, unidadMayor: string, unidadMenor: string): string {
+    const enteros = Math.trunc(cantidad);
+    const menores = Math.round((cantidad - enteros) * 1000);
+    if (enteros > 0 && menores > 0) return `${enteros} ${unidadMayor} ${menores} ${unidadMenor}`;
+    if (enteros > 0) return `${enteros} ${unidadMayor}`;
+    return `${Math.round(cantidad * 1000)} ${unidadMenor}`;
   }
 
   volver(): void {

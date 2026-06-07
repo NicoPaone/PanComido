@@ -8,28 +8,28 @@
 
     <div filtros class="d-flex align-items-center">
       <app-dropdown #filtroDropdown>
-        <button trigger class="btn-pill-filter text-nowrap" style="white-space: nowrap; outline: none;" [class.active]="filtroEstado() !== 'Todos'">
+        <button trigger class="btn-pill-filter text-nowrap" [class.active]="filtroEstado() !== 'Todos'">
           <span class="material-symbols-outlined" style="font-size: 18px;">filter_alt</span>
           <span>Estado: {{ filtroEstado() }}</span>
         </button>
         <ul menu class="m-0 p-0 list-unstyled w-100">
-          <li (click)="setFiltroEstado('Todos'); filtroDropdown.cerrar()" [style.color]="filtroEstado() === 'Todos' ? '#1691ac' : ''" [style.background-color]="filtroEstado() === 'Todos' ? '#f0fdfa' : ''">Todos</li>
-          <li (click)="setFiltroEstado('Activos'); filtroDropdown.cerrar()" [style.color]="filtroEstado() === 'Activos' ? '#1691ac' : ''" [style.background-color]="filtroEstado() === 'Activos' ? '#f0fdfa' : ''">Activos</li>
-          <li (click)="setFiltroEstado('Inactivos'); filtroDropdown.cerrar()" [style.color]="filtroEstado() === 'Inactivos' ? '#1691ac' : ''" [style.background-color]="filtroEstado() === 'Inactivos' ? '#f0fdfa' : ''">Inactivos</li>
+          <li (click)="setFiltroEstado('Todos'); filtroDropdown.cerrar()" [class.dropdown-option-active]="filtroEstado() === 'Todos'">Todos</li>
+          <li (click)="setFiltroEstado('Activos'); filtroDropdown.cerrar()" [class.dropdown-option-active]="filtroEstado() === 'Activos'">Activos</li>
+          <li (click)="setFiltroEstado('Inactivos'); filtroDropdown.cerrar()" [class.dropdown-option-active]="filtroEstado() === 'Inactivos'">Inactivos</li>
         </ul>
       </app-dropdown>
     </div>
 
     <div acciones class="d-flex gap-2 ms-auto">
-      <button 
-        class="btn-premium-teal d-flex align-items-center gap-2"
+      <button
+        class="btn-premium-primary d-flex align-items-center gap-2"
         (click)="irARealizarPedidoSugeridoGeneral()">
         <span class="material-symbols-outlined fs-5">auto_awesome</span>
         <span class="fw-semibold">Pedido sugerido</span>
       </button>
 
       <button 
-        class="btn-premium-primary d-flex align-items-center gap-2"
+        class="btn-premium-secondary d-flex align-items-center gap-2"
         (click)="abrirNuevoProveedorRoute()">
         <span class="material-symbols-outlined fs-5">person_add</span>
         <span class="fw-semibold">Nuevo proveedor</span>
@@ -84,31 +84,34 @@
     <app-glass-card class="detail-panel d-block">
       @if (proveedorSeleccionado(); as proveedor) {
         <div class="detail-top">
-          <h2 class="detail-title">{{ proveedor.nombre }}</h2>
+          <div>
+            <p class="detail-kicker mb-1">Proveedor seleccionado</p>
+            <h2 class="detail-title mb-0">{{ proveedor.nombre }}</h2>
+          </div>
           <span class="status-pill" [class.inactivo]="!proveedor.activo">{{ proveedor.activo ? 'Activo' : 'Inactivo' }}</span>
         </div>
 
-        <div class="info-grid">
-          <article class="info-card">
-            <span class="info-label">Último pedido</span>
+        <div class="provider-meta-strip">
+          <span class="provider-meta-item">
+            <span class="material-symbols-outlined">event_available</span>
+            Último pedido:
             <strong>{{ proveedor.fechaUltimoPedido ? (proveedor.fechaUltimoPedido | date:'dd/MM/yyyy') : 'Sin pedidos' }}</strong>
-          </article>
-
-          <article class="info-card">
-            <span class="info-label">Pedidos registrados</span>
+          </span>
+          <span class="provider-meta-item">
+            <span class="material-symbols-outlined">receipt_long</span>
+            Pedidos:
             <strong>{{ totalPedidosSeleccionado }}</strong>
-          </article>
-
-          <article class="info-card">
-            <span class="info-label">Contacto</span>
-            <strong>{{ proveedor.telefono || 'Sin contacto registrado' }}</strong>
-          </article>
-
+          </span>
+          <span class="provider-meta-item">
+            <span class="material-symbols-outlined">call</span>
+            Contacto:
+            <strong>{{ proveedor.telefono || 'Sin registrar' }}</strong>
+          </span>
           @if (proveedor.email) {
-            <article class="info-card">
-              <span class="info-label">Correo</span>
+            <span class="provider-meta-item">
+              <span class="material-symbols-outlined">mail</span>
               <strong>{{ proveedor.email }}</strong>
-            </article>
+            </span>
           }
         </div>
 
@@ -121,19 +124,71 @@
               label="Recibir pedido"
               variante="success"
               tamanio="sm"
-              (clicked)="abrirHistorial(proveedor)">
+              (clicked)="mostrarHistorial(proveedor)">
             </app-boton>
           </div>
         }
 
+        <div class="detail-tabs" role="tablist" aria-label="Secciones del proveedor">
+          <button type="button" class="detail-tab" [class.active]="panelModo() === 'historial'" (click)="mostrarHistorial()">
+            <span class="material-symbols-outlined">history</span>
+            Historial
+          </button>
+          <button type="button" class="detail-tab" [class.active]="panelModo() === 'pedido'" (click)="abrirPedido(proveedor)">
+            <span class="material-symbols-outlined">add_shopping_cart</span>
+            Nuevo pedido
+          </button>
+        </div>
+
         @if (panelModo() === 'historial') {
-          <div class="action-row">
-            <app-boton
-              label="Agregar pedido"
-              variante="secondary"
-              tamanio="md"
-              (clicked)="abrirPedido(proveedor)">
-            </app-boton>
+          <div class="panel-section history-overview">
+            <div class="section-header">
+              <div>
+                <h3 class="section-title mb-1">Últimos pedidos</h3>
+                <p class="section-subtitle mb-0">Resumen reciente de actividad con <strong>{{ proveedor.nombre }}</strong></p>
+              </div>
+              <button type="button" class="soft-link-btn" (click)="abrirHistorial(proveedor)">
+                <span class="material-symbols-outlined">open_in_new</span>
+                Ver completo
+              </button>
+            </div>
+
+            @if (loadingHistorial()) {
+              <div class="history-empty compact">
+                <span class="material-symbols-outlined">sync</span>
+                Cargando historial...
+              </div>
+            } @else if (errorHistorial()) {
+              <div class="history-empty compact error-state">
+                <span class="material-symbols-outlined">error</span>
+                {{ errorHistorial() }}
+              </div>
+            } @else if (historialProveedor().length > 0) {
+              <div class="history-list compact-history-list">
+                @for (pedido of historialProveedor().slice(0, 4); track pedido.id) {
+                  <button type="button" class="history-card history-card-clickable history-card-compact" (click)="abrirDetallePedido(pedido)">
+                    <div>
+                      <strong>{{ pedido.concepto }}</strong>
+                      <div class="history-date">{{ pedido.fecha | date:'dd/MM/yyyy HH:mm' }}</div>
+                    </div>
+                    <div class="history-card-side">
+                      <span class="estado-pill" [class]="getEstadoClase(pedido.estado)">{{ pedido.estado }}</span>
+                      <strong>${{ pedido.monto | number:'1.0-0' }}</strong>
+                    </div>
+                  </button>
+                }
+              </div>
+            } @else {
+              <div class="history-empty">
+                <span class="material-symbols-outlined">receipt_long</span>
+                <strong>Este proveedor todavía no tiene pedidos.</strong>
+                <span>Creá el primero desde la pestaña Nuevo pedido.</span>
+                <button type="button" class="soft-link-btn mt-2" (click)="abrirPedido(proveedor)">
+                  <span class="material-symbols-outlined">add_shopping_cart</span>
+                  Crear primer pedido
+                </button>
+              </div>
+            }
           </div>
         }
 
@@ -145,20 +200,18 @@
                 <h3 class="section-title mb-1">Nuevo pedido</h3>
                 <p class="section-subtitle mb-0">para <strong>{{ proveedor.nombre }}</strong></p>
               </div>
-              <app-boton
-                label="Ver historial"
-                variante="outline"
-                tamanio="sm"
-                (clicked)="abrirHistorial(proveedor)">
-              </app-boton>
+              <button type="button" class="soft-link-btn" (click)="mostrarHistorial()">
+                <span class="material-symbols-outlined">history</span>
+                Ver resumen
+              </button>
             </div>
 
             <!-- Cinta de búsqueda de producto -->
             <div class="add-product-strip">
               <div class="add-product-fields">
                 <!-- Buscar producto -->
-                <label class="field-group product-field flex-grow-1">
-                  <span>Buscar producto</span>
+                <label class="field-group product-field add-product-search">
+                  <span>Producto</span>
                   <input
                     type="text"
                     class="form-control custom-input"
@@ -166,7 +219,7 @@
                     [ngModel]="productoTexto()"
                     (ngModelChange)="onProductoTextoChange($event)">
 
-                  @if (productoTexto().trim().length > 0) {
+                  @if (productoTexto().trim().length > 0 && !productoSeleccionadoId()) {
                     <div class="predictive-list">
                       @if (loadingInsumos()) {
                         <div class="predictive-empty">Cargando insumos...</div>
@@ -191,50 +244,74 @@
                   }
                 </label>
 
-                <!-- Precio del proveedor (solo lectura) -->
-                <div class="field-group price-display-field">
-                  <span>Precio del proveedor</span>
-                  <div class="price-display">
-                    @if (precioProductoManual(); as precio) {
-                      <span class="price-value">${{ precio | number:'1.0-0' }}</span>
-                    } @else {
-                      <span class="price-no-data">Sin historial</span>
+                <div class="add-product-selection-row">
+                  <div class="field-group selected-product-field">
+                    <span>Item seleccionado</span>
+                    <div class="selected-product-display" [class.empty]="!productoBaseActual() && !productoTexto().trim()">
+                      @if (productoBaseActual(); as producto) {
+                        <strong>{{ producto.nombre }}</strong>
+                        <span>{{ nombreCategoria(producto.categoriaIngrediente) || nombreUnidad(producto.unidadMedida) }}</span>
+                      } @else if (productoTexto().trim()) {
+                        <strong>{{ productoTexto() }}</strong>
+                        <span>Sin seleccionar</span>
+                      } @else {
+                        <span>Seleccioná un insumo</span>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Precio del proveedor (solo lectura) -->
+                  <div class="field-group price-display-field">
+                    <span>Precio del proveedor</span>
+                    <div class="price-display">
+                      @if (precioProductoManual(); as precio) {
+                        <span class="price-value">${{ precio | number:'1.0-0' }}</span>
+                      } @else {
+                        <span class="price-no-data">Sin historial de precio</span>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Cantidad con stepper -->
+                  <div class="field-group quantity-stepper-field">
+                    <span>Cant. ({{ unidadDisplay() }})</span>
+                    <div class="quantity-stepper">
+                      <button type="button" class="step-btn" (click)="ajustarCantidadDisplay(-cantidadPasoDisplay())">−</button>
+                      <input
+                        type="number"
+                        class="form-control custom-input step-input"
+                        [min]="cantidadMinimaDisplay()"
+                        [step]="cantidadPasoDisplay()"
+                        [placeholder]="cantidadPlaceholderDisplay()"
+                        [ngModel]="cantidadDisplay()"
+                        (ngModelChange)="setCantidadDisplay($event)">
+                      <span class="step-unit">{{ unidadDisplay() }}</span>
+                      <button type="button" class="step-btn" (click)="ajustarCantidadDisplay(cantidadPasoDisplay())">+</button>
+                    </div>
+                    @if (presetsCantidad().length > 0) {
+                      <div class="quantity-presets">
+                        @for (preset of presetsCantidad(); track preset.label) {
+                          <button type="button" class="quantity-preset" [class.active]="cantidadDisplay() === preset.value" (click)="setCantidadDisplay(preset.value)">
+                            {{ preset.label }}
+                          </button>
+                        }
+                      </div>
+                    }
+                    @if (equivalenciaCantidad(); as equivalencia) {
+                      <strong class="quantity-equivalence">{{ equivalencia }}</strong>
                     }
                   </div>
                 </div>
 
-                <!-- Cantidad con stepper -->
-                <div class="field-group quantity-stepper-field">
-                  <span>Cant. {{ productoBaseActual()?.unidadMedida ? '(' + nombreUnidad(productoBaseActual()!.unidadMedida) + ')' : '' }}</span>
-                  <div class="quantity-stepper">
-                    <button type="button" class="step-btn" (click)="cantidadProducto.set(Math.max((cantidadProducto() ?? 1) - 1, 1))">−</button>
-                    <input
-                      type="number"
-                      class="form-control custom-input step-input"
-                      [min]="cantidadMinimaProducto"
-                      [step]="cantidadPasoProducto"
-                      [placeholder]="cantidadPlaceholderProducto"
-                      [ngModel]="cantidadProducto()"
-                      (ngModelChange)="cantidadProducto.set($event === null || $event === '' ? null : +$event)">
-                    <button type="button" class="step-btn" (click)="cantidadProducto.set((cantidadProducto() ?? 0) + 1)">+</button>
-                  </div>
-                  @if (equivalenciaCantidad(); as equivalencia) {
-                    <strong class="quantity-equivalence">{{ equivalencia }}</strong>
-                  }
-                </div>
-
                 <!-- Botón Añadir -->
-                <div class="field-group add-btn-field">
-                  <span>&nbsp;</span>
-                  <button
-                    type="button"
-                    class="add-item-btn"
-                    [disabled]="!productoTexto().trim() || !cantidadProducto() || cantidadProducto()! <= 0"
-                    (click)="agregarItemPedido()">
-                    <span class="material-symbols-outlined">add</span>
-                    Añadir
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  class="add-item-btn"
+                  [disabled]="!productoTexto().trim() || !precioProductoManual() || !cantidadProducto() || cantidadProducto()! <= 0"
+                  (click)="agregarItemPedido()">
+                  <span class="material-symbols-outlined">add</span>
+                  Añadir
+                </button>
               </div>
             </div>
 
@@ -285,7 +362,7 @@
                   } @else if (productos().length === 0) {
                     <p>Este proveedor no tiene insumos asociados.</p>
                   } @else {
-                    <p>Buscá un producto arriba y hacé clic en <strong>Añadir</strong>.</p>
+                    <p>Seleccioná un producto para armar el pedido.</p>
                   }
                 </div>
               }

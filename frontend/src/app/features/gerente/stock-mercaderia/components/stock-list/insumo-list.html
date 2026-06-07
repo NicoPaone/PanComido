@@ -1,34 +1,56 @@
-<table class="stock-table">
-      <thead>
-        <tr>
-          <th>PRODUCTO <fa-icon [icon]="faSort"></fa-icon></th>
-          <th class="text-center">STOCK</th>
-          <th class="text-center">U. MEDIDA</th>
-          <th class="text-center">F. VENCIMIENTO</th>
-          <th class="text-center">STOCK MÍN</th>
-          <th class="text-end"></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (item of productos(); track item.id) {
-          <tr>
-            <td class="font-bold">{{ item.nombre }}</td>
-            <td class="text-center">
-              <span class="stock-pill" [ngClass]="getBadgeClass(item)">
-                {{ item.stockActual}}
-              </span>
-            </td>
-            <td class="text-center gray-text">{{ item.unidadMedida.nombre }}</td>
-            <td class="text-center gray-text">{{ item.vencimiento }}</td>
-            <td class="text-center gray-text">{{ item.stockMinimo }}</td>
-            <td class="text-end">
-              <button class="btn-icon" (click)="editar.emit(item.id)">
-                <fa-icon [icon]="faCog">
+@if (filas().length === 0) {
+  <div class="insumo-empty-state">
+    <span class="material-symbols-outlined">inventory</span>
+    <strong>No hay productos para mostrar</strong>
+    <p>Probá cambiar la búsqueda, la categoría o la bodega seleccionada.</p>
+  </div>
+} @else {
+  <section class="stock-grid" aria-label="Listado de stock">
+    <div class="stock-grid-head" role="row">
+      <span>Producto</span>
+      <span>Categoría</span>
+      <span class="text-end">Stock</span>
+      <span class="text-end">Mínimo</span>
+      <span>Vencimiento</span>
+      <span>Estado</span>
+      <span class="text-end">Acción</span>
+    </div>
 
-                </fa-icon>
-              </button>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+    <cdk-virtual-scroll-viewport
+      class="stock-viewport"
+      [itemSize]="itemSize()"
+      minBufferPx="560"
+      maxBufferPx="1120"
+    >
+      <div
+        *cdkVirtualFor="let fila of filas(); trackBy: trackById"
+        class="stock-row"
+        [class.row-danger]="fila.estado === 'critical'"
+        [class.row-warning]="fila.estado === 'warning'"
+      >
+        <div class="stock-cell product-cell">
+          <strong>{{ fila.nombre }}</strong>
+        </div>
+        <div class="stock-cell">{{ fila.categoria }}</div>
+        <div class="stock-cell text-end strong-number">{{ fila.stock }}</div>
+        <div class="stock-cell text-end">{{ fila.minimo }}</div>
+        <div class="stock-cell">{{ fila.vencimiento }}</div>
+        <div class="stock-cell">
+          <span
+            class="fast-pill"
+            [class.danger]="fila.estado === 'critical'"
+            [class.warning]="fila.estado === 'warning'"
+            [class.success]="fila.estado === 'success'"
+          >
+            {{ fila.estadoLabel }}
+          </span>
+        </div>
+        <div class="stock-cell action-cell">
+          <button class="btn-icon" type="button" title="Editar producto" (click)="editar.emit(fila.id)">
+            <span class="material-symbols-outlined" aria-hidden="true">settings</span>
+          </button>
+        </div>
+      </div>
+    </cdk-virtual-scroll-viewport>
+  </section>
+}

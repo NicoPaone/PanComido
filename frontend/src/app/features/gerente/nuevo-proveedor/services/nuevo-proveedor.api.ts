@@ -14,6 +14,6 @@ export class NuevoProveedorApiService {
   }
 
   crearProveedor(proveedor: ProveedorNuevo): Observable<Proveedor> {
-    return this.api.post<Proveedor>('proveedores', proveedor);
+    return this.api.post<Proveedor>('proveedor', proveedor);
   }
 }

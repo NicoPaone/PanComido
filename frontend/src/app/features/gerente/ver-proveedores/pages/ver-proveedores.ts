@@ -59,6 +59,7 @@ export class VerProveedoresComponent implements OnInit {
   error = this.state.error;
   errorHistorial = this.state.errorHistorial;
   errorInsumos = this.state.errorInsumos;
+  historialProveedor = this.state.historialProveedor;
 
   faCheck = faCheck;
   faXmark = faXmark;
@@ -100,6 +101,14 @@ export class VerProveedoresComponent implements OnInit {
 
   abrirHistorial(proveedor: Proveedor): void {
     this.router.navigate(['/staff', 'gerente', 'ver-proveedores', proveedor.id, 'historial']);
+  }
+
+  mostrarHistorial(proveedor?: Proveedor): void {
+    if (proveedor) {
+      this.state.abrirHistorial(proveedor.id);
+      return;
+    }
+    this.state.panelModo.set('historial');
   }
 
   abrirDetallePedido(pedido: PedidoProveedor): void {
@@ -207,6 +216,89 @@ export class VerProveedoresComponent implements OnInit {
     return this.state.cantidadPlaceholderProducto();
   }
 
+  cantidadDisplay(): number | null {
+    const cantidad = this.cantidadProducto();
+    if (cantidad === null) return null;
+    return this.usaUnidadMenor() ? Math.round(cantidad * 1000) : cantidad;
+  }
+
+  setCantidadDisplay(valor: number | string | null): void {
+    if (valor === null || valor === '') {
+      this.cantidadProducto.set(null);
+      return;
+    }
+
+    const cantidad = Number(valor);
+    if (!Number.isFinite(cantidad)) {
+      this.cantidadProducto.set(null);
+      return;
+    }
+
+    this.cantidadProducto.set(this.usaUnidadMenor() ? cantidad / 1000 : cantidad);
+  }
+
+  ajustarCantidadDisplay(delta: number): void {
+    const actual = this.cantidadDisplay() ?? 0;
+    const siguiente = Math.max(actual + delta, this.cantidadMinimaDisplay());
+    this.setCantidadDisplay(siguiente);
+  }
+
+  cantidadMinimaDisplay(): number {
+    return this.usaUnidadMenor() ? 1 : this.cantidadMinimaProducto;
+  }
+
+  cantidadPasoDisplay(): number {
+    if (this.esUnidadPeso()) return 100;
+    if (this.esUnidadGramos()) return 10;
+    if (this.esUnidadVolumen()) return 100;
+    return this.cantidadPasoProducto;
+  }
+
+  cantidadPlaceholderDisplay(): string {
+    if (this.esUnidadPeso()) return 'Ej: 100';
+    if (this.esUnidadGramos()) return 'Ej: 10';
+    if (this.esUnidadVolumen()) return 'Ej: 250';
+    return this.cantidadPlaceholderProducto;
+  }
+
+  unidadDisplay(): string {
+    if (this.esUnidadPeso()) return 'g';
+    if (this.esUnidadGramos()) return 'gr';
+    if (this.esUnidadVolumen()) return 'ml';
+    return this.nombreUnidad(this.productoBaseActual()?.unidadMedida).toLowerCase() || 'un';
+  }
+
+  presetsCantidad(): Array<{ label: string; value: number }> {
+    if (this.esUnidadPeso()) {
+      return [
+        { label: '100 g', value: 100 },
+        { label: '250 g', value: 250 },
+        { label: '500 g', value: 500 },
+        { label: '1 kg', value: 1000 }
+      ];
+    }
+
+    if (this.esUnidadGramos()) {
+      return [
+        { label: '10 gr', value: 10 },
+        { label: '25 gr', value: 25 },
+        { label: '50 gr', value: 50 },
+        { label: '100 gr', value: 100 }
+      ];
+    }
+
+    if (this.esUnidadVolumen()) {
+      return [
+        { label: '100 ml', value: 100 },
+        { label: '250 ml', value: 250 },
+        { label: '500 ml', value: 500 },
+        { label: '1 l', value: 1000 }
+      ];
+    }
+
+    return [];
+  }
+
   nombreUnidad(unidadMedida: UnidadMedida | string | null | undefined): string {
     if (!unidadMedida) return '';
     return typeof unidadMedida === 'string' ? unidadMedida : unidadMedida.nombre;
@@ -224,14 +316,33 @@ export class VerProveedoresComponent implements OnInit {
 
     const unidad = this.nombreUnidad(producto.unidadMedida).trim().toUpperCase();
     if (['KG', 'KILO', 'KILOS'].includes(unidad)) {
-      return `Equivale a ${this.formatearEquivalencia(cantidad, 'kg', 'g', 1000)}`;
+      return `Se agregará como ${this.formatearEquivalencia(cantidad, 'kg', 'g', 1000)}`;
     }
 
     if (['L', 'LT', 'LITRO', 'LITROS'].includes(unidad)) {
-      return `Equivale a ${this.formatearEquivalencia(cantidad, 'l', 'ml', 1000)}`;
+      return `Se agregará como ${this.formatearEquivalencia(cantidad, 'l', 'ml', 1000)}`;
     }
 
     return null;
+  }
+
+  private usaUnidadMenor(): boolean {
+    return this.esUnidadPeso() || this.esUnidadVolumen();
+  }
+
+  private esUnidadPeso(): boolean {
+    const unidad = this.nombreUnidad(this.productoBaseActual()?.unidadMedida).trim().toUpperCase();
+    return ['KG', 'KILO', 'KILOS'].includes(unidad);
+  }
+
+  private esUnidadGramos(): boolean {
+    const unidad = this.nombreUnidad(this.productoBaseActual()?.unidadMedida).trim().toUpperCase();
+    return ['G', 'GR', 'GRAMO', 'GRAMOS'].includes(unidad);
+  }
+
+  private esUnidadVolumen(): boolean {
+    const unidad = this.nombreUnidad(this.productoBaseActual()?.unidadMedida).trim().toUpperCase();
+    return ['L', 'LT', 'LITRO', 'LITROS'].includes(unidad);
   }
 
   private formatearEquivalencia(cantidad: number, unidadMayor: string, unidadMenor: string, factor: number): string {
