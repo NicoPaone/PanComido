@@ -26,5 +26,17 @@ namespace PanComido.Presentacion.Mappers
                 .Select(p => aDto(p))
                 .ToList();
         }
+
+        public DOM.Proveedor aDominio(ProveedorRequestDto proveedorRequest)
+        {
+            return new DOM.Proveedor
+            {
+                Nombre = proveedorRequest.Nombre,
+                NumeroTelefonoWsp = proveedorRequest.NumeroTelefonoWsp,
+                CategoriaIds = proveedorRequest.CategoriaIds
+                              .Select(c => c)
+                              .ToList()
+            };
+        }
     }
 }
