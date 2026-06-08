@@ -29,7 +29,7 @@ export const GERENTE_ROUTES: Routes = [
   },
   {
     path: 'crear-plato',
-    loadComponent: () => import('./crear-plato/pages/crear-plato').then(m => m.CrearPlatoComponent)
+    loadComponent: () => import('./crear-plato/pages/crear-plato').then(m => m.CrearPlatoPage)
   },
   {
     path: 'realizar-pedido-sugerido',

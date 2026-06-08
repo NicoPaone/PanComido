@@ -1,15 +1,30 @@
 import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CrearPlatoApiService, ItemDesplegableDto, IngredienteDisponibleDto } from './crear-plato.api';
-import { Plato, RecetaIngrediente } from '../../../../core/models/domain/plato';
+import { CrearPlatoRequestDto } from '../../../../core/models/dtos/requests/crear-plato.request';
+import { RecetaIngrediente } from '../../../../core/models/domain/plato';
 import { calcularCostoReceta } from '../../services/plato.service';
+
+/** Mapeo de nombre de tipo/categoría a ID para el backend */
+const TIPO_PLATO_MAP: Record<string, number> = {
+  'Entrada': 1,
+  'Plato Principal': 2,
+  'Postre': 3,
+  'Bebida': 4,
+};
+
+const CATEGORIA_PLATO_MAP: Record<string, number> = {
+  'Entradas': 1,
+  'Principales': 2,
+  'Postres': 3,
+  'Bebidas': 4,
+};
 
 @Injectable({ providedIn: 'root' })
 export class CrearPlatoState {
   private api = inject(CrearPlatoApiService);
   private destroyRef = inject(DestroyRef);
 
-  // Estado centralizado
   visible = signal<boolean>(true);
   imagenSelected = signal<string>('');
   
@@ -20,19 +35,22 @@ export class CrearPlatoState {
   ingredientesDisponibles = signal<IngredienteDisponibleDto[]>([]);
   
   restriccionesSeleccionadas = signal<number[]>([]);
+  vegano = computed(() => this.restriccionesSeleccionadas().includes(1));
+  vegetariano = computed(() => this.restriccionesSeleccionadas().includes(2));
+  celiaco = computed(() => this.restriccionesSeleccionadas().includes(3));
   receta = signal<RecetaIngrediente[]>([]);
   mostrarExito = signal<boolean>(false);
   mostrarSelectorImagen = signal<boolean>(false);
 
-  private _loading = signal<boolean>(false);
-  loading = this._loading.asReadonly();
+  readonly #loading = signal<boolean>(false);
+  loading = this.#loading.asReadonly();
 
   costoSugerido = computed(() => {
     return calcularCostoReceta(this.receta());
   });
 
   cargarDatosFormulario(): void {
-    this._loading.set(true);
+    this.#loading.set(true);
     this.api.getDatosFormulario()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -41,10 +59,10 @@ export class CrearPlatoState {
           this.categoriasPlato.set(res.categoriasPlato);
           this.restricciones.set(res.restricciones);
           this.ingredientesDisponibles.set(res.ingredientes);
-          this._loading.set(false);
+          this.#loading.set(false);
         },
         error: () => {
-          this._loading.set(false);
+          this.#loading.set(false);
         }
       });
   }
@@ -56,6 +74,11 @@ export class CrearPlatoState {
     } else {
       this.restriccionesSeleccionadas.set([...current, id]);
     }
+  }
+
+  toggleTag(tag: 'vegano' | 'vegetariano' | 'celiaco'): void {
+    const ids = { vegano: 1, vegetariano: 2, celiaco: 3 } as const;
+    this.toggleRestriccion(ids[tag]);
   }
 
   toggleVisible(): void {
@@ -83,16 +106,16 @@ export class CrearPlatoState {
     this.mostrarExito.set(val);
   }
 
-  guardarPlato(platoData: { nombre: string; costo: number; precioVenta: number; tiempoPreparacion: number; tipoPlatoId: number; categoriaPlatoId: number; descripcion: string; }, callback: () => void): void {
-    this._loading.set(true);
+  guardarPlato(platoData: { nombre: string; costo: number; precioVenta: number; tiempoPreparacion: number; tipoPlato: string; descripcion: string; }, callback: () => void): void {
+    this.#loading.set(true);
 
-    const request = {
+    const request: CrearPlatoRequestDto = {
       nombre: platoData.nombre,
       descripcion: platoData.descripcion,
       precioVentaFinal: platoData.precioVenta,
       tiempoPreparacionBase: platoData.tiempoPreparacion,
-      tipoPlatoId: platoData.tipoPlatoId,
-      categoriaPlatoId: platoData.categoriaPlatoId,
+      tipoPlatoId: TIPO_PLATO_MAP[platoData.tipoPlato] ?? 2,
+      categoriaPlatoId: CATEGORIA_PLATO_MAP[platoData.tipoPlato] ?? 2,
       urlImagen: this.imagenSelected() || '',
       restriccionesIds: this.restriccionesSeleccionadas(),
       ingredientes: this.receta().map(ing => ({
@@ -102,16 +125,17 @@ export class CrearPlatoState {
       }))
     };
 
-    this.api.crearPlato(request as any)
+    this.api.crearPlato(request)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this._loading.set(false);
+          this.#loading.set(false);
           this.mostrarExito.set(true);
           callback();
         },
-        error: () => {
-          this._loading.set(false);
+        error: (err) => {
+          console.error('Error al crear plato:', err?.error?.error || err?.message || err);
+          this.#loading.set(false);
         }
       });
   }

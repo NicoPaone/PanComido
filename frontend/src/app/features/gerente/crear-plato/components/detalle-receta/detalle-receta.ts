@@ -15,11 +15,11 @@ import { Component, output, signal, computed, input, OnInit, ChangeDetectionStra
 export class DetalleRecetaComponent implements OnInit {
   recetaCambiada = output<RecetaIngrediente[]>();
   ingredientesIniciales = input<RecetaIngrediente[]>([]);
-  // Lista de ingredientes disponibles del backend (reemplaza al mock)
   ingredientesDisponibles = input<IngredienteDisponibleDto[]>([]);
 
   busqueda = signal<string>('');
   ingredientesSeleccionados = signal<RecetaIngrediente[]>([]);
+
 
   sugerencias = computed(() => {
     const query = this.busqueda().toLowerCase().trim();
@@ -72,4 +72,3 @@ export class DetalleRecetaComponent implements OnInit {
     }
   }
 }
-

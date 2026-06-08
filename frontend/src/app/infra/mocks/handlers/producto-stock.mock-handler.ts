@@ -1,12 +1,12 @@
-import { HttpRequest, HttpResponse, HttpHandlerFn } from "@angular/common/http";
+import { HttpRequest, HttpResponse, HttpEvent, HttpHandlerFn } from "@angular/common/http";
 import { delay, Observable, of } from "rxjs";
-import { Insumo } from '../../models/domain/insumo';
-import { INSUMOS_MOCK } from '../../../infra/mocks/insumo.mock';
+import { Insumo } from '../../../core/models/domain/insumo';
+import { INSUMOS_MOCK } from '../insumo.mock-data';
 
 // El estado de memoria queda encapsulado solo para este dominio
 let dbMemoria: Insumo[] = [...INSUMOS_MOCK];
 
-export const handleStockMock = (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<any> => {
+export const handleStockMock = (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> => {
   const method = req.method;
   const url = req.url;
 
@@ -25,7 +25,7 @@ export const handleStockMock = (req: HttpRequest<unknown>, next: HttpHandlerFn):
     const id = parseInt(url.split('/').pop() || '0', 10);
     const index = dbMemoria.findIndex(p => p.id === id);
     if (index !== -1) {
-      dbMemoria[index] = { ...dbMemoria[index], ...(req.body as any) };
+      dbMemoria[index] = { ...dbMemoria[index], ...(req.body as Partial<Insumo>) };
       return of(new HttpResponse({ status: 200, body: dbMemoria[index] })).pipe(delay(600));
     }
   }

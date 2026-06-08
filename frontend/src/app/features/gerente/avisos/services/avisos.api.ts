@@ -7,6 +7,18 @@ import { Insumo } from '../../../../core/models/domain/insumo';
 import { SugerenciaIA } from '../../../../core/models/dtos/responses/sugerencia-ia.response';
 import { Sugerencia } from '../../../../core/models/domain/sugerencia-ia';
 
+export interface CrearPlatoIARequest {
+  nombre: string;
+  descripcion: string;
+  precioVentaFinal: number;
+  tiempoPreparacionBase: number;
+  tipoPlatoId: number;
+  categoriaPlatoId: number;
+  urlImagen: string;
+  restriccionesIds: number[];
+  ingredientes: { insumoId: number; cantidad: number; opcional: boolean }[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class AvisosApiService {
   private api = inject(ApiService);
@@ -47,7 +59,7 @@ export class AvisosApiService {
     );
   }
 
-  crearPlatoDesdeIA(plato: any): Observable<any> {
-  return this.api.post<any>('plato', plato);
-}
+  crearPlatoDesdeIA(plato: CrearPlatoIARequest): Observable<Plato> {
+    return this.api.post<Plato>('plato', plato);
+  }
 }

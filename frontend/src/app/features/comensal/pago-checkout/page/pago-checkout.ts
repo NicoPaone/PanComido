@@ -5,7 +5,7 @@ import { DecimalPipe } from '@angular/common';
 import { ComandaState } from '../../services/comanda-state';
 import { PagoService } from '../../services/pago.service';
 import { ComandaHubService } from '../../../../core/services/hubs/comanda/comanda-hub-service';
-import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
+import { configuracionRestauranteMock } from '../../../../infra/mocks/configuracion-restaurante.mock-data';
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
 
 @Component({

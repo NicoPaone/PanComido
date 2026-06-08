@@ -5,6 +5,7 @@ import { catchError, map } from 'rxjs/operators';
 import { RealizarPedidoSugeridoApiService } from './realizar-pedido-sugerido.api';
 import { Proveedor, SugerenciaPedidoItem } from '../../../../core/models/domain/proveedor';
 import { Insumo } from '../../../../core/models/domain/insumo';
+import { QuantityHistoryOrder } from '../../../../shared/utils/quantity-presets';
 
 @Injectable({ providedIn: 'root' })
 export class RealizarPedidoSugeridoStateService {
@@ -21,11 +22,12 @@ export class RealizarPedidoSugeridoStateService {
   busqueda = signal<string>('');
   busquedaProveedor = signal<string>('');
   pedidosPorProveedor = signal<Record<string, SugerenciaPedidoItem[]>>({});
+  historialPorProveedor = signal<Record<string, QuantityHistoryOrder[]>>({});
   observacionesPorProveedor = signal<Record<string, string>>({});
   mensajeError = signal<string | null>(null);
   
-  private _loading = signal(false);
-  loading = this._loading.asReadonly();
+  readonly #loading = signal(false);
+  loading = this.#loading.asReadonly();
 
   // Variables Derivadas (Computed)
   montoEstimado = computed(() => {
@@ -44,19 +46,26 @@ export class RealizarPedidoSugeridoStateService {
 
   // Métodos de Negocio
   cargarDatos(id?: number): void {
-    this._loading.set(true);
+    this.#loading.set(true);
 
     this.api.getProveedores()
       .pipe(
         switchMap(proveedores => {
           if (proveedores.length === 0) {
-            return of({ proveedoresConItems: [], pedidosPorProveedor: {} as Record<string, SugerenciaPedidoItem[]> });
+            return of({
+              proveedoresConItems: [],
+              pedidosPorProveedor: {} as Record<string, SugerenciaPedidoItem[]>,
+              historialPorProveedor: {} as Record<string, QuantityHistoryOrder[]>
+            });
           }
 
           const consultas = proveedores.map(proveedor =>
-            this.api.getInsumosAReponer(proveedor.id).pipe(
-              map(items => ({ proveedor, items })),
-              catchError(() => of({ proveedor, items: [] as SugerenciaPedidoItem[] }))
+            forkJoin({
+              items: this.api.getInsumosAReponer(proveedor.id).pipe(catchError(() => of([] as SugerenciaPedidoItem[]))),
+              historial: this.api.getHistorialPedidos(proveedor.id).pipe(catchError(() => of([] as QuantityHistoryOrder[])))
+            }).pipe(
+              map(({ items, historial }) => ({ proveedor, items, historial })),
+              catchError(() => of({ proveedor, items: [] as SugerenciaPedidoItem[], historial: [] as QuantityHistoryOrder[] }))
             )
           );
 
@@ -68,14 +77,18 @@ export class RealizarPedidoSugeridoStateService {
                 acc[resultado.proveedor.id.toString()] = JSON.parse(JSON.stringify(resultado.items));
                 return acc;
               }, {});
-              return { proveedoresConItems, pedidosPorProveedor };
+              const historialPorProveedor = resultados.reduce<Record<string, QuantityHistoryOrder[]>>((acc, resultado) => {
+                acc[resultado.proveedor.id.toString()] = resultado.historial;
+                return acc;
+              }, {});
+              return { proveedoresConItems, pedidosPorProveedor, historialPorProveedor };
             })
           );
         }),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
-        next: ({ proveedoresConItems, pedidosPorProveedor }) => {
+        next: ({ proveedoresConItems, pedidosPorProveedor, historialPorProveedor }) => {
           this.proveedores.set(proveedoresConItems);
           const seleccionado =
             proveedoresConItems.find(proveedor => proveedor.id.toString() === id?.toString()) ??
@@ -84,18 +97,20 @@ export class RealizarPedidoSugeridoStateService {
           this.proveedor.set(seleccionado);
           this.proveedorId.set(Number(seleccionado?.id ?? 0));
           this.pedidosPorProveedor.set(pedidosPorProveedor);
+          this.historialPorProveedor.set(historialPorProveedor);
           this.sugerencias.set(seleccionado ? pedidosPorProveedor[seleccionado.id.toString()] ?? [] : []);
           this.pedidoItems.set(seleccionado ? pedidosPorProveedor[seleccionado.id.toString()] ?? [] : []);
-          this._loading.set(false);
+          this.#loading.set(false);
         },
         error: () => {
           this.proveedores.set([]);
           this.proveedor.set(null);
           this.proveedorId.set(0);
           this.pedidosPorProveedor.set({});
+          this.historialPorProveedor.set({});
           this.sugerencias.set([]);
           this.pedidoItems.set([]);
-          this._loading.set(false);
+          this.#loading.set(false);
         }
       });
   }
@@ -111,18 +126,25 @@ export class RealizarPedidoSugeridoStateService {
 
     if (!proveedor) return;
 
-    this._loading.set(true);
-    this.api.getInsumosAReponer(proveedor.id)
+    this.#loading.set(true);
+    forkJoin({
+      items: this.api.getInsumosAReponer(proveedor.id).pipe(catchError(() => of([] as SugerenciaPedidoItem[]))),
+      historial: this.api.getHistorialPedidos(proveedor.id).pipe(catchError(() => of([] as QuantityHistoryOrder[])))
+    })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: items => {
+        next: ({ items, historial }) => {
           this.sugerencias.set(items);
           this.pedidoItems.set(JSON.parse(JSON.stringify(items)));
           this.pedidosPorProveedor.update(pedidos => ({
             ...pedidos,
             [proveedor.id.toString()]: JSON.parse(JSON.stringify(items))
           }));
-          this._loading.set(false);
+          this.historialPorProveedor.update(historiales => ({
+            ...historiales,
+            [proveedor.id.toString()]: historial
+          }));
+          this.#loading.set(false);
         },
         error: () => {
           this.sugerencias.set([]);
@@ -131,7 +153,11 @@ export class RealizarPedidoSugeridoStateService {
             ...pedidos,
             [proveedor.id.toString()]: []
           }));
-          this._loading.set(false);
+          this.historialPorProveedor.update(historiales => ({
+            ...historiales,
+            [proveedor.id.toString()]: []
+          }));
+          this.#loading.set(false);
         }
       });
   }
@@ -149,10 +175,7 @@ export class RealizarPedidoSugeridoStateService {
   }
 
 onCantidadCambiada(proveedorId: string | number, item: SugerenciaPedidoItem, val: number | null): void {
-    let cantidad = val ?? 1;
-    if (cantidad <= 0) {
-      cantidad = 1;
-    }
+    const cantidad = val == null || val < 0 ? 0 : val;
 
     const key = proveedorId.toString();
     this.pedidosPorProveedor.update(pedidos => ({
@@ -189,6 +212,10 @@ onCantidadCambiada(proveedorId: string | number, item: SugerenciaPedidoItem, val
     return this.observacionesPorProveedor()[proveedorId.toString()] ?? '';
   }
 
+  obtenerHistorialProveedor(proveedorId: string | number): QuantityHistoryOrder[] {
+    return this.historialPorProveedor()[proveedorId.toString()] ?? [];
+  }
+
   calcularMontoProveedor(proveedorId: string | number): number {
     return this.obtenerItemsProveedor(proveedorId)
       .reduce((total, item) => total + (item.precioUnitario * item.cantidadSugerida), 0);
@@ -219,6 +246,12 @@ onCantidadCambiada(proveedorId: string | number, item: SugerenciaPedidoItem, val
       .filter(p => !texto || p.nombre.toLowerCase().includes(texto));
   });
 
+  productoExtraSeleccionado = computed(() => {
+    const productoId = this.productoExtraSeleccionadoId();
+    if (!productoId) return null;
+    return this.productosDisponiblesPedido().find(item => item.productoId.toString() === productoId) ?? null;
+  });
+
 abrirAgregarIngrediente(proveedorId: number | string): void {
     this.proveedorAgregarIngredienteId.set(proveedorId);
     this.busquedaIngrediente.set('');
@@ -226,8 +259,7 @@ abrirAgregarIngrediente(proveedorId: number | string): void {
     this.cantidadIngrediente.set(1);
     this.precioIngrediente.set(null);
 
-    // Cargar TODOS los insumos disponibles (no solo los a reponer)
-    this.api.getProductosDisponibles()
+    this.api.getInsumosProveedor(proveedorId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (items: Insumo[]) => {
@@ -248,6 +280,10 @@ abrirAgregarIngrediente(proveedorId: number | string): void {
 
   cerrarAgregarIngrediente(): void {
     this.proveedorAgregarIngredienteId.set(null);
+    this.busquedaIngrediente.set('');
+    this.productoExtraSeleccionadoId.set('');
+    this.cantidadIngrediente.set(1);
+    this.precioIngrediente.set(null);
   }
 
 seleccionarIngredienteExtra(productoId: string): void {
@@ -307,7 +343,10 @@ seleccionarIngredienteExtra(productoId: string): void {
       [key]: [...(pedidos[key] ?? []), nuevoItem]
     }));
 
-    this.cerrarAgregarIngrediente();
+    this.busquedaIngrediente.set('');
+    this.productoExtraSeleccionadoId.set('');
+    this.cantidadIngrediente.set(1);
+    this.precioIngrediente.set(null);
   }
   // ============================================================
   // FIN TODO REFACTOR

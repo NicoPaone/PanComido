@@ -4,7 +4,7 @@ import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
 import { Router } from '@angular/router';
 import { HeaderNroDeMesa } from '../components/header-nro-de-mesa/header-nro-de-mesa';
-import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
+import { configuracionRestauranteMock } from '../../../../infra/mocks/configuracion-restaurante.mock-data';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

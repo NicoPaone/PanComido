@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { HeaderCantidadPersonas } from '../components/header-cantidad-personas/header-cantidad-personas';
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
-import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
+import { configuracionRestauranteMock } from '../../../../infra/mocks/configuracion-restaurante.mock-data';
 import { ComandaState } from '../../services/comanda-state';
 
 @Component({

@@ -16,9 +16,9 @@ export class MesaState {
   notificacion = this.lectura.notificacion;
 
   // Estado de edición (solo gerente)
-  private _isEditorMode = signal<boolean>(false);
-  private _mesasBackup: Mesa[] = [];
-  isEditorMode = this._isEditorMode.asReadonly();
+  readonly #isEditorMode = signal<boolean>(false);
+  #mesasBackup: Mesa[] = [];
+  isEditorMode = this.#isEditorMode.asReadonly();
 
   // Métodos que delega a MesaLecturaState
   cargarMesas(): void { this.lectura.cargarMesas(); }
@@ -29,16 +29,16 @@ export class MesaState {
 
   // Métodos de EDICIÓN (solo gerente)
   toggleEditorMode(): void {
-    if (!this._isEditorMode()) {
-      this._mesasBackup = JSON.parse(JSON.stringify(this.lectura.mesas()));
+    if (!this.#isEditorMode()) {
+      this.#mesasBackup = JSON.parse(JSON.stringify(this.lectura.mesas()));
     }
     this.lectura.seleccionarMesa(null);
-    this._isEditorMode.set(!this._isEditorMode());
+    this.#isEditorMode.set(!this.#isEditorMode());
   }
 
   cancelarEdicion(): void {
-    this.lectura.setMesas(JSON.parse(JSON.stringify(this._mesasBackup)));
-    this._isEditorMode.set(false);
+    this.lectura.setMesas(JSON.parse(JSON.stringify(this.#mesasBackup)));
+    this.#isEditorMode.set(false);
   }
 
   moverMesa(id: number, deltaX: number, deltaY: number): void {
@@ -132,7 +132,7 @@ export class MesaState {
 
     this.mesaService.guardarMapa(mesas).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
-        this._isEditorMode.set(false);
+        this.#isEditorMode.set(false);
         this.lectura.mostrarNotificacion('Mapa guardado con éxito', 'exito');
       },
       error: (err) => {

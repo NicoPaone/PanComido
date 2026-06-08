@@ -328,13 +328,52 @@
   font-weight: 900;
 }
 
+.quantity-tools-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.quantity-clear-btn {
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 0.12rem 0.2rem;
+}
+
+.quantity-clear-btn:hover {
+  color: #dc2626;
+}
+
 .quantity-presets {
   display: flex;
   flex-wrap: wrap;
   gap: 0.32rem;
 }
 
+.quantity-presets-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  width: fit-content;
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.quantity-presets-header .material-symbols-outlined {
+  color: #1691ac;
+  font-size: 0.9rem;
+}
+
 .quantity-preset {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
   border: 1px solid rgba(22, 145, 172, 0.16);
   border-radius: 8px;
   background: rgba(22, 145, 172, 0.06);
@@ -350,6 +389,19 @@
   background: #1691ac;
   border-color: #1691ac;
   color: #ffffff;
+}
+
+.quantity-preset.smart {
+  border-color: rgba(245, 158, 11, 0.45);
+  background: linear-gradient(to top, rgba(245, 158, 11, 0.16), rgba(255, 255, 255, 0.8));
+  color: #b45309;
+}
+
+.preset-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: #f59e0b;
 }
 
 .quantity-equivalence {
@@ -536,6 +588,9 @@
 .inline-ingredient-list {
   display: grid;
   gap: 0.5rem;
+  max-height: 330px;
+  overflow: auto;
+  padding-right: 0.2rem;
 }
 
 .inline-ingredient-item {
@@ -551,8 +606,9 @@
 }
 
 .inline-ingredient-item.selected {
-  border-color: #1691ac;
-  background: rgba(22, 145, 172, 0.06);
+  border-color: rgba(245, 158, 11, 0.55);
+  background: rgba(245, 158, 11, 0.1);
+  box-shadow: inset 4px 0 0 #f59e0b;
 }
 
 .inline-ingredient-item small {
@@ -570,22 +626,71 @@
 }
 
 .inline-ingredient-selection {
+  position: sticky;
+  top: -1.25rem;
+  z-index: 2;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(150px, 1.2fr) minmax(110px, 0.75fr) minmax(110px, 0.75fr) auto;
   gap: 0.75rem;
   padding: 0.9rem;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.2);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.76);
+  background:
+    linear-gradient(135deg, rgba(255, 247, 237, 0.96), rgba(255, 255, 255, 0.98));
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  align-items: end;
 }
 
-.inline-ingredient-selection label {
+.selected-extra-summary,
+.inline-ingredient-selection label,
+.readonly-price-box {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
   color: #64748b;
   font-size: 0.8rem;
   font-weight: 800;
+}
+
+.selected-extra-summary strong {
+  color: #0f172a;
+  font-size: 0.95rem;
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+.selected-extra-summary small {
+  color: #64748b;
+  font-size: 0.78rem;
+}
+
+.inline-ingredient-selection .modal-action-btn {
+  min-height: 40px;
+}
+
+.readonly-price-box {
+  min-height: 40px;
+  justify-content: center;
+  border: 1px solid rgba(245, 158, 11, 0.16);
+  border-radius: 10px;
+  background: rgba(245, 158, 11, 0.07);
+  padding: 0.5rem 0.7rem;
+}
+
+.readonly-price-box strong {
+  color: #b45309;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.inline-ingredient-hint {
+  border: 1px dashed rgba(22, 145, 172, 0.28);
+  border-radius: 10px;
+  background: rgba(22, 145, 172, 0.06);
+  color: #0f766e;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 0.75rem 0.85rem;
 }
 
 .pedido-modal-actions {
@@ -666,5 +771,9 @@
   .pedido-modal-actions {
     display: grid;
     grid-template-columns: 1fr;
+  }
+
+  .inline-ingredient-selection {
+    top: -1rem;
   }
 }

@@ -275,7 +275,7 @@
 
                   <!-- Cantidad con stepper -->
                   <div class="field-group quantity-stepper-field">
-                    <span>Cant. ({{ unidadDisplay() }})</span>
+                    <span>Cantidad en {{ unidadDisplayCompleta() }}</span>
                     <div class="quantity-stepper">
                       <button type="button" class="step-btn" (click)="ajustarCantidadDisplay(-cantidadPasoDisplay())">−</button>
                       <input
@@ -286,14 +286,28 @@
                         [placeholder]="cantidadPlaceholderDisplay()"
                         [ngModel]="cantidadDisplay()"
                         (ngModelChange)="setCantidadDisplay($event)">
-                      <span class="step-unit">{{ unidadDisplay() }}</span>
                       <button type="button" class="step-btn" (click)="ajustarCantidadDisplay(cantidadPasoDisplay())">+</button>
                     </div>
+                    <div class="quantity-tools-row">
+                      <button type="button" class="quantity-clear-btn" (click)="limpiarCantidadDisplay()">Limpiar</button>
+                    </div>
                     @if (presetsCantidad().length > 0) {
+                      <div class="quantity-presets-header" title="Los primeros accesos pueden aparecer segun cantidades frecuentes usadas antes con este proveedor.">
+                        <span>Accesos rápidos</span>
+                        <span class="material-symbols-outlined">info</span>
+                      </div>
                       <div class="quantity-presets">
                         @for (preset of presetsCantidad(); track preset.label) {
-                          <button type="button" class="quantity-preset" [class.active]="cantidadDisplay() === preset.value" (click)="setCantidadDisplay(preset.value)">
+                          <button
+                            type="button"
+                            class="quantity-preset"
+                            [class.smart]="preset.source === 'history'"
+                            [title]="preset.source === 'history' ? 'Cantidad frecuente para este proveedor e insumo' : 'Cantidad base sugerida'"
+                            (click)="sumarCantidadPreset(preset.value)">
                             {{ preset.label }}
+                            @if (preset.source === 'history') {
+                              <span class="preset-dot"></span>
+                            }
                           </button>
                         }
                       </div>

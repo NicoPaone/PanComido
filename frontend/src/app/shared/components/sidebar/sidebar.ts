@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { MenuItem, UserProfile } from '../../../core/models/domain/menu-item';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { AuthService } from '../../../core/services/auth.service';
 import {
   faUsers,
@@ -171,8 +172,8 @@ export class SidebarComponent {
     this.onLogout.emit();
   }
 
-  getIconComponent(iconName: string): any {
-    const iconMap: Record<string, any> = {
+  getIconComponent(iconName: string): IconProp | undefined {
+    const iconMap: Record<string, IconProp> = {
       'faUsers': this.faUsers,
       'faCog': this.faCog,
       'faChartBar': this.faChartBar,
@@ -188,6 +189,6 @@ export class SidebarComponent {
       'faCarrot': this.faCarrot,
       'faListCheck': this.faListCheck
     };
-    return iconMap[iconName] || null;
+    return iconMap[iconName] || undefined;
   }
 }

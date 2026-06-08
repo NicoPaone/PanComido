@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../../../core/services/api-service';
 import { Plato } from '../../../../core/models/domain/plato';
+import { CrearPlatoRequestDto } from '../../../../core/models/dtos/requests/crear-plato.request';
 
 export interface ItemDesplegableDto {
   id: number;
@@ -31,7 +32,7 @@ export class CrearPlatoApiService {
     return this.api.get<DatosFormularioCrearPlatoResponseDto>(`${this.endpoint}/formulario-plato`);
   }
 
-  crearPlato(plato: any): Observable<any> {
-    return this.api.post<any>(this.endpoint, plato);
+  crearPlato(request: CrearPlatoRequestDto): Observable<Plato> {
+    return this.api.post<Plato>(this.endpoint, request);
   }
 }

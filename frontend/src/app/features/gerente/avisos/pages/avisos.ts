@@ -25,18 +25,18 @@ import { ArsCurrencyPipe } from '../../../../shared/pipes/ars-currency.pipe';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AvisosPage implements OnInit {
-  
+
   state = inject(AvisosStateService);
   pedidoState = inject(VencimientosState);
   pedidoSugeridoState = inject(RealizarPedidoSugeridoStateService);
   router = inject(Router);
-  
+
   isPedidoOffcanvasOpen = false;
   cantidadAgregar = 1;
   stockAvisoSeleccionado: Aviso | null = null;
   vencimientoSeleccionado: Aviso | null = null;
   panelPreviewAbierto = signal<'sistema' | 'ia' | null>(null);
-  
+
   isStockExpanded = signal(true);
   isVencimientosExpanded = signal(true);
 
@@ -48,21 +48,21 @@ export class AvisosPage implements OnInit {
     this.isVencimientosExpanded.update(v => !v);
   }
 
-abrirPreviewSugerencia(tipo: 'sistema' | 'ia') {
-  if (this.panelPreviewAbierto() === tipo) {
-    this.panelPreviewAbierto.set(null);
-    return;
-  }
-  this.panelPreviewAbierto.set(tipo);
+  abrirPreviewSugerencia(tipo: 'sistema' | 'ia') {
+    if (this.panelPreviewAbierto() === tipo) {
+      this.panelPreviewAbierto.set(null);
+      return;
+    }
+    this.panelPreviewAbierto.set(tipo);
 
-  if (tipo === 'sistema') {
-    this.pedidoSugeridoState.cargarDatos();
-  }
+    if (tipo === 'sistema') {
+      this.pedidoSugeridoState.cargarDatos();
+    }
 
-  if (tipo === 'ia') {
-    this.state.generarSugerenciasIA();
+    if (tipo === 'ia') {
+      this.state.generarSugerenciasIA();
+    }
   }
-}
 
   irASugerenciasSistemaFull() {
     this.router.navigate(['/staff/gerente/realizar-pedido-sugerido']);
@@ -95,17 +95,17 @@ abrirPreviewSugerencia(tipo: 'sistema' | 'ia') {
 
   abrirPedidoStock(aviso: Aviso) {
     this.stockAvisoSeleccionado = aviso;
-    this.cantidadAgregar = this.cantidadAgregar = 1;;
-    
-    // 🔥 EL FIX: Ahora pasamos objetos puros, sin inferencias extrañas
+    this.cantidadAgregar = 1;
+
+
     this.pedidoState.seleccionarIngredienteParaPedido({
-      id: Number(aviso.id), // Aseguramos que sea número si el estado lo exige
+      id: Number(aviso.id),
       nombre: aviso.titulo,
-      fechaVencimiento: '', 
+      fechaVencimiento: '',
       stockDisponible: this.getStockDisponible(aviso),
       unidadMedida: this.getUnidadMedida(aviso)
     });
-    
+
     this.isPedidoOffcanvasOpen = true;
   }
 
@@ -130,7 +130,7 @@ abrirPreviewSugerencia(tipo: 'sistema' | 'ia') {
   confirmarPedidoStock() {
     const pedido = this.pedidoState.crearPedidoPendiente(this.cantidadAgregar);
     const aviso = this.stockAvisoSeleccionado;
-    
+
     if (!pedido || !aviso) return;
 
     pedido.pipe(take(1)).subscribe({
@@ -163,7 +163,7 @@ abrirPreviewSugerencia(tipo: 'sistema' | 'ia') {
   // Devuelve la unidad desde el payload
   private getUnidadMedida(aviso: Aviso): UnidadMedida {
     const defaultUnidad: UnidadMedida = { id: 1, nombre: 'Kg' };
-    
+
     if (aviso.payloadStock) {
       const u = aviso.payloadStock.unidadMedida.toUpperCase();
       if (u === 'L' || u === 'LT') return { id: 3, nombre: 'Lt' };
@@ -171,11 +171,11 @@ abrirPreviewSugerencia(tipo: 'sistema' | 'ia') {
       if (u === 'GR') return { id: 2, nombre: 'Gr' };
       return { id: 1, nombre: aviso.payloadStock.unidadMedida };
     }
-    
+
     return defaultUnidad;
   }
 
-nombreUnidad(unidadMedida: UnidadMedida | string | null | undefined): string {
+  nombreUnidad(unidadMedida: UnidadMedida | string | null | undefined): string {
     if (!unidadMedida) return '';
     return typeof unidadMedida === 'string' ? unidadMedida : unidadMedida.nombre;
   }

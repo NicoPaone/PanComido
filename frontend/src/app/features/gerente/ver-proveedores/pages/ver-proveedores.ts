@@ -17,6 +17,7 @@ import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
 import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo';
 import { ArsCurrencyPipe } from '../../../../shared/pipes/ars-currency.pipe';
 import { PriceNoteComponent } from '../../../../shared/ui/price-note/price-note';
+import { buildSmartQuantityPresets, QuantityPreset } from '../../../../shared/utils/quantity-presets';
 
 @Component({
   selector: 'app-ver-proveedores',
@@ -245,56 +246,91 @@ export class VerProveedoresComponent implements OnInit {
     this.setCantidadDisplay(siguiente);
   }
 
+  sumarCantidadPreset(valor: number): void {
+    const actual = this.cantidadDisplay() ?? 0;
+    this.setCantidadDisplay(actual + valor);
+  }
+
+  limpiarCantidadDisplay(): void {
+    this.setCantidadDisplay(0);
+  }
+
   cantidadMinimaDisplay(): number {
-    return this.usaUnidadMenor() ? 1 : this.cantidadMinimaProducto;
+    return 0;
   }
 
   cantidadPasoDisplay(): number {
     if (this.esUnidadPeso()) return 100;
     if (this.esUnidadGramos()) return 10;
-    if (this.esUnidadVolumen()) return 100;
+    if (this.esUnidadVolumen() || this.esUnidadMililitros()) return 100;
     return this.cantidadPasoProducto;
   }
 
   cantidadPlaceholderDisplay(): string {
     if (this.esUnidadPeso()) return 'Ej: 100';
     if (this.esUnidadGramos()) return 'Ej: 10';
-    if (this.esUnidadVolumen()) return 'Ej: 250';
+    if (this.esUnidadVolumen() || this.esUnidadMililitros()) return 'Ej: 500';
     return this.cantidadPlaceholderProducto;
   }
 
   unidadDisplay(): string {
     if (this.esUnidadPeso()) return 'g';
     if (this.esUnidadGramos()) return 'gr';
-    if (this.esUnidadVolumen()) return 'ml';
+    if (this.esUnidadVolumen() || this.esUnidadMililitros()) return 'ml';
     return this.nombreUnidad(this.productoBaseActual()?.unidadMedida).toLowerCase() || 'un';
   }
 
-  presetsCantidad(): Array<{ label: string; value: number }> {
+  unidadDisplayCompleta(): string {
+    if (this.esUnidadPeso() || this.esUnidadGramos()) return 'gramos';
+    if (this.esUnidadVolumen() || this.esUnidadMililitros()) return 'mililitros';
+
+    const unidad = this.nombreUnidad(this.productoBaseActual()?.unidadMedida).trim().toUpperCase();
+    if (['UN', 'UNIDAD', 'UNIDADES'].includes(unidad)) return 'unidades';
+    if (['PORCION', 'PORCIONES'].includes(unidad)) return 'porciones';
+    return this.nombreUnidad(this.productoBaseActual()?.unidadMedida).toLowerCase() || 'unidades';
+  }
+
+  presetsCantidad(): QuantityPreset[] {
+    const producto = this.productoBaseActual();
+    const fallback = this.presetsCantidadBase();
+    if (!producto) return fallback;
+
+    return buildSmartQuantityPresets(
+      this.historialProveedor(),
+      producto.id,
+      this.nombreUnidad(producto.unidadMedida),
+      fallback
+    );
+  }
+
+  private presetsCantidadBase(): QuantityPreset[] {
     if (this.esUnidadPeso()) {
       return [
         { label: '100 g', value: 100 },
-        { label: '250 g', value: 250 },
         { label: '500 g', value: 500 },
-        { label: '1 kg', value: 1000 }
+        { label: '1 kg', value: 1000 },
+        { label: '10 kg', value: 10000 },
+        { label: '50 kg', value: 50000 }
       ];
     }
 
     if (this.esUnidadGramos()) {
       return [
-        { label: '10 gr', value: 10 },
-        { label: '25 gr', value: 25 },
-        { label: '50 gr', value: 50 },
-        { label: '100 gr', value: 100 }
+        { label: '100 gr', value: 100 },
+        { label: '500 gr', value: 500 },
+        { label: '1 kg', value: 1000 },
+        { label: '10 kg', value: 10000 },
+        { label: '50 kg', value: 50000 }
       ];
     }
 
-    if (this.esUnidadVolumen()) {
+    if (this.esUnidadVolumen() || this.esUnidadMililitros()) {
       return [
         { label: '100 ml', value: 100 },
-        { label: '250 ml', value: 250 },
         { label: '500 ml', value: 500 },
-        { label: '1 l', value: 1000 }
+        { label: '1 l', value: 1000 },
+        { label: '10 l', value: 10000 },
+        { label: '50 l', value: 50000 }
       ];
     }
 
@@ -325,6 +361,10 @@ export class VerProveedoresComponent implements OnInit {
       return `Se agregará como ${this.formatearEquivalencia(cantidad, 'l', 'ml', 1000)}`;
     }
 
+    if (['ML', 'MILILITRO', 'MILILITROS'].includes(unidad) && cantidad >= 1000) {
+      return `Equivale a ${this.formatearEquivalencia(cantidad / 1000, 'l', 'ml', 1000)}`;
+    }
+
     return null;
   }
 
@@ -345,6 +385,11 @@ export class VerProveedoresComponent implements OnInit {
   private esUnidadVolumen(): boolean {
     const unidad = this.nombreUnidad(this.productoBaseActual()?.unidadMedida).trim().toUpperCase();
     return ['L', 'LT', 'LITRO', 'LITROS'].includes(unidad);
+  }
+
+  private esUnidadMililitros(): boolean {
+    const unidad = this.nombreUnidad(this.productoBaseActual()?.unidadMedida).trim().toUpperCase();
+    return ['ML', 'MILILITRO', 'MILILITROS'].includes(unidad);
   }
 
   private formatearEquivalencia(cantidad: number, unidadMayor: string, unidadMenor: string, factor: number): string {

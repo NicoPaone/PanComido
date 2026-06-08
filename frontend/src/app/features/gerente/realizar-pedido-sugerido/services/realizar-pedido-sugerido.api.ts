@@ -55,6 +55,20 @@ export class RealizarPedidoSugeridoApiService {
     );
   }
 
+  getInsumosProveedor(id: number | string): Observable<Insumo[]> {
+    return this.api.get<any[]>(`Proveedor/${id}/insumos`).pipe(
+      map(insumos => insumos.map(insumo => ({
+        id: insumo.id,
+        nombre: insumo.nombre ?? '',
+        stockActual: insumo.stockActual ?? insumo.stock ?? 0,
+        vencimiento: insumo.vencimiento ?? insumo.fechaVencimiento ?? '',
+        unidadMedida: this.mapUnidadMedida(insumo.unidadMedida),
+        categoriaIngrediente: this.mapCategoriaInsumo(insumo.categoria ?? insumo.categoriaIngrediente),
+        stockMinimo: insumo.stockMinimo ?? 0
+      })))
+    );
+  }
+
   crearPedidoProveedor(id: number | string, pedido: PedidoProveedorRequest): Observable<unknown> {
     return this.api.post<unknown>(`pedido-proveedor/${id}/crear-pedido`, {
       items: pedido.items.map(item => ({
@@ -98,12 +112,13 @@ export class RealizarPedidoSugeridoApiService {
     return { id: 0, descripcion: String(valor ?? 'Almacen'), tipoAplica: 'Ingrediente' };
   }
 
-  getHistorialPedidos(id: number | string): Observable<{ items: { id: string | number; precioUnitario: number }[]; fecha: string }[]> {
+  getHistorialPedidos(id: number | string): Observable<{ items: { id: string | number; cantidad: number; precioUnitario: number }[]; fecha: string }[]> {
     return this.api.get<any[]>(`Proveedor/${id}/historial-pedidos`).pipe(
       map(pedidos => pedidos.map(p => ({
         fecha: p.fecha ?? '',
         items: (p.itemsInsumo ?? []).map((item: any) => ({
           id: item.insumoId,
+          cantidad: item.cantidad ?? 0,
           precioUnitario: item.precioCompra ?? 0
         }))
       })))
