@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit, inject, ElementRef, viewChild, ChangeDetectionStrategy } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, inject, ElementRef, viewChild, ChangeDetectionStrategy, signal } from '@angular/core';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { Buscador } from '../../../../shared/ui/buscador/buscador';
@@ -22,7 +22,7 @@ import { buildSmartQuantityPresets, QuantityPreset } from '../../../../shared/ut
 @Component({
   selector: 'app-ver-proveedores',
   standalone: true,
-  imports: [DatePipe, FormsModule, FontAwesomeModule, Buscador, Boton, Dropdown, PageToolbar, GlassCard, ProveedorListComponent, RouterModule, ArsCurrencyPipe, PriceNoteComponent],
+  imports: [DatePipe, FormsModule, ReactiveFormsModule, FontAwesomeModule, Buscador, Boton, Dropdown, PageToolbar, GlassCard, ProveedorListComponent, RouterModule, ArsCurrencyPipe, PriceNoteComponent],
   templateUrl: './ver-proveedores.html',
   styleUrls: ['./ver-proveedores.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -30,6 +30,7 @@ import { buildSmartQuantityPresets, QuantityPreset } from '../../../../shared/ut
 export class VerProveedoresComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly state = inject(VerProveedoresState);
+  private readonly fb = inject(FormBuilder);
 
   private readonly pedidoModalCard = viewChild<ElementRef<HTMLElement>>('pedidoModalCard');
 
@@ -64,6 +65,32 @@ export class VerProveedoresComponent implements OnInit {
   errorInsumos = this.state.errorInsumos;
   historialProveedor = this.state.historialProveedor;
 
+  proveedorEditando = signal<Proveedor | null>(null);
+  proveedorAEliminar = signal<Proveedor | null>(null);
+  categoriasEdicion = signal<string[]>([]);
+
+  proveedorForm = this.fb.group({
+    nombre: ['', [Validators.required, Validators.minLength(3)]],
+    contacto: ['', [Validators.required, Validators.minLength(3)]],
+    telefono: ['', [Validators.pattern(/^\+?[0-9\s-]{7,15}$/)]],
+    email: ['', [Validators.email]],
+    direccion: [''],
+    activo: [true],
+    customCategory: ['']
+  });
+
+  readonly categoriasBase = [
+    'Carnes',
+    'Lácteos',
+    'Verduras',
+    'Bebidas',
+    'Panificados',
+    'Limpieza',
+    'Condimentos',
+    'Aceites y Grasas',
+    'Huevos'
+  ];
+
   faCheck = faCheck;
   faXmark = faXmark;
   readonly Math = Math;
@@ -80,6 +107,87 @@ export class VerProveedoresComponent implements OnInit {
 
   abrirNuevoProveedorRoute(): void {
     this.router.navigate(['/staff', 'gerente', 'nuevo-proveedor']);
+  }
+
+  abrirEditarProveedor(proveedor: Proveedor): void {
+    this.proveedorEditando.set(proveedor);
+    this.categoriasEdicion.set([...(proveedor.categorias ?? [])]);
+    this.proveedorForm.reset({
+      nombre: proveedor.nombre,
+      contacto: proveedor.contacto,
+      telefono: proveedor.telefono,
+      email: proveedor.email,
+      direccion: proveedor.direccion,
+      activo: proveedor.activo,
+      customCategory: ''
+    });
+  }
+
+  cerrarEditarProveedor(): void {
+    this.proveedorEditando.set(null);
+    this.categoriasEdicion.set([]);
+    this.proveedorForm.reset({ activo: true });
+  }
+
+  guardarEdicionProveedor(): void {
+    const proveedor = this.proveedorEditando();
+    if (!proveedor || this.proveedorForm.invalid || this.categoriasEdicion().length === 0) {
+      this.proveedorForm.markAllAsTouched();
+      return;
+    }
+
+    const formVal = this.proveedorForm.value;
+    this.state.actualizarProveedorLocal({
+      ...proveedor,
+      nombre: formVal.nombre!.trim(),
+      contacto: formVal.contacto!.trim(),
+      telefono: formVal.telefono?.trim() ?? '',
+      email: formVal.email?.trim() ?? '',
+      direccion: formVal.direccion?.trim() ?? '',
+      activo: formVal.activo ?? true,
+      categorias: this.categoriasEdicion()
+    });
+    this.cerrarEditarProveedor();
+  }
+
+  abrirEliminarProveedor(proveedor: Proveedor): void {
+    this.proveedorAEliminar.set(proveedor);
+  }
+
+  cerrarEliminarProveedor(): void {
+    this.proveedorAEliminar.set(null);
+  }
+
+  confirmarEliminarProveedor(): void {
+    const proveedor = this.proveedorAEliminar();
+    if (!proveedor) return;
+    this.state.eliminarProveedorLocal(proveedor.id);
+    this.cerrarEliminarProveedor();
+  }
+
+  categoriasDisponiblesEdicion(): string[] {
+    return Array.from(new Set([...this.categoriasBase, ...this.categoriasEdicion()])).sort();
+  }
+
+  toggleCategoriaEdicion(categoria: string): void {
+    this.categoriasEdicion.update(categorias =>
+      categorias.includes(categoria)
+        ? categorias.filter(item => item !== categoria)
+        : [...categorias, categoria]
+    );
+  }
+
+  agregarCategoriaEdicion(): void {
+    const control = this.proveedorForm.get('customCategory');
+    const categoria = control?.value?.trim();
+    if (!categoria || this.categoriasEdicion().includes(categoria)) return;
+
+    this.categoriasEdicion.update(categorias => [...categorias, categoria]);
+    control?.reset();
+  }
+
+  removerCategoriaEdicion(categoria: string): void {
+    this.categoriasEdicion.update(categorias => categorias.filter(item => item !== categoria));
   }
 
   irARealizarPedidoSugeridoGeneral(): void {

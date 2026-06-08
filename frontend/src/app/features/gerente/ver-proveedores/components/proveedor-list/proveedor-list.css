@@ -115,17 +115,40 @@
 /* ── Botones de acción (icon-only) ── */
 .proveedor-acciones {
   display: flex;
+  align-items: center;
   gap: 6px;
   flex-shrink: 0;
+}
+
+.accion-grupo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.accion-grupo-admin {
+  position: relative;
+  padding-left: 10px;
+}
+
+.accion-grupo-admin::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.55);
 }
 
 .icon-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
   border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.18s ease;
@@ -174,6 +197,20 @@
   color: #0f172a;
   border-color: #cbd5e1;
   transform: translateY(-1px);
+}
+
+.icon-btn-danger {
+  background-color: rgba(239, 68, 68, 0.08);
+  color: #dc2626;
+  border-color: rgba(239, 68, 68, 0.16);
+}
+
+.icon-btn-danger:hover {
+  background-color: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.2);
 }
 
 /* ── Empty state ── */

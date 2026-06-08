@@ -254,6 +254,38 @@ export class VerProveedoresState {
     this.panelModo.set('historial');
   }
 
+  actualizarProveedorLocal(proveedorActualizado: Proveedor): void {
+    this.proveedores.update(proveedores =>
+      proveedores.map(proveedor =>
+        proveedor.id === proveedorActualizado.id ? { ...proveedor, ...proveedorActualizado } : proveedor
+      )
+    );
+    this.proveedorSeleccionadoId.set(proveedorActualizado.id);
+    this.mensajeAccion.set('Proveedor actualizado localmente. Se sincronizará cuando esté disponible el backend.');
+  }
+
+  eliminarProveedorLocal(proveedorId: number | string): void {
+    const proveedoresRestantes = this.proveedores().filter(proveedor => proveedor.id !== proveedorId);
+    this.proveedores.set(proveedoresRestantes);
+
+    if (this.proveedorSeleccionadoId() === proveedorId) {
+      const siguiente = proveedoresRestantes[0] ?? null;
+      this.proveedorSeleccionadoId.set(siguiente?.id ?? null);
+      this.#historialProveedor.set([]);
+      this.productos.set([]);
+      this.pedidoItems.set([]);
+      this.pedidoHistorialSeleccionado.set(null);
+      this.panelModo.set('historial');
+
+      if (siguiente) {
+        this.cargarHistorial(siguiente.id);
+        this.cargarInsumosProveedor(siguiente.id);
+      }
+    }
+
+    this.mensajeAccion.set('Proveedor eliminado localmente. Se sincronizará cuando esté disponible el backend.');
+  }
+
   abrirDetallePedido(pedido: PedidoProveedor): void {
     this.pedidoHistorialSeleccionado.set(pedido);
   }

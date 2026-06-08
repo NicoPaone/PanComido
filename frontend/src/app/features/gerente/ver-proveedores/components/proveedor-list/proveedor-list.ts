@@ -17,6 +17,8 @@ export class ProveedorListComponent {
   seleccionar = output<Proveedor>();
   crearPedido = output<Proveedor>();
   verHistorial = output<Proveedor>();
+  editar = output<Proveedor>();
+  eliminar = output<Proveedor>();
 
   esSeleccionado(proveedorId: number | string): boolean {
     return this.proveedorSeleccionadoId() === proveedorId;

@@ -25,12 +25,22 @@
         </div>
 
         <div class="proveedor-acciones" (click)="$event.stopPropagation()">
-          <button class="icon-btn icon-btn-amber" title="Nuevo pedido" (click)="crearPedido.emit(proveedor)">
-            <span class="material-symbols-outlined">add_shopping_cart</span>
-          </button>
-          <button class="icon-btn icon-btn-outline" title="Ver historial" (click)="verHistorial.emit(proveedor)">
-            <span class="material-symbols-outlined">history</span>
-          </button>
+          <div class="accion-grupo accion-grupo-operativo" aria-label="Pedido e historial">
+            <button class="icon-btn icon-btn-amber" title="Nuevo pedido" (click)="crearPedido.emit(proveedor)">
+              <span class="material-symbols-outlined">add_shopping_cart</span>
+            </button>
+            <button class="icon-btn icon-btn-outline" title="Ver historial" (click)="verHistorial.emit(proveedor)">
+              <span class="material-symbols-outlined">history</span>
+            </button>
+          </div>
+          <div class="accion-grupo accion-grupo-admin" aria-label="Editar y eliminar">
+            <button class="icon-btn icon-btn-teal" title="Editar proveedor" (click)="editar.emit(proveedor)">
+              <span class="material-symbols-outlined">edit</span>
+            </button>
+            <button class="icon-btn icon-btn-danger" title="Eliminar proveedor" (click)="eliminar.emit(proveedor)">
+              <span class="material-symbols-outlined">delete</span>
+            </button>
+          </div>
         </div>
 
       </div>
