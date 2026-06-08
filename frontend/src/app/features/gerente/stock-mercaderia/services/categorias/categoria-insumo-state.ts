@@ -11,12 +11,12 @@ export class CategoriaState {
   private api = inject(CategoriaInsumoService);
   private destroyRef = inject(DestroyRef);
 
-  private _categorias = signal<CategoriaInsumo[]>([]);
-  categorias = this._categorias.asReadonly();
+  readonly #categorias = signal<CategoriaInsumo[]>([]);
+  categorias = this.#categorias.asReadonly();
 
   cargarCategorias(): void {
     this.api.obtenerCategorias().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((categorias) => {
-      this._categorias.set(categorias);
+      this.#categorias.set(categorias);
     });
   }
 

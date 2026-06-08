@@ -10,33 +10,33 @@ export class ComandaState {
 
   private api = inject(ComandaService);
   private destroyRef = inject(DestroyRef);
-  private _comandas = signal<Comanda[]>([]);
-  private _cargando = signal<boolean>(false);
+  readonly #comandas = signal<Comanda[]>([]);
+  readonly #cargando = signal<boolean>(false);
 
-  comandas = this._comandas.asReadonly();
-  cargando = this._cargando.asReadonly();
+  comandas = this.#comandas.asReadonly();
+  cargando = this.#cargando.asReadonly();
 
 
   comandasNuevas = computed(() =>
-    this._comandas().filter(c => c.estado === 'Nueva')
+    this.#comandas().filter(c => c.estado === 'Nueva')
   );
 
   comandasEnPreparacion = computed(() =>
-    this._comandas().filter(c => c.estado === 'EnPreparacion')
+    this.#comandas().filter(c => c.estado === 'EnPreparacion')
   );
 
   comandasEnEspera = computed(() =>
-    this._comandas().filter(c => c.estado === 'EnEspera')
+    this.#comandas().filter(c => c.estado === 'EnEspera')
   );
   comandasfinalizadas = computed(() =>
-    this._comandas().filter(c => c.estado === 'Finalizada')
+    this.#comandas().filter(c => c.estado === 'Finalizada')
   );
 
 
   modificarEstadoComanda(comandaId: number, tipoId: number): void {
     this.api.modificarEstadoComanda(comandaId, tipoId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (comandaActualizada) => {
-        this._comandas.update(lista =>
+        this.#comandas.update(lista =>
           lista.map(c => c.id === comandaActualizada.id
             ? comandaActualizada
             : c
@@ -49,7 +49,7 @@ export class ComandaState {
   marcarItemEntregado(comandaId: number, articuloComandaId: number): void {
     this.api.marcarItemEntregado(comandaId, articuloComandaId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (comandaActualizada) => {
-        this._comandas.update(lista =>
+        this.#comandas.update(lista =>
           lista.map(c => c.id === comandaActualizada.id ? comandaActualizada : c)
         );
       },
@@ -66,7 +66,7 @@ export class ComandaState {
         : EstadoComandaId[comandaRecibida.estado as unknown as number]) as EstadoComanda
     };
 
-    this._comandas.update(listaActual => {
+    this.#comandas.update(listaActual => {
       const existe = listaActual.some(comanda => comanda.id === normalizada.id);
       if (existe) {
         return listaActual.map(comanda => comanda.id === normalizada.id ? normalizada : comanda);
@@ -77,13 +77,13 @@ export class ComandaState {
   }
 
   cargarComandasActivas(): void {
-    this._cargando.set(true);
+    this.#cargando.set(true);
     this.api.obtenerComandasActivas().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
-        this._comandas.set(data);
-        this._cargando.set(false);
+        this.#comandas.set(data);
+        this.#cargando.set(false);
       },
-      error: () => this._cargando.set(false)
+      error: () => this.#cargando.set(false)
     })
   }
 

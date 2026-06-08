@@ -136,6 +136,8 @@ builder.Services.AddScoped<ListarMesasCasoDeUso>();
 builder.Services.AddScoped<GuardarMapaCasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosParaFormularioCrearPlato>();
 builder.Services.AddScoped<CrearPlatoCasoDeUso>();
+builder.Services.AddScoped<ModificarPlatoCasoDeUso>();
+builder.Services.AddScoped<ObtenerPlatoPorIdCasoDeUso>();
 builder.Services.AddScoped<ObtenerCartaCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConStockCriticoCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConVencimientoProximoCasoDeUso>();

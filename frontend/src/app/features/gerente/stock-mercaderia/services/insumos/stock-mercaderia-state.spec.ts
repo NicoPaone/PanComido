@@ -6,7 +6,7 @@ import { CategoriaInsumoService } from '../categorias/categoria-insumo.service';
 import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Insumo } from '../../../../../core/models/domain/insumo';
-import { INSUMOS_MOCK } from '../../../../../infra/mocks/insumo.mock';
+import { INSUMOS_MOCK } from '../../../../../infra/mocks/insumo.mock-data';
 
 describe('StockMercaderiaState', () => {
   let state: StockMercaderiaState;

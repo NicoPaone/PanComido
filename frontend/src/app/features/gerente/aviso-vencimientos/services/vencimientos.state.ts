@@ -23,73 +23,73 @@ export class VencimientosState {
     '11': 4500
   };
 
-  private _ingredientes = signal<IngredienteVencimiento[]>([]);
-  private _loadingIngredientes = signal<boolean>(false);
-  private _mensaje = signal<string | null>(null);
+  readonly #ingredientes = signal<IngredienteVencimiento[]>([]);
+  readonly #loadingIngredientes = signal<boolean>(false);
+  readonly #mensaje = signal<string | null>(null);
 
-  private _proveedoresDisponibles = signal<VencimientoProveedor[]>([]);
-  private _pedidosActivos = signal<VencimientoPedidoActivo[]>([]);
+  readonly #proveedoresDisponibles = signal<VencimientoProveedor[]>([]);
+  readonly #pedidosActivos = signal<VencimientoPedidoActivo[]>([]);
   
-  private _ingredienteSeleccionado = signal<IngredienteVencimiento | null>(null);
-  private _proveedorSeleccionado = signal<VencimientoProveedor | null>(null);
+  readonly #ingredienteSeleccionado = signal<IngredienteVencimiento | null>(null);
+  readonly #proveedorSeleccionado = signal<VencimientoProveedor | null>(null);
 
-  ingredientes = this._ingredientes.asReadonly();
-  loadingIngredientes = this._loadingIngredientes.asReadonly();
-  mensaje = this._mensaje.asReadonly();
-  proveedoresDisponibles = this._proveedoresDisponibles.asReadonly();
-  pedidosActivos = this._pedidosActivos.asReadonly();
-  ingredienteSeleccionado = this._ingredienteSeleccionado.asReadonly();
-  proveedorSeleccionado = this._proveedorSeleccionado.asReadonly();
+  ingredientes = this.#ingredientes.asReadonly();
+  loadingIngredientes = this.#loadingIngredientes.asReadonly();
+  mensaje = this.#mensaje.asReadonly();
+  proveedoresDisponibles = this.#proveedoresDisponibles.asReadonly();
+  pedidosActivos = this.#pedidosActivos.asReadonly();
+  ingredienteSeleccionado = this.#ingredienteSeleccionado.asReadonly();
+  proveedorSeleccionado = this.#proveedorSeleccionado.asReadonly();
 
   cargarIngredientes() {
-    this._loadingIngredientes.set(true);
+    this.#loadingIngredientes.set(true);
     this.api.getIngredientesProximosVencer().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => {
-      this._ingredientes.set(data);
-      this._loadingIngredientes.set(false);
+      this.#ingredientes.set(data);
+      this.#loadingIngredientes.set(false);
     });
   }
 
   seleccionarIngredienteParaPedido(ingrediente: IngredienteVencimiento) {
-    this._ingredienteSeleccionado.set(ingrediente);
-    this._proveedorSeleccionado.set(null);
-    this._pedidosActivos.set([]);
+    this.#ingredienteSeleccionado.set(ingrediente);
+    this.#proveedorSeleccionado.set(null);
+    this.#pedidosActivos.set([]);
     this.api.getProveedoresPorIngrediente(ingrediente.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(provs => {
-      this._proveedoresDisponibles.set(provs);
+      this.#proveedoresDisponibles.set(provs);
     });
   }
 
   seleccionarProveedor(proveedor: VencimientoProveedor) {
-    this._proveedorSeleccionado.set(proveedor);
+    this.#proveedorSeleccionado.set(proveedor);
     this.api.getPedidosActivosPorProveedor(proveedor.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(pedidos => {
-      this._pedidosActivos.set(pedidos);
+      this.#pedidosActivos.set(pedidos);
     });
   }
 
   limpiarSeleccion() {
-    this._ingredienteSeleccionado.set(null);
-    this._proveedorSeleccionado.set(null);
-    this._proveedoresDisponibles.set([]);
-    this._pedidosActivos.set([]);
+    this.#ingredienteSeleccionado.set(null);
+    this.#proveedorSeleccionado.set(null);
+    this.#proveedoresDisponibles.set([]);
+    this.#pedidosActivos.set([]);
   }
 
   marcarRevisado(ingredienteId: string | number) {
-    this._ingredientes.update(items => items.filter(item => item.id !== ingredienteId));
+    this.#ingredientes.update(items => items.filter(item => item.id !== ingredienteId));
     this.mostrarMensaje('Vencimiento revisado');
   }
 
   sugerirUso(ingredienteId: string | number) {
-    this._ingredientes.update(items => items.filter(item => item.id !== ingredienteId));
+    this.#ingredientes.update(items => items.filter(item => item.id !== ingredienteId));
     this.mostrarMensaje('Sugerencia de uso enviada');
   }
 
   avisarCocina(ingredienteId: string | number) {
-    this._ingredientes.update(items => items.filter(item => item.id !== ingredienteId));
+    this.#ingredientes.update(items => items.filter(item => item.id !== ingredienteId));
     this.mostrarMensaje('Cocina notificada');
   }
 
   crearPedidoPendiente(cantidad: number): Observable<VencimientoProveedor> | null {
-    const ingrediente = this._ingredienteSeleccionado();
-    const proveedor = this._proveedorSeleccionado();
+    const ingrediente = this.#ingredienteSeleccionado();
+    const proveedor = this.#proveedorSeleccionado();
     if (!ingrediente || !proveedor) return null;
 
     const precioUnitario = this.preciosIngredientes[ingrediente.id.toString()] ?? 500;
@@ -112,7 +112,7 @@ export class VencimientosState {
   }
 
   private mostrarMensaje(mensaje: string) {
-    this._mensaje.set(mensaje);
-    setTimeout(() => this._mensaje.set(null), 2500);
+    this.#mensaje.set(mensaje);
+    setTimeout(() => this.#mensaje.set(null), 2500);
   }
 }

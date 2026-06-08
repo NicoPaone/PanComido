@@ -2,7 +2,7 @@ import { Component, inject , ChangeDetectionStrategy} from '@angular/core';
 import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { ComandaState } from '../../services/comanda-state';
-import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
+import { configuracionRestauranteMock } from '../../../../infra/mocks/configuracion-restaurante.mock-data';
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
 
 @Component({

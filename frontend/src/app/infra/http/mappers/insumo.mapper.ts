@@ -7,6 +7,7 @@ export function mapInsumoDtoToDomain(dto: InsumoResponseDto): Insumo {
     nombre: dto.nombre,
     stockActual: dto.stockActual,
     stockMinimo: dto.stockMinimo,
+    precioVentaFinal: dto.precioVentaFinal ?? 0,
     vencimiento: dto.vencimiento ?? '',
     unidadMedida: { id: 0, nombre: dto.unidadMedida }, 
     categoriaIngrediente: { 

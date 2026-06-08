@@ -1,88 +1,47 @@
 import { Injectable, inject } from '@angular/core';
 import { catchError, forkJoin, map, Observable, of } from 'rxjs';
-import { ApiService } from '../../../../core/services/api-service';
+import { ApiService } from '../../../core/services/api-service';
+import { AuthService } from '../../../core/services/auth.service';
 
 // Modelos de Dominio
-import { Proveedor, PedidoProveedor, PedidoProveedorRequest, RecepcionPedidoItem } from '../../../../core/models/domain/proveedor';
-import { Insumo } from '../../../../core/models/domain/insumo';
-import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo';
-import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
-import { Bodega } from '../../../../core/models/domain/bodega';
-
-interface ProveedorResponseDto {
-  id: number;
-  nombre: string | null;
-  numeroTelefonoWsp: string | null;
-  numeroTelefonoWSP?: string | null;
-  telefono?: string | null;
-  email?: string | null;
-  correo?: string | null;
-  fechaUltimoPedido: string | null;
-  categorias: string[] | null;
-}
-
-interface PedidoInsumoResponseDto {
-  insumoId: number;
-  nombreInsumo: string | null;
-  cantidad: number;
-  precioCompra: number;
-}
-
-interface PedidoResponseDto {
-  id: number;
-  fecha: string | null;
-  estado: string | null;
-  itemsInsumo: PedidoInsumoResponseDto[] | null;
-}
-
-interface CrearPedidoResponseDto extends PedidoResponseDto {
-  proveedorId: number;
-  proveedorNombre: string | null;
-  proveedorTelefono: string | null;
-}
-
-interface CrearPedidoRequestDto {
-  items: {
-    insumoId: number;
-    cantidad: number;
-    precioCompra: number;
-  }[];
-}
-
-interface ConfirmarPedidoResponseDto {
-  pedidoConfirmado: PedidoResponseDto;
-  linkWpp: string;
-}
-
-interface PreRecepcionItemResponseDto {
-  insumoId: number;
-  nombreInsumo: string | null;
-  cantidad: number;
-  nombreLote: string | null;
-  bodegaIdSug: number;
-  fechaVencimientoSug: string | null;
-}
-
-interface InsumoResponseDto {
-  id: number;
-  nombre: string | null;
-  stockActual: number;
-  unidadMedida: string | null;
-  vencimiento: string | null;
-  stockMinimo: number;
-  estadoStock: string | null;
-  tipo: string | null;
-  categoria: string | null;
-}
+import { Proveedor, PedidoProveedor, PedidoProveedorRequest, ProveedorNuevo, RecepcionPedidoItem, SugerenciaPedidoItem } from '../../../core/models/domain/proveedor';
+import { Insumo } from '../../../core/models/domain/insumo';
+import { CategoriaInsumo } from '../../../core/models/domain/categoria-insumo';
+import { UnidadMedida } from '../../../core/models/domain/unidad-medida';
+import { Bodega } from '../../../core/models/domain/bodega';
+import { InsumoResponseDto } from '../../../core/models/dtos/responses/insumo.response';
+import {
+  ConfirmarPedidoResponseDto,
+  CrearPedidoResponseDto,
+  PedidoResponseDto,
+  PreRecepcionItemResponseDto,
+  ProveedorResponseDto,
+} from '../../../core/models/dtos/responses/proveedor.response';
+import { CrearPedidoProveedorRequestDto } from '../../../core/models/dtos/requests/crear-pedido-proveedor.request';
 
 @Injectable({ providedIn: 'root' })
-export class VerProveedoresApiService {
+export class ProveedorApiService {
   private api = inject(ApiService);
+  private authService = inject(AuthService);
+
+  validateManagerCredentials(user: string, pass: string): Observable<boolean> {
+    return this.authService.validateManagerCredentials(user, pass);
+  }
 
   getProveedores(): Observable<Proveedor[]> {
     return this.api.get<ProveedorResponseDto[]>('Proveedor').pipe(
       map(proveedores => proveedores.map(dto => this.mapProveedor(dto)))
     );
+  }
+
+  getProveedorById(id: number | string): Observable<Proveedor | undefined> {
+    return this.getProveedores().pipe(
+      map(proveedores => proveedores.find(proveedor => proveedor.id.toString() === id.toString()))
+    );
+  }
+
+  crearProveedor(proveedor: ProveedorNuevo): Observable<Proveedor> {
+    return this.api.post<Proveedor>('proveedor', proveedor);
   }
 
   getHistorialPedidos(id: number | string): Observable<PedidoProveedor[]> {
@@ -94,6 +53,21 @@ export class VerProveedoresApiService {
   getProductosDisponibles(): Observable<Insumo[]> {
     return this.api.get<InsumoResponseDto[]>('Insumo').pipe(
       map(insumos => insumos.map(dto => this.mapInsumo(dto)))
+    );
+  }
+
+  getInsumosAReponer(id: number | string): Observable<SugerenciaPedidoItem[]> {
+    return this.api.get<any[]>(`Proveedor/${id}/insumos-a-reponer`).pipe(
+      map(items => items.map(item => ({
+        productoId: item.id.toString(),
+        nombre: item.nombre ?? '',
+        unidadMedida: this.mapUnidadMedida(item.unidadMedida),
+        stockActual: item.stockActual ?? 0,
+        stockMinimo: 0,
+        estadoStock: item.estadoStock ?? '',
+        cantidadSugerida: item.cantidadSugerida ?? 1,
+        precioUnitario: this.normalizarPrecio(item.precioUnitario)
+      })))
     );
   }
 
@@ -115,7 +89,7 @@ export class VerProveedoresApiService {
             ...dto,
             stockActual,
             vencimiento: dto.vencimiento || insumoConStock?.vencimiento || null,
-            estadoStock: dto.estadoStock || insumoConStock?.estadoStock || null
+            estadoStock: dto.estadoStock || insumoConStock?.estadoStock || ''
           });
         });
       })
@@ -129,11 +103,13 @@ export class VerProveedoresApiService {
   }
 
   private mapProveedor(dto: ProveedorResponseDto): Proveedor {
+    const telefono = dto.numeroTelefonoWsp ?? dto.numeroTelefonoWSP ?? dto.telefono ?? '';
+
     return {
       id: dto.id,
       nombre: dto.nombre ?? 'Sin Nombre',
       contacto: dto.nombre ?? 'Sin Contacto',
-      telefono: dto.numeroTelefonoWsp ?? '',
+      telefono,
       email: dto.email ?? dto.correo ?? '',
       direccion: '', 
       activo: true,
@@ -143,7 +119,7 @@ export class VerProveedoresApiService {
   }
 
   confirmarPedido(pedido: PedidoProveedor): Observable<{ pedido: PedidoProveedor; linkWpp: string }> {
-return this.api.put<ConfirmarPedidoResponseDto>(`pedido-proveedor/${pedido.id}/confirmar`, {
+    return this.api.put<ConfirmarPedidoResponseDto>(`pedido-proveedor/${pedido.id}/confirmar`, {
       listaInsumosPedido: pedido.items.map(item => ({
         insumoId: Number(item.id),
         cantidad: item.cantidad,
@@ -171,7 +147,7 @@ return this.api.put<ConfirmarPedidoResponseDto>(`pedido-proveedor/${pedido.id}/c
   }
 
   recibirPedido(pedidoId: number | string, items: RecepcionPedidoItem[]): Observable<unknown> {
-return this.api.put<unknown>(`pedido-proveedor/${pedidoId}/recibir`, {
+    return this.api.put<unknown>(`pedido-proveedor/${pedidoId}/recibir`, {
       itemsPedidoRecibido: items.map(item => ({
         insumoId: item.insumoId,
         nombreLote: item.nombreLote,
@@ -186,7 +162,20 @@ return this.api.put<unknown>(`pedido-proveedor/${pedidoId}/recibir`, {
     return this.api.get<Bodega[]>('Bodega');
   }
 
-  private mapCrearPedidoRequest(pedido: PedidoProveedorRequest): CrearPedidoRequestDto {
+  getHistorialCantidadPedidos(id: number | string): Observable<{ items: { id: string | number; cantidad: number; precioUnitario: number }[]; fecha: string }[]> {
+    return this.api.get<any[]>(`Proveedor/${id}/historial-pedidos`).pipe(
+      map(pedidos => pedidos.map(pedido => ({
+        fecha: pedido.fecha ?? '',
+        items: (pedido.itemsInsumo ?? []).map((item: any) => ({
+          id: item.insumoId,
+          cantidad: item.cantidad ?? 0,
+          precioUnitario: item.precioCompra ?? 0
+        }))
+      })))
+    );
+  }
+
+  private mapCrearPedidoRequest(pedido: PedidoProveedorRequest): CrearPedidoProveedorRequestDto {
     return {
       items: pedido.items.map(item => ({
         insumoId: Number(item.id),
@@ -196,7 +185,7 @@ return this.api.put<unknown>(`pedido-proveedor/${pedidoId}/recibir`, {
     };
   }
 
- private mapPedido(dto: PedidoResponseDto): PedidoProveedor {
+  private mapPedido(dto: PedidoResponseDto): PedidoProveedor {
     const items = dto.itemsInsumo ?? [];
     return {
       id: dto.id,
@@ -219,6 +208,7 @@ return this.api.put<unknown>(`pedido-proveedor/${pedidoId}/recibir`, {
       }))
     };
   }
+
   private mapInsumo(dto: InsumoResponseDto): Insumo {
    
     return {
@@ -227,6 +217,7 @@ return this.api.put<unknown>(`pedido-proveedor/${pedidoId}/recibir`, {
       stockActual: dto.stockActual,
       vencimiento: this.normalizarFecha(dto.vencimiento) ?? '',
       stockMinimo: dto.stockMinimo,
+      precioVentaFinal: dto.precioVentaFinal ?? 0,
       
       unidadMedida: { 
         id: 0, 
@@ -246,6 +237,18 @@ return this.api.put<unknown>(`pedido-proveedor/${pedidoId}/recibir`, {
     if (normalizado === 'enviado') return 'Enviado';
     if (normalizado === 'recibido') return 'Recibido';
     return 'Pendiente';
+  }
+
+  private normalizarPrecio(precio: unknown): number {
+    const valor = Number(precio);
+    return Number.isFinite(valor) && valor >= 1 ? valor : 1;
+  }
+
+  private mapUnidadMedida(valor: unknown): UnidadMedida {
+    if (typeof valor === 'object' && valor !== null && 'nombre' in valor) {
+      return valor as UnidadMedida;
+    }
+    return { id: 0, nombre: String(valor ?? 'UN') };
   }
 
 

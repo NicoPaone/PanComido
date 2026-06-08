@@ -1,11 +1,11 @@
 import { Injectable, inject, signal, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NuevoProveedorApiService } from './nuevo-proveedor.api';
+import { ProveedorApiService } from '../../services/proveedor.api';
 import { ProveedorNuevo } from '../../../../core/models/domain/proveedor';
 
 @Injectable({ providedIn: 'root' })
 export class NuevoProveedorState {
-  private api = inject(NuevoProveedorApiService);
+  private api = inject(ProveedorApiService);
   private destroyRef = inject(DestroyRef);
 
   // Estado mutable expuesto como writeable signals
