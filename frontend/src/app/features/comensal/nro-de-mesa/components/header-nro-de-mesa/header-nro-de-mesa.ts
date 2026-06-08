@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output , ChangeDetectionStrategy} from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-header-nro-de-mesa',
   templateUrl: './header-nro-de-mesa.html',
   styleUrls: ['./header-nro-de-mesa.css']

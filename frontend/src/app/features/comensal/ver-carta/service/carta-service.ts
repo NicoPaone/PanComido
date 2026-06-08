@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from '../../../../core/services/api-service';
 import { Observable } from 'rxjs';
-import { CartaItem } from '../../../../core/models/carta-item';
+import { CartaItem } from '../../../../core/models/domain/carta-item';
 
 @Injectable({
   providedIn: 'root',

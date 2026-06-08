@@ -5,8 +5,8 @@
       <div class="header-title">
         <span class="material-symbols-outlined filter-icon">filter_alt</span>
         <h2 class="filtros-titulo">Filtros</h2>
-        @if (cartaState.cantidadFiltrosActivos() > 0) {
-          <span class="badge-filtros">{{ cartaState.cantidadFiltrosActivos() }}</span>
+        @if (cantidadFiltrosActivos() > 0) {
+          <span class="badge-filtros">{{ cantidadFiltrosActivos() }}</span>
         }
       </div>
       <button class="btn-cerrar" (click)="cerrar.emit()">
@@ -31,8 +31,8 @@
           <div class="subcategorias-list">
             <label class="checkbox-item">
               <input type="checkbox" 
-                     [checked]="cartaState.tiposSeleccionados().includes('Plato')"
-                     (change)="cartaState.toggleTipoPlato('Plato')">
+                     [checked]="tiposSeleccionados().includes('Plato')"
+                     (change)="toggleTipo.emit('Plato')">
               <span class="checkbox-label">Todos los platos</span>
             </label>
           </div>
@@ -55,8 +55,8 @@
           <div class="subcategorias-list">
             <label class="checkbox-item">
               <input type="checkbox"
-                     [checked]="cartaState.tiposSeleccionados().includes('Bebida')"
-                     (change)="cartaState.toggleTipoPlato('Bebida')">
+                     [checked]="tiposSeleccionados().includes('Bebida')"
+                     (change)="toggleTipo.emit('Bebida')">
               <span class="checkbox-label">Todas las bebidas</span>
             </label>
           </div>
@@ -67,7 +67,7 @@
     </div>
 
     <div class="actions-footer">
-      @if (cartaState.tieneFiltrosActivos()) {
+      @if (tieneFiltrosActivos()) {
         <button class="btn-limpiar" (click)="limpiarFiltros()">
           Limpiar filtros
         </button>

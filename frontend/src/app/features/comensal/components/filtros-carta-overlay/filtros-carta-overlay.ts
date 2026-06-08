@@ -1,15 +1,20 @@
-import { Component, output, inject, signal } from '@angular/core';
-import { CartaState } from '../../ver-carta/service/carta-state';
+import { Component, output, input, signal , ChangeDetectionStrategy} from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-filtros-carta-overlay',
   standalone: true,
   templateUrl: './filtros-carta-overlay.html',
   styleUrls: ['./filtros-carta-overlay.css']
 })
 export class FiltrosCartaOverlay {
-  cartaState = inject(CartaState);
+  cantidadFiltrosActivos = input<number>(0);
+  tiposSeleccionados = input<string[]>([]);
+  tieneFiltrosActivos = input<boolean>(false);
+
   cerrar = output<void>();
+  toggleTipo = output<string>();
+  limpiar = output<void>();
 
   seccionPlatosAbierta = signal(true);
   seccionBebidasAbierta = signal(true);
@@ -26,6 +31,6 @@ export class FiltrosCartaOverlay {
   }
 
   limpiarFiltros(): void {
-    this.cartaState.limpiarFiltros();
+    this.limpiar.emit();
   }
 }

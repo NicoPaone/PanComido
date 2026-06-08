@@ -81,7 +81,10 @@
           "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@analogjs/vitest-angular:vitest",
+          "options": {
+            "configFile": "vitest.config.ts"
+          }
         }
       }
     }

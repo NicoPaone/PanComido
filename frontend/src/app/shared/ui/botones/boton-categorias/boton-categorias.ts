@@ -1,8 +1,9 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, input, output, signal , ChangeDetectionStrategy} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Boton } from '../boton/boton';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-boton-categorias',
   standalone: true,
   imports: [CommonModule, Boton],

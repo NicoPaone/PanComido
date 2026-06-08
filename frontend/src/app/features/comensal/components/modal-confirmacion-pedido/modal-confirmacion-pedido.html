@@ -1,19 +1,19 @@
 @if (isVisible()) {
-  <div class="modal-overlay" (click)="!comandaState.cargando() && ocultar()">
+  <div class="modal-overlay" (click)="!cargando() && ocultar()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       
-      @if (comandaState.cargando()) {
+      @if (cargando()) {
         <div class="text-center py-5">
           <div class="spinner-border text-primary mb-3" role="status">
             <span class="visually-hidden">Enviando pedido...</span>
           </div>
           <h5>Confirmando tu pedido...</h5>
         </div>
-      } @else if (comandaState.error()) {
+      } @else if (error()) {
         <div class="text-center py-4">
           <span class="material-symbols-outlined text-danger fs-1 mb-3">error</span>
           <h4 class="fw-bold text-danger mb-3">Error</h4>
-          <p class="text-muted">{{ comandaState.error() }}</p>
+          <p class="text-muted">{{ error() }}</p>
           <button class="btn btn-primary mt-3" (click)="ocultar()">
             Cerrar
           </button>

@@ -3,13 +3,12 @@ import { catchError, forkJoin, map, Observable, of } from 'rxjs';
 import { ApiService } from '../../../../core/services/api-service';
 
 // Modelos de Dominio
-import { Proveedor, PedidoProveedor, NuevoPedidoProveedor, PreRecepcionPedidoItem } from '../../../../core/models/proveedor';
-import { Insumo } from '../../../../core/models/insumos/insumo';
-import { CategoriaInsumo } from '../../../../core/models/insumos/categorias/categoria-insumo';
-import { UnidadMedida } from '../../../../core/models/unidad-medida';
-import { Bodega } from '../../../../core/models/bodega/bodega';
+import { Proveedor, PedidoProveedor, PedidoProveedorRequest, RecepcionPedidoItem } from '../../../../core/models/domain/proveedor';
+import { Insumo } from '../../../../core/models/domain/insumo';
+import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo';
+import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
+import { Bodega } from '../../../../core/models/domain/bodega';
 
-// DTOs (Lo que escupe la red)
 interface ProveedorResponseDto {
   id: number;
   nombre: string | null;
@@ -123,7 +122,7 @@ export class VerProveedoresApiService {
     );
   }
 
-  crearPedidoProveedor(id: number | string, pedido: NuevoPedidoProveedor): Observable<PedidoProveedor> {
+  crearPedidoProveedor(id: number | string, pedido: PedidoProveedorRequest): Observable<PedidoProveedor> {
     return this.api.post<CrearPedidoResponseDto>(`pedido-proveedor/${id}/crear-pedido`, this.mapCrearPedidoRequest(pedido)).pipe(
       map(response => this.mapPedido(response))
     );
@@ -158,7 +157,7 @@ return this.api.put<ConfirmarPedidoResponseDto>(`pedido-proveedor/${pedido.id}/c
     );
   }
 
-  previsualizarConfirmacion(pedidoId: number | string): Observable<PreRecepcionPedidoItem[]> {
+  previsualizarConfirmacion(pedidoId: number | string): Observable<RecepcionPedidoItem[]> {
     return this.api.get<PreRecepcionItemResponseDto[]>(`pedido-proveedor/${pedidoId}/previsualizar-confirmacion`).pipe(
       map(items => items.map(item => ({
         insumoId: item.insumoId,
@@ -171,7 +170,7 @@ return this.api.put<ConfirmarPedidoResponseDto>(`pedido-proveedor/${pedido.id}/c
     );
   }
 
-  recibirPedido(pedidoId: number | string, items: PreRecepcionPedidoItem[]): Observable<unknown> {
+  recibirPedido(pedidoId: number | string, items: RecepcionPedidoItem[]): Observable<unknown> {
 return this.api.put<unknown>(`pedido-proveedor/${pedidoId}/recibir`, {
       itemsPedidoRecibido: items.map(item => ({
         insumoId: item.insumoId,
@@ -187,7 +186,7 @@ return this.api.put<unknown>(`pedido-proveedor/${pedidoId}/recibir`, {
     return this.api.get<Bodega[]>('Bodega');
   }
 
-  private mapCrearPedidoRequest(pedido: NuevoPedidoProveedor): CrearPedidoRequestDto {
+  private mapCrearPedidoRequest(pedido: PedidoProveedorRequest): CrearPedidoRequestDto {
     return {
       items: pedido.items.map(item => ({
         insumoId: Number(item.id),

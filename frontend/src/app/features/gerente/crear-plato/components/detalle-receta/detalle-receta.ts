@@ -1,10 +1,11 @@
 import { FormsModule } from '@angular/forms';
 import { Buscador } from '../../../../../shared/ui/buscador/buscador';
-import { RecetaIngrediente } from '../../../../../core/models/plato';
-import { Insumo, INSUMOS_MOCK } from '../../../../../core/models/insumos/insumo';
-import { Component, output, signal, computed, input, OnInit } from '@angular/core';
+import { RecetaIngrediente } from '../../../../../core/models/domain/plato';
+import { Insumo } from '../../../../../core/models/domain/insumo';
+import { Component, output, signal, computed, input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-detalle-receta',
   standalone: true,
   imports: [FormsModule, Buscador],
@@ -13,16 +14,18 @@ import { Component, output, signal, computed, input, OnInit } from '@angular/cor
 })
 export class DetalleRecetaComponent {
   recetaCambiada = output<RecetaIngrediente[]>();
-ingredientesIniciales = input<RecetaIngrediente[]>([]);
+  ingredientesIniciales = input<RecetaIngrediente[]>([]);
+  insumosDisponibles = input<Insumo[]>([]);
   busqueda = signal<string>('');
-  
+
   ingredientesSeleccionados = signal<RecetaIngrediente[]>([]);
+
 
   sugerencias = computed(() => {
     const query = this.busqueda().toLowerCase().trim();
     if (!query) return [];
-    
-    return INSUMOS_MOCK.filter(prod => 
+
+    return this.insumosDisponibles().filter(prod =>
       prod.nombre.toLowerCase().includes(query) &&
       !this.ingredientesSeleccionados().some(selected => selected.id === prod.id)
     );
@@ -45,7 +48,7 @@ ingredientesIniciales = input<RecetaIngrediente[]>([]);
     this.notificarCambio();
   }
 
-  eliminarIngrediente(id: string|number) {
+  eliminarIngrediente(id: string | number) {
     this.ingredientesSeleccionados.update(items => items.filter(item => item.id !== id));
     this.notificarCambio();
   }
@@ -66,10 +69,10 @@ ingredientesIniciales = input<RecetaIngrediente[]>([]);
   }
 
   ngOnInit() {
-  const iniciales = this.ingredientesIniciales();
-  if (iniciales.length > 0) {
-    this.ingredientesSeleccionados.set(iniciales);
-    this.notificarCambio();
+    const iniciales = this.ingredientesIniciales();
+    if (iniciales.length > 0) {
+      this.ingredientesSeleccionados.set(iniciales);
+      this.notificarCambio();
+    }
   }
-}
 }

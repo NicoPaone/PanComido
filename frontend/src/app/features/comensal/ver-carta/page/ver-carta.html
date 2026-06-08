@@ -79,11 +79,23 @@
 </div>
 
 @if (mostrarFiltros()) {
-  <app-filtros-carta-overlay (cerrar)="mostrarFiltros.set(false)" />
+  <app-filtros-carta-overlay 
+    [cantidadFiltrosActivos]="state.cantidadFiltrosActivos()"
+    [tiposSeleccionados]="state.tiposSeleccionados()"
+    [tieneFiltrosActivos]="state.tieneFiltrosActivos()"
+    (toggleTipo)="state.toggleTipoPlato($event)"
+    (limpiar)="state.limpiarFiltros()"
+    (cerrar)="mostrarFiltros.set(false)" />
 }
 
 <app-comensal-footer-cart
   [cantidadItems]="cantidadTotalPedido()"
   [total]="totalPedido()"
   [configuracion]="configuracion"
+  [mesaId]="mesaId()"
+  [enviando]="comensalState.enviando()"
+  [enviado]="comensalState.exito()"
+  [error]="comensalState.error()"
+  (llamadoMozo)="comensalState.solicitarMozo($event)"
+  (modalCerrado)="comensalState.limpiarEstado()"
   (verPedido)="irAPedido()" />

@@ -2,17 +2,17 @@ import { Component, ChangeDetectionStrategy, OnInit, inject, signal } from '@ang
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { take } from 'rxjs';
-import { PlatoSugeridoIA } from '../../../../core/models/sugerencia-ia.model';
+import { PlatoSugerido } from '../../../../core/models/domain/sugerencia-ia';
 // Componentes UI
 import { PageToolbar } from '../../../../shared/ui/page-toolbar/page-toolbar';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Buscador } from '../../../../shared/ui/buscador/buscador';
 
 // Modelos y Estados
-import { Aviso } from '../../../../core/models/aviso.model';
-import { VencimientosStateService } from '../../aviso-vencimientos/services/vencimientos.state';
+import { Aviso } from '../../../../core/models/domain/aviso';
+import { VencimientosState } from '../../aviso-vencimientos/services/vencimientos.state';
 import { AvisosStateService } from '../services/avisos.state';
-import { UnidadMedida } from '../../../../core/models/unidad-medida';
+import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
 import { RealizarPedidoSugeridoStateService } from '../../realizar-pedido-sugerido/services/realizar-pedido-sugerido.state';
 
 @Component({
@@ -24,18 +24,18 @@ import { RealizarPedidoSugeridoStateService } from '../../realizar-pedido-sugeri
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AvisosPage implements OnInit {
-  
+
   state = inject(AvisosStateService);
-  pedidoState = inject(VencimientosStateService);
+  pedidoState = inject(VencimientosState);
   pedidoSugeridoState = inject(RealizarPedidoSugeridoStateService);
   router = inject(Router);
-  
+
   isPedidoOffcanvasOpen = false;
   cantidadAgregar = 1;
   stockAvisoSeleccionado: Aviso | null = null;
   vencimientoSeleccionado: Aviso | null = null;
   panelPreviewAbierto = signal<'sistema' | 'ia' | null>(null);
-  
+
   isStockExpanded = signal(true);
   isVencimientosExpanded = signal(true);
 
@@ -47,21 +47,21 @@ export class AvisosPage implements OnInit {
     this.isVencimientosExpanded.update(v => !v);
   }
 
-abrirPreviewSugerencia(tipo: 'sistema' | 'ia') {
-  if (this.panelPreviewAbierto() === tipo) {
-    this.panelPreviewAbierto.set(null);
-    return;
-  }
-  this.panelPreviewAbierto.set(tipo);
+  abrirPreviewSugerencia(tipo: 'sistema' | 'ia') {
+    if (this.panelPreviewAbierto() === tipo) {
+      this.panelPreviewAbierto.set(null);
+      return;
+    }
+    this.panelPreviewAbierto.set(tipo);
 
-  if (tipo === 'sistema') {
-    this.pedidoSugeridoState.cargarDatos();
-  }
+    if (tipo === 'sistema') {
+      this.pedidoSugeridoState.cargarDatos();
+    }
 
-  if (tipo === 'ia') {
-    this.state.generarSugerenciasIA();
+    if (tipo === 'ia') {
+      this.state.generarSugerenciasIA();
+    }
   }
-}
 
   irASugerenciasSistemaFull() {
     this.router.navigate(['/staff/gerente/realizar-pedido-sugerido']);
@@ -94,17 +94,17 @@ abrirPreviewSugerencia(tipo: 'sistema' | 'ia') {
 
   abrirPedidoStock(aviso: Aviso) {
     this.stockAvisoSeleccionado = aviso;
-    this.cantidadAgregar = this.cantidadAgregar = 1;;
-    
-    // 🔥 EL FIX: Ahora pasamos objetos puros, sin inferencias extrañas
+    this.cantidadAgregar = 1;
+
+
     this.pedidoState.seleccionarIngredienteParaPedido({
-      id: Number(aviso.id), // Aseguramos que sea número si el estado lo exige
+      id: Number(aviso.id),
       nombre: aviso.titulo,
-      fechaVencimiento: '', 
+      fechaVencimiento: '',
       stockDisponible: this.getStockDisponible(aviso),
       unidadMedida: this.getUnidadMedida(aviso)
     });
-    
+
     this.isPedidoOffcanvasOpen = true;
   }
 
@@ -129,7 +129,7 @@ abrirPreviewSugerencia(tipo: 'sistema' | 'ia') {
   confirmarPedidoStock() {
     const pedido = this.pedidoState.crearPedidoPendiente(this.cantidadAgregar);
     const aviso = this.stockAvisoSeleccionado;
-    
+
     if (!pedido || !aviso) return;
 
     pedido.pipe(take(1)).subscribe({
@@ -138,7 +138,7 @@ abrirPreviewSugerencia(tipo: 'sistema' | 'ia') {
         this.cerrarPedidoStock();
         this.router.navigate(['/staff', 'gerente', 'ver-proveedores', proveedor.id, 'historial']);
       },
-      error: (err) => console.error('Error al confirmar pedido', err)
+      error: (err) => console.error('Error al confirmar pedido de stock:', err)
     });
   }
 
@@ -162,7 +162,7 @@ abrirPreviewSugerencia(tipo: 'sistema' | 'ia') {
   // Devuelve la unidad desde el payload
   private getUnidadMedida(aviso: Aviso): UnidadMedida {
     const defaultUnidad: UnidadMedida = { id: 1, nombre: 'Kg' };
-    
+
     if (aviso.payloadStock) {
       const u = aviso.payloadStock.unidadMedida.toUpperCase();
       if (u === 'L' || u === 'LT') return { id: 3, nombre: 'Lt' };
@@ -170,24 +170,24 @@ abrirPreviewSugerencia(tipo: 'sistema' | 'ia') {
       if (u === 'GR') return { id: 2, nombre: 'Gr' };
       return { id: 1, nombre: aviso.payloadStock.unidadMedida };
     }
-    
+
     return defaultUnidad;
   }
 
-nombreUnidad(unidadMedida: UnidadMedida | string | null | undefined): string {
+  nombreUnidad(unidadMedida: UnidadMedida | string | null | undefined): string {
     if (!unidadMedida) return '';
     return typeof unidadMedida === 'string' ? unidadMedida : unidadMedida.nombre;
   }
 
   // ← PEGÁ ACÁ ↓
-  crearPlatoDesdeIA(plato: PlatoSugeridoIA) {
+  crearPlatoDesdeIA(plato: PlatoSugerido) {
     this.router.navigate(['/staff/gerente/crear-plato'], {
       state: {
         desde_ia: true,
         nombre: plato.nombre,
         descripcion: plato.descripcion,
         tiempoPreparacion: plato.tiempoPreparacion,
-        ingredientes: plato.ingredientesSugeridosIA.map(ing => ({
+        ingredientes: plato.ingredientesSugeridos.map(ing => ({
           insumoId: ing.insumoId,
           nombre: ing.nombre,
           cantidad: ing.cantidad,

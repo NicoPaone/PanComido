@@ -3,8 +3,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, of, switchMap } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { RealizarPedidoSugeridoApiService } from './realizar-pedido-sugerido.api';
-import { Proveedor, SugerenciaPedidoItem } from '../../../../core/models/proveedor';
-import { Insumo } from '../../../../core/models/insumos/insumo';
+import { Proveedor, SugerenciaPedidoItem } from '../../../../core/models/domain/proveedor';
+import { Insumo } from '../../../../core/models/domain/insumo';
 
 @Injectable({ providedIn: 'root' })
 export class RealizarPedidoSugeridoStateService {
@@ -24,8 +24,8 @@ export class RealizarPedidoSugeridoStateService {
   observacionesPorProveedor = signal<Record<string, string>>({});
   mensajeError = signal<string | null>(null);
   
-  private _loading = signal(false);
-  loading = this._loading.asReadonly();
+  readonly #loading = signal(false);
+  loading = this.#loading.asReadonly();
 
   // Variables Derivadas (Computed)
   montoEstimado = computed(() => {
@@ -44,7 +44,7 @@ export class RealizarPedidoSugeridoStateService {
 
   // Métodos de Negocio
   cargarDatos(id?: number): void {
-    this._loading.set(true);
+    this.#loading.set(true);
 
     this.api.getProveedores()
       .pipe(
@@ -86,7 +86,7 @@ export class RealizarPedidoSugeridoStateService {
           this.pedidosPorProveedor.set(pedidosPorProveedor);
           this.sugerencias.set(seleccionado ? pedidosPorProveedor[seleccionado.id.toString()] ?? [] : []);
           this.pedidoItems.set(seleccionado ? pedidosPorProveedor[seleccionado.id.toString()] ?? [] : []);
-          this._loading.set(false);
+          this.#loading.set(false);
         },
         error: () => {
           this.proveedores.set([]);
@@ -95,7 +95,7 @@ export class RealizarPedidoSugeridoStateService {
           this.pedidosPorProveedor.set({});
           this.sugerencias.set([]);
           this.pedidoItems.set([]);
-          this._loading.set(false);
+          this.#loading.set(false);
         }
       });
   }
@@ -111,7 +111,7 @@ export class RealizarPedidoSugeridoStateService {
 
     if (!proveedor) return;
 
-    this._loading.set(true);
+    this.#loading.set(true);
     this.api.getInsumosAReponer(proveedor.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -122,7 +122,7 @@ export class RealizarPedidoSugeridoStateService {
             ...pedidos,
             [proveedor.id.toString()]: JSON.parse(JSON.stringify(items))
           }));
-          this._loading.set(false);
+          this.#loading.set(false);
         },
         error: () => {
           this.sugerencias.set([]);
@@ -131,7 +131,7 @@ export class RealizarPedidoSugeridoStateService {
             ...pedidos,
             [proveedor.id.toString()]: []
           }));
-          this._loading.set(false);
+          this.#loading.set(false);
         }
       });
   }
@@ -255,7 +255,7 @@ seleccionarIngredienteExtra(productoId: string): void {
     // Buscar el último precio en el historial del proveedor seleccionado
     const proveedorId = this.proveedorAgregarIngredienteId();
     if (proveedorId !== null) {
-      this.api.getHistorialPedidos(proveedorId).subscribe({
+      this.api.getHistorialPedidos(proveedorId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: pedidos => {
           const ordenados = [...pedidos].sort((a, b) => {
             const fa = new Date(a.fecha).getTime();
