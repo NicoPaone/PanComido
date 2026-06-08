@@ -291,3 +291,21 @@
   background: #cbd5e1;
   border-radius: 10px;
 }
+
+/* Radius system: main containers 8px, inner containers 10px, buttons 11px */
+.side-panel {
+  border-radius: 8px;
+}
+
+.panel-hero,
+.ingredient-row,
+.quantity-control {
+  border-radius: 10px;
+}
+
+.btn-close-panel,
+.btn-delete-pill,
+::ng-deep .save-btn .btn,
+::ng-deep .cancel-btn .btn {
+  border-radius: 11px;
+}

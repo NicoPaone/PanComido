@@ -233,3 +233,16 @@ select.form-control {
     width: 100%;
   }
 }
+
+/* Radius system: inner containers 10px, buttons 11px */
+.form-intro,
+.form-section,
+.section-icon,
+.form-control {
+  border-radius: 10px;
+}
+
+.btn-cancelar,
+.btn-guardar {
+  border-radius: 11px;
+}

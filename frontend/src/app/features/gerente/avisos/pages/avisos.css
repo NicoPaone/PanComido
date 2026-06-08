@@ -476,7 +476,7 @@ app-boton:active {
 }
 
 ::ng-deep .avisos-page .btn {
-  border-radius: 12px !important;
+  border-radius: 11px !important;
   font-weight: 700 !important;
   border: none !important;
   padding: 0.5rem 1.25rem !important;
@@ -538,4 +538,23 @@ app-boton:active {
 }
 .accordion-header.header-vencimiento:hover {
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.11) 0%, rgba(245, 158, 11, 0.02) 100%);
+}
+
+/* Radius system: main containers 8px, inner containers 10px, buttons 11px */
+.accordion-section,
+.sugerencia-card,
+.avisos-modal-card {
+  border-radius: 8px;
+}
+
+.aviso-item,
+.accordion-badge,
+.skeleton-card,
+.sugerencia-preview-panel {
+  border-radius: 10px;
+}
+
+.accordion-icon,
+.sugerencia-card-icon {
+  border-radius: 10px;
 }

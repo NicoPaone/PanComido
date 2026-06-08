@@ -340,3 +340,15 @@
     height: 36px;
   }
 }
+
+/* Radius system: inner containers 10px, buttons 11px */
+.fast-pill,
+.stock-empty-state,
+.stock-card,
+.stock-row {
+  border-radius: 10px;
+}
+
+.btn-icon {
+  border-radius: 11px;
+}

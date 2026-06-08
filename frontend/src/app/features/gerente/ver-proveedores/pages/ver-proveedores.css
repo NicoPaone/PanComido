@@ -1625,3 +1625,47 @@
   transform: translateY(-2px);
   box-shadow: 0 5px 12px rgba(249, 115, 22, 0.12);
 }
+
+/* Radius system: main containers 8px, inner containers 10px, buttons 11px */
+::ng-deep app-glass-card.list-panel .glass-card,
+::ng-deep app-glass-card.detail-panel .glass-card,
+.pedido-modal-card,
+.proveedor-modal-card,
+.delete-modal-card {
+  border-radius: 8px;
+}
+
+.provider-meta-strip,
+.detail-tabs,
+.add-product-strip,
+.selected-product-display,
+.price-display,
+.quantity-stepper,
+.cart-row,
+.pedido-footer,
+.history-card,
+.history-empty,
+.pedido-modal-info,
+.delete-modal-icon,
+.section-icon,
+.checkbox-pill,
+.chip {
+  border-radius: 10px;
+}
+
+.icon-action-btn,
+.detail-tab,
+.soft-link-btn,
+.step-btn,
+.step-btn.sm,
+.quantity-preset,
+.add-item-btn,
+.cart-remove-btn,
+.pedido-modal-close,
+.chip-remove,
+.danger-action-btn,
+.btn-pill-filter,
+.btn-premium-primary,
+.btn-premium-secondary {
+  border-radius: 11px;
+}

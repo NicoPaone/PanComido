@@ -7,6 +7,7 @@
 
 /* === CARD WRAPPER === */
 ::ng-deep .dish-card-wrapper {
+  position: relative;
   background:
     linear-gradient(to top, rgba(255, 237, 213, 0.58) 0%, rgba(255, 247, 237, 0.3) 34%, #ffffff 100%),
     #ffffff;
@@ -213,8 +214,36 @@
 
 /* === RECOMMENDED HIGHLIGHT === */
 .dish-card-wrapper.recommended-card {
-  border: 2px solid rgba(245, 158, 11, 0.38) !important;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07) !important;
+  background:
+    linear-gradient(to top, rgba(255, 237, 213, 0.9) 0%, rgba(255, 251, 235, 0.58) 42%, #ffffff 100%),
+    #ffffff !important;
+  border: 2px solid rgba(245, 158, 11, 0.64) !important;
+  box-shadow: 0 12px 28px rgba(245, 158, 11, 0.16), 0 8px 20px rgba(15, 23, 42, 0.07) !important;
+}
+
+.dish-card-wrapper.recommended-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, #f59e0b, #facc15, #f59e0b);
+  z-index: 3;
+}
+
+.dish-card-wrapper.recommended-card:hover {
+  border-color: rgba(245, 158, 11, 0.78) !important;
+  box-shadow: 0 16px 34px rgba(245, 158, 11, 0.2), 0 12px 24px rgba(15, 23, 42, 0.07) !important;
+}
+
+.dish-card-wrapper.recommended-card .dish-info-body {
+  background: linear-gradient(180deg, rgba(255, 251, 235, 0.62), rgba(255, 255, 255, 0));
+}
+
+.dish-card-wrapper.recommended-card .star-glass-badge,
+.dish-card-wrapper.recommended-card .dish-star-badge-compact {
+  background: #fff7ed;
+  border-color: rgba(245, 158, 11, 0.72);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.24);
 }
 
 /* === LIST LAYOUT FLAT OVERRIDE === */
@@ -229,6 +258,20 @@
 ::ng-deep .dish-card-wrapper.list-layout:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+}
+
+::ng-deep .dish-card-wrapper.list-layout.recommended-card {
+  background:
+    linear-gradient(90deg, rgba(255, 237, 213, 0.7), rgba(255, 255, 255, 0.96) 52%),
+    #ffffff !important;
+  border-color: rgba(245, 158, 11, 0.58) !important;
+}
+
+::ng-deep .dish-card-wrapper.list-layout.recommended-card::before {
+  inset: 0 auto 0 0;
+  width: 4px;
+  height: auto;
+  background: linear-gradient(180deg, #f59e0b, #facc15);
 }
 
 /* === DISABLED STATE === */
@@ -326,4 +369,28 @@
 ::ng-deep .dish-card-wrapper.is-bebida .dish-hero-img {
   object-fit: contain;
   padding: 10px;
+}
+
+/* Radius system: main containers 8px, inner containers 10px, buttons 11px */
+::ng-deep .dish-card-wrapper,
+::ng-deep .dish-card-wrapper.list-layout {
+  border-radius: 8px;
+}
+
+.visibility-glass-badge,
+::ng-deep .dish-img-compact,
+::ng-deep .badge-price,
+::ng-deep .badge-cost,
+::ng-deep .skeleton-image,
+::ng-deep .skeleton-image-compact,
+::ng-deep .skeleton-title,
+::ng-deep .skeleton-text {
+  border-radius: 10px;
+}
+
+::ng-deep .btn-soft,
+::ng-deep .btn-soft.btn-sm,
+::ng-deep .skeleton-btn,
+::ng-deep .skeleton-btn-sm {
+  border-radius: 11px;
 }

@@ -142,3 +142,19 @@
   font-size: 1.1rem;
   color: inherit;
 }
+
+/* Radius system: main containers 8px, inner containers 10px, buttons 11px */
+.segmented-control {
+  border-radius: 10px;
+}
+
+.btn-premium-primary,
+.segmented-btn,
+.btn-soft-filter,
+.btn-pill-filter {
+  border-radius: 11px;
+}
+
+.btn-pill-filter .filter-badge {
+  border-radius: 10px;
+}

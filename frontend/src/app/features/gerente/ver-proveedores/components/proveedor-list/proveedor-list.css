@@ -228,3 +228,13 @@
   font-size: 2.5rem;
   opacity: 0.5;
 }
+
+/* Radius system: inner containers 10px, buttons 11px */
+.proveedor-row,
+.chip-sin-pedidos {
+  border-radius: 10px;
+}
+
+.icon-btn {
+  border-radius: 11px;
+}
