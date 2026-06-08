@@ -12,16 +12,13 @@ namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
     public class GenerarSugerenciasRecepcionCasoDeUso
     {
         private readonly IPedidoRepositorio _pedidoRepositorio;
-        private readonly IBodegaRepositorio _bodegaRepositorio;
         private readonly ILoteRepositorio _loteRepositorio;
 
         public GenerarSugerenciasRecepcionCasoDeUso(
             IPedidoRepositorio pedidoRepositorio,
-            IBodegaRepositorio bodegaRepositorio,
             ILoteRepositorio loteRepositorio)
         {
             _pedidoRepositorio = pedidoRepositorio;
-            _bodegaRepositorio = bodegaRepositorio;
             _loteRepositorio = loteRepositorio;
         }
 
