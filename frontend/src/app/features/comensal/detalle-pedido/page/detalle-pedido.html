@@ -106,7 +106,21 @@
   </button>
 </div>
 
-<app-llamar-al-mozo [configuracion]="configuracion" />
+<app-llamar-al-mozo 
+  [configuracion]="configuracion" 
+  [mesaId]="comandaState.mesaId() ?? 0"
+  [enviando]="comensalState.enviando()"
+  [enviado]="comensalState.exito()"
+  [error]="comensalState.error()"
+  (llamadoMozo)="comensalState.solicitarMozo($event)"
+  (modalCerrado)="comensalState.limpiarEstado()"
+/>
 
 <!-- MODAL DE CONFIRMACIÓN -->
-<app-modal-confirmacion-pedido #modal />
+<app-modal-confirmacion-pedido 
+  #modal 
+  [cargando]="comandaState.cargando()"
+  [error]="comandaState.error()"
+  [estadoPedido]="comandaState.estadoPedido()"
+  (confirmar)="comandaState.confirmarPedido()"
+/>

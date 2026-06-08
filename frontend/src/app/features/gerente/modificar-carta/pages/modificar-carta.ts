@@ -2,11 +2,11 @@ import { Component, OnInit, inject, ChangeDetectionStrategy, signal } from '@ang
 import { Router } from '@angular/router';
 import { Buscador } from '../../../../shared/ui/buscador/buscador';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
-import { Plato } from '../../../../core/models/plato';
+import { Plato } from '../../../../core/models/domain/plato';
 import { ListaPlatosComponent } from '../components/lista-platos/lista-platos';
 import { PageToolbar } from '../../../../shared/ui/page-toolbar/page-toolbar';
 import { Dropdown } from '../../../../shared/ui/dropdown/dropdown';
-import { ModalEditarPlatoComponent } from '../components/modal-editar-plato/modal-editar-plato';
+import { ModalEditarPlatoComponent } from '../containers/modal-editar-plato/modal-editar-plato';
 import { ModalEliminarPlatoComponent } from '../components/modal-eliminar-plato/modal-eliminar-plato';
 import { ModificarCartaStateService } from '../services/modificar-carta.state';
 

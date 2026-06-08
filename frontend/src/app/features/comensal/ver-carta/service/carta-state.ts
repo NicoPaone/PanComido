@@ -1,5 +1,6 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
-import { CartaItem } from '../../../../core/models/carta-item';
+import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CartaItem } from '../../../../core/models/domain/carta-item';
 import { CartaService } from './carta-service';
 
 @Injectable({
@@ -8,11 +9,12 @@ import { CartaService } from './carta-service';
 export class CartaState {
 
   private api = inject(CartaService);
-  private _items = signal<CartaItem[]>([]);
-  private _cargando = signal(false);
+  private destroyRef = inject(DestroyRef);
+  readonly #items = signal<CartaItem[]>([]);
+  readonly #cargando = signal(false);
 
-  items = this._items.asReadonly();
-  cargando = this._cargando.asReadonly();
+  items = this.#items.asReadonly();
+  cargando = this.#cargando.asReadonly();
 
   // Filtros
   busqueda = signal('');
@@ -21,17 +23,17 @@ export class CartaState {
 
   // Computed: platos
   platos = computed(() =>
-    this._items().filter(i => i.tipoArticulo === 'Plato')
+    this.#items().filter(i => i.tipoArticulo === 'Plato')
   );
 
   // Computed: bebidas
   bebidas = computed(() =>
-    this._items().filter(i => i.tipoArticulo === 'Bebida')
+    this.#items().filter(i => i.tipoArticulo === 'Bebida')
   );
 
   // Items filtrados (para la vista)
   itemsFiltrados = computed(() => {
-    let resultado = this._items();
+    let resultado = this.#items();
 
     // Filtro por búsqueda (solo nombre, descripcion no existe)
     const busqueda = this.busqueda().toLowerCase();
@@ -69,13 +71,13 @@ export class CartaState {
   });
 
   cargarCarta(): void {
-    this._cargando.set(true);
-    this.api.obtenerCarta().subscribe({
+    this.#cargando.set(true);
+    this.api.obtenerCarta().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
-        this._items.set(data);
-        this._cargando.set(false);
+        this.#items.set(data);
+        this.#cargando.set(false);
       },
-      error: () => this._cargando.set(false)
+      error: () => this.#cargando.set(false)
     });
   }
 

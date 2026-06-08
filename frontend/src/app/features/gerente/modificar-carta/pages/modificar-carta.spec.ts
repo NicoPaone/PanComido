@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { ModificarCartaComponent } from './modificar-carta';
 import { ModificarCartaApiService } from '../services/modificar-carta.api';
-import { Plato } from '../../../../core/models/plato';
+import { Plato } from '../../../../core/models/domain/plato';
 import { vi } from 'vitest';
 
 describe('ModificarCartaComponent', () => {
@@ -152,10 +152,10 @@ describe('ModificarCartaComponent', () => {
     expect(component.platoAEliminar()).toBeNull();
   });
 
-  it('debería registrar la categoría en consola al llamar a onCategoriaSeleccionada', () => {
-    const consoleSpy = vi.spyOn(console, 'log');
+  it('debería setear la categoría en el state al llamar a onCategoriaSeleccionada', () => {
+    const spy = vi.spyOn(component['state'], 'setCategoria');
     component.onCategoriaSeleccionada('Bebidas');
-    expect(consoleSpy).toHaveBeenCalledWith('Categoría seleccionada:', 'Bebidas');
+    expect(spy).toHaveBeenCalledWith('Bebidas');
   });
 
   it('debería navegar a la vista de creación al llamar a irACrearPlato', () => {

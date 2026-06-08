@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PRODUCTOS_STOCK_MOCK } from '../../../../core/models/producto-stock';
+import { INSUMOS_MOCK as PRODUCTOS_STOCK_MOCK } from '../../../../infra/mocks/insumo.mock-data';
 import { VerProveedoresComponent } from './ver-proveedores';
 
 describe('VerProveedoresComponent', () => {
@@ -24,6 +24,7 @@ describe('VerProveedoresComponent', () => {
     component.productos.set([...PRODUCTOS_STOCK_MOCK]);
     component.onProductoTextoChange('Ajo');
     component.cantidadProducto.set(2);
+    component.precioProductoManual.set(500);
 
     component.agregarItemPedido();
 
@@ -33,14 +34,14 @@ describe('VerProveedoresComponent', () => {
         id: 1,
         nombre: 'Ajo',
         cantidad: 2,
-        unidadMedida: 'KG'
+        unidadMedida: { id: 1, nombre: 'Kg' }
       })
     );
   });
 
   it('should remove an item from the pedido list', () => {
     component.pedidoItems.set([
-      { id: '1', nombre: 'Ajo', cantidad: 2, unidadMedida: 'KG' }
+      { id: '1', nombre: 'Ajo', cantidad: 2, unidadMedida: { id: 1, nombre: 'Kg' } }
     ]);
 
     component.eliminarItemPedido('1');

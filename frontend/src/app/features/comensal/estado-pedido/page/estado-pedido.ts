@@ -1,13 +1,14 @@
-import { Component, inject, OnInit, OnDestroy, effect } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectionStrategy} from '@angular/core';
 import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
-import { ComandaStateService } from '../../services/comanda-state.service';
-import { ComandaClienteResponse } from '../../../../core/models/comanda-cliente-response';
-import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
+import { ComandaState } from '../../services/comanda-state';
+import { configuracionRestauranteMock } from '../../../../infra/mocks/configuracion-restaurante.mock-data';
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
-import { ComandaHubService } from '../../../../core/services/hubs/comanda/comanda-hub-service';
 import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
+import { ComensalState } from '../../services/comensal-state';
+
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-estado-pedido',
   standalone: true,
   imports: [DecimalPipe, BotonComensal, LlamarAlMozo],
@@ -16,8 +17,8 @@ import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
 })
 export class EstadoPedido implements OnInit, OnDestroy {
   private router = inject(Router);
-  private comandaState = inject(ComandaStateService);
-  private comandaHub = inject(ComandaHubService);
+  private comandaState = inject(ComandaState);
+  comensalState = inject(ComensalState);
 
   configuracion = configuracionRestauranteMock;
   estado = this.comandaState.estadoPedido;
@@ -25,43 +26,33 @@ export class EstadoPedido implements OnInit, OnDestroy {
   cargando = this.comandaState.cargando;
   error = this.comandaState.error;
 
-  constructor() {
-    effect(() => {
-      const modificada = this.comandaHub.comandaModificada();
-      if (modificada) {
-        // Recargar el estado si hubo una notificación de SignalR
-        this.comandaState.consultarEstado();
-      }
-    }, { allowSignalWrites: true });
-  }
-
   ngOnInit() {
     if (!this.estado()) {
       this.comandaState.consultarEstado();
     }
     const mesaId = this.comandaState.mesaId();
     if (mesaId) {
-      this.comandaHub.conectarComoComensal(mesaId).catch(err => 
-        console.error('Error conectando al hub:', err)
+      this.comandaState.iniciarEscucha(mesaId).catch(err =>
+        console.error('Error al conectar hub de comanda:', err)
       );
     }
   }
 
   ngOnDestroy() {
-    this.comandaHub.detener();
+    this.comandaState.detenerEscucha();
   }
 
   get estadoColor(): string {
     const st = this.estado()?.estadoUI?.toLowerCase() || '';
-    if (st.includes('preparaci')) return '#ebd038'; // Amarillo
-    if (st.includes('listo') || st.includes('hecho') || st.includes('espera')) return '#6bb446'; // Verde
-    return '#a3a3a3'; // Gris (Recibido, default)
+    if (st.includes('preparaci')) return '#ebd038'; // amarillo
+    if (st.includes('listo') || st.includes('hecho') || st.includes('espera')) return '#6bb446'; // verde
+    return '#a3a3a3'; // gris por defecto
   }
 
   get estadoTextColor(): string {
     const st = this.estado()?.estadoUI?.toLowerCase() || '';
-    if (st.includes('preparaci')) return '#000000'; // Texto negro para fondo amarillo
-    return '#ffffff'; // Texto blanco para los demás
+    if (st.includes('preparaci')) return '#000000'; 
+    return '#ffffff';
   }
 
   get estadoBorder(): string {

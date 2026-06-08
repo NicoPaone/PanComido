@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../../../core/services/api-service';
 import { AuthService } from '../../../../core/services/auth.service';
-import { NuevoProveedor, Proveedor } from '../../../../core/models/proveedor';
+import { Proveedor, ProveedorNuevo } from '../../../../core/models/domain/proveedor';
 
 @Injectable({ providedIn: 'root' })
 export class NuevoProveedorApiService {
@@ -13,7 +13,7 @@ export class NuevoProveedorApiService {
     return this.authService.validateManagerCredentials(user, pass);
   }
 
-  crearProveedor(proveedor: NuevoProveedor): Observable<Proveedor> {
+  crearProveedor(proveedor: ProveedorNuevo): Observable<Proveedor> {
     return this.api.post<Proveedor>('proveedores', proveedor);
   }
 }

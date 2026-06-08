@@ -1,9 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from '../../../../../core/services/api-service';
 import { map, Observable } from 'rxjs';
-import { Insumo, InsumoResponseDto } from '../../../../../core/models/insumos/insumo';
-import { CrearInsumoRequest } from '../../../../../core/models/insumos/crear-insumo-request';
+import { Insumo } from '../../../../../core/models/domain/insumo';
+import { InsumoResponseDto } from '../../../../../core/models/dtos/responses/insumo.response';
+import { CrearInsumoRequest } from '../../../../../core/models/dtos/requests/crear-insumo.request';
 
+
+import { mapInsumoDtoToDomain } from '../../../../../infra/http/mappers/insumo.mapper';
 
 @Injectable({ providedIn: 'root' })
 
@@ -13,39 +16,19 @@ export class StockMercaderiaService {
 
   getStockMercaderia(): Observable<Insumo[]> {
     return this.api.get<InsumoResponseDto[]>(this.endpoint).pipe(
-      map(dtos => dtos.map(dto => this.toDomain(dto)))
+      map(dtos => dtos.map(mapInsumoDtoToDomain))
     );
   }
 
   getById(id: number): Observable<Insumo> {
     return this.api.get<InsumoResponseDto>(`${this.endpoint}/${id}`).pipe(
-      map(dto => this.toDomain(dto))
+      map(mapInsumoDtoToDomain)
     );
   }
 
-  private toDomain(dto: InsumoResponseDto): Insumo {
-    return {
-      id: dto.id,
-      nombre: dto.nombre,
-      stockActual: dto.stockActual,
-      stockMinimo: dto.stockMinimo,
-      vencimiento: dto.vencimiento ?? '',
-      unidadMedida: { id: 0, nombre: dto.unidadMedida }, 
-      categoriaIngrediente: { 
-        id: 0, 
-        descripcion: dto.categoria, 
-        tipoAplica: dto.tipo 
-      }
-    };
-  }
-
- 
   crear(producto: CrearInsumoRequest): Observable<Insumo> {
     return this.api.post< {insumo: InsumoResponseDto, mensaje: string} >(this.endpoint, producto).pipe(
-      map(response => {
-        const insumoData = response.insumo;
-        return this.toDomain(insumoData);
-      })
+      map(response => mapInsumoDtoToDomain(response.insumo))
     );
   }
 

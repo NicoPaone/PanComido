@@ -1,35 +1,37 @@
-import { Component, inject, effect } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Location } from '@angular/common';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { ToggleComponent } from '../../../../shared/ui/toggle/toggle';
 import { DetalleRecetaComponent } from '../components/detalle-receta/detalle-receta';
-import { RecetaIngrediente } from '../../../../core/models/plato';
-import { computed } from '@angular/core';
-import { CrearPlatoStateService } from '../services/crear-plato.state';
+import { CrearPlatoFormComponent, PlatoFormData } from '../components/crear-plato-form/crear-plato-form';
+import { RecetaIngrediente } from '../../../../core/models/domain/plato';
+import { CrearPlatoState } from '../services/crear-plato.state';
+import { StockMercaderiaState } from '../../stock-mercaderia/services/insumos/stock-mercaderia-state';
+
+interface PlatoIAState {
+  desde_ia: boolean;
+  nombre?: string;
+  descripcion?: string;
+  tiempoPreparacion?: number;
+  ingredientes?: Array<{ insumoId: number; nombre: string; cantidad: number }>;
+}
 
 @Component({
-  selector: 'app-crear-plato',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-crear-plato-page',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, Boton, ToggleComponent, DetalleRecetaComponent],
+  imports: [Boton, ToggleComponent, DetalleRecetaComponent, CrearPlatoFormComponent],
   templateUrl: './crear-plato.html',
   styleUrl: './crear-plato.css'
 })
-export class CrearPlatoComponent {
+export class CrearPlatoPage {
   private readonly router = inject(Router);
-  private readonly fb = inject(FormBuilder);
-  private readonly state = inject(CrearPlatoStateService);
+  private readonly location = inject(Location);
+  private readonly state = inject(CrearPlatoState);
+  private readonly insumoState = inject(StockMercaderiaState);
 
-  platoForm = this.fb.group({
-    nombre: ['', [Validators.required, Validators.minLength(3)]],
-    costo: [0, [Validators.required, Validators.min(0.01)]],
-    precioVenta: [0, [Validators.required, Validators.min(0.01)]],
-    tiempoPreparacion: [15, [Validators.required, Validators.min(1)]],
-    tipoPlato: ['', [Validators.required]],
-    descripcion: ['', [Validators.required, Validators.minLength(8)]]
-  });
-
+  // Signals del state
   visible = this.state.visible;
   imagenSelected = this.state.imagenSelected;
   vegano = this.state.vegano;
@@ -39,8 +41,10 @@ export class CrearPlatoComponent {
   mostrarExito = this.state.mostrarExito;
   mostrarSelectorImagen = this.state.mostrarSelectorImagen;
   costoSugerido = this.state.costoSugerido;
+  insumos = this.insumoState.productos;
 
-  mockImages = [
+  // Imágenes disponibles para el plato
+  imagenesDisponibles = [
     { url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=200&h=150', label: 'Ensalada' },
     { url: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&q=80&w=200&h=150', label: 'Milanesa' },
     { url: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&q=80&w=200&h=150', label: 'Papas Fritas' },
@@ -49,47 +53,15 @@ export class CrearPlatoComponent {
     { url: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=200&h=150', label: 'Hamburguesa' }
   ];
 
-  private readonly formValue = toSignal(this.platoForm.valueChanges, {
-    initialValue: this.platoForm.value
-  });
-
-  private readonly formStatus = toSignal(this.platoForm.statusChanges, {
-    initialValue: this.platoForm.status
-  });
-
-  precioEsMenorQueCosto = computed(() => {
-    const currentVal = this.formValue();
-    const pVenta = currentVal?.precioVenta ?? 0;
-    const pCosto = currentVal?.costo ?? 0;
-    return pVenta > 0 && pCosto > 0 && pVenta <= pCosto;
-  });
-
-  puedeGuardar = computed(() => {
-    return this.formStatus() === 'VALID';
-  });
-
   constructor() {
-    effect(() => {
-      const sugerido = this.costoSugerido();
-      if (sugerido > 0) {
-        this.platoForm.patchValue({ costo: sugerido });
-        this.platoForm.get('costo')?.markAsTouched();
-      }
-    });
+    // Cargamos insumos del backend
+    this.insumoState.cargarMercaderia();
 
-    const nav = this.router.getCurrentNavigation();
-    const extras = nav?.extras?.state;
+    // Si viene de sugerencia IA, cargamos los ingredientes al form
+    const navState = this.location.getState() as PlatoIAState | null;
 
-    if (extras?.['desde_ia']) {
-      this.platoForm.patchValue({
-        nombre: extras['nombre'] ?? '',
-        descripcion: extras['descripcion'] ?? '',
-        tiempoPreparacion: extras['tiempoPreparacion'] ?? 15,
-        costo: 0,
-        precioVenta: 0,
-      });
-
-      const ingredientes: RecetaIngrediente[] = (extras['ingredientes'] ?? []).map((ing: any) => ({
+    if (navState?.desde_ia && navState.ingredientes) {
+      const ingredientes: RecetaIngrediente[] = navState.ingredientes.map(ing => ({
         id: ing.insumoId,
         nombre: ing.nombre,
         cantidad: ing.cantidad,
@@ -100,55 +72,40 @@ export class CrearPlatoComponent {
     }
   }
 
-  toggleTag(tag: 'vegano' | 'vegetariano' | 'celiaco') {
+  onGuardar(data: PlatoFormData): void {
+    this.state.guardarPlato(data, () => { });
+  }
+
+  onToggleTag(tag: 'vegano' | 'vegetariano' | 'celiaco'): void {
     this.state.toggleTag(tag);
   }
 
-  onToggleVisible() {
+  onToggleVisible(): void {
     this.state.toggleVisible();
   }
 
-  onRecetaCambiada(ingredientes: RecetaIngrediente[]) {
+  onRecetaCambiada(ingredientes: RecetaIngrediente[]): void {
     this.state.updateReceta(ingredientes);
   }
 
-  abrirSelectorImagen() {
+  onAbrirSelectorImagen(): void {
     this.state.abrirSelectorImagen();
   }
 
-  cerrarSelectorImagen() {
+  onCerrarSelectorImagen(): void {
     this.state.cerrarSelectorImagen();
   }
 
-  seleccionarImagen(url: string) {
+  onSeleccionarImagen(url: string): void {
     this.state.seleccionarImagen(url);
   }
 
-guardar() {
-  if (this.platoForm.invalid) {
-    this.platoForm.markAllAsTouched();
-    return;
-  }
-
-  const formVal = this.platoForm.value;
-  const platoData = {
-    nombre: formVal.nombre!,
-    costo: formVal.costo!,
-    precioVenta: formVal.precioVenta!,
-    tiempoPreparacion: formVal.tiempoPreparacion!,
-    tipoPlato: formVal.tipoPlato!,
-    descripcion: formVal.descripcion!,
-  };
-
-  this.state.guardarPlato(platoData, () => {});
-}
-
-  cerrarExito() {
+  onCerrarExito(): void {
     this.state.setMostrarExito(false);
     this.router.navigate(['/staff/gerente/modificar-carta']);
   }
 
-  cancelar() {
+  onCancelar(): void {
     this.router.navigate(['/staff/gerente/modificar-carta']);
   }
 }

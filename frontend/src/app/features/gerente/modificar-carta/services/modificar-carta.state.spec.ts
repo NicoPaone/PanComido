@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { ModificarCartaStateService } from './modificar-carta.state';
 import { ModificarCartaApiService } from './modificar-carta.api';
-import { Plato } from '../../../../core/models/plato';
+import { Plato } from '../../../../core/models/domain/plato';
 import { vi } from 'vitest';
 
 describe('ModificarCartaStateService', () => {

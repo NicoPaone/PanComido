@@ -2,19 +2,16 @@ import { Injectable, signal } from '@angular/core';
 import { Observable, of, delay } from 'rxjs';
 
 
-const ROLE_ROUTES: Record<string, string> = {
-  'Gerente': 'staff/gerente',
-  'Cocina': 'staff/cocina',
-  'Mozo': 'staff/mozo',
-};
-const DEFAULT_ROUTE = 'staff/cocina';
-
-
+import { ROLE_ROUTES, DEFAULT_ROUTE } from '../../app.constants';
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  currentRole = signal<string>('Gerente');
+  currentRole = signal<string>('Mozo');
+
+  // TODO: sacar ids harcodeados
+  get currentRestauranteId(): number { return 1; }
+  get currentMozoId(): number { return 3; }
   validateManagerCredentials(username: string, password: string): Observable<boolean> {
     const esValido = username.toLowerCase().trim() === 'gerente' && password === '123456';
     return of(esValido).pipe(delay(250));
