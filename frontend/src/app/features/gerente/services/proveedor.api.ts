@@ -1,31 +1,47 @@
 import { Injectable, inject } from '@angular/core';
 import { catchError, forkJoin, map, Observable, of } from 'rxjs';
-import { ApiService } from '../../../../core/services/api-service';
+import { ApiService } from '../../../core/services/api-service';
+import { AuthService } from '../../../core/services/auth.service';
 
 // Modelos de Dominio
-import { Proveedor, PedidoProveedor, PedidoProveedorRequest, RecepcionPedidoItem } from '../../../../core/models/domain/proveedor';
-import { Insumo } from '../../../../core/models/domain/insumo';
-import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo';
-import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
-import { Bodega } from '../../../../core/models/domain/bodega';
-import { InsumoResponseDto } from '../../../../core/models/dtos/responses/insumo.response';
+import { Proveedor, PedidoProveedor, PedidoProveedorRequest, ProveedorNuevo, RecepcionPedidoItem, SugerenciaPedidoItem } from '../../../core/models/domain/proveedor';
+import { Insumo } from '../../../core/models/domain/insumo';
+import { CategoriaInsumo } from '../../../core/models/domain/categoria-insumo';
+import { UnidadMedida } from '../../../core/models/domain/unidad-medida';
+import { Bodega } from '../../../core/models/domain/bodega';
+import { InsumoResponseDto } from '../../../core/models/dtos/responses/insumo.response';
 import {
   ConfirmarPedidoResponseDto,
   CrearPedidoResponseDto,
   PedidoResponseDto,
   PreRecepcionItemResponseDto,
   ProveedorResponseDto,
-} from '../../../../core/models/dtos/responses/proveedor.response';
-import { CrearPedidoProveedorRequestDto } from '../../../../core/models/dtos/requests/crear-pedido-proveedor.request';
+} from '../../../core/models/dtos/responses/proveedor.response';
+import { CrearPedidoProveedorRequestDto } from '../../../core/models/dtos/requests/crear-pedido-proveedor.request';
 
 @Injectable({ providedIn: 'root' })
-export class VerProveedoresApiService {
+export class ProveedorApiService {
   private api = inject(ApiService);
+  private authService = inject(AuthService);
+
+  validateManagerCredentials(user: string, pass: string): Observable<boolean> {
+    return this.authService.validateManagerCredentials(user, pass);
+  }
 
   getProveedores(): Observable<Proveedor[]> {
     return this.api.get<ProveedorResponseDto[]>('Proveedor').pipe(
       map(proveedores => proveedores.map(dto => this.mapProveedor(dto)))
     );
+  }
+
+  getProveedorById(id: number | string): Observable<Proveedor | undefined> {
+    return this.getProveedores().pipe(
+      map(proveedores => proveedores.find(proveedor => proveedor.id.toString() === id.toString()))
+    );
+  }
+
+  crearProveedor(proveedor: ProveedorNuevo): Observable<Proveedor> {
+    return this.api.post<Proveedor>('proveedor', proveedor);
   }
 
   getHistorialPedidos(id: number | string): Observable<PedidoProveedor[]> {
@@ -37,6 +53,21 @@ export class VerProveedoresApiService {
   getProductosDisponibles(): Observable<Insumo[]> {
     return this.api.get<InsumoResponseDto[]>('Insumo').pipe(
       map(insumos => insumos.map(dto => this.mapInsumo(dto)))
+    );
+  }
+
+  getInsumosAReponer(id: number | string): Observable<SugerenciaPedidoItem[]> {
+    return this.api.get<any[]>(`Proveedor/${id}/insumos-a-reponer`).pipe(
+      map(items => items.map(item => ({
+        productoId: item.id.toString(),
+        nombre: item.nombre ?? '',
+        unidadMedida: this.mapUnidadMedida(item.unidadMedida),
+        stockActual: item.stockActual ?? 0,
+        stockMinimo: 0,
+        estadoStock: item.estadoStock ?? '',
+        cantidadSugerida: item.cantidadSugerida ?? 1,
+        precioUnitario: this.normalizarPrecio(item.precioUnitario)
+      })))
     );
   }
 
@@ -131,6 +162,19 @@ export class VerProveedoresApiService {
     return this.api.get<Bodega[]>('Bodega');
   }
 
+  getHistorialCantidadPedidos(id: number | string): Observable<{ items: { id: string | number; cantidad: number; precioUnitario: number }[]; fecha: string }[]> {
+    return this.api.get<any[]>(`Proveedor/${id}/historial-pedidos`).pipe(
+      map(pedidos => pedidos.map(pedido => ({
+        fecha: pedido.fecha ?? '',
+        items: (pedido.itemsInsumo ?? []).map((item: any) => ({
+          id: item.insumoId,
+          cantidad: item.cantidad ?? 0,
+          precioUnitario: item.precioCompra ?? 0
+        }))
+      })))
+    );
+  }
+
   private mapCrearPedidoRequest(pedido: PedidoProveedorRequest): CrearPedidoProveedorRequestDto {
     return {
       items: pedido.items.map(item => ({
@@ -193,6 +237,18 @@ export class VerProveedoresApiService {
     if (normalizado === 'enviado') return 'Enviado';
     if (normalizado === 'recibido') return 'Recibido';
     return 'Pendiente';
+  }
+
+  private normalizarPrecio(precio: unknown): number {
+    const valor = Number(precio);
+    return Number.isFinite(valor) && valor >= 1 ? valor : 1;
+  }
+
+  private mapUnidadMedida(valor: unknown): UnidadMedida {
+    if (typeof valor === 'object' && valor !== null && 'nombre' in valor) {
+      return valor as UnidadMedida;
+    }
+    return { id: 0, nombre: String(valor ?? 'UN') };
   }
 
 

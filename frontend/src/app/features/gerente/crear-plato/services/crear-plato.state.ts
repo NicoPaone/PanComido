@@ -1,9 +1,9 @@
 import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CrearPlatoApiService, ItemDesplegableDto, IngredienteDisponibleDto } from './crear-plato.api';
+import { PlatoApiService, ItemDesplegableDto, IngredienteDisponibleDto } from '../../services/plato.api';
 import { CrearPlatoRequestDto } from '../../../../core/models/dtos/requests/crear-plato.request';
 import { RecetaIngrediente } from '../../../../core/models/domain/plato';
-import { calcularCostoReceta } from '../../services/plato.service';
+import { calcularCostoReceta } from '../../services/plato-cost';
 
 /** Mapeo de nombre de tipo/categoría a ID para el backend */
 const TIPO_PLATO_MAP: Record<string, number> = {
@@ -22,7 +22,7 @@ const CATEGORIA_PLATO_MAP: Record<string, number> = {
 
 @Injectable({ providedIn: 'root' })
 export class CrearPlatoState {
-  private api = inject(CrearPlatoApiService);
+  private api = inject(PlatoApiService);
   private destroyRef = inject(DestroyRef);
 
   visible = signal<boolean>(true);

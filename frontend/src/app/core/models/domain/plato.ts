@@ -5,6 +5,7 @@ export interface RecetaIngrediente {
   nombre: string;
   cantidad: number;
   unidadMedida: UnidadMedida | string;
+  costoUnitario?: number;
 }
 
 export interface Plato {

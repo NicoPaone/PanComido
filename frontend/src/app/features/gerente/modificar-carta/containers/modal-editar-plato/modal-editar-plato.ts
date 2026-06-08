@@ -5,9 +5,9 @@ import { Plato, RecetaIngrediente } from '../../../../../core/models/domain/plat
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
 import { ToggleComponent } from '../../../../../shared/ui/toggle/toggle';
 import { Buscador } from '../../../../../shared/ui/buscador/buscador';
-import { calcularCostoReceta } from '../../../services/plato.service';
+import { calcularCostoReceta } from '../../../services/plato-cost';
 import { Insumo } from '../../../../../core/models/domain/insumo';
-import { ModificarCartaApiService } from '../../services/modificar-carta.api';
+import { PlatoApiService } from '../../../services/plato.api';
 import { ArsCurrencyPipe } from '../../../../../shared/pipes/ars-currency.pipe';
 import { PriceNoteComponent } from '../../../../../shared/ui/price-note/price-note';
 
@@ -20,7 +20,7 @@ import { PriceNoteComponent } from '../../../../../shared/ui/price-note/price-no
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ModalEditarPlatoComponent {
-  private api = inject(ModificarCartaApiService);
+  private api = inject(PlatoApiService);
   private destroyRef = inject(DestroyRef);
 
   plato = input.required<Plato>();

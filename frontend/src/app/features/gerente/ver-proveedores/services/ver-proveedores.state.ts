@@ -1,6 +1,6 @@
 import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { VerProveedoresApiService } from './ver-proveedores.api';
+import { ProveedorApiService } from '../../services/proveedor.api';
 import { Proveedor, PedidoProveedor, PedidoProveedorItem } from '../../../../core/models/domain/proveedor';
 import { RecepcionPedidoItem } from '../../../../core/models/domain/proveedor';
 import { Insumo } from '../../../../core/models/domain/insumo';
@@ -9,7 +9,7 @@ import { Bodega } from '../../../../core/models/domain/bodega';
 
 @Injectable({ providedIn: 'root' })
 export class VerProveedoresState {
-  private api = inject(VerProveedoresApiService);
+  private api = inject(ProveedorApiService);
   private destroyRef = inject(DestroyRef);
 
   /*private readonly preciosMock: Record<string, number> = {

@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { ModificarCartaStateService } from './modificar-carta.state';
-import { ModificarCartaApiService } from './modificar-carta.api';
+import { PlatoApiService } from '../../services/plato.api';
 import { Plato } from '../../../../core/models/domain/plato';
 import { vi } from 'vitest';
 
@@ -29,7 +29,7 @@ describe('ModificarCartaStateService', () => {
     TestBed.configureTestingModule({
       providers: [
         ModificarCartaStateService,
-        { provide: ModificarCartaApiService, useValue: apiServiceMock }
+        { provide: PlatoApiService, useValue: apiServiceMock }
       ]
     });
 

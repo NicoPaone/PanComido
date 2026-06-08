@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { VerProveedoresState } from './ver-proveedores.state';
-import { VerProveedoresApiService } from './ver-proveedores.api';
+import { ProveedorApiService } from '../../services/proveedor.api';
 import { Proveedor, PedidoProveedor } from '../../../../core/models/domain/proveedor';
 import { Insumo } from '../../../../core/models/domain/insumo';
 
@@ -67,7 +67,7 @@ describe('VerProveedoresState', () => {
     TestBed.configureTestingModule({
       providers: [
         VerProveedoresState,
-        { provide: VerProveedoresApiService, useValue: apiServiceMock }
+        { provide: ProveedorApiService, useValue: apiServiceMock }
       ]
     });
 

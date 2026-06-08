@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { ModificarCartaComponent } from './modificar-carta';
-import { ModificarCartaApiService } from '../services/modificar-carta.api';
+import { PlatoApiService } from '../../services/plato.api';
 import { Plato } from '../../../../core/models/domain/plato';
 import { vi } from 'vitest';
 
@@ -35,7 +35,7 @@ describe('ModificarCartaComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ModificarCartaComponent],
       providers: [
-        { provide: ModificarCartaApiService, useValue: apiServiceMock },
+        { provide: PlatoApiService, useValue: apiServiceMock },
         { provide: Router, useValue: routerMock }
       ]
     }).compileComponents();

@@ -2,14 +2,14 @@ import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, of, switchMap } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { RealizarPedidoSugeridoApiService } from './realizar-pedido-sugerido.api';
+import { ProveedorApiService } from '../../services/proveedor.api';
 import { Proveedor, SugerenciaPedidoItem } from '../../../../core/models/domain/proveedor';
 import { Insumo } from '../../../../core/models/domain/insumo';
 import { QuantityHistoryOrder } from '../../../../shared/utils/quantity-presets';
 
 @Injectable({ providedIn: 'root' })
 export class RealizarPedidoSugeridoStateService {
-  private api = inject(RealizarPedidoSugeridoApiService);
+  private api = inject(ProveedorApiService);
   private destroyRef = inject(DestroyRef);
 
   // Estado centralizado expuesto como writeable signals
@@ -62,7 +62,7 @@ export class RealizarPedidoSugeridoStateService {
           const consultas = proveedores.map(proveedor =>
             forkJoin({
               items: this.api.getInsumosAReponer(proveedor.id).pipe(catchError(() => of([] as SugerenciaPedidoItem[]))),
-              historial: this.api.getHistorialPedidos(proveedor.id).pipe(catchError(() => of([] as QuantityHistoryOrder[])))
+              historial: this.api.getHistorialCantidadPedidos(proveedor.id).pipe(catchError(() => of([] as QuantityHistoryOrder[])))
             }).pipe(
               map(({ items, historial }) => ({ proveedor, items, historial })),
               catchError(() => of({ proveedor, items: [] as SugerenciaPedidoItem[], historial: [] as QuantityHistoryOrder[] }))
@@ -129,7 +129,7 @@ export class RealizarPedidoSugeridoStateService {
     this.#loading.set(true);
     forkJoin({
       items: this.api.getInsumosAReponer(proveedor.id).pipe(catchError(() => of([] as SugerenciaPedidoItem[]))),
-      historial: this.api.getHistorialPedidos(proveedor.id).pipe(catchError(() => of([] as QuantityHistoryOrder[])))
+      historial: this.api.getHistorialCantidadPedidos(proveedor.id).pipe(catchError(() => of([] as QuantityHistoryOrder[])))
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -291,7 +291,7 @@ seleccionarIngredienteExtra(productoId: string): void {
     // Buscar el último precio en el historial del proveedor seleccionado
     const proveedorId = this.proveedorAgregarIngredienteId();
     if (proveedorId !== null) {
-      this.api.getHistorialPedidos(proveedorId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      this.api.getHistorialCantidadPedidos(proveedorId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: pedidos => {
           const ordenados = [...pedidos].sort((a, b) => {
             const fa = new Date(a.fecha).getTime();

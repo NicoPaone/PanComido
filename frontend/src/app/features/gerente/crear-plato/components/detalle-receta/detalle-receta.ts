@@ -1,7 +1,7 @@
 import { FormsModule } from '@angular/forms';
 import { Buscador } from '../../../../../shared/ui/buscador/buscador';
 import { RecetaIngrediente } from '../../../../../core/models/domain/plato';
-import { IngredienteDisponibleDto } from '../../services/crear-plato.api';
+import { IngredienteDisponibleDto } from '../../../services/plato.api';
 import { Component, output, signal, computed, input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
@@ -40,7 +40,8 @@ export class DetalleRecetaComponent implements OnInit {
       id: ingrediente.id,
       nombre: ingrediente.nombre,
       cantidad: 1,
-      unidadMedida: ingrediente.unidadMedida  // Viene del backend, no editable
+      unidadMedida: ingrediente.unidadMedida,
+      costoUnitario: ingrediente.costoUnitario
     };
 
     this.ingredientesSeleccionados.update(items => [...items, nuevo]);

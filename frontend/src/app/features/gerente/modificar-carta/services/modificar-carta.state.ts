@@ -1,11 +1,11 @@
 import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ModificarCartaApiService } from './modificar-carta.api';
+import { PlatoApiService } from '../../services/plato.api';
 import { Plato } from '../../../../core/models/domain/plato';
 
 @Injectable({ providedIn: 'root' })
 export class ModificarCartaStateService {
-  private api = inject(ModificarCartaApiService);
+  private api = inject(PlatoApiService);
   private destroyRef = inject(DestroyRef);
 
   // 1. Estado PRIVADO
@@ -100,6 +100,10 @@ export class ModificarCartaStateService {
     return this.filteredPlatos()
       .filter(plato => plato.recomendado && plato.visible)
       .sort((a, b) => (b.ventas ?? 0) - (a.ventas ?? 0));
+  });
+
+  platosNormales = computed(() => {
+    return this.filteredPlatos().filter(plato => !(plato.recomendado && plato.visible));
   });
 
   tiposComidaDisponibles = computed(() => {
