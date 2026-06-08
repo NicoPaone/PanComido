@@ -73,7 +73,7 @@ export class CrearPlatoPage {
   }
 
   onGuardar(data: PlatoFormData): void {
-    this.state.guardarPlato(data, () => {});
+    this.state.guardarPlato(data, () => { });
   }
 
   onToggleTag(tag: 'vegano' | 'vegetariano' | 'celiaco'): void {
