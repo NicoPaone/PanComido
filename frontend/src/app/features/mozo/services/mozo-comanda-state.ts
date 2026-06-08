@@ -14,20 +14,20 @@ export class MozoComandaState {
   private api = inject(MozoComandaService);
   private hub = inject(ComandaHubService);
   private destroyRef = inject(DestroyRef);
-  private _comandas = signal<Comanda[]>([]);
-  private _cargando = signal<boolean>(false);
+  readonly #comandas = signal<Comanda[]>([]);
+  readonly #cargando = signal<boolean>(false);
 
-  comandas = this._comandas.asReadonly();
-  cargando = this._cargando.asReadonly();
+  comandas = this.#comandas.asReadonly();
+  cargando = this.#cargando.asReadonly();
 
   comandasNuevas = computed(() =>
-    this._comandas().filter(c => c.estado === 'Nueva'));
+    this.#comandas().filter(c => c.estado === 'Nueva'));
 
   comandasEnPreparacion = computed(() =>
-    this._comandas().filter(c => c.estado === 'EnPreparacion'));
+    this.#comandas().filter(c => c.estado === 'EnPreparacion'));
 
   comandasEnEspera = computed(() =>
-    this._comandas().filter(c => c.estado === 'EnEspera'));
+    this.#comandas().filter(c => c.estado === 'EnEspera'));
 
   readonly #hubEffect = effect(() => {
     const actualizada = this.hub.comandaModificada();
@@ -40,7 +40,7 @@ export class MozoComandaState {
         : EstadoComandaId[actualizada.estado as unknown as number]) as EstadoComanda
     };
 
-    this._comandas.update(lista => {
+    this.#comandas.update(lista => {
       const estadosFinales = ['Finalizada', 'Abierta'];
       if (estadosFinales.includes(normalizada.estado)) {
         return lista.filter(c => c.id !== normalizada.id);
@@ -54,16 +54,16 @@ export class MozoComandaState {
   });
 
   cargarComandas(): void {
-    this._cargando.set(true);
+    this.#cargando.set(true);
     this.api.listarComandas().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (comandas) => {
-        this._comandas.set(comandas);
+        this.#comandas.set(comandas);
 
-        this._cargando.set(false);
+        this.#cargando.set(false);
       },
       error: (error) => {
 
-        this._cargando.set(false);
+        this.#cargando.set(false);
       }
     });
   }
@@ -73,7 +73,7 @@ export class MozoComandaState {
 
     this.api.entregarItems(comandaId, articuloComandaIds).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (comandaActualizada) => {
-        this._comandas.update(lista =>
+        this.#comandas.update(lista =>
           lista.map(c => c.id === comandaActualizada.id ? comandaActualizada : c)
         );
       },

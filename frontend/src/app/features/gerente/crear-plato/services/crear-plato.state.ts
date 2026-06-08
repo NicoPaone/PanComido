@@ -34,8 +34,8 @@ export class CrearPlatoState {
   mostrarExito = signal<boolean>(false);
   mostrarSelectorImagen = signal<boolean>(false);
 
-  private _loading = signal<boolean>(false);
-  loading = this._loading.asReadonly();
+  readonly #loading = signal<boolean>(false);
+  loading = this.#loading.asReadonly();
 
   costoSugerido = computed(() => {
     return calcularCostoReceta(this.receta());
@@ -78,7 +78,7 @@ export class CrearPlatoState {
   }
 
   guardarPlato(platoData: { nombre: string; costo: number; precioVenta: number; tiempoPreparacion: number; tipoPlato: string; descripcion: string; }, callback: () => void): void {
-    this._loading.set(true);
+    this.#loading.set(true);
 
     const restriccionesIds: number[] = [];
     if (this.vegano()) restriccionesIds.push(1);
@@ -105,13 +105,13 @@ export class CrearPlatoState {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this._loading.set(false);
+          this.#loading.set(false);
           this.mostrarExito.set(true);
           callback();
         },
         error: (err) => {
           console.error('Error al crear plato:', err?.error?.error || err?.message || err);
-          this._loading.set(false);
+          this.#loading.set(false);
         }
       });
   }

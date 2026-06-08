@@ -18,18 +18,18 @@ export class StockMercaderiaState {
   private apiCategoriaInsumos = inject(CategoriaInsumoService);
   private destroyRef = inject(DestroyRef);
   
-  private _productos = signal<Insumo[]>([]);
-  private _unidadMedidas = signal<UnidadMedida[]>([]);
-  private _categoriasInsumos = signal<CategoriaInsumo[]>([]);
-  private _cargando = signal<boolean>(false);
+  readonly #productos = signal<Insumo[]>([]);
+  readonly #unidadMedidas = signal<UnidadMedida[]>([]);
+  readonly #categoriasInsumos = signal<CategoriaInsumo[]>([]);
+  readonly #cargando = signal<boolean>(false);
 
-  productos = this._productos.asReadonly();
-  cargando = this._cargando.asReadonly();
-  unidadMedidas = this._unidadMedidas.asReadonly();
-  categoriasInsumos = this._categoriasInsumos.asReadonly();
+  productos = this.#productos.asReadonly();
+  cargando = this.#cargando.asReadonly();
+  unidadMedidas = this.#unidadMedidas.asReadonly();
+  categoriasInsumos = this.#categoriasInsumos.asReadonly();
 
   productosCriticos = computed(() =>
-    this._productos().filter(p => p.stockActual <= p.stockMinimo)
+    this.#productos().filter(p => p.stockActual <= p.stockMinimo)
   );
 
   cantidadProductosCriticos = computed(() =>
@@ -37,15 +37,15 @@ export class StockMercaderiaState {
   );
 
   cargarMercaderia(): void {
-    this._cargando.set(true);
+    this.#cargando.set(true);
     this.api.getStockMercaderia().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
-        this._productos.set(data);
-        this._cargando.set(false);
+        this.#productos.set(data);
+        this.#cargando.set(false);
       },
       error: (err) => {
         
-        this._cargando.set(false);
+        this.#cargando.set(false);
       }
     });
   }
@@ -56,37 +56,37 @@ export class StockMercaderiaState {
       unidadesRes: this.apiUnidadMedida.obtenerUnidades()
     }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
-        this._categoriasInsumos.set(response.categoriasRes);
-        this._unidadMedidas.set(response.unidadesRes);
+        this.#categoriasInsumos.set(response.categoriasRes);
+        this.#unidadMedidas.set(response.unidadesRes);
       },
       error: (err) => {}
     });
   }
 
   guardarProducto(producto: CrearInsumo): void {
-    this._cargando.set(true);
+    this.#cargando.set(true);
     
     const idEdicion = 'id' in producto ? (producto as any).id : null;
 
     if (idEdicion) {
       this.api.actualizar(idEdicion, producto).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (updated) => {
-          this._productos.update(lista => 
+          this.#productos.update(lista => 
             lista.map(p => p.id === updated.id ? updated : p)
           );
-          this._cargando.set(false);
+          this.#cargando.set(false);
         },
-        error: () => this._cargando.set(false)
+        error: () => this.#cargando.set(false)
       });
     } else {
       this.api.crear(producto).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (nuevo: Insumo) => {
-          this._productos.update(lista => [...lista, nuevo]);
-          this._cargando.set(false);
+          this.#productos.update(lista => [...lista, nuevo]);
+          this.#cargando.set(false);
           
         },
         error: (err) => {
-          this._cargando.set(false)
+          this.#cargando.set(false)
           
 
         }
@@ -95,13 +95,13 @@ export class StockMercaderiaState {
   }
 
   eliminarProducto(id: number): void {
-    this._cargando.set(true);
+    this.#cargando.set(true);
     this.api.eliminar(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
-        this._productos.update(lista => lista.filter(p => p.id !== id));
-        this._cargando.set(false);
+        this.#productos.update(lista => lista.filter(p => p.id !== id));
+        this.#cargando.set(false);
       },
-      error: () => this._cargando.set(false)
+      error: () => this.#cargando.set(false)
     });
   }
 }
