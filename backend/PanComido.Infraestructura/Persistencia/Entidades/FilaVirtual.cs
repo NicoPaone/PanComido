@@ -16,6 +16,9 @@ public partial class FilaVirtual
     [Column("restaurante_id")]
     public int RestauranteId { get; set; }
 
+    [Column("habilitada")]
+    public bool Habilitada { get; set; }
+
     [ForeignKey("RestauranteId")]
     [InverseProperty("FilaVirtuals")]
     public virtual Restaurante Restaurante { get; set; } = null!;

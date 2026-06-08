@@ -16,9 +16,9 @@ namespace PanComido.Presentacion.Servicios
 
         public async Task NotificarEstadoModificadoAsync(Comanda comanda, List<int> mozoIds)
         {
-           await _hubContext.Clients.Group($"Cocina_{comanda.RestauranteId}").SendAsync("EstadoComandaModificada", comanda);
-           await _hubContext.Clients.Group($"Mesa_{comanda.MesaId}").SendAsync("EstadoComandaModificada", comanda);
-            foreach(int mozoId in mozoIds)
+            await _hubContext.Clients.Group($"Cocina_{comanda.RestauranteId}").SendAsync("EstadoComandaModificada", comanda);
+            await _hubContext.Clients.Group($"Mesa_{comanda.MesaId}").SendAsync("EstadoComandaModificada", comanda);
+            foreach (int mozoId in mozoIds)
             {
                 await _hubContext.Clients.Group($"Mozo_{mozoId}").SendAsync("EstadoComandaModificada", comanda);
             }

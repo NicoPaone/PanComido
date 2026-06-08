@@ -156,6 +156,10 @@ builder.Services.AddScoped<ObtenerArticulosParaCrearCartaCasoDeUso>();
 builder.Services.AddScoped<ModificarArticuloCasoDeUso>();
 builder.Services.AddScoped<LlamarMozoComandaCasoDeUso>();
 builder.Services.AddScoped<CambiarEstadoMesaCasoDeUso>();
+builder.Services.AddScoped<CrearProveedorCasoDeUso>();
+builder.Services.AddScoped<ModificarProveedorCasoDeUso>();
+builder.Services.AddScoped<EliminarProveedorCasoDeuso>();
+
 
 
 
