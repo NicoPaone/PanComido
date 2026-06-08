@@ -14,9 +14,12 @@ export interface Plato {
   precioVenta: number;
   costo: number;
   tiempo?: number;
+  tipoPlatoId?: number;
+  categoriaPlatoId?: number;
   tipo: string;
   bebida?: string;
   restriccion?: string;
+  restriccionesIds?: number[];
   visible: boolean;
   imagen: string;
   descripcion?: string;

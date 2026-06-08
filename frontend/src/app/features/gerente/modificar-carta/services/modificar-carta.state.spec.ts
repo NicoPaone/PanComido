@@ -18,6 +18,27 @@ describe('ModificarCartaStateService', () => {
   beforeEach(() => {
     apiServiceMock = {
       getPlatos: vi.fn().mockReturnValue(of([...mockPlatos])),
+      getPlatoById: vi.fn().mockImplementation((id) => {
+        const found = mockPlatos.find(p => p.id === id);
+        return of({ ...found, tipoPlatoId: 1, categoriaPlatoId: 1, tiempoPreparacion: 15, restriccionesIds: [] } as Plato);
+      }),
+      modificarPlato: vi.fn().mockImplementation((id, data) => {
+        const found = mockPlatos.find(p => p.id === id);
+        if (!found) throw new Error('Not found');
+        return of({
+          ...found,
+          nombre: data.nombre,
+          precioVenta: data.precioVentaFinal,
+          visible: data.esVisibleEnCarta,
+          imagen: data.urlImagen,
+          receta: data.ingredientes.map((ingrediente: any) => ({
+            id: ingrediente.insumoId,
+            nombre: '',
+            cantidad: ingrediente.cantidad,
+            unidadMedida: ''
+          }))
+        } as Plato);
+      }),
       updatePlato: vi.fn().mockImplementation((id, data) => {
         const found = mockPlatos.find(p => p.id === id);
         if (!found) throw new Error('Not found');
@@ -115,7 +136,7 @@ describe('ModificarCartaStateService', () => {
   it('debería abrir y cerrar los modales de edición y eliminación', () => {
     const plato = mockPlatos[0];
     service.setPlatoAEditar(plato);
-    expect(service.platoAEditar()).toEqual(plato);
+    expect(service.platoAEditar()).toEqual(expect.objectContaining(plato));
 
     service.setPlatoAEliminar(plato);
     expect(service.platoAEliminar()).toEqual(plato);
@@ -132,9 +153,17 @@ describe('ModificarCartaStateService', () => {
 
     service.savePlato({ nombre: 'Milanesa Napolitana Suprema', precioVenta: 150 });
 
-    expect(apiServiceMock.updatePlato).toHaveBeenCalledWith(1, {
+    expect(apiServiceMock.modificarPlato).toHaveBeenCalledWith(1, {
       nombre: 'Milanesa Napolitana Suprema',
-      precioVenta: 150
+      descripcion: '',
+      precioVentaFinal: 150,
+      tiempoPreparacionBase: 15,
+      tipoPlatoId: 1,
+      categoriaPlatoId: 1,
+      urlImagen: '',
+      esVisibleEnCarta: true,
+      restriccionesIds: [],
+      ingredientes: []
     });
     const updated = service.platos().find(p => p.id === 1);
     expect(updated?.nombre).toBe('Milanesa Napolitana Suprema');

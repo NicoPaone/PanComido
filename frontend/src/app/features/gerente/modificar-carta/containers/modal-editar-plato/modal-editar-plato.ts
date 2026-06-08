@@ -66,7 +66,11 @@ export class ModalEditarPlatoComponent {
         this.precioVenta.set(p.precioVenta);
         this.imagen.set(p.imagen);
         this.visible.set(p.visible);
-        this.receta.set(p.receta ? JSON.parse(JSON.stringify(p.receta)) : []);
+        const receta = p.receta ? JSON.parse(JSON.stringify(p.receta)) as RecetaIngrediente[] : [];
+        this.receta.set(receta.map(ingrediente => ({
+          ...ingrediente,
+          unidadMedida: this.normalizarUnidadMedida(ingrediente.unidadMedida)
+        })));
       }
     });
   }
@@ -93,7 +97,8 @@ export class ModalEditarPlatoComponent {
       id: producto.id,
       nombre: producto.nombre,
       cantidad: 1,
-      unidadMedida: producto.unidadMedida
+      unidadMedida: this.normalizarUnidadMedida(producto.unidadMedida),
+      costoUnitario: producto.precioVentaFinal ?? 0
     };
 
     this.receta.update(items => [...items, nuevo]);
@@ -129,5 +134,18 @@ export class ModalEditarPlatoComponent {
 
   onClose() {
     this.close.emit();
+  }
+
+  private normalizarUnidadMedida(unidad: RecetaIngrediente['unidadMedida'] | Insumo['unidadMedida']): string {
+    const valor = typeof unidad === 'string' ? unidad : unidad?.nombre ?? '';
+    const normalizado = valor.trim().toLowerCase();
+
+    if (['kg', 'kilo', 'kilos', 'kilogramo', 'kilogramos'].includes(normalizado)) return 'KG';
+    if (['g', 'gr', 'gramo', 'gramos'].includes(normalizado)) return 'GR';
+    if (['l', 'lt', 'lts', 'litro', 'litros'].includes(normalizado)) return 'L';
+    if (['ml', 'mililitro', 'mililitros'].includes(normalizado)) return 'ML';
+    if (['un', 'u', 'unidad', 'unidades'].includes(normalizado)) return 'UN';
+
+    return valor.toUpperCase();
   }
 }

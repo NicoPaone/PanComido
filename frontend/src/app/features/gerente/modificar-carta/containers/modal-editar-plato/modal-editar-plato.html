@@ -128,14 +128,14 @@
           @for (ing of receta(); track ing.id) {
             <div class="ingredient-pill d-flex align-items-center justify-content-between p-2 rounded-3 border">
               
-              <div class="d-flex align-items-center gap-2 min-w-0">
+              <div class="ingredient-main d-flex align-items-center gap-2 min-w-0">
                 <div class="icon-circle bg-light text-secondary flex-shrink-0">
                   <span class="material-symbols-outlined fs-6">kitchen</span>
                 </div>
                 <span class="fw-semibold text-dark text-truncate">{{ ing.nombre }}</span>
               </div>
 
-              <div class="d-flex align-items-center gap-2 flex-shrink-0">
+              <div class="ingredient-controls d-flex align-items-center gap-2 flex-shrink-0">
                 <div class="qty-control d-flex align-items-center bg-light rounded-pill px-1">
                   <input 
                     type="number" 
@@ -147,7 +147,7 @@
                 
                 <select class="unit-select form-select form-select-sm bg-light border-0 fw-semibold rounded-pill" [(ngModel)]="ing.unidadMedida">
                   <option value="GR">gr</option>
-                  <option value="L">ml</option>
+                  <option value="ML">ml</option>
                   <option value="L">l</option>
                   <option value="KG">kg</option>
                   <option value="UN">un</option>

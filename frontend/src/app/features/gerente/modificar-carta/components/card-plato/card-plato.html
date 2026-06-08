@@ -2,7 +2,7 @@
      [class.disabled-card]="!plato().visible"
      [class.exploding-card]="isExploding()"
      [class.recommended-card]="plato().recomendado"
-     [class.is-bebida]="(plato().categoria?.toLowerCase() || '').includes('bebida') || (plato().tipo?.toLowerCase() || '').includes('bebida') || !!plato().bebida"
+  [class.is-bebida]="(plato().categoria?.toLowerCase() || '').includes('bebida') || (plato().tipo || '').toLowerCase().includes('bebida') || !!plato().bebida"
      [class.list-layout]="layoutMode() === 'list'">
   
   @if (layoutMode() === 'grid') {

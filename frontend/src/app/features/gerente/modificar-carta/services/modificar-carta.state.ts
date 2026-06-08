@@ -2,6 +2,7 @@ import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PlatoApiService } from '../../services/plato.api';
 import { Plato } from '../../../../core/models/domain/plato';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ModificarCartaStateService {
@@ -294,6 +295,16 @@ export class ModificarCartaStateService {
 
   setPlatoAEditar(plato: Plato | null): void {
     this._platoAEditar.set(plato);
+
+    if (!plato) return;
+
+    this.api.getPlatoById(plato.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: detalle => {
+          this._platoAEditar.set({ ...plato, ...detalle });
+        }
+      });
   }
 
   setPlatoAEliminar(plato: Plato | null): void {
@@ -304,10 +315,33 @@ export class ModificarCartaStateService {
     const target = this._platoAEditar();
     if (!target) return;
 
-    this.api.updatePlato(target.id, updatedFields)
+    const updatedPlato = { ...target, ...updatedFields };
+    const tipoPlatoId = updatedPlato.tipoPlatoId ?? target.tipoPlatoId;
+    const categoriaPlatoId = updatedPlato.categoriaPlatoId ?? target.categoriaPlatoId;
+
+    if (!tipoPlatoId || !categoriaPlatoId) return;
+
+    const request = {
+      nombre: updatedPlato.nombre,
+      descripcion: updatedPlato.descripcion ?? '',
+      precioVentaFinal: updatedPlato.precioVenta,
+      tiempoPreparacionBase: updatedPlato.tiempoPreparacion ?? updatedPlato.tiempo ?? 1,
+      tipoPlatoId,
+      categoriaPlatoId,
+      urlImagen: this.normalizarUrlImagen(updatedPlato.imagen),
+      esVisibleEnCarta: updatedPlato.visible,
+      restriccionesIds: updatedPlato.restriccionesIds ?? [],
+      ingredientes: (updatedPlato.receta ?? []).map(ingrediente => ({
+        insumoId: Number(ingrediente.id),
+        cantidad: ingrediente.cantidad,
+        opcional: false
+      }))
+    };
+
+    this.api.modificarPlato(target.id, request)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(updated => {
-        this._platos.update(platos => platos.map(p => p.id === target.id ? { ...p, ...updated } : p));
+        this._platos.update(platos => platos.map(p => p.id === target.id ? { ...p, ...updated, ...updatedPlato } : p));
         this._platoAEditar.set(null);
       });
   }
@@ -351,5 +385,11 @@ export class ModificarCartaStateService {
           );
         }
       });
+  }
+
+  private normalizarUrlImagen(url: string | undefined): string {
+    if (!url) return '';
+
+    return url.startsWith(environment.apiUrl) ? url.replace(environment.apiUrl, '') : url;
   }
 }

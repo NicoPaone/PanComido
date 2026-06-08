@@ -171,6 +171,7 @@
   border-color: #e2e8f0 !important;
   transition: all 0.2s;
   animation: slideInUp 0.25s ease-out;
+  gap: 0.75rem;
 }
 
 @keyframes slideInUp {
@@ -181,6 +182,15 @@
 .ingredient-pill:hover {
   border-color: #cbd5e1 !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.ingredient-main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ingredient-controls {
+  flex: 0 0 auto;
 }
 
 .icon-circle {
@@ -194,7 +204,8 @@
 
 .qty-control {
   height: 32px;
-  width: 70px;
+  width: 86px;
+  flex: 0 0 86px;
 }
 
 .qty-input {
@@ -202,6 +213,8 @@
   height: 100%;
   outline: none;
   color: #0f172a;
+  min-width: 0;
+  padding: 0 0.35rem;
 }
 
 /* Hide number arrows */
@@ -216,11 +229,13 @@
 
 .unit-select {
   height: 32px;
+  width: 78px;
+  flex: 0 0 78px;
   cursor: pointer;
   outline: none;
   color: #475569;
-  padding-left: 12px;
-  padding-right: 28px;
+  padding-left: 10px;
+  padding-right: 24px;
 }
 
 .unit-select:focus {
