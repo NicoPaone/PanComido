@@ -1,0 +1,344 @@
+<main class="dashboard-page">
+  <header class="dashboard-header">
+    <div>
+      <p class="eyebrow">Gerencia</p>
+      <h1>Dashboard</h1>
+      <p class="subtitle">Resumen operativo para {{ state.periodoLabel() }}</p>
+    </div>
+  </header>
+
+  <section class="dashboard-toolbar" aria-label="Filtros del dashboard">
+    <div class="period-filter" role="group" aria-label="Periodo del dashboard">
+      @for (periodo of periodos; track periodo.value) {
+        <button
+          type="button"
+          class="period-button"
+          [class.active]="state.periodo() === periodo.value"
+          (click)="setPeriodo(periodo.value)">
+          {{ periodo.label }}
+        </button>
+      }
+      <button
+        type="button"
+        class="period-button custom-period"
+        [class.active]="state.periodo() === 'custom'"
+        (click)="abrirFiltroPersonalizado()">
+        Personalizado
+      </button>
+    </div>
+
+    <div class="date-filter">
+      <label>
+        Desde
+        <span class="date-field">
+          <input
+            #fechaDesdeInput
+            type="text"
+            inputmode="numeric"
+            placeholder="dd/mm/aaaa"
+            [ngModel]="state.fechaDesde()"
+            (ngModelChange)="setFechaDesde($event)">
+          <span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>
+        </span>
+      </label>
+      <label>
+        Hasta
+        <span class="date-field">
+          <input
+            #fechaHastaInput
+            type="text"
+            inputmode="numeric"
+            placeholder="dd/mm/aaaa"
+            [ngModel]="state.fechaHasta()"
+            (ngModelChange)="setFechaHasta($event)">
+          <span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>
+        </span>
+      </label>
+    </div>
+  </section>
+
+  <section class="executive-summary" aria-label="Resumen ejecutivo">
+    <article class="summary-card">
+      <div>
+        <span class="summary-label">Lectura del periodo</span>
+        <p>{{ state.resumenEjecutivo() }}</p>
+      </div>
+    </article>
+
+    <div class="attention-grid">
+      @for (item of state.atencion(); track item.titulo) {
+        <article class="attention-card" [class]="item.tono">
+          <div class="attention-copy">
+            <strong>{{ item.titulo }}</strong>
+            <span>{{ item.detalle }}</span>
+          </div>
+          <button type="button" class="attention-action" (click)="irA(item.destino)">
+            {{ item.accion }}
+            <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+          </button>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="kpi-grid" aria-label="Indicadores principales">
+    @for (kpi of state.kpis(); track kpi.id) {
+      <article class="kpi-card" [class]="kpi.tone">
+        <div class="kpi-meta">
+          <span>{{ kpi.label }}</span>
+          <strong [class.negative]="kpi.trend < 0">
+            {{ kpi.trend > 0 ? '+' : '' }}{{ kpi.trend }}%
+          </strong>
+        </div>
+        <p class="kpi-value">{{ kpi.value }}</p>
+        <small>{{ kpi.detail }}</small>
+      </article>
+    }
+  </section>
+
+  <section class="insight-grid">
+    <article class="panel-card monthly-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>{{ state.periodo() === '30d' ? 'Distribución diaria de ventas' : 'Ventas por mes' }}</h2>
+          <p>{{ state.periodo() === '30d' ? 'Junio 2026' : 'Variación histórica anual' }}</p>
+        </div>
+        <span class="panel-badge revenue-badge">{{ state.totalFacturacion() | arsCurrency }}</span>
+      </div>
+
+      @if (state.periodo() === '30d') {
+        <div class="month-heatmap" aria-label="Ventas diarias del mes">
+          <div class="heatmap-weekdays" aria-hidden="true">
+            <span>Lun</span>
+            <span>Mar</span>
+            <span>Mie</span>
+            <span>Jue</span>
+            <span>Vie</span>
+            <span>Sab</span>
+            <span>Dom</span>
+          </div>
+
+          <div class="heatmap-grid">
+            @for (empty of calendarOffset(); track $index) {
+              <div class="heatmap-day-empty" aria-hidden="true"></div>
+            }
+            @for (item of state.ventasCalendarioMes(); track item.dia) {
+              <button
+                type="button"
+                class="heatmap-day"
+                [class.active]="diaSeleccionado()?.dia === item.dia"
+                [style.--intensity]="intensidadVentaDia(item.ventas)"
+                [attr.aria-label]="detalleVentaDia(item.fecha, item.ventas)"
+                (click)="seleccionarDia(item)">
+                <span>{{ item.dia }}</span>
+                <span class="day-tooltip" role="tooltip">
+                  <span class="tooltip-date">{{ item.fecha }}</span>
+                  <span class="tooltip-value">{{ item.ventas | arsCurrency }}</span>
+                </span>
+              </button>
+            }
+          </div>
+
+          <div class="heatmap-legend" aria-hidden="true">
+            <span>Menos ventas</span>
+            <span class="legend-scale">
+              <span class="scale-dot level-1"></span>
+              <span class="scale-dot level-2"></span>
+              <span class="scale-dot level-3"></span>
+              <span class="scale-dot level-4"></span>
+            </span>
+            <span>Más ventas</span>
+          </div>
+        </div>
+
+        @if (diaSeleccionado(); as dia) {
+          <div class="day-detail-panel">
+            <div class="detail-header">
+              <span class="detail-date">{{ dia.fecha }}</span>
+              <button type="button" class="close-detail" (click)="cerrarDetalle()" aria-label="Cerrar detalle">
+                <span class="material-symbols-outlined" aria-hidden="true">close</span>
+              </button>
+            </div>
+            <div class="detail-metrics">
+              <div class="detail-metric">
+                <small>Facturación</small>
+                <strong>{{ dia.ventas | arsCurrency }}</strong>
+              </div>
+              <div class="detail-metric">
+                <small>Pedidos est.</small>
+                <strong>{{ calcularPedidosDia(dia.ventas) }} u.</strong>
+              </div>
+              <div class="detail-metric">
+                <small>Ticket prom.</small>
+                <strong>{{ calcularTicketPromedioDia(dia.ventas) | arsCurrency }}</strong>
+              </div>
+            </div>
+          </div>
+        }
+      } @else {
+        <div
+          class="monthly-chart"
+          aria-label="Ventas mensuales"
+          [style.grid-template-columns]="'repeat(' + state.ventasMensuales().length + ', minmax(0, 1fr))'">
+          @for (item of state.ventasMensuales(); track item.mes) {
+            <div class="month-column">
+              <div class="bar-track">
+                <span [style.height.%]="porcentajeVentaMensual(item.ventas)"></span>
+              </div>
+              <strong>{{ item.mes }}</strong>
+              <small>{{ item.ventas | arsCurrency }}</small>
+            </div>
+          }
+        </div>
+      }
+    </article>
+
+    <article class="panel-card billing-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Facturacion por centro</h2>
+          <p>Distribucion por canal operativo</p>
+        </div>
+      </div>
+
+      <div class="billing-donut-layout">
+        <div
+          class="billing-donut"
+          [style.background]="state.facturacionDonutGradient()"
+          aria-label="Distribucion de facturacion por centro">
+          <div class="donut-center">
+            <span>Total</span>
+            <strong>{{ state.totalFacturacion() | arsCurrency }}</strong>
+          </div>
+        </div>
+
+        <div class="billing-legend">
+          @for (centro of state.facturacionPorCentro(); track centro.centro) {
+            <div class="legend-row">
+              <span class="legend-dot" [style.background]="centro.color"></span>
+              <div>
+                <strong>{{ centro.centro }}</strong>
+                <small>{{ centro.total | arsCurrency }}</small>
+              </div>
+              <em>{{ centro.porcentaje }}%</em>
+            </div>
+          }
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <section class="section-heading">
+    <div>
+      <h2>Rendimiento comercial</h2>
+      <p>Platos que empujan ventas y platos que requieren revision.</p>
+    </div>
+    <button type="button" class="section-action" (click)="irA('carta')">Ir a carta</button>
+  </section>
+
+  <section class="dashboard-grid">
+    <article class="panel-card sales-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Platos mas vendidos</h2>
+          <p>Top 5 por unidades vendidas</p>
+        </div>
+        <span class="panel-badge">Top 5</span>
+      </div>
+
+      <div class="ranking-list">
+        @for (plato of state.platosMasVendidosPreview(); track plato.nombre; let index = $index) {
+          <div class="ranking-row">
+            <span class="rank">{{ index + 1 }}</span>
+            <div class="ranking-content">
+              <div class="ranking-title">
+                <strong>{{ plato.nombre }}</strong>
+                <small>{{ plato.detalle }}</small>
+              </div>
+              <span class="ranking-value">{{ plato.valor }} u.</span>
+              <div class="ranking-bar">
+                <span [style.width.%]="porcentajeRanking(plato.valor)"></span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="panel-card low-sales-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Platos menos vendidos</h2>
+          <p>Con accion sugerida</p>
+        </div>
+      </div>
+
+      <div class="compact-list">
+        @for (plato of state.platosMenosVendidosPreview(); track plato.nombre; let index = $index) {
+          <div class="compact-row">
+            <div>
+              <strong>{{ plato.nombre }}</strong>
+              <small>{{ index < 2 ? 'Revisar precio o visibilidad' : 'Candidato a pausar o relanzar' }}</small>
+            </div>
+            <span>{{ plato.valor }} u.</span>
+          </div>
+        }
+      </div>
+    </article>
+  </section>
+
+  <section class="section-heading">
+    <div>
+      <h2>Riesgos operativos</h2>
+      <p>Insumos y decisiones que pueden afectar el servicio.</p>
+    </div>
+    <button type="button" class="section-action" (click)="irA('stock')">Ir a stock</button>
+  </section>
+
+  <section class="operations-grid">
+    <article class="panel-card expiry-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Insumos proximos a vencer</h2>
+          <p>Priorizado por fecha, cantidad y criticidad</p>
+        </div>
+      </div>
+
+      <div class="expiry-list">
+        @for (insumo of state.insumosPorVencer(); track insumo.nombre) {
+          <div class="expiry-row" [class]="insumo.criticidad">
+            <div class="expiry-copy">
+              <strong>{{ insumo.nombre }}</strong>
+              <small>{{ insumo.relativo }} · {{ insumo.cantidad }} disponibles</small>
+            </div>
+            <div class="expiry-meta">
+              <time>{{ insumo.fecha | date:'dd/MM' }}</time>
+              <span>{{ insumo.criticidad }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="panel-card next-actions-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Proximas acciones</h2>
+          <p>Atajos para resolver lo urgente</p>
+        </div>
+      </div>
+
+      <div class="next-actions-list">
+        @for (item of state.acciones(); track item.titulo) {
+          <button type="button" class="next-action" [class]="item.tono" (click)="irA(item.destino)">
+            <span>
+              {{ item.titulo }}
+              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+            </span>
+            <small>{{ item.detalle }}</small>
+          </button>
+        }
+      </div>
+    </article>
+  </section>
+</main>
