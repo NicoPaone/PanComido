@@ -1,18 +1,21 @@
 
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.DTOs.Plato;
 using PanComido.Presentacion.Mappers;
-using PanComido.Presentacion.SesionMock;
-using System.Threading.Tasks;
+using PanComido.Presentacion.Sesion;
 
 namespace PanComido.Presentacion.Controllers
 {
     [Route("/plato")]
     [ApiController]
-    public class PlatoController : ControllerBase
+   [Authorize]
+
+   public class PlatoController : ControllerBase
     {
 
         //dependencias del GET (formulario para crear plato)

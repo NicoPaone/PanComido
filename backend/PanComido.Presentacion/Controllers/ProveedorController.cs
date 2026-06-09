@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
@@ -7,13 +8,15 @@ using PanComido.Presentacion.DTOs.Insumos;
 using PanComido.Presentacion.DTOs.Pedidos;
 using PanComido.Presentacion.DTOs.Proveedores;
 using PanComido.Presentacion.Mappers;
-using PanComido.Presentacion.SesionMock;
+using PanComido.Presentacion.Sesion;
 
 namespace PanComido.Presentacion.Controllers
 {
     [Route("proveedor")]
     [ApiController]
-    public class ProveedorController : ControllerBase
+   [Authorize(Roles = "Gerente")]
+
+   public class ProveedorController : ControllerBase
     {
         private readonly ListarProveedorCasoDeUso _listarProveedorCasoDeUso;
         private readonly ObtenerHistorialPedidosCasoDeUso _obtenerHistorialCasoDeUso;
@@ -22,6 +25,7 @@ namespace PanComido.Presentacion.Controllers
         private readonly CrearProveedorCasoDeUso _crearProveedorCasoDeUso;
         private readonly ModificarProveedorCasoDeUso _modificarProveedorCasoDeUso;
         private readonly EliminarProveedorCasoDeuso _eliminarProveedorCasoDeUso;
+        private readonly ObtenerProveedorCasoDeUso _obtenerProveedorCasoDeuso;
 
         private readonly ProveedorMapper _proveedorMapper;
         private readonly PedidoMapper _pedidoMapper;
@@ -37,6 +41,7 @@ namespace PanComido.Presentacion.Controllers
             CrearProveedorCasoDeUso crearProveedorCasoDeUso,
             ModificarProveedorCasoDeUso modificarProveedorCasoDeUso,
             EliminarProveedorCasoDeuso eliminarProveedorCasoDeUso,
+            ObtenerProveedorCasoDeUso obtenerProveedorCasoDeUso,
             ProveedorMapper proveedorMapper,
             PedidoMapper pedidoMapper,
             InsumoMapper insumoMapper,
@@ -50,6 +55,7 @@ namespace PanComido.Presentacion.Controllers
             _crearProveedorCasoDeUso = crearProveedorCasoDeUso;
             _modificarProveedorCasoDeUso = modificarProveedorCasoDeUso;
             _eliminarProveedorCasoDeUso = eliminarProveedorCasoDeUso;
+            _obtenerProveedorCasoDeuso = obtenerProveedorCasoDeUso;
             _proveedorMapper = proveedorMapper;
             _pedidoMapper = pedidoMapper;
             _insumoMapper = insumoMapper;
@@ -134,6 +140,14 @@ namespace PanComido.Presentacion.Controllers
 
             var dtos = _insumoConsugerenciaMapper.aListaDto(insumosSugeridos);
             return Ok(dtos);
+        }
+
+        [HttpGet("obtener-proveedor/{idProveedor}")]
+        public async Task<ActionResult> ObtenerProveedorId(int idProveedor)
+        {
+            var proveedorEncontrado = await _obtenerProveedorCasoDeuso.EjecutarAsync(idProveedor);
+
+            return Ok(_proveedorMapper.aDto(proveedorEncontrado));
         }
     }
 }
