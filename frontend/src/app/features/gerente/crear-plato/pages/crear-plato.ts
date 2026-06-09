@@ -1,13 +1,12 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { Router } from '@angular/router';
 import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { ToggleComponent } from '../../../../shared/ui/toggle/toggle';
 import { DetalleRecetaComponent } from '../components/detalle-receta/detalle-receta';
 import { CrearPlatoFormComponent, PlatoFormData } from '../components/crear-plato-form/crear-plato-form';
 import { RecetaIngrediente } from '../../../../core/models/domain/plato';
 import { CrearPlatoState } from '../services/crear-plato.state';
-import { StockMercaderiaState } from '../../stock-mercaderia/services/insumos/stock-mercaderia-state';
 
 interface PlatoIAState {
   desde_ia: boolean;
@@ -29,21 +28,22 @@ export class CrearPlatoPage {
   private readonly router = inject(Router);
   private readonly location = inject(Location);
   private readonly state = inject(CrearPlatoState);
-  private readonly insumoState = inject(StockMercaderiaState);
 
-  // Signals del state
   visible = this.state.visible;
   imagenSelected = this.state.imagenSelected;
-  vegano = this.state.vegano;
-  vegetariano = this.state.vegetariano;
-  celiaco = this.state.celiaco;
+  tiposPlato = this.state.tiposPlato;
+  categoriasPlato = this.state.categoriasPlato;
+  restricciones = this.state.restricciones;
+  restriccionesSeleccionadas = this.state.restriccionesSeleccionadas;
+  ingredientesDisponibles = this.state.ingredientesDisponibles;
   receta = this.state.receta;
   mostrarExito = this.state.mostrarExito;
   mostrarSelectorImagen = this.state.mostrarSelectorImagen;
   costoSugerido = this.state.costoSugerido;
-  insumos = this.insumoState.productos;
+  vegano = this.state.vegano;
+  vegetariano = this.state.vegetariano;
+  celiaco = this.state.celiaco;
 
-  // Imágenes disponibles para el plato
   imagenesDisponibles = [
     { url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=200&h=150', label: 'Ensalada' },
     { url: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&q=80&w=200&h=150', label: 'Milanesa' },
@@ -54,12 +54,9 @@ export class CrearPlatoPage {
   ];
 
   constructor() {
-    // Cargamos insumos del backend
-    this.insumoState.cargarMercaderia();
+    this.state.cargarDatosFormulario();
 
-    // Si viene de sugerencia IA, cargamos los ingredientes al form
     const navState = this.location.getState() as PlatoIAState | null;
-
     if (navState?.desde_ia && navState.ingredientes) {
       const ingredientes: RecetaIngrediente[] = navState.ingredientes.map(ing => ({
         id: ing.insumoId,
@@ -98,6 +95,19 @@ export class CrearPlatoPage {
 
   onSeleccionarImagen(url: string): void {
     this.state.seleccionarImagen(url);
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      this.onSeleccionarImagen(dataUrl);
+    };
+    reader.readAsDataURL(file);
   }
 
   onCerrarExito(): void {

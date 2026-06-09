@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { ModificarCartaComponent } from './modificar-carta';
-import { ModificarCartaApiService } from '../services/modificar-carta.api';
+import { PlatoApiService } from '../../services/plato.api';
 import { Plato } from '../../../../core/models/domain/plato';
 import { vi } from 'vitest';
 
@@ -21,6 +21,26 @@ describe('ModificarCartaComponent', () => {
   beforeEach(async () => {
     apiServiceMock = {
       getPlatos: vi.fn().mockReturnValue(of([...mockPlatos])),
+      getPlatoById: vi.fn().mockImplementation((id) => {
+        const found = mockPlatos.find(p => p.id === id);
+        return of({ ...found, tipoPlatoId: 1, categoriaPlatoId: 1, tiempoPreparacion: 15, restriccionesIds: [] } as Plato);
+      }),
+      modificarPlato: vi.fn().mockImplementation((id, data) => {
+        const found = mockPlatos.find(p => p.id === id);
+        return of({
+          ...found,
+          nombre: data.nombre,
+          precioVenta: data.precioVentaFinal,
+          visible: data.esVisibleEnCarta,
+          imagen: data.urlImagen,
+          receta: data.ingredientes.map((ingrediente: any) => ({
+            id: ingrediente.insumoId,
+            nombre: '',
+            cantidad: ingrediente.cantidad,
+            unidadMedida: ''
+          }))
+        } as Plato);
+      }),
       updatePlato: vi.fn().mockImplementation((id, data) => {
         const found = mockPlatos.find(p => p.id === id);
         return of({ ...found, ...data } as Plato);
@@ -35,7 +55,7 @@ describe('ModificarCartaComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ModificarCartaComponent],
       providers: [
-        { provide: ModificarCartaApiService, useValue: apiServiceMock },
+        { provide: PlatoApiService, useValue: apiServiceMock },
         { provide: Router, useValue: routerMock }
       ]
     }).compileComponents();
@@ -107,7 +127,7 @@ describe('ModificarCartaComponent', () => {
   it('debería establecer el plato a editar al llamar a onEditPlato', () => {
     const plato = mockPlatos[0];
     component.onEditPlato(plato);
-    expect(component.platoAEditar()).toEqual(plato);
+    expect(component.platoAEditar()).toEqual(expect.objectContaining(plato));
   });
 
   it('debería establecer el plato a eliminar al llamar a onDeletePlato', () => {
@@ -120,14 +140,25 @@ describe('ModificarCartaComponent', () => {
     const plato = mockPlatos[0];
     component.onEditPlato(plato);
     component.onSavePlato({ nombre: 'Milanesa Editada' });
-    expect(apiServiceMock.updatePlato).toHaveBeenCalledWith(plato.id, { nombre: 'Milanesa Editada' });
+    expect(apiServiceMock.modificarPlato).toHaveBeenCalledWith(plato.id, {
+      nombre: 'Milanesa Editada',
+      descripcion: '',
+      precioVentaFinal: 100,
+      tiempoPreparacionBase: 15,
+      tipoPlatoId: 1,
+      categoriaPlatoId: 1,
+      urlImagen: '',
+      esVisibleEnCarta: true,
+      restriccionesIds: [],
+      ingredientes: []
+    });
     expect(component.platos().find(p => p.id === plato.id)?.nombre).toBe('Milanesa Editada');
     expect(component.platoAEditar()).toBeNull();
   });
 
   it('debería no hacer nada en onSavePlato si no hay ningún plato editándose', () => {
     component.onSavePlato({ nombre: 'Milanesa Editada' });
-    expect(apiServiceMock.updatePlato).not.toHaveBeenCalled();
+    expect(apiServiceMock.modificarPlato).not.toHaveBeenCalled();
   });
 
   it('debería eliminar el plato al llamar a onConfirmDelete', () => {

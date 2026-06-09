@@ -1,15 +1,16 @@
 import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { VerProveedoresApiService } from './ver-proveedores.api';
-import { Proveedor, PedidoProveedor, PedidoProveedorItem } from '../../../../core/models/domain/proveedor';
+import { ProveedorApiService } from '../../services/proveedor.api';
+import { Proveedor, PedidoProveedor, PedidoProveedorItem, ProveedorNuevo } from '../../../../core/models/domain/proveedor';
 import { RecepcionPedidoItem } from '../../../../core/models/domain/proveedor';
 import { Insumo } from '../../../../core/models/domain/insumo';
 import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
 import { Bodega } from '../../../../core/models/domain/bodega';
+import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo';
 
 @Injectable({ providedIn: 'root' })
 export class VerProveedoresState {
-  private api = inject(VerProveedoresApiService);
+  private api = inject(ProveedorApiService);
   private destroyRef = inject(DestroyRef);
 
   /*private readonly preciosMock: Record<string, number> = {
@@ -18,6 +19,7 @@ export class VerProveedoresState {
   };*/
 
   termino = signal('');
+  filtroEstado = signal<'Todos' | 'Activos' | 'Inactivos'>('Todos');
   proveedores = signal<Proveedor[]>([]);
   productos = signal<Insumo[]>([]);
   proveedorSeleccionadoId = signal<number | string | null>(null);
@@ -33,6 +35,7 @@ export class VerProveedoresState {
   recepcionPedido = signal<PedidoProveedor | null>(null);
   recepcionItems = signal<RecepcionPedidoItem[]>([]);
   bodegas = signal<Bodega[]>([]);
+  categoriasInsumo = signal<CategoriaInsumo[]>([]);
 
   readonly #loading = signal(false);
   loading = this.#loading.asReadonly();
@@ -54,7 +57,13 @@ export class VerProveedoresState {
 
   proveedoresFiltrados = computed(() => {
     const texto = this.termino().toLowerCase().trim();
-    const lista = [...this.proveedores()].sort((a, b) => {
+    const filtro = this.filtroEstado();
+
+    const lista = [...this.proveedores()].filter(prov => {
+      if (filtro === 'Activos' && !prov.activo) return false;
+      if (filtro === 'Inactivos' && prov.activo) return false;
+      return true;
+    }).sort((a, b) => {
       const fechaA = a.fechaUltimoPedido ? new Date(a.fechaUltimoPedido).getTime() : 0;
       const fechaB = b.fechaUltimoPedido ? new Date(b.fechaUltimoPedido).getTime() : 0;
       return fechaB - fechaA;
@@ -155,6 +164,8 @@ export class VerProveedoresState {
       .subscribe(bodegas => {
         this.bodegas.set(bodegas);
       });
+
+    this.cargarCategoriasInsumo();
   }
 
   /**
@@ -182,6 +193,17 @@ export class VerProveedoresState {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(bodegas => {
         this.bodegas.set(bodegas);
+      });
+
+    this.cargarCategoriasInsumo();
+  }
+
+  cargarCategoriasInsumo(): void {
+    this.api.getCategoriasInsumo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: categorias => this.categoriasInsumo.set(categorias),
+        error: () => this.categoriasInsumo.set([])
       });
   }
 
@@ -245,6 +267,58 @@ export class VerProveedoresState {
   abrirHistorial(proveedorId: number | string): void {
     this.seleccionarProveedor(proveedorId);
     this.panelModo.set('historial');
+  }
+
+  actualizarProveedor(proveedorId: number | string, proveedorActualizado: ProveedorNuevo, onSuccess?: () => void): void {
+    this.api.modificarProveedor(proveedorId, proveedorActualizado)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: proveedorModificado => {
+          this.proveedores.update(proveedores =>
+            proveedores.map(proveedor =>
+              proveedor.id === proveedorModificado.id ? { ...proveedor, ...proveedorModificado } : proveedor
+            )
+          );
+          this.proveedorSeleccionadoId.set(proveedorModificado.id);
+          this.mensajeAccion.set('Proveedor actualizado correctamente.');
+          onSuccess?.();
+        },
+        error: () => {
+          this.mensajeAccion.set('No pudimos actualizar el proveedor. Revisá los datos e intentá nuevamente.');
+        }
+      });
+  }
+
+  eliminarProveedor(proveedorId: number | string, onSuccess?: () => void): void {
+    this.api.eliminarProveedor(proveedorId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          const proveedoresRestantes = this.proveedores().filter(proveedor => proveedor.id !== proveedorId);
+          this.proveedores.set(proveedoresRestantes);
+
+          if (this.proveedorSeleccionadoId() === proveedorId) {
+            const siguiente = proveedoresRestantes[0] ?? null;
+            this.proveedorSeleccionadoId.set(siguiente?.id ?? null);
+            this.#historialProveedor.set([]);
+            this.productos.set([]);
+            this.pedidoItems.set([]);
+            this.pedidoHistorialSeleccionado.set(null);
+            this.panelModo.set('historial');
+
+            if (siguiente) {
+              this.cargarHistorial(siguiente.id);
+              this.cargarInsumosProveedor(siguiente.id);
+            }
+          }
+
+          this.mensajeAccion.set('Proveedor eliminado correctamente.');
+          onSuccess?.();
+        },
+        error: () => {
+          this.mensajeAccion.set('No pudimos eliminar el proveedor. Intentá nuevamente.');
+        }
+      });
   }
 
   abrirDetallePedido(pedido: PedidoProveedor): void {

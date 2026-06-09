@@ -2,38 +2,10 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map, switchMap, of } from 'rxjs';
 import { ApiService } from '../../../../core/services/api-service';
 import { IngredienteVencimiento, VencimientoProveedor, VencimientoPedidoActivo } from '../../../../core/models/domain/vencimiento';
-import { Insumo } from '../../../../core/models/domain/insumo';
 import { PedidoProveedor, PedidoProveedorRequest } from '../../../../core/models/domain/proveedor';
-
-interface ProveedorResponseDto {
-  id: number;
-  nombre: string | null;
-  categorias: string[] | null;
-}
-
-interface PedidoResponseDto {
-  id: number;
-  fecha: string | null;
-  estado: string | null;
-}
-
-interface InsumoResponseDto {
-  id: number;
-  nombre: string | null;
-  stockActual: number;
-  unidadMedida: string | null;
-  vencimiento: string | null;
-  stockMinimo: number;
-  categoria: string | null;
-}
-
-interface CrearPedidoRequestDto {
-  items: {
-    insumoId: number;
-    cantidad: number;
-    precioCompra: number;
-  }[];
-}
+import { InsumoResponseDto } from '../../../../core/models/dtos/responses/insumo.response';
+import { PedidoResponseDto, ProveedorResponseDto } from '../../../../core/models/dtos/responses/proveedor.response';
+import { CrearPedidoProveedorRequestDto } from '../../../../core/models/dtos/requests/crear-pedido-proveedor.request';
 
 @Injectable({ providedIn: 'root' })
 export class VencimientosApiService {
@@ -90,7 +62,7 @@ export class VencimientosApiService {
     return this.api.post<PedidoProveedor>(`pedido-proveedor/${proveedorId}/crear-pedido`, this.mapCrearPedidoRequest(pedido));
   }
 
-  private mapCrearPedidoRequest(pedido: PedidoProveedorRequest): CrearPedidoRequestDto {
+  private mapCrearPedidoRequest(pedido: PedidoProveedorRequest): CrearPedidoProveedorRequestDto {
     return {
       items: pedido.items.map(item => ({
         insumoId: Number(item.id),

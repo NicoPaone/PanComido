@@ -1,26 +1,30 @@
-
 .buscador-container {
   display: flex;
   align-items: center;
-  /* Borde grueso calcado de la imagen */
-  border: 2px solid var(--gray-900); 
-  border-radius: 4px; /* Radio sutil */
-  padding: 8px 12px;
+  border: 1px solid rgba(15, 23, 42, 0.1); 
+  border-radius: 9px;
+  padding: 10px 16px;
   background-color: #ffffff;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  width: 100%; /* El componente padre dictará el ancho final */
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
 }
 
-/* Estado de foco (accesibilidad y UX) */
 .buscador-container:focus-within {
   border-color: var(--primary-teal);
-  box-shadow: 0 0 0 3px rgba(2, 89, 108, 0.15);
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05), 0 0 0 3px rgba(2, 89, 108, 0.1);
 }
 
 .icon-search {
-  color: var(--gray-800); /* Lupa oscura como en la imagen */
+  color: var(--gray-400); 
   font-size: 1.1rem;
-  margin-right: 10px;
+  margin-right: 12px;
+  transition: color 0.2s ease;
+}
+
+.buscador-container:focus-within .icon-search {
+  color: var(--primary-teal);
 }
 
 .buscador-input {
@@ -34,13 +38,11 @@
   width: 100%;
 }
 
-/* Color y peso del placeholder según tu diseño */
 .buscador-input::placeholder {
-  color: var(--gray-500);
+  color: var(--gray-400);
   font-weight: 500;
 }
 
-/* Botón de la X */
 .btn-clear {
   background: none;
   border: none;
@@ -56,5 +58,5 @@
 }
 
 .btn-clear:hover {
-  color: var(--status-danger); /* Se pone rojo al pasar el mouse */
+  color: var(--status-danger);
 }

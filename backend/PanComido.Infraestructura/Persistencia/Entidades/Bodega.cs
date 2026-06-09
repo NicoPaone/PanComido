@@ -22,6 +22,9 @@ public partial class Bodega
     [Column("nombre")]
     public string Nombre { get; set; } = null!;
 
+    [Column("eliminado")]
+    public bool Eliminado { get; set; }
+
     [InverseProperty("Bodega")]
     public virtual ICollection<Lote> Lotes { get; set; } = new List<Lote>();
 

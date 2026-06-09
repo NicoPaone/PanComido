@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
 import { RealizarPedidoSugeridoComponent } from './realizar-pedido-sugerido';
-import { RealizarPedidoSugeridoApiService } from '../services/realizar-pedido-sugerido.api';
+import { ProveedorApiService } from '../../services/proveedor.api';
 import { Proveedor, SugerenciaPedidoItem } from '../../../../core/models/domain/proveedor';
 
 describe('RealizarPedidoSugeridoComponent', () => {
@@ -49,7 +49,7 @@ describe('RealizarPedidoSugeridoComponent', () => {
       getProductosDisponibles: vi.fn().mockReturnValue(of([])),
       crearPedidoProveedor: vi.fn().mockReturnValue(of(mockProveedor)),
       getBodegas: vi.fn().mockReturnValue(of([])),
-      getHistorialPedidos: vi.fn().mockReturnValue(of([])),
+      getHistorialCantidadPedidos: vi.fn().mockReturnValue(of([])),
       getInsumosProveedor: vi.fn().mockReturnValue(of([])),
     };
   });
@@ -60,7 +60,7 @@ describe('RealizarPedidoSugeridoComponent', () => {
       providers: [
         { provide: Router, useValue: routerMock },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: vi.fn().mockReturnValue(routeId) } } } },
-        { provide: RealizarPedidoSugeridoApiService, useValue: proveedorServiceMock }
+        { provide: ProveedorApiService, useValue: proveedorServiceMock }
       ]
     }).compileComponents();
 

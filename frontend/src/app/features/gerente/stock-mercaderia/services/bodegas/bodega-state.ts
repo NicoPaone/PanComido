@@ -12,8 +12,10 @@ export class BodegaState {
   private destroyRef = inject(DestroyRef);
 
   readonly #bodegas = signal<Bodega[]>([]);
+  readonly #bodegasConInsumosCargadas = signal<boolean>(false);
 
   bodegas = this.#bodegas.asReadonly();
+  bodegasConInsumosCargadas = this.#bodegasConInsumosCargadas.asReadonly();
 
   cargarBodegas(): void {
     this.api.obtenerBodegas().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
@@ -23,10 +25,14 @@ export class BodegaState {
     });
   }
   cargarBodegasConInsumos(): void {
+    if (this.#bodegasConInsumosCargadas()) return;
+
     this.api.obtenerBodegasConInsumos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (data) => this.#bodegas.set(data),    
+      next: (data) => {
+        this.#bodegas.set(data);
+        this.#bodegasConInsumosCargadas.set(true);
+      },
     });
   }
 
 }
-

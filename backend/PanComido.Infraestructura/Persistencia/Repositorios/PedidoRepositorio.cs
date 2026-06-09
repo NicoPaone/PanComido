@@ -82,7 +82,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<DateOnly?> ObtenerFechaUltimoPedidoDeProveedorAsync(int proveedorId)
         {
             DateOnly? fechaMaxima = await _ctx.Pedidos
-                .Where(p => p.ProveedorId == proveedorId)
+                .Where(p => p.ProveedorId == proveedorId && !p.Proveedor.Eliminado)
                 .OrderByDescending(p => p.Fecha)
                 .Select(p => (DateOnly?)p.Fecha)
                 .FirstOrDefaultAsync();
@@ -116,6 +116,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .Where(p => p.ProveedorId == proveedorId)
                 .Include(p => p.EstadoPedido)
                 .Include(p => p.Proveedor)
+                .Where(p => !p.Proveedor.Eliminado)
                 .Include(p => p.PedidoInsumos)
                     .ThenInclude(pi => pi.Insumo)
                         .ThenInclude(i => i.IdArticuloNavigation)
@@ -158,14 +159,15 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             var insumosIds = await _ctx.PedidoInsumos
                 .Include(pi => pi.Pedido)
                     .ThenInclude(p => p.EstadoPedido)
-                .Where(pi => pi.Pedido.ProveedorId == proveedorId)
+                .Include(pi => pi.Pedido)
+                    .ThenInclude(p => p.Proveedor)
+                .Where(pi => pi.Pedido.ProveedorId == proveedorId && !pi.Pedido.Proveedor.Eliminado)
                 .Where(pi => pi.Pedido.EstadoPedido.Descripcion == "Pendiente" || pi.Pedido.EstadoPedido.Descripcion == "Enviado")
                 .Select(pi => pi.InsumoId)
                 .Distinct()
                 .ToListAsync();
 
             return insumosIds;
-
         }
     }
 }

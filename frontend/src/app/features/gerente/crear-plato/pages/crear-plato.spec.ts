@@ -4,7 +4,7 @@ import { CrearPlatoPage } from './crear-plato';
 import { RecetaIngrediente } from '../../../../core/models/domain/plato';
 import { vi } from 'vitest';
 import { of } from 'rxjs';
-import { CrearPlatoApiService } from '../services/crear-plato.api';
+import { PlatoApiService } from '../../services/plato.api';
 
 describe('CrearPlatoPage', () => {
   let component: CrearPlatoPage;
@@ -18,6 +18,12 @@ describe('CrearPlatoPage', () => {
     };
 
     const apiMock = {
+      getDatosFormulario: vi.fn().mockReturnValue(of({
+        tiposPlato: [],
+        categoriasPlato: [],
+        restricciones: [],
+        ingredientes: []
+      })),
       crearPlato: vi.fn().mockReturnValue(of({ id: 1 })),
     };
 
@@ -25,7 +31,7 @@ describe('CrearPlatoPage', () => {
       imports: [CrearPlatoPage],
       providers: [
         { provide: Router, useValue: routerMock },
-        { provide: CrearPlatoApiService, useValue: apiMock },
+        { provide: PlatoApiService, useValue: apiMock },
       ]
     }).compileComponents();
 
