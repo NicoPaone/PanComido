@@ -1,13 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso;
 using PanComido.Presentacion.DTOs.Llamado;
 using PanComido.Presentacion.Mappers;
-using PanComido.Presentacion.SesionMock;
+using PanComido.Presentacion.Sesion;
 
 namespace PanComido.Presentacion.Controllers
 {
     [Route("llamado")]
     [ApiController]
+   [Authorize(Roles = "Mozo")]
     public class LlamadoController : ControllerBase
     {
         private readonly LlamarMozoCasoDeUso _llamarMozoCasoDeUSo;
@@ -30,7 +32,7 @@ namespace PanComido.Presentacion.Controllers
         [HttpPost("generar-llamado")]
         public async Task<ActionResult<LlamadoResponseDto>> CrearLlamado([FromBody] LlamarMozoRequestDto request)
         {
-            var mozoId = HttpContext.ObtenerMozoId();
+            var mozoId = HttpContext.ObtenerEmpleadoId();
             var llamadoGuardado = await _llamarMozoCasoDeUSo.EjecutarAsync(mozoId, 
                 request.MesaId, request.CategoriaLlamadoId, request.Descripcion);
 
@@ -41,7 +43,7 @@ namespace PanComido.Presentacion.Controllers
         [HttpGet("ver-pendientes")]
         public async Task<ActionResult<List<LlamadoResponseDto>>> ObtenerLlamadosPendientes()
         {
-            var mozoId = HttpContext.ObtenerMozoId();
+            var mozoId = HttpContext.ObtenerEmpleadoId();
             var llamados = await _listarLlamadosPendientesCasoDeUso.EjecutarAsync(mozoId);
 
             var dtos = _llamadoMapper.aListaDto(llamados);

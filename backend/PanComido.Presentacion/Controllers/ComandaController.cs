@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
 using PanComido.Dominio.Entidades;
@@ -5,13 +6,15 @@ using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Presentacion.DTOs.Cliente;
 using PanComido.Presentacion.DTOs.Comanda;
 using PanComido.Presentacion.Mappers;
-using PanComido.Presentacion.SesionMock;
+using PanComido.Presentacion.Sesion;
 
 namespace PanComido.Presentacion.Controllers
 {
     [Route("comanda")]
     [ApiController]
-    public class ComandaController : ControllerBase
+   [Authorize]
+
+   public class ComandaController : ControllerBase
     {
         private readonly ListarComandaActivaCocinaCasoDeUso _listarComandasActivasCocinaCasoDeUso;
         private readonly ModificarEstadoComandaCasoDeUso _modificarEstadoComandaCasoDeUso;
@@ -45,7 +48,9 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("activas")]
-        public async Task<ActionResult<List<ComandaResponseDto>>> ObtenerComandasActivas()
+      [Authorize(Roles = "Cocina")]
+
+      public async Task<ActionResult<List<ComandaResponseDto>>> ObtenerComandasActivas()
         {
             int restauranteId = 1;
             var comandas = await _listarComandasActivasCocinaCasoDeUso.Ejecutar(restauranteId);
@@ -54,7 +59,9 @@ namespace PanComido.Presentacion.Controllers
 
         }
         [HttpPut("activas/{comandaId}/{estadoId}")]
-        public async Task<ActionResult<ComandaResponseDto>> ModificarEstadoDeComanda(int comandaId, int estadoId)
+      [Authorize(Roles = "Cocina")]
+
+      public async Task<ActionResult<ComandaResponseDto>> ModificarEstadoDeComanda(int comandaId, int estadoId)
         {
             var comanda = await _modificarEstadoComandaCasoDeUso.EjecutarAsync(comandaId, estadoId);
             var comandaDto = _mapper.ComandaResponseDto(comanda);
@@ -62,7 +69,9 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPut("{comandaId}/entregar-items")]
-        public async Task<ActionResult<ComandaResponseDto>> MarcarItemComandaEntregado(int comandaId, [FromBody] List<int> itemsEntregados)
+      [Authorize(Roles = "Mozo")]
+
+      public async Task<ActionResult<ComandaResponseDto>> MarcarItemComandaEntregado(int comandaId, [FromBody] List<int> itemsEntregados)
         {
             var comanda = await _marcarItemsEntregadosCasoDeUso.EjecutarAsync(comandaId, itemsEntregados);
             var comandaDto = _mapper.ComandaResponseDto(comanda);
