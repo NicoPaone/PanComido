@@ -22,7 +22,7 @@ export class ComandaPage {
   hub = inject(ComandaHubService);
   auth = inject(AuthService);
 
-  restauranteId = this.auth.currentRestauranteId;
+  restauranteId = this.auth.restauranteId;
 
   constructor() {
     effect(() => {

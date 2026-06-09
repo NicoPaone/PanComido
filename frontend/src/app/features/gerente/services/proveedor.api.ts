@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { catchError, forkJoin, map, Observable, of } from 'rxjs';
 import { ApiService } from '../../../core/services/api-service';
-import { AuthService } from '../../../core/services/auth.service';
 
 // Modelos de Dominio
 import { Proveedor, PedidoProveedor, PedidoProveedorRequest, ProveedorNuevo, RecepcionPedidoItem, SugerenciaPedidoItem } from '../../../core/models/domain/proveedor';
@@ -22,11 +21,8 @@ import { CrearPedidoProveedorRequestDto } from '../../../core/models/dtos/reques
 @Injectable({ providedIn: 'root' })
 export class ProveedorApiService {
   private api = inject(ApiService);
-  private authService = inject(AuthService);
 
-  validateManagerCredentials(user: string, pass: string): Observable<boolean> {
-    return this.authService.validateManagerCredentials(user, pass);
-  }
+ 
 
   getProveedores(): Observable<Proveedor[]> {
     return this.api.get<ProveedorResponseDto[]>('Proveedor').pipe(
