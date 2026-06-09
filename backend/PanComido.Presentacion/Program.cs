@@ -191,7 +191,7 @@ builder.Services.AddScoped<CambiarEstadoMesaCasoDeUso>();
 builder.Services.AddScoped<CrearProveedorCasoDeUso>();
 builder.Services.AddScoped<ModificarProveedorCasoDeUso>();
 builder.Services.AddScoped<EliminarProveedorCasoDeuso>();
-
+builder.Services.AddScoped<ObtenerProveedorCasoDeUso>();
 
 
 
@@ -202,6 +202,7 @@ builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio
 builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticuloServicio>();
 builder.Services.AddScoped<ISugerenciaPlatosIAServicio, GeminiSugerenciaPlatosIAServicio >();
 builder.Services.AddScoped<IGestionStockServicio, GestionStockServicio>();
+builder.Services.AddScoped<IVencimientosProximosInsumosServicio, VencimientosProximosInsumosServicio>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
