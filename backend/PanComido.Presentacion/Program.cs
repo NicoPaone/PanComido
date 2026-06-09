@@ -34,6 +34,7 @@ using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Servicios;
 using PanComido.Presentacion.SesionMock;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
+using PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -70,6 +71,7 @@ builder.Services.AddScoped<FormularioParaCrearPlatoEntityMapper>();
 builder.Services.AddScoped<ArticuloEntityMapper>();
 builder.Services.AddScoped<PlatoEntityMapper>();
 builder.Services.AddScoped<LlamadoEntityMapper>();
+builder.Services.AddScoped<MetodoDePagoEntityMapper>();
 
 
 
@@ -90,6 +92,7 @@ builder.Services.AddScoped<CartaMapper>();
 builder.Services.AddScoped<FormularioParaCrearPlatoMapper>();
 builder.Services.AddScoped<PlatoMapper>();
 builder.Services.AddScoped<ArticuloCartaMapper>();
+builder.Services.AddScoped<MetodoDePagoMapper>();
 
 
 builder.Services.AddScoped<ArticuloMapper>();
@@ -111,6 +114,7 @@ builder.Services.AddScoped<IMozoRepositorio, MozoRepositorio>();
 builder.Services.AddScoped<IFormularioPlatoRepositorio, FormularioPlatoRepositorio>();
 builder.Services.AddScoped<IPlatoRepositorio, PlatoRepositorio>();
 builder.Services.AddScoped<IPagoRepositorio, PagoRepositorio>();
+builder.Services.AddScoped<IMetodoDePagoRepositorio, MetodoDePagoRepositorio>();
 
 
 
@@ -160,7 +164,8 @@ builder.Services.AddScoped<CrearProveedorCasoDeUso>();
 builder.Services.AddScoped<ModificarProveedorCasoDeUso>();
 builder.Services.AddScoped<EliminarProveedorCasoDeuso>();
 builder.Services.AddScoped<ObtenerProveedorCasoDeUso>();
-
+builder.Services.AddScoped<ObtenerMetodosDePagoCasoDeUso>();
+builder.Services.AddScoped<ActualizarMetodosDePagoCasoDeUso>();
 
 
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();

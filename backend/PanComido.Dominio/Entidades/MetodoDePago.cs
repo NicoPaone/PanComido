@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace PanComido.Dominio.Entidades
 {
-    internal class MetodoDePago
+    public class MetodoDePago
     {
+        public int Id { get; set; }
+        public string Descripcion { get; set; }
+        public bool Habilitado { get; set; }
     }
 }
