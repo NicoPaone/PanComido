@@ -18,6 +18,20 @@ export class CartaState {
   busqueda = signal('');
   tiposSeleccionados = signal<string[]>([]);
   ordenarPor = signal('');
+  categoriasSeleccionadas = signal<string[]>([]);
+
+
+  
+
+toggleCategoria(categoria: string): void {
+  this.categoriasSeleccionadas.update(actual => {
+    if (actual.includes(categoria)) {
+      return actual.filter(c => c !== categoria);
+    }
+
+    return [...actual, categoria];
+  });
+}
 
   // Computed: platos
   platos = computed(() =>
@@ -32,6 +46,20 @@ export class CartaState {
   // Items filtrados (para la vista)
   itemsFiltrados = computed(() => {
     let resultado = this._items();
+    const categorias = this.categoriasSeleccionadas();
+
+// if (categorias.length > 0) {
+//   resultado = resultado.filter(item =>
+//     item.tipoArticulo === 'Plato' &&
+//     categorias.includes(item.categoria)
+//   );
+// }
+
+if (categorias.length > 0) {
+  resultado = resultado.filter(item =>
+    categorias.includes(item.categoria)
+  );
+}
 
     // Filtro por búsqueda (solo nombre, descripcion no existe)
     const busqueda = this.busqueda().toLowerCase();
@@ -109,4 +137,6 @@ export class CartaState {
   cantidadFiltrosActivos = computed(() =>
     this.tiposSeleccionados().length
   );
+
+  
 }

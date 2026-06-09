@@ -14,6 +14,7 @@ namespace PanComido.Presentacion.Mappers
                 ArticuloId = articulo.Id,
                 Nombre = articulo.Nombre ?? "",
                 UrlImagen = articulo.UrlImagen,
+
                 PrecioVentaFinal = articulo.PrecioVentaFinal ?? 0,
 
                 // Leemos si está visible o no
@@ -26,14 +27,15 @@ namespace PanComido.Presentacion.Mappers
                 Costo = articulo.CostoCalculado,
 
                 // Inyectamos la categoria para el filtrado en frontend
-                Categoria = articulo is Plato p ? (p.Categoria ?? "Sin categoria") : (articulo is Insumo i ? (i.Categoria ?? "Sin categoria") : "Sin categoria")
+                Categoria = articulo is Plato p ? (p.Categoria ?? "Sin categoria") : (articulo is Insumo i ? (i.Categoria ?? "Sin categoria") : "Sin categoria"),
+                TiempoPreparacionBase = articulo is Plato plato ? plato.TiempoPreparacionBase : default
             };
         }
 
         // Convierte la lista entera usando el método de arriba
         public List<ArticuloCartaResponseDto> aListaDto(List<Articulo> articulos)
         {
-         
+
             return articulos.Select(aDto).ToList();
         }
     }

@@ -4,13 +4,13 @@ import { ItemPedido } from '../../../../../core/models/item-pedido';
 import { BotonComensal } from '../../../../../shared/ui/botones/boton-comensal/boton-comensal';
 import { configuracionRestauranteMock } from '../../../../../core/interceptors/handlers/configuracion-restaurante.mock';
 import { CartaItem } from '../../../../../core/models/carta-item';
-
+import { Boton } from '../../../../../shared/ui/botones/boton/boton';
 
 
  @Component({
   selector: 'app-card-plato-comensal',
   standalone: true,
-  imports: [BotonComensal],
+  imports: [BotonComensal, Boton],
   templateUrl: './card-plato-comensal.html',
   styleUrls: ['./card-plato-comensal.css'],
 })
