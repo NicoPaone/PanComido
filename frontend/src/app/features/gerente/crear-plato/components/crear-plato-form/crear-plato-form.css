@@ -5,8 +5,8 @@
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 11px;
   padding: 1.5rem;
-  background:
-    linear-gradient(35deg, #ffffff 0%, rgba(255, 255, 255, 0.86) 42%, rgba(255, 144, 4, 0.34) 100%) !important;
+  background: #f7f7f7 !important;
+  border-color: rgba(255, 144, 4, 0.22);
   box-shadow: 0 8px 22px rgba(15, 23, 42, 0.045);
 }
 
@@ -30,14 +30,14 @@
 
 .custom-input:focus {
   background-color: #ffffff;
-  border-color: rgba(22, 145, 172, 0.42);
-  box-shadow: 0 0 0 4px rgba(22, 145, 172, 0.08);
+  border-color: rgba(255, 144, 4, 0.46);
+  box-shadow: 0 0 0 4px rgba(255, 144, 4, 0.1);
 }
 
 .input-group-text {
-  background-color: #f8fafc;
+  background-color: rgba(255, 144, 4, 0.08);
   border: 1px solid rgba(15, 23, 42, 0.06);
-  color: #6b7280;
+  color: #9a3412;
   font-weight: 600;
 }
 

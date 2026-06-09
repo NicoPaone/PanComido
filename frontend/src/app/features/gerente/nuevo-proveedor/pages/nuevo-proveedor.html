@@ -4,7 +4,7 @@
       <div>
         <p class="detail-kicker mb-1">Alta de proveedor</p>
         <h1 class="page-title mb-0">Nuevo proveedor</h1>
-        <p class="page-subtitle mb-0">Registrá sus datos, asociá categorías y validá la operación con credenciales de gerente.</p>
+        <p class="page-subtitle mb-0">Registrá sus datos y asociá categorías.</p>
       </div>
 
       <button type="button" class="soft-link-btn" (click)="cancelar()">
@@ -133,67 +133,6 @@
       </form>
 
       <aside class="side-panel">
-        <section class="credentials-section" [formGroup]="gerenteForm">
-          <div class="section-heading compact">
-            <span class="section-icon material-symbols-outlined">admin_panel_settings</span>
-            <div>
-              <h2 class="section-title mb-0">Validación</h2>
-              <p class="section-subtitle mb-0">Necesaria para crear el proveedor.</p>
-            </div>
-          </div>
-
-          <div class="side-form">
-            <label class="field-group">
-              <span>Usuario gerente <strong class="field-required">*</strong></span>
-              <input 
-                type="text" 
-                class="form-control custom-input" 
-                [class.is-invalid]="gerenteForm.get('usuario')?.touched && gerenteForm.get('usuario')?.invalid"
-                formControlName="usuario">
-              @if (gerenteForm.get('usuario')?.touched && gerenteForm.get('usuario')?.hasError('required')) {
-                <span class="error-text">El usuario es requerido.</span>
-              }
-            </label>
-
-            <label class="field-group">
-              <span>Contraseña gerente <strong class="field-required">*</strong></span>
-              <input 
-                type="password" 
-                class="form-control custom-input" 
-                [class.is-invalid]="gerenteForm.get('contrasena')?.touched && gerenteForm.get('contrasena')?.invalid"
-                formControlName="contrasena">
-              @if (gerenteForm.get('contrasena')?.touched && gerenteForm.get('contrasena')?.hasError('required')) {
-                <span class="error-text">La contraseña es requerida.</span>
-              }
-              @if (gerenteForm.get('contrasena')?.touched && gerenteForm.get('contrasena')?.hasError('minlength')) {
-                <span class="error-text">Debe tener al menos 6 caracteres.</span>
-              }
-            </label>
-          </div>
-
-          <div class="credentials-actions">
-            <app-boton 
-              label="Validar" 
-              variante="teal" 
-              tamanio="sm" 
-              [disabled]="gerenteForm.invalid || gerenteValidado() || cargandoGerente()"
-              (clicked)="validarCredencialesGerente()">
-            </app-boton>
-            
-            @if (cargandoGerente()) {
-              <span class="text-muted">Validando...</span>
-            } @else {
-              <span class="cred-status" [class.ok]="gerenteValidado()">
-                {{ gerenteValidado() ? 'Credenciales válidas' : 'No validadas' }}
-              </span>
-            }
-          </div>
-          
-          @if (mensajeErrorGerente()) {
-            <div class="error-text mt-2">{{ mensajeErrorGerente() }}</div>
-          }
-        </section>
-
         <section class="summary-card">
           <span class="summary-icon material-symbols-outlined">checklist</span>
           <h2 class="section-title mb-2">Antes de guardar</h2>
@@ -201,7 +140,6 @@
             <li [class.done]="proveedorForm.get('nombre')?.valid">Nombre cargado</li>
             <li [class.done]="proveedorForm.get('telefono')?.valid">WhatsApp revisado</li>
             <li [class.done]="categoriaIds().length > 0">Categoría seleccionada</li>
-            <li [class.done]="gerenteValidado()">Gerente validado</li>
           </ul>
         </section>
       </aside>

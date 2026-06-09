@@ -27,18 +27,10 @@ export class NuevoProveedorComponent implements OnInit {
     telefono: ['', [Validators.pattern(/^\+?[0-9\s-]{7,15}$/)]],
   });
 
-  gerenteForm = this.fb.group({
-    usuario: ['', [Validators.required, Validators.minLength(3)]],
-    contrasena: ['', [Validators.required, Validators.minLength(6)]]
-  });
-
   categorias = this.state.categorias;
   categoriaIds = this.state.categoriaIds;
   categoriasDisponibles = this.state.categoriasDisponibles;
   errorCategorias = this.state.errorCategorias;
-  gerenteValidado = this.state.gerenteValidado;
-  mensajeErrorGerente = this.state.mensajeErrorGerente;
-  cargandoGerente = this.state.cargandoGerente;
 
   faCheck = faCheck;
   faXmark = faXmark;
@@ -54,21 +46,8 @@ export class NuevoProveedorComponent implements OnInit {
   });
 
   puedeGuardar = computed(() => {
-    return this.formStatus() === 'VALID' && this.categoriaIds().length > 0 && this.gerenteValidado();
+    return this.formStatus() === 'VALID' && this.categoriaIds().length > 0;
   });
-
-  validarCredencialesGerente(): void {
-    const user = this.gerenteForm.get('usuario')?.value?.trim();
-    const pass = this.gerenteForm.get('contrasena')?.value;
-    if (!user || !pass || this.gerenteForm.invalid) {
-      this.mensajeErrorGerente.set('Por favor, ingresa credenciales válidas (Usuario >= 3 car., Contraseña >= 6 car.).');
-      return;
-    }
-
-    this.state.validarCredencialesGerente(user, pass, () => {
-      this.gerenteForm.disable();
-    });
-  }
 
   toggleCategoria(categoria: CategoriaInsumo): void {
     this.state.toggleCategoria(categoria);

@@ -96,12 +96,12 @@
     }
   </section>
 
-  <section class="insight-grid">
+  <section class="insight-grid" [class.month-mode]="state.periodo() === '30d'">
     <article class="panel-card monthly-panel">
       <div class="panel-heading">
         <div>
-          <h2>{{ state.periodo() === '30d' ? 'Distribución diaria de ventas' : 'Ventas por mes' }}</h2>
-          <p>{{ state.periodo() === '30d' ? 'Junio 2026' : 'Variación histórica anual' }}</p>
+          <h2>{{ state.tituloGrafico() }}</h2>
+          <p>{{ state.subtituloGrafico() }}</p>
         </div>
         <span class="panel-badge revenue-badge">{{ state.totalFacturacion() | arsCurrency }}</span>
       </div>
@@ -226,7 +226,7 @@
       }
     </article>
 
-    <article class="panel-card billing-panel">
+    <article class="panel-card billing-panel" [class.month-mode]="state.periodo() === '30d'">
       <div class="panel-heading">
         <div>
           <h2>Facturacion por centro</h2>
@@ -257,6 +257,26 @@
             </div>
           }
         </div>
+
+        @if (state.periodo() === '30d') {
+          <div class="channel-reading">
+            <div class="channel-reading-heading">
+              <span class="material-symbols-outlined" aria-hidden="true">insights</span>
+              <strong>Lectura del canal</strong>
+            </div>
+            <div class="channel-reading-list">
+              @for (lectura of state.lecturaCanales(); track lectura.titulo) {
+                <div class="channel-reading-item">
+                  <span></span>
+                  <div>
+                    <strong>{{ lectura.titulo }}</strong>
+                    <small>{{ lectura.detalle }}</small>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
       </div>
     </article>
   </section>
@@ -267,6 +287,15 @@
       <p>Platos que empujan ventas y platos que requieren revision.</p>
     </div>
     <button type="button" class="section-action" (click)="irA('carta')">Ir a carta</button>
+  </section>
+
+  <section class="commercial-reading" aria-label="Lectura comercial">
+    @for (lectura of state.lecturaComercial(); track lectura.titulo) {
+      <article class="commercial-reading-card" [class]="lectura.tono">
+        <strong>{{ lectura.titulo }}</strong>
+        <span>{{ lectura.detalle }}</span>
+      </article>
+    }
   </section>
 
   <section class="dashboard-grid">
@@ -295,6 +324,14 @@
             </div>
           </div>
         }
+
+        <div class="ranking-recommendation">
+          <span class="material-symbols-outlined" aria-hidden="true">local_fire_department</span>
+          <div>
+            <strong>Lectura rápida</strong>
+            <small>{{ state.recomendacionTopVentas() }}</small>
+          </div>
+        </div>
       </div>
     </article>
 
@@ -307,11 +344,17 @@
       </div>
 
       <div class="compact-list">
-        @for (plato of state.platosMenosVendidosPreview(); track plato.nombre; let index = $index) {
+        @for (plato of state.platosMenosVendidos(); track plato.nombre; let index = $index) {
           <div class="compact-row">
             <div>
               <strong>{{ plato.nombre }}</strong>
               <small>{{ index < 2 ? 'Revisar precio o visibilidad' : 'Candidato a pausar o relanzar' }}</small>
+              <button
+                type="button"
+                class="low-action-pill"
+                (click)="irA(state.destinoAccionPlatoBajo(index))">
+                {{ state.accionPlatoBajo(index) }}
+              </button>
             </div>
             <span>{{ plato.valor }} u.</span>
           </div>
@@ -335,6 +378,22 @@
           <h2>Insumos proximos a vencer</h2>
           <p>Priorizado por fecha, cantidad y criticidad</p>
         </div>
+        <div class="expiry-recommendation">
+          <span class="material-symbols-outlined" aria-hidden="true">tips_and_updates</span>
+          <div>
+            <strong>Sugerencia operativa</strong>
+            <small>{{ state.recomendacionOperativa() }}</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="expiry-summary">
+        @for (item of state.vencimientosResumen(); track item.label) {
+          <div class="expiry-summary-item" [class]="item.tone">
+            <strong>{{ item.value }}</strong>
+            <span>{{ item.label }}</span>
+          </div>
+        }
       </div>
 
       <div class="expiry-list">
@@ -350,6 +409,7 @@
             </div>
           </div>
         }
+
       </div>
     </article>
 
@@ -364,11 +424,13 @@
       <div class="next-actions-list">
         @for (item of state.acciones(); track item.titulo) {
           <button type="button" class="next-action" [class]="item.tono" (click)="irA(item.destino)">
-            <span>
-              {{ item.titulo }}
+            <span class="next-action-priority">{{ item.prioridad }}</span>
+            <span class="next-action-title">
+              <span>{{ item.titulo }}</span>
               <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
             </span>
             <small>{{ item.detalle }}</small>
+            <em>{{ item.impacto }}</em>
           </button>
         }
       </div>

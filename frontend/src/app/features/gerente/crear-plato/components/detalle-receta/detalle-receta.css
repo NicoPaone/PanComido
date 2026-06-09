@@ -1,7 +1,6 @@
 .receta-container {
-  background:
-    linear-gradient(35deg, #ffffff 0%, rgba(255, 255, 255, 0.86) 42%, rgba(255, 144, 4, 0.34) 100%);
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #f7f7f7;
+  border: 1px solid rgba(255, 144, 4, 0.22);
   border-radius: 11px;
   padding: 1.5rem;
   box-shadow: 0 8px 22px rgba(15, 23, 42, 0.045);
@@ -13,8 +12,8 @@
   grid-column: 2;
   grid-row: 1;
   justify-self: center;
-  background-color: #f1f5f9;
-  color: #475569;
+  background-color: rgba(255, 144, 4, 0.1);
+  color: #9a3412;
   font-size: 0.75rem;
   font-weight: 600;
   padding: 3px 8px;
@@ -41,8 +40,8 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background-color: #f3f4f6;
-  color: #4b5563;
+  background-color: rgba(255, 144, 4, 0.1);
+  color: #9a3412;
 }
 
 .info-icon:hover + .info-tooltip-box,
@@ -116,8 +115,8 @@
 .recipe-list-head {
   padding: 0.55rem 0.75rem;
   border-radius: 10px;
-  background: rgba(22, 145, 172, 0.08);
-  color: #334155;
+  background: rgba(255, 144, 4, 0.1);
+  color: #7c2d12;
   font-size: 0.76rem;
   font-weight: 800;
 }
@@ -223,11 +222,11 @@
 
 .quantity-preset {
   min-height: 24px;
-  border: 1px solid rgba(22, 145, 172, 0.18);
+  border: 1px solid rgba(255, 144, 4, 0.24);
   border-radius: 999px;
   padding: 0.18rem 0.5rem;
-  background: rgba(22, 145, 172, 0.07);
-  color: #02596c;
+  background: rgba(255, 144, 4, 0.08);
+  color: #9a3412;
   font-size: 0.72rem;
   font-weight: 750;
   cursor: pointer;
@@ -235,8 +234,8 @@
 }
 
 .quantity-preset:hover {
-  border-color: rgba(22, 145, 172, 0.34);
-  background: rgba(22, 145, 172, 0.12);
+  border-color: rgba(255, 144, 4, 0.42);
+  background: rgba(255, 144, 4, 0.14);
   transform: translateY(-1px);
 }
 

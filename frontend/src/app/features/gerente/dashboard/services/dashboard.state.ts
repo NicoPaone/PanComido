@@ -43,6 +43,17 @@ export interface DashboardFacturacionCentro {
   color: string;
 }
 
+export interface DashboardLecturaCanal {
+  titulo: string;
+  detalle: string;
+}
+
+export interface DashboardLecturaComercial {
+  titulo: string;
+  detalle: string;
+  tono: 'success' | 'warning' | 'info';
+}
+
 export interface DashboardAtencionItem {
   titulo: string;
   detalle: string;
@@ -56,6 +67,8 @@ export interface DashboardAccionItem {
   detalle: string;
   destino: DashboardDestino;
   tono: 'danger' | 'warning' | 'info';
+  impacto: string;
+  prioridad: number;
 }
 
 export type DashboardDestino = 'stock' | 'carta' | 'proveedores' | 'pedido' | 'vencimientos';
@@ -70,27 +83,27 @@ const MOCK_KPIS: DashboardKpi[] = [
 const MOCK_PLATOS_VENDIDOS: DashboardRankingItem[] = [
   { nombre: 'Pizza Muzzarella', valor: 286, detalle: '$ 1.287.000' },
   { nombre: 'Milanesa Napolitana', valor: 241, detalle: '$ 1.205.000' },
-  { nombre: 'Papas PanComido', valor: 198, detalle: '$ 594.000' },
-  { nombre: 'Hamburguesa Completa', valor: 176, detalle: '$ 968.000' },
-  { nombre: 'Ravioles de Verdura', valor: 142, detalle: '$ 781.000' },
-  { nombre: 'Ensalada Caesar', valor: 121, detalle: '$ 484.000' },
-  { nombre: 'Limonada Jengibre', valor: 108, detalle: '$ 324.000' },
-  { nombre: 'Flan Casero', valor: 96, detalle: '$ 268.800' },
-  { nombre: 'Empanadas de Carne', valor: 88, detalle: '$ 352.000' },
-  { nombre: 'Tiramisu', valor: 73, detalle: '$ 328.500' }
+  { nombre: 'Pizza Napolitana', valor: 198, detalle: '$ 990.000' },
+  { nombre: 'Hamburguesa Clásica', valor: 176, detalle: '$ 968.000' },
+  { nombre: 'Papas Fritas', valor: 142, detalle: '$ 355.000' },
+  { nombre: 'Bife de Chorizo', valor: 121, detalle: '$ 1.028.500' },
+  { nombre: 'Spaghetti Bolognesa', valor: 108, detalle: '$ 540.000' },
+  { nombre: 'Empanadas de Carne (x3)', valor: 96, detalle: '$ 288.000' },
+  { nombre: 'Ensalada César', valor: 88, detalle: '$ 352.000' },
+  { nombre: 'Wok de Pollo y Verduras', valor: 73, detalle: '$ 401.500' }
 ];
 
 const MOCK_PLATOS_MENOS_VENDIDOS: DashboardRankingItem[] = [
-  { nombre: 'Sopa de Calabaza', valor: 12, detalle: '$ 42.000' },
-  { nombre: 'Risotto de Hongos', valor: 18, detalle: '$ 117.000' },
-  { nombre: 'Tortilla Espanola', valor: 21, detalle: '$ 73.500' },
-  { nombre: 'Pescado Grillado', valor: 24, detalle: '$ 192.000' },
-  { nombre: 'Bruschettas', valor: 29, detalle: '$ 87.000' },
-  { nombre: 'Guiso de Lentejas', valor: 33, detalle: '$ 148.500' },
-  { nombre: 'Tabla Veggie', valor: 37, detalle: '$ 203.500' },
-  { nombre: 'Cafe Irlandes', valor: 42, detalle: '$ 126.000' },
-  { nombre: 'Brownie con Helado', valor: 46, detalle: '$ 184.000' },
-  { nombre: 'Sandwich Caprese', valor: 51, detalle: '$ 204.000' }
+  { nombre: 'Ensalada Mixta', valor: 12, detalle: '$ 24.000' },
+  { nombre: 'Wok de Pollo y Verduras', valor: 18, detalle: '$ 99.000' },
+  { nombre: 'Empanadas de Carne (x3)', valor: 21, detalle: '$ 63.000' },
+  { nombre: 'Ensalada César', valor: 24, detalle: '$ 96.000' },
+  { nombre: 'Spaghetti Bolognesa', valor: 29, detalle: '$ 145.000' },
+  { nombre: 'Bife de Chorizo', valor: 33, detalle: '$ 280.500' },
+  { nombre: 'Papas Fritas', valor: 37, detalle: '$ 92.500' },
+  { nombre: 'Hamburguesa Clásica', valor: 42, detalle: '$ 231.000' },
+  { nombre: 'Pizza Napolitana', valor: 46, detalle: '$ 230.000' },
+  { nombre: 'Pizza Muzzarella', valor: 51, detalle: '$ 229.500' }
 ];
 
 const MOCK_VENTAS_MENSUALES: DashboardVentaMensual[] = [
@@ -193,9 +206,9 @@ const MOCK_ATENCION: DashboardAtencionItem[] = [
 ];
 
 const MOCK_ACCIONES: DashboardAccionItem[] = [
-  { titulo: 'Crear pedido sugerido', detalle: 'Reponer insumos criticos', destino: 'pedido', tono: 'danger' },
-  { titulo: 'Ver vencimientos', detalle: 'Priorizar consumo y descarte', destino: 'vencimientos', tono: 'warning' },
-  { titulo: 'Revisar carta', detalle: 'Ajustar baja demanda', destino: 'carta', tono: 'info' }
+  { titulo: 'Crear pedido sugerido', detalle: 'Reponer insumos criticos', destino: 'pedido', tono: 'danger', impacto: 'Evita quiebres', prioridad: 1 },
+  { titulo: 'Ver vencimientos', detalle: 'Priorizar consumo y descarte', destino: 'vencimientos', tono: 'warning', impacto: 'Reduce merma', prioridad: 2 },
+  { titulo: 'Revisar carta', detalle: 'Ajustar baja demanda', destino: 'carta', tono: 'info', impacto: 'Recupera ventas', prioridad: 3 }
 ];
 
 @Injectable({ providedIn: 'root' })
@@ -268,6 +281,26 @@ export class DashboardStateService {
     return MOCK_INSUMOS_VENCEN.filter(insumo => this.diasHasta(insumo.fecha) <= horizonte);
   });
 
+  vencimientosResumen = computed(() => {
+    const insumos = this.insumosPorVencer();
+    return [
+      { label: 'En radar', value: insumos.length, tone: 'info' },
+      { label: 'Alta', value: insumos.filter(item => item.criticidad === 'alta').length, tone: 'danger' },
+      { label: 'Media', value: insumos.filter(item => item.criticidad === 'media').length, tone: 'warning' },
+      { label: 'Baja', value: insumos.filter(item => item.criticidad === 'baja').length, tone: 'neutral' }
+    ];
+  });
+
+  recomendacionOperativa = computed(() => {
+    const criticos = this.insumosPorVencer().filter(item => item.criticidad === 'alta');
+    if (criticos.length === 0) {
+      return 'Sin insumos de prioridad alta. Mantener seguimiento de media y baja criticidad.';
+    }
+
+    const nombres = criticos.map(item => item.nombre).join(' y ');
+    return `Priorizar ${nombres} en preparaciones del dia para reducir merma y evitar faltantes.`;
+  });
+
   facturacionPorCentro = computed<DashboardFacturacionCentro[]>(() => {
     const factor = this.factorPeriodo();
     return MOCK_FACTURACION_CENTRO.map(centro => ({
@@ -315,6 +348,38 @@ export class DashboardStateService {
     return labels[this._periodo()];
   });
 
+  tituloGrafico = computed(() => {
+    const periodo = this._periodo();
+    if (periodo === '1d') return 'Ventas por hora';
+    if (periodo === '3d') return 'Ventas por día';
+    if (periodo === '7d') return 'Ventas por día';
+    if (periodo === '30d') return 'Distribución diaria de ventas';
+    if (periodo === '365d') return 'Ventas por mes';
+    if (periodo === 'custom') {
+      const dias = this.diasPersonalizados();
+      if (dias <= 7) return 'Ventas por día';
+      if (dias <= 31) return 'Ventas por semana';
+      return 'Ventas por mes';
+    }
+    return 'Ventas';
+  });
+
+  subtituloGrafico = computed(() => {
+    const periodo = this._periodo();
+    if (periodo === '1d') return 'Distribución horaria del día';
+    if (periodo === '3d') return 'Distribución de los últimos 3 días';
+    if (periodo === '7d') return 'Distribución semanal';
+    if (periodo === '30d') return 'Junio 2026';
+    if (periodo === '365d') return 'Variación histórica anual';
+    if (periodo === 'custom') {
+      const dias = this.diasPersonalizados();
+      if (dias <= 7) return 'Distribución diaria personalizada';
+      if (dias <= 31) return 'Distribución semanal personalizada';
+      return 'Variación mensual personalizada';
+    }
+    return '';
+  });
+
   maxVentasMensuales = computed(() => {
     return Math.max(...this.ventasMensuales().map(item => item.ventas));
   });
@@ -326,6 +391,49 @@ export class DashboardStateService {
   platosMasVendidosPreview = computed(() => this.platosMasVendidos().slice(0, 5));
 
   platosMenosVendidosPreview = computed(() => this.platosMenosVendidos().slice(0, 5));
+
+  lecturaComercial = computed<DashboardLecturaComercial[]>(() => {
+    const top = this.platosMasVendidosPreview();
+    const bajos = this.platosMenosVendidosPreview();
+    const lider = top[0];
+    const totalTop = top.reduce((total, item) => total + this.extraerImporte(item.detalle), 0);
+    const revisar = bajos.filter((_, index) => index < 2).length;
+
+    return [
+      {
+        titulo: `${lider.nombre} lidera ventas`,
+        detalle: `${lider.valor} unidades vendidas en el periodo.`,
+        tono: 'success'
+      },
+      {
+        titulo: 'Top 5 con traccion',
+        detalle: `Suma ${this.formatCurrency(totalTop)} de facturacion estimada.`,
+        tono: 'info'
+      },
+      {
+        titulo: `${revisar} platos para revisar`,
+        detalle: 'Priorizar precio, visibilidad o foto antes de pausar.',
+        tono: 'warning'
+      }
+    ];
+  });
+
+  recomendacionTopVentas = computed(() => {
+    const top = this.platosMasVendidosPreview();
+    const principales = top.slice(0, 2).map(item => item.nombre).join(' y ');
+    return `Usar ${principales} como base para combos o destacados del dia.`;
+  });
+
+  accionPlatoBajo(index: number): string {
+    if (index === 0) return 'Revisar precio';
+    if (index === 1) return 'Mejorar visibilidad';
+    return 'Relanzar';
+  }
+
+  destinoAccionPlatoBajo(index: number): DashboardDestino {
+    if (index === 0 || index === 1) return 'carta';
+    return 'carta';
+  }
 
   totalFacturacion = computed(() => {
     return this.facturacionPorCentro().reduce((total, centro) => total + centro.total, 0);
@@ -340,6 +448,30 @@ export class DashboardStateService {
     });
 
     return `conic-gradient(${segmentos.join(', ')})`;
+  });
+
+  lecturaCanales = computed<DashboardLecturaCanal[]>(() => {
+    const centros = this.facturacionPorCentro();
+    const dominante = [...centros].sort((a, b) => b.porcentaje - a.porcentaje)[0];
+    const menor = [...centros].sort((a, b) => a.porcentaje - b.porcentaje)[0];
+    const fueraSalon = centros
+      .filter(centro => !centro.centro.toLowerCase().includes('salon'))
+      .reduce((total, centro) => total + centro.porcentaje, 0);
+
+    return [
+      {
+        titulo: `${dominante.centro} lidera el periodo`,
+        detalle: `Concentra ${dominante.porcentaje}% de la facturacion.`
+      },
+      {
+        titulo: 'Canales fuera de salon',
+        detalle: `Explican ${fueraSalon}% del total y sostienen el flujo operativo.`
+      },
+      {
+        titulo: `Revisar ${menor.centro}`,
+        detalle: `Aporta ${menor.porcentaje}%; evaluar acciones puntuales si hay capacidad disponible.`
+      }
+    ];
   });
 
   setPeriodo(periodo: DashboardPeriodo): void {
