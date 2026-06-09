@@ -23,7 +23,7 @@ namespace PanComido.Dominio.CasosDeUso.AutenticacionCasosDeUso
          if (empleado == null)
             throw new UnauthorizedAccessException("Credenciales inválidas");
 
-         if (empleado.Estado != "Activo")
+         if (empleado.Estado != "activo")
             throw new UnauthorizedAccessException("El empleado no está activo");
 
          if (!_hasher.Verificar(contrasenia, empleado.ContraseniaHash))
