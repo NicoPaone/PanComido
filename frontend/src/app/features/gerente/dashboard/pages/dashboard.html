@@ -126,14 +126,29 @@
               <button
                 type="button"
                 class="heatmap-day"
+                [ngClass]="nivelVentaDia(item.ventas)"
                 [class.active]="diaSeleccionado()?.dia === item.dia"
+                [class.best-day]="esMejorDia(item)"
+                [class.low-day]="esDiaBajo(item)"
                 [style.--intensity]="intensidadVentaDia(item.ventas)"
                 [attr.aria-label]="detalleVentaDia(item.fecha, item.ventas)"
                 (click)="seleccionarDia(item)">
                 <span>{{ item.dia }}</span>
+                @if (esMejorDia(item)) {
+                  <small class="day-badge top" title="Día top" aria-label="Día top">
+                    <span>Top</span>
+                  </small>
+                } @else if (esDiaBajo(item)) {
+                  <small class="day-badge low" title="Día bajo" aria-label="Día bajo">
+                    <span>Bajo</span>
+                  </small>
+                }
                 <span class="day-tooltip" role="tooltip">
                   <span class="tooltip-date">{{ item.fecha }}</span>
                   <span class="tooltip-value">{{ item.ventas | arsCurrency }}</span>
+                  <span class="tooltip-trend">
+                    {{ variacionContraPromedio(item) > 0 ? '+' : '' }}{{ variacionContraPromedio(item) }}% vs promedio
+                  </span>
                 </span>
               </button>
             }
@@ -148,6 +163,24 @@
               <span class="scale-dot level-4"></span>
             </span>
             <span>Más ventas</span>
+          </div>
+
+          <div class="heatmap-insights">
+            <div>
+              <small>Mejor día</small>
+              <strong>{{ mejorDiaMes().fecha }}</strong>
+              <span>{{ mejorDiaMes().ventas | arsCurrency }}</span>
+            </div>
+            <div>
+              <small>Día más bajo</small>
+              <strong>{{ peorDiaMes().fecha }}</strong>
+              <span>{{ peorDiaMes().ventas | arsCurrency }}</span>
+            </div>
+            <div>
+              <small>Promedio diario</small>
+              <strong>{{ promedioDiaMes() | arsCurrency }}</strong>
+              <span>Base de comparación</span>
+            </div>
           </div>
         </div>
 

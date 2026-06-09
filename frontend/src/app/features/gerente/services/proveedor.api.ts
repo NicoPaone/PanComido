@@ -19,6 +19,17 @@ import {
 } from '../../../core/models/dtos/responses/proveedor.response';
 import { CrearPedidoProveedorRequestDto } from '../../../core/models/dtos/requests/crear-pedido-proveedor.request';
 
+interface ProveedorRequestDto {
+  nombre: string;
+  numeroTelefonoWsp?: string | null;
+  categoriaIds: number[];
+}
+
+interface ProveedorMutationResponseDto {
+  proveedorDto: ProveedorResponseDto;
+  mensaje: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ProveedorApiService {
   private api = inject(ApiService);
@@ -41,7 +52,23 @@ export class ProveedorApiService {
   }
 
   crearProveedor(proveedor: ProveedorNuevo): Observable<Proveedor> {
-    return this.api.post<Proveedor>('proveedor', proveedor);
+    return this.api.post<ProveedorMutationResponseDto>('proveedor/crear-proveedor', this.mapProveedorRequest(proveedor)).pipe(
+      map(response => this.mapProveedor(response.proveedorDto))
+    );
+  }
+
+  modificarProveedor(id: number | string, proveedor: ProveedorNuevo): Observable<Proveedor> {
+    return this.api.patch<ProveedorMutationResponseDto>(`proveedor/${id}/modificar-proveedor`, this.mapProveedorRequest(proveedor)).pipe(
+      map(response => this.mapProveedor(response.proveedorDto))
+    );
+  }
+
+  eliminarProveedor(id: number | string): Observable<unknown> {
+    return this.api.delete<unknown>(`proveedor/${id}`);
+  }
+
+  getCategoriasInsumo(): Observable<CategoriaInsumo[]> {
+    return this.api.get<CategoriaInsumo[]>('categoria-insumo');
   }
 
   getHistorialPedidos(id: number | string): Observable<PedidoProveedor[]> {
@@ -115,6 +142,14 @@ export class ProveedorApiService {
       activo: true,
       fechaUltimoPedido: this.normalizarFecha(dto.fechaUltimoPedido),
       categorias: dto.categorias ?? []
+    };
+  }
+
+  private mapProveedorRequest(proveedor: ProveedorNuevo): ProveedorRequestDto {
+    return {
+      nombre: proveedor.nombre.trim(),
+      numeroTelefonoWsp: proveedor.numeroTelefonoWsp?.trim() || null,
+      categoriaIds: proveedor.categoriaIds
     };
   }
 

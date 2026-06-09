@@ -71,6 +71,20 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
 
   readonly mayorVentaMensual = this.state.maxVentasMensuales;
 
+  readonly mejorDiaMes = computed(() => {
+    return [...this.state.ventasCalendarioMes()].sort((a, b) => b.ventas - a.ventas)[0] ?? null;
+  });
+
+  readonly peorDiaMes = computed(() => {
+    return [...this.state.ventasCalendarioMes()].sort((a, b) => a.ventas - b.ventas)[0] ?? null;
+  });
+
+  readonly promedioDiaMes = computed(() => {
+    const dias = this.state.ventasCalendarioMes();
+    if (dias.length === 0) return 0;
+    return Math.round(dias.reduce((total, dia) => total + dia.ventas, 0) / dias.length);
+  });
+
   ngAfterViewInit(): void {
     const baseOptions = {
       locale: SPANISH_LOCALE,
@@ -147,7 +161,19 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
   }
 
   intensidadVentaDia(valor: number): number {
-    return Math.max(0.18, valor / this.state.maxVentasCalendarioMes());
+    const max = this.state.maxVentasCalendarioMes();
+    const min = this.peorDiaMes()?.ventas ?? 0;
+    if (max <= min) return 0.5;
+    return Math.max(0.08, Math.min(1, (valor - min) / (max - min)));
+  }
+
+  nivelVentaDia(valor: number): string {
+    const intensidad = this.intensidadVentaDia(valor);
+    if (intensidad < 0.2) return 'heat-level-1';
+    if (intensidad < 0.4) return 'heat-level-2';
+    if (intensidad < 0.6) return 'heat-level-3';
+    if (intensidad < 0.8) return 'heat-level-4';
+    return 'heat-level-5';
   }
 
   detalleVentaDia(fecha: string, ventas: number): string {
@@ -178,6 +204,20 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
     const base = 4160;
     const seed = (ventas % 15) - 7;
     return base + seed * 100;
+  }
+
+  esMejorDia(item: DashboardVentaDia): boolean {
+    return this.mejorDiaMes()?.dia === item.dia;
+  }
+
+  esDiaBajo(item: DashboardVentaDia): boolean {
+    return item.ventas < this.promedioDiaMes() * 0.78;
+  }
+
+  variacionContraPromedio(item: DashboardVentaDia): number {
+    const promedio = this.promedioDiaMes();
+    if (!promedio) return 0;
+    return Math.round(((item.ventas - promedio) / promedio) * 100);
   }
 
   irA(destino: DashboardDestino): void {

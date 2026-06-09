@@ -2,6 +2,7 @@ import { Injectable, inject, signal, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ProveedorApiService } from '../../services/proveedor.api';
 import { ProveedorNuevo } from '../../../../core/models/domain/proveedor';
+import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo';
 
 @Injectable({ providedIn: 'root' })
 export class NuevoProveedorState {
@@ -10,10 +11,22 @@ export class NuevoProveedorState {
 
   // Estado mutable expuesto como writeable signals
   categorias = signal<string[]>([]);
+  categoriaIds = signal<number[]>([]);
+  categoriasDisponibles = signal<CategoriaInsumo[]>([]);
   gerenteValidado = signal(false);
   mensajeErrorGerente = signal<string | null>(null);
   cargandoGerente = signal(false);
-  availableCategories = signal<string[]>(['Distribuidora', 'Mayorista', 'Minorista', 'Insumos']);
+  errorCategorias = signal<string | null>(null);
+
+  cargarCategorias(): void {
+    this.errorCategorias.set(null);
+    this.api.getCategoriasInsumo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: categorias => this.categoriasDisponibles.set(categorias),
+        error: () => this.errorCategorias.set('No pudimos cargar las categorías de insumo.')
+      });
+  }
 
   validarCredencialesGerente(user: string, pass: string, onValid: () => void): void {
     if (!user || !pass) {
@@ -43,35 +56,30 @@ export class NuevoProveedorState {
       });
   }
 
-  toggleCategoria(cat: string): void {
-    const actuales = [...this.categorias()];
-    const idx = actuales.indexOf(cat);
+  toggleCategoria(categoria: CategoriaInsumo): void {
+    const idsActuales = [...this.categoriaIds()];
+    const idx = idsActuales.indexOf(categoria.id);
     if (idx >= 0) {
-      actuales.splice(idx, 1);
+      idsActuales.splice(idx, 1);
     } else {
-      actuales.push(cat);
+      idsActuales.push(categoria.id);
     }
-    this.categorias.set(actuales);
+    this.categoriaIds.set(idsActuales);
+    this.categorias.set(
+      this.categoriasDisponibles()
+        .filter(categoriaDisponible => idsActuales.includes(categoriaDisponible.id))
+        .map(categoriaDisponible => categoriaDisponible.descripcion)
+    );
   }
 
-  agregarCategoriaPersonalizada(text: string, onReset: () => void): void {
-    const cleanText = text.trim();
-    if (!cleanText) return;
-    const actuales = [...this.categorias()];
-    if (!actuales.includes(cleanText)) {
-      actuales.push(cleanText);
-      this.categorias.set(actuales);
-    }
-    const avail = [...this.availableCategories()];
-    if (!avail.includes(cleanText)) {
-      this.availableCategories.set([...avail, cleanText]);
-    }
-    onReset();
-  }
-
-  removerCategoria(cat: string): void {
-    const actuales = this.categorias().filter(c => c !== cat);
-    this.categorias.set(actuales);
+  removerCategoria(id: number): void {
+    const actuales = this.categoriaIds().filter(categoriaId => categoriaId !== id);
+    this.categoriaIds.set(actuales);
+    this.categorias.set(
+      this.categoriasDisponibles()
+        .filter(categoriaDisponible => actuales.includes(categoriaDisponible.id))
+        .map(categoriaDisponible => categoriaDisponible.descripcion)
+    );
   }
 
   guardarProveedor(proveedor: ProveedorNuevo, onSuccess: () => void): void {

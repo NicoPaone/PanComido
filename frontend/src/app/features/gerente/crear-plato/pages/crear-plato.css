@@ -1,26 +1,80 @@
 .crear-plato-page {
-  background-color: #f9fafb;
+  background-color: #eef7fb;
   min-height: 100vh;
   font-family: var(--font-family);
+  padding: 1.5rem;
+}
+
+.create-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.header-copy {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.back-btn {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  border-radius: 50%;
+  background: #ffffff;
+  color: #334155;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  cursor: pointer;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.back-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.09);
+}
+
+.create-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.58fr) minmax(420px, 1fr) minmax(500px, 1.22fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.media-panel,
+.form-panel,
+.recipe-panel {
+  min-width: 0;
+}
+
+.media-panel {
+  display: grid;
+  gap: 0.9rem;
 }
 
 .page-title {
-  font-size: 1.75rem;
+  font-size: 1.45rem;
   font-weight: 800;
   color: #111827;
+  line-height: 1.15;
 }
 
 .page-subtitle {
-  font-size: 0.9rem;
+  color: #64748b;
+  font-size: 0.86rem;
 }
 
 /* === CARDS === */
 .image-preview-card,
 .visibility-toggle-wrapper {
-  border-radius: 16px;
+  border-radius: 11px;
   background-color: #ffffff !important;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  background: linear-gradient(35deg, #ffffff 0%, rgba(255, 255, 255, 0.86) 40%, rgba(255, 144, 4, 0.32) 100%) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.045);
 }
 
 .image-preview-card {
@@ -29,19 +83,21 @@
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  padding: 0.5rem;
+  position: relative;
 }
 
 .dish-image-large {
-  border-radius: 12px;
-  max-height: 180px;
+  border-radius: 9px;
+  height: 184px;
   width: 100%;
   object-fit: cover;
 }
 
 .image-placeholder {
-  height: 180px;
+  height: 184px;
   background-color: #f8fafc;
-  border-radius: 12px;
+  border-radius: 9px;
   border: 2px dashed #cbd5e1;
   color: #64748b;
   transition: all 0.2s ease;
@@ -59,6 +115,55 @@
 
 .placeholder-text {
   font-weight: 600;
+}
+
+.edit-photo-icon {
+  position: absolute;
+  right: 0.9rem;
+  top: 0.9rem;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.88);
+  color: #334155;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+  cursor: pointer;
+  transition: transform 0.16s ease, background 0.16s ease;
+}
+
+.edit-photo-icon:hover {
+  background: #ffffff;
+  transform: translateY(-1px);
+}
+
+.edit-photo-icon .material-symbols-outlined {
+  font-size: 1.1rem;
+}
+
+.photo-guidance {
+  margin: -0.25rem 0 0;
+  border: 1px solid rgba(255, 144, 4, 0.38);
+  border-radius: 11px;
+  padding: 0.75rem 0.85rem;
+  background: rgba(255, 144, 4, 0.16);
+  color: #7c2d12;
+  font-size: 0.82rem;
+  font-style: italic;
+  line-height: 1.35;
+}
+
+.visibility-toggle-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 0.95rem;
+}
+
+.edit-photo-btn {
+  width: 100%;
 }
 
 .form-card {
@@ -178,9 +283,41 @@
   border-color: #94a3b8 !important;
 }
 
-@media (max-width: 991.98px) {
-  .main-content-row {
-    flex-direction: column;
+.create-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+@media (max-width: 1280px) {
+  .create-layout {
+    grid-template-columns: minmax(230px, 0.62fr) minmax(0, 1fr);
+  }
+
+  .recipe-panel {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 820px) {
+  .crear-plato-page {
+    padding: 1rem;
+  }
+
+  .create-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .recipe-panel {
+    grid-column: auto;
+  }
+
+  .create-footer {
+    justify-content: stretch;
+  }
+
+  .cancel-btn {
+    width: 100%;
   }
 }
 

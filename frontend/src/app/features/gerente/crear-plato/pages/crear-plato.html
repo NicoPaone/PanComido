@@ -1,19 +1,23 @@
-<div class="crear-plato-page p-4">
-  <div class="row mb-4 header-section align-items-center">
-    <div class="col-12 d-flex gap-3 align-items-center">
-      <button class="btn btn-light rounded-circle shadow-sm border-0 d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; color: #475569;" (click)="onCancelar()" title="Volver a la carta">
+<div class="crear-plato-page">
+  <header class="create-header">
+    <div class="header-copy">
+      <button class="back-btn" (click)="onCancelar()" title="Volver a la carta">
         <span class="material-symbols-outlined">arrow_back</span>
       </button>
       <div>
-        <h1 class="page-title mb-0" style="font-size: 1.5rem; line-height: 1.2;">Crear un plato</h1>
-        <p class="page-subtitle text-muted mb-0" style="font-size: 0.85rem;">Registra tus platos en el sistema</p>
+        <h1 class="page-title mb-0">Crear un plato</h1>
+        <p class="page-subtitle mb-0">Registrá el plato, su receta y cómo se verá en carta.</p>
       </div>
     </div>
-  </div>
+  </header>
 
-  <div class="row g-4 main-content-row">
-    <div class="col-12 col-lg-3 text-center d-flex flex-column gap-3">
-      <div class="image-preview-card p-2 w-100">
+  <div class="create-layout">
+    <aside class="media-panel">
+      <div class="image-preview-card">
+        <button type="button" class="edit-photo-icon" (click)="onAbrirSelectorImagen()" title="Editar foto" aria-label="Editar foto">
+          <span class="material-symbols-outlined">edit</span>
+        </button>
+
         @if (imagenSelected()) {
         <img [src]="imagenSelected()" class="dish-image-large img-fluid shadow-sm" alt="Vista previa del plato">
         } @else {
@@ -24,43 +28,42 @@
         }
       </div>
 
-      <app-boton label="Editar foto" variante="outline" tamanio="md" (clicked)="onAbrirSelectorImagen()"
-        class="w-100 edit-photo-btn">
-        <span class="material-symbols-outlined me-2 fs-5">image</span>
-      </app-boton>
+      <p class="photo-guidance">
+        Para que se vea bien en carta, usá una foto horizontal, luminosa y enfocada en el plato completo.
+      </p>
 
-      <div class="visibility-toggle-wrapper w-100 p-3 d-flex justify-content-center">
+      <div class="visibility-toggle-wrapper">
         <app-toggle [active]="visible()" label="Visible en carta" (toggled)="onToggleVisible()">
         </app-toggle>
       </div>
-    </div>
+    </aside>
 
-    <div class="col-12 col-lg-5">
+    <section class="form-panel">
       <app-crear-plato-form
         [costoSugerido]="costoSugerido()"
+        [tiposPlato]="tiposPlato()"
+        [categoriasPlato]="categoriasPlato()"
         [vegano]="vegano()"
         [vegetariano]="vegetariano()"
         [celiaco]="celiaco()"
         (guardar)="onGuardar($event)"
         (toggleTag)="onToggleTag($event)">
       </app-crear-plato-form>
-    </div>
+    </section>
 
-    <div class="col-12 col-lg-4">
+    <section class="recipe-panel">
       <app-detalle-receta
         [ingredientesIniciales]="receta()"
         [ingredientesDisponibles]="ingredientesDisponibles()"
         (recetaCambiada)="onRecetaCambiada($event)">
       </app-detalle-receta>
-    </div>
+    </section>
   </div>
 
-  <div class="row mt-4">
-    <div class="col-12 d-flex justify-content-end gap-3 footer-actions">
-      <app-boton label="CANCELAR" variante="outline" tamanio="lg" (clicked)="onCancelar()" class="cancel-btn">
-      </app-boton>
-    </div>
-  </div>
+  <footer class="create-footer">
+    <app-boton label="Cancelar" variante="outline" tamanio="lg" (clicked)="onCancelar()" class="cancel-btn">
+    </app-boton>
+  </footer>
 </div>
 
 @if (mostrarExito()) {

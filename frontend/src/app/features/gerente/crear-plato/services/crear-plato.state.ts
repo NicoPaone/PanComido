@@ -5,21 +5,6 @@ import { CrearPlatoRequestDto } from '../../../../core/models/dtos/requests/crea
 import { RecetaIngrediente } from '../../../../core/models/domain/plato';
 import { calcularCostoReceta } from '../../services/plato-cost';
 
-/** Mapeo de nombre de tipo/categoría a ID para el backend */
-const TIPO_PLATO_MAP: Record<string, number> = {
-  'Entrada': 1,
-  'Plato Principal': 2,
-  'Postre': 3,
-  'Bebida': 4,
-};
-
-const CATEGORIA_PLATO_MAP: Record<string, number> = {
-  'Entradas': 1,
-  'Principales': 2,
-  'Postres': 3,
-  'Bebidas': 4,
-};
-
 @Injectable({ providedIn: 'root' })
 export class CrearPlatoState {
   private api = inject(PlatoApiService);
@@ -106,7 +91,7 @@ export class CrearPlatoState {
     this.mostrarExito.set(val);
   }
 
-  guardarPlato(platoData: { nombre: string; costo: number; precioVenta: number; tiempoPreparacion: number; tipoPlato: string; descripcion: string; }, callback: () => void): void {
+  guardarPlato(platoData: { nombre: string; costo: number; precioVenta: number; tiempoPreparacion: number; tipoPlatoId: number; categoriaPlatoId: number; descripcion: string; }, callback: () => void): void {
     this.#loading.set(true);
 
     const request: CrearPlatoRequestDto = {
@@ -114,8 +99,8 @@ export class CrearPlatoState {
       descripcion: platoData.descripcion,
       precioVentaFinal: platoData.precioVenta,
       tiempoPreparacionBase: platoData.tiempoPreparacion,
-      tipoPlatoId: TIPO_PLATO_MAP[platoData.tipoPlato] ?? 2,
-      categoriaPlatoId: CATEGORIA_PLATO_MAP[platoData.tipoPlato] ?? 2,
+      tipoPlatoId: platoData.tipoPlatoId,
+      categoriaPlatoId: platoData.categoriaPlatoId,
       urlImagen: this.imagenSelected() || '',
       restriccionesIds: this.restriccionesSeleccionadas(),
       ingredientes: this.receta().map(ing => ({

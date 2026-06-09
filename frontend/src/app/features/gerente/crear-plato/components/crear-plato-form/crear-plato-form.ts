@@ -1,14 +1,16 @@
-import { Component, inject, input, output, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, input, output, computed, ChangeDetectionStrategy, effect } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
+import { ItemDesplegableDto } from '../../../services/plato.api';
 
 export interface PlatoFormData {
   nombre: string;
   costo: number;
   precioVenta: number;
   tiempoPreparacion: number;
-  tipoPlato: string;
+  tipoPlatoId: number;
+  categoriaPlatoId: number;
   descripcion: string;
 }
 
@@ -25,6 +27,8 @@ export class CrearPlatoFormComponent {
 
   // Inputs
   costoSugerido = input<number>(0);
+  tiposPlato = input<ItemDesplegableDto[]>([]);
+  categoriasPlato = input<ItemDesplegableDto[]>([]);
   vegano = input<boolean>(false);
   vegetariano = input<boolean>(false);
   celiaco = input<boolean>(false);
@@ -39,8 +43,19 @@ export class CrearPlatoFormComponent {
     costo: [0, [Validators.required, Validators.min(0.01)]],
     precioVenta: [0, [Validators.required, Validators.min(0.01)]],
     tiempoPreparacion: [15, [Validators.required, Validators.min(1)]],
-    tipoPlato: ['', [Validators.required]],
+    tipoPlatoId: [null as number | null, [Validators.required]],
+    categoriaPlatoId: [null as number | null, [Validators.required]],
     descripcion: ['', [Validators.required, Validators.minLength(8)]]
+  });
+
+  private readonly sincronizarCostoAutocalculado = effect(() => {
+    const costo = this.costoSugerido();
+    const costoControl = this.platoForm.controls.costo;
+
+    if (costo > 0 && costoControl.value !== costo) {
+      costoControl.setValue(costo);
+      costoControl.markAsTouched();
+    }
   });
 
   // Signals derivados del form
@@ -59,6 +74,15 @@ export class CrearPlatoFormComponent {
     return pVenta > 0 && pCosto > 0 && pVenta <= pCosto;
   });
 
+  tiempoPreparacionLegible = computed(() => {
+    const minutos = Number(this.formValue()?.tiempoPreparacion ?? 0);
+    if (!Number.isFinite(minutos) || minutos < 60) return '';
+
+    const horas = Math.floor(minutos / 60);
+    const minutosRestantes = minutos % 60;
+    return minutosRestantes > 0 ? `${horas} h ${minutosRestantes} min` : `${horas} h`;
+  });
+
   onGuardar(): void {
     if (this.platoForm.invalid) {
       this.platoForm.markAllAsTouched();
@@ -71,7 +95,8 @@ export class CrearPlatoFormComponent {
       costo: formVal.costo!,
       precioVenta: formVal.precioVenta!,
       tiempoPreparacion: formVal.tiempoPreparacion!,
-      tipoPlato: formVal.tipoPlato!,
+      tipoPlatoId: formVal.tipoPlatoId!,
+      categoriaPlatoId: formVal.categoriaPlatoId!,
       descripcion: formVal.descripcion!,
     });
   }

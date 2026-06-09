@@ -1,4 +1,4 @@
-import { Component, computed, inject , ChangeDetectionStrategy} from '@angular/core';
+import { Component, computed, inject , ChangeDetectionStrategy, OnInit} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faXmark, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -7,6 +7,7 @@ import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { Router } from '@angular/router';
 import { ProveedorNuevo } from '../../../../core/models/domain/proveedor';
 import { NuevoProveedorState } from '../services/nuevo-proveedor.state';
+import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -16,20 +17,14 @@ import { NuevoProveedorState } from '../services/nuevo-proveedor.state';
   templateUrl: './nuevo-proveedor.html',
   styleUrls: ['./nuevo-proveedor.css']
 })
-export class NuevoProveedorComponent {
+export class NuevoProveedorComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
   private readonly state = inject(NuevoProveedorState);
 
   proveedorForm = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(3)]],
-    contacto: ['', [Validators.required, Validators.minLength(3)]],
     telefono: ['', [Validators.pattern(/^\+?[0-9\s-]{7,15}$/)]],
-    email: ['', [Validators.email]],
-    calle: ['', [Validators.required]],
-    numero: [''],
-    ciudad: ['', [Validators.required]],
-    customCategory: ['']
   });
 
   gerenteForm = this.fb.group({
@@ -38,6 +33,9 @@ export class NuevoProveedorComponent {
   });
 
   categorias = this.state.categorias;
+  categoriaIds = this.state.categoriaIds;
+  categoriasDisponibles = this.state.categoriasDisponibles;
+  errorCategorias = this.state.errorCategorias;
   gerenteValidado = this.state.gerenteValidado;
   mensajeErrorGerente = this.state.mensajeErrorGerente;
   cargandoGerente = this.state.cargandoGerente;
@@ -46,8 +44,8 @@ export class NuevoProveedorComponent {
   faXmark = faXmark;
   faTrash = faTrash;
 
-  get availableCategories(): string[] {
-    return this.state.availableCategories();
+  ngOnInit(): void {
+    this.state.cargarCategorias();
   }
 
   // Convertimos el observable del estado del formulario a Signal
@@ -56,7 +54,7 @@ export class NuevoProveedorComponent {
   });
 
   puedeGuardar = computed(() => {
-    return this.formStatus() === 'VALID' && this.categorias().length > 0 && this.gerenteValidado();
+    return this.formStatus() === 'VALID' && this.categoriaIds().length > 0 && this.gerenteValidado();
   });
 
   validarCredencialesGerente(): void {
@@ -72,19 +70,16 @@ export class NuevoProveedorComponent {
     });
   }
 
-  toggleCategoria(cat: string): void {
-    this.state.toggleCategoria(cat);
+  toggleCategoria(categoria: CategoriaInsumo): void {
+    this.state.toggleCategoria(categoria);
   }
 
-  agregarCategoriaPersonalizada(): void {
-    const text = this.proveedorForm.get('customCategory')?.value || '';
-    this.state.agregarCategoriaPersonalizada(text, () => {
-      this.proveedorForm.get('customCategory')?.reset();
-    });
+  categoriaSeleccionada(id: number): boolean {
+    return this.categoriaIds().includes(id);
   }
 
-  removerCategoria(cat: string): void {
-    this.state.removerCategoria(cat);
+  removerCategoria(id: number): void {
+    this.state.removerCategoria(id);
   }
 
   cancelar(): void {
@@ -97,13 +92,8 @@ export class NuevoProveedorComponent {
     const formVal = this.proveedorForm.value;
     const proveedor: ProveedorNuevo = {
       nombre: formVal.nombre!,
-      contacto: formVal.contacto!,
-      telefono: formVal.telefono ?? '',
-      email: formVal.email ?? '',
-      calle: formVal.calle ?? '',
-      numero: formVal.numero ?? '',
-      ciudad: formVal.ciudad ?? '',
-      categorias: this.categorias()
+      numeroTelefonoWsp: formVal.telefono ?? '',
+      categoriaIds: this.categoriaIds()
     };
 
     this.state.guardarProveedor(proveedor, () => {

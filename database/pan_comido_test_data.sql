@@ -56,6 +56,7 @@ INSERT INTO empleado (id, restaurante_id, nombre, email, contrasena, estado, eli
     (5, 1, 'Laura Fernández',  'laura@pancomido.com',     '$2b$10$hash_simulado_mozo3',    'activo',   FALSE),
     (6, 1, 'Diego Sánchez',    'diego@pancomido.com',     '$2b$10$hash_simulado_inactivo', 'inactivo', TRUE); -- eliminado lógicamente
 
+SELECT setval('empleado_id_seq', (SELECT MAX(id) FROM empleado));
 
 -- Gerente
 INSERT INTO empleado (restaurante_id, nombre, email, contrasena, estado)
