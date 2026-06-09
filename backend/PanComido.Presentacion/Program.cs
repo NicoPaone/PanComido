@@ -159,7 +159,7 @@ builder.Services.AddScoped<CambiarEstadoMesaCasoDeUso>();
 builder.Services.AddScoped<CrearProveedorCasoDeUso>();
 builder.Services.AddScoped<ModificarProveedorCasoDeUso>();
 builder.Services.AddScoped<EliminarProveedorCasoDeuso>();
-
+builder.Services.AddScoped<ObtenerProveedorCasoDeUso>();
 
 
 

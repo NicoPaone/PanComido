@@ -22,6 +22,7 @@ namespace PanComido.Presentacion.Controllers
         private readonly CrearProveedorCasoDeUso _crearProveedorCasoDeUso;
         private readonly ModificarProveedorCasoDeUso _modificarProveedorCasoDeUso;
         private readonly EliminarProveedorCasoDeuso _eliminarProveedorCasoDeUso;
+        private readonly ObtenerProveedorCasoDeUso _obtenerProveedorCasoDeuso;
 
         private readonly ProveedorMapper _proveedorMapper;
         private readonly PedidoMapper _pedidoMapper;
@@ -37,6 +38,7 @@ namespace PanComido.Presentacion.Controllers
             CrearProveedorCasoDeUso crearProveedorCasoDeUso,
             ModificarProveedorCasoDeUso modificarProveedorCasoDeUso,
             EliminarProveedorCasoDeuso eliminarProveedorCasoDeUso,
+            ObtenerProveedorCasoDeUso obtenerProveedorCasoDeUso,
             ProveedorMapper proveedorMapper,
             PedidoMapper pedidoMapper,
             InsumoMapper insumoMapper,
@@ -50,6 +52,7 @@ namespace PanComido.Presentacion.Controllers
             _crearProveedorCasoDeUso = crearProveedorCasoDeUso;
             _modificarProveedorCasoDeUso = modificarProveedorCasoDeUso;
             _eliminarProveedorCasoDeUso = eliminarProveedorCasoDeUso;
+            _obtenerProveedorCasoDeuso = obtenerProveedorCasoDeUso;
             _proveedorMapper = proveedorMapper;
             _pedidoMapper = pedidoMapper;
             _insumoMapper = insumoMapper;
@@ -134,6 +137,14 @@ namespace PanComido.Presentacion.Controllers
 
             var dtos = _insumoConsugerenciaMapper.aListaDto(insumosSugeridos);
             return Ok(dtos);
+        }
+
+        [HttpGet("obtener-proveedor/{idProveedor}")]
+        public async Task<ActionResult> ObtenerProveedorId(int idProveedor)
+        {
+            var proveedorEncontrado = await _obtenerProveedorCasoDeuso.EjecutarAsync(idProveedor);
+
+            return Ok(_proveedorMapper.aDto(proveedorEncontrado));
         }
     }
 }
