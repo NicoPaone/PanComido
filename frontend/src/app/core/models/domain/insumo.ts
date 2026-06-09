@@ -9,6 +9,7 @@ export interface Insumo {
   unidadMedida: UnidadMedida;
   categoriaIngrediente: CategoriaInsumo;
   stockMinimo: number;
+  precioVentaFinal?: number;
 }
 
 export interface CrearInsumo {
@@ -21,4 +22,13 @@ export interface CrearInsumo {
   bodegaId: number;
   cantidadInicial: number;
   fechaVencimiento: string;
+}
+
+export interface LoteInsumo {
+  id: number;
+  nombre: string;
+  insumoId: number;
+  cantidad: number;
+  fechaVencimiento: string | null;
+  bodegaId: number;
 }

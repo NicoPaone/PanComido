@@ -7,6 +7,7 @@ export interface InsumoStockCritico {
   unidadMedida: string;
   vencimiento?: string | null;
   stockMinimo: number;
+  precioVentaFinal?: number;
   estadoStock: string;
   tipo: string;
   categoria?: string | null;
@@ -19,6 +20,7 @@ export interface LoteVencimiento {
   cantidad: number;
   fechaVencimiento: string;
   bodegaId: number;
+  precioVentaFinal?: number;
 }
 
 export interface Aviso {

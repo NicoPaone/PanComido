@@ -14,56 +14,56 @@ export class MozoComandaState {
   private api = inject(MozoComandaService);
   private hub = inject(ComandaHubService);
   private destroyRef = inject(DestroyRef);
-  private _comandas = signal<Comanda[]>([]);
-  private _cargando = signal<boolean>(false);
+  readonly #comandas = signal<Comanda[]>([]);
+  readonly #cargando = signal<boolean>(false);
 
-  comandas = this._comandas.asReadonly();
-  cargando = this._cargando.asReadonly();
+  comandas = this.#comandas.asReadonly();
+  cargando = this.#cargando.asReadonly();
 
-  comandasNuevas = computed(() => 
-  this._comandas().filter(c => c.estado === 'Nueva'));
+  comandasNuevas = computed(() =>
+    this.#comandas().filter(c => c.estado === 'Nueva'));
 
   comandasEnPreparacion = computed(() =>
-  this._comandas().filter(c => c.estado === 'EnPreparacion'));
+    this.#comandas().filter(c => c.estado === 'EnPreparacion'));
 
   comandasEnEspera = computed(() =>
-  this._comandas().filter(c => c.estado === 'EnEspera'));
+    this.#comandas().filter(c => c.estado === 'EnEspera'));
 
-readonly #hubEffect = effect(() => {
+  readonly #hubEffect = effect(() => {
     const actualizada = this.hub.comandaModificada();
     if (!actualizada) return;
 
     const normalizada = {
-        ...actualizada,
-        estado: (typeof actualizada.estado === 'string' 
-            ? actualizada.estado.replace(/\s/g, '') 
-            : EstadoComandaId[actualizada.estado as unknown as number]) as EstadoComanda
+      ...actualizada,
+      estado: (typeof actualizada.estado === 'string'
+        ? actualizada.estado.replace(/\s/g, '')
+        : EstadoComandaId[actualizada.estado as unknown as number]) as EstadoComanda
     };
 
-    this._comandas.update(lista => {
-        const estadosFinales = ['Finalizada', 'Abierta'];
-        if (estadosFinales.includes(normalizada.estado)) {
-            return lista.filter(c => c.id !== normalizada.id);
-        }
-        const existe = lista.some(c => c.id === normalizada.id);
-        if (existe) {
-            return lista.map(c => c.id === normalizada.id ? normalizada : c);
-        }
-        return [normalizada, ...lista];
+    this.#comandas.update(lista => {
+      const estadosFinales = ['Finalizada', 'Abierta'];
+      if (estadosFinales.includes(normalizada.estado)) {
+        return lista.filter(c => c.id !== normalizada.id);
+      }
+      const existe = lista.some(c => c.id === normalizada.id);
+      if (existe) {
+        return lista.map(c => c.id === normalizada.id ? normalizada : c);
+      }
+      return [normalizada, ...lista];
     });
-});
+  });
 
-  cargarComandas(): void{ 
-    this._cargando.set(true);
+  cargarComandas(): void {
+    this.#cargando.set(true);
     this.api.listarComandas().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (comandas) => {
-        this._comandas.set(comandas);
-        
-        this._cargando.set(false);
+        this.#comandas.set(comandas);
+
+        this.#cargando.set(false);
       },
       error: (error) => {
-        
-        this._cargando.set(false);
+
+        this.#cargando.set(false);
       }
     });
   }
@@ -73,14 +73,16 @@ readonly #hubEffect = effect(() => {
 
     this.api.entregarItems(comandaId, articuloComandaIds).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (comandaActualizada) => {
-        this._comandas.update(lista =>
+        this.#comandas.update(lista =>
           lista.map(c => c.id === comandaActualizada.id ? comandaActualizada : c)
         );
       },
-      error: (err) => {}
+      error: (err) => {
+        console.error('Error al entregar items:', err);
+      }
     });
   }
- 
+
   async conectarHub(restauranteId: number, mozoId: number): Promise<void> {
     await this.hub.conectarComoMozo(restauranteId, mozoId);
   }

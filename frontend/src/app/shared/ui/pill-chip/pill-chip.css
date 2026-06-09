@@ -1,0 +1,30 @@
+.pill-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pill-chip.primary {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.pill-chip.secondary {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.pill-chip.success {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.pill-chip.danger {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}

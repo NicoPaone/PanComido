@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:15
+    container_name: pancomido_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "1234"
+      POSTGRES_DB: PanComido
+    ports:
+      - "5432:5432"
+    volumes:
+      - pancomido_data:/var/lib/postgresql/data
+      - ./database:/docker-entrypoint-initdb.d/
+    restart: unless-stopped
+
+volumes:
+  pancomido_data:

@@ -2,7 +2,7 @@ import { Component, inject, signal , ChangeDetectionStrategy} from '@angular/cor
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
-import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
+import { configuracionRestauranteMock } from '../../../../infra/mocks/configuracion-restaurante.mock-data';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

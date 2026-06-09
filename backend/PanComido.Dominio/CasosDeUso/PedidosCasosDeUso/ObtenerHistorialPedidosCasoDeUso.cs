@@ -22,7 +22,7 @@ namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
         public async Task<List<Pedido>?> EjecutarAsync(int proveedorId)
         {
             var proveedor = await _proveedorRepositorio.ObtenerProveedorPorIdAsync(proveedorId);
-            if (proveedor == null) return null;
+            if (proveedor == null) throw new KeyNotFoundException("Proveedor no encontrado");
 
             return await _pedidoRepositorio.ObtenerPedidosPorProveedorAsync(proveedorId);
         }

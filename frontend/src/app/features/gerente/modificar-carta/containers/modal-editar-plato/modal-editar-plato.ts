@@ -5,20 +5,22 @@ import { Plato, RecetaIngrediente } from '../../../../../core/models/domain/plat
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
 import { ToggleComponent } from '../../../../../shared/ui/toggle/toggle';
 import { Buscador } from '../../../../../shared/ui/buscador/buscador';
-import { calcularCostoReceta } from '../../../services/plato.service';
+import { calcularCostoReceta } from '../../../services/plato-cost';
 import { Insumo } from '../../../../../core/models/domain/insumo';
-import { ModificarCartaApiService } from '../../services/modificar-carta.api';
+import { PlatoApiService } from '../../../services/plato.api';
+import { ArsCurrencyPipe } from '../../../../../shared/pipes/ars-currency.pipe';
+import { PriceNoteComponent } from '../../../../../shared/ui/price-note/price-note';
 
 @Component({
   selector: 'app-modal-editar-plato',
   standalone: true,
-  imports: [FormsModule, Boton, ToggleComponent, Buscador],
+  imports: [FormsModule, Boton, ToggleComponent, Buscador, ArsCurrencyPipe, PriceNoteComponent],
   templateUrl: './modal-editar-plato.html',
   styleUrls: ['./modal-editar-plato.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ModalEditarPlatoComponent {
-  private api = inject(ModificarCartaApiService);
+  private api = inject(PlatoApiService);
   private destroyRef = inject(DestroyRef);
 
   plato = input.required<Plato>();
@@ -64,7 +66,11 @@ export class ModalEditarPlatoComponent {
         this.precioVenta.set(p.precioVenta);
         this.imagen.set(p.imagen);
         this.visible.set(p.visible);
-        this.receta.set(p.receta ? JSON.parse(JSON.stringify(p.receta)) : []);
+        const receta = p.receta ? JSON.parse(JSON.stringify(p.receta)) as RecetaIngrediente[] : [];
+        this.receta.set(receta.map(ingrediente => ({
+          ...ingrediente,
+          unidadMedida: this.normalizarUnidadMedida(ingrediente.unidadMedida)
+        })));
       }
     });
   }
@@ -91,7 +97,8 @@ export class ModalEditarPlatoComponent {
       id: producto.id,
       nombre: producto.nombre,
       cantidad: 1,
-      unidadMedida: producto.unidadMedida
+      unidadMedida: this.normalizarUnidadMedida(producto.unidadMedida),
+      costoUnitario: producto.precioVentaFinal ?? 0
     };
 
     this.receta.update(items => [...items, nuevo]);
@@ -127,5 +134,18 @@ export class ModalEditarPlatoComponent {
 
   onClose() {
     this.close.emit();
+  }
+
+  private normalizarUnidadMedida(unidad: RecetaIngrediente['unidadMedida'] | Insumo['unidadMedida']): string {
+    const valor = typeof unidad === 'string' ? unidad : unidad?.nombre ?? '';
+    const normalizado = valor.trim().toLowerCase();
+
+    if (['kg', 'kilo', 'kilos', 'kilogramo', 'kilogramos'].includes(normalizado)) return 'KG';
+    if (['g', 'gr', 'gramo', 'gramos'].includes(normalizado)) return 'GR';
+    if (['l', 'lt', 'lts', 'litro', 'litros'].includes(normalizado)) return 'L';
+    if (['ml', 'mililitro', 'mililitros'].includes(normalizado)) return 'ML';
+    if (['un', 'u', 'unidad', 'unidades'].includes(normalizado)) return 'UN';
+
+    return valor.toUpperCase();
   }
 }

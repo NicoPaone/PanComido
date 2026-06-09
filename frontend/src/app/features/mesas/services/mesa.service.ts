@@ -18,12 +18,12 @@ export class MesaService {
     return this.api.post<MesaOcuparResponse>(`${this.endpoint}/${mesaId}/ocupar`, { cantidadComensales });
   }
 
-  reservarMesa(mesaId: number): Observable<any> {
-    return this.api.post(`${this.endpoint}/${mesaId}/reservar`, {});
+  reservarMesa(mesaId: number): Observable<void> {
+    return this.api.post<void>(`${this.endpoint}/${mesaId}/reservar`, {});
   }
 
-  guardarMapa(mesas: Mesa[]): Observable<any> {
-    return this.api.put(`${this.endpoint}/mapa`, mesas);
+  guardarMapa(mesas: Mesa[]): Observable<void> {
+    return this.api.put<void>(`${this.endpoint}/mapa`, mesas);
   }
 
   cambiarEstado(mesaId: number, estadoMesa: EstadoMesa): Observable<Mesa> {

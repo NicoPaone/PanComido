@@ -21,7 +21,19 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 NumeroTelefonoWsp = efProveedor.NumeroTelefonoWsp,
                 Categorias = efProveedor.CategoriaInsumos
                 .Select(ci => ci.Descripcion)
-                .ToList()
+                .ToList(),
+                Eliminado = efProveedor.Eliminado
+            };
+        }
+
+        public EF.Proveedor paraEntidad(DOM.Proveedor dominioProveedor)
+        {
+            return new EF.Proveedor
+            {
+                RestauranteId = dominioProveedor.RestauranteId,
+                Nombre = dominioProveedor.Nombre,
+                NumeroTelefonoWsp = dominioProveedor.NumeroTelefonoWsp,
+                Eliminado = dominioProveedor.Eliminado
             };
         }
     }

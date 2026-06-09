@@ -60,16 +60,7 @@
                 (ngModelChange)="onCantidadCambiada(ing)">
             </td>
             <td>
-              <select 
-                class="form-select form-select-sm unit-select" 
-                [(ngModel)]="ing.unidadMedida" 
-                (ngModelChange)="onUnidadCambiada()">
-                <option value="GR">gr</option>
-                <option value="L">ml</option>
-                <option value="L">l</option>
-                <option value="KG">kg</option>
-                <option value="UN">un</option>
-              </select>
+              <span class="badge-unidad">{{ ing.unidadMedida }}</span>
             </td>
             <td class="text-center">
               <button class="btn-delete" (click)="eliminarIngrediente(ing.id)">

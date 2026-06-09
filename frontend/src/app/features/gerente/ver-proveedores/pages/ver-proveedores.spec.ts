@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { INSUMOS_MOCK as PRODUCTOS_STOCK_MOCK } from '../../../../infra/mocks/insumo.mock';
+import { INSUMOS_MOCK as PRODUCTOS_STOCK_MOCK } from '../../../../infra/mocks/insumo.mock-data';
 import { VerProveedoresComponent } from './ver-proveedores';
 
 describe('VerProveedoresComponent', () => {

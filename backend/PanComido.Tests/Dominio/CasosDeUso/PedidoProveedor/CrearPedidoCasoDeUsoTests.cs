@@ -3,7 +3,7 @@ using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
 using DOM = PanComido.Dominio.Entidades;
 
-namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
+namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
 {
     public class CrearPedidoCasoDeUsoTests
     {
@@ -99,7 +99,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
                 _proveedorRepoMock.Object,
                 _insumoRepoMock.Object);
 
-            var excepcion = await Assert.ThrowsAsync<Exception>(
+            var excepcion = await Assert.ThrowsAsync<KeyNotFoundException>(
                 () => casoDeUso.EjecutarAsync(pedido, restauranteId));
 
             Assert.Equal("Proveedor no encontrado", excepcion.Message);
@@ -136,7 +136,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
                 _proveedorRepoMock.Object,
                 _insumoRepoMock.Object);
 
-            var excepcion = await Assert.ThrowsAsync<Exception>(
+            var excepcion = await Assert.ThrowsAsync<KeyNotFoundException>(
                 () => casoDeUso.EjecutarAsync(pedido, restauranteId));
 
             Assert.Equal("Proveedor no encontrado", excepcion.Message);
@@ -163,7 +163,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
                 _proveedorRepoMock.Object,
                 _insumoRepoMock.Object);
 
-            var excepcion = await Assert.ThrowsAsync<Exception>(
+            var excepcion = await Assert.ThrowsAsync<InvalidOperationException>(
                 () => casoDeUso.EjecutarAsync(pedido, restauranteId));
 
             Assert.Equal("Hay insumos duplicados", excepcion.Message);
@@ -210,7 +210,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
                 _proveedorRepoMock.Object,
                 _insumoRepoMock.Object);
 
-            var excepcion = await Assert.ThrowsAsync<Exception>(
+            var excepcion = await Assert.ThrowsAsync<ArgumentException>(
                 () => casoDeUso.EjecutarAsync(pedido, restauranteId));
 
             Assert.Equal("Hay insumos que no pertenecen al proveedor", excepcion.Message);
