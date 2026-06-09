@@ -15,33 +15,7 @@ export class NuevoProveedorState {
   cargandoGerente = signal(false);
   availableCategories = signal<string[]>(['Distribuidora', 'Mayorista', 'Minorista', 'Insumos']);
 
-  validarCredencialesGerente(user: string, pass: string, onValid: () => void): void {
-    if (!user || !pass) {
-      this.mensajeErrorGerente.set('Por favor, ingresa credenciales válidas (Usuario >= 3 car., Contraseña >= 6 car.).');
-      return;
-    }
-
-    this.cargandoGerente.set(true);
-    this.mensajeErrorGerente.set(null);
-
-    this.api.validateManagerCredentials(user, pass)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (esValido) => {
-          this.cargandoGerente.set(false);
-          this.gerenteValidado.set(esValido);
-          if (!esValido) {
-            this.mensajeErrorGerente.set('Usuario o contraseña de gerente incorrectos. (Prueba con "gerente" / "123456")');
-          } else {
-            onValid();
-          }
-        },
-        error: () => {
-          this.cargandoGerente.set(false);
-          this.mensajeErrorGerente.set('Error de red al validar credenciales.');
-        }
-      });
-  }
+ 
 
   toggleCategoria(cat: string): void {
     const actuales = [...this.categorias()];

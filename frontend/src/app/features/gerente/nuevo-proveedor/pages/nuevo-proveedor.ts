@@ -59,18 +59,7 @@ export class NuevoProveedorComponent {
     return this.formStatus() === 'VALID' && this.categorias().length > 0 && this.gerenteValidado();
   });
 
-  validarCredencialesGerente(): void {
-    const user = this.gerenteForm.get('usuario')?.value?.trim();
-    const pass = this.gerenteForm.get('contrasena')?.value;
-    if (!user || !pass || this.gerenteForm.invalid) {
-      this.mensajeErrorGerente.set('Por favor, ingresa credenciales válidas (Usuario >= 3 car., Contraseña >= 6 car.).');
-      return;
-    }
-
-    this.state.validarCredencialesGerente(user, pass, () => {
-      this.gerenteForm.disable();
-    });
-  }
+  
 
   toggleCategoria(cat: string): void {
     this.state.toggleCategoria(cat);
