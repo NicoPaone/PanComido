@@ -1,15 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso.IA;
 using PanComido.Dominio.Entidades.IA;
 using PanComido.Presentacion.DTOs.Avisos;
 using PanComido.Presentacion.Mappers;
-using PanComido.Presentacion.SesionMock;
+using PanComido.Presentacion.Sesion;
 
 namespace PanComido.Presentacion.Controllers
 {
     [ApiController]
     [Route("avisos")]
+   [Authorize(Roles = "Gerente")] 
     public class AvisosController : ControllerBase
     {
         private readonly ListarInsumosConStockCriticoCasoDeUso _listarInsumosConStockCriticoCasoDeUso;

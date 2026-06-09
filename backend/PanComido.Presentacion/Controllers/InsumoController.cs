@@ -1,17 +1,20 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Presentacion.DTOs.Insumos;
 using PanComido.Presentacion.Mappers;
-using PanComido.Presentacion.SesionMock;
-using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Presentacion.Sesion;
 
 namespace PanComido.Presentacion.Controllers
 {
     [Route("insumo")]
     [ApiController]
-    public class InsumoController : ControllerBase
+   [Authorize(Roles = "Gerente")]
+
+   public class InsumoController : ControllerBase
     {
         private readonly ListarInsumoCasoDeUso _listarInsumoCasoDeUso;
         private readonly CrearInsumoCasoDeUso _crearInsumoCasoDeUso;
