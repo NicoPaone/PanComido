@@ -69,7 +69,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 CantComensales = comandaDominio.CantComensales,
                 HoraInicio = comandaDominio.HoraInicio,
                 HoraFin = comandaDominio.HoraFin,
-                HoraUltimoCambioEstado = comandaDominio.HoraUltimoCambioEstado,
+                HoraUltimoCambioEstado = comandaDominio.HoraUltimoCambioEstado.GetValueOrDefault(),
                 PagoId = comandaDominio.PagoID,
 
                 ArticuloComanda = comandaDominio.Items?.Select(item => new EF.ArticuloComandum

@@ -36,7 +36,6 @@ namespace PanComido.Presentacion.Controllers
             _modificarEstadoComandaCasoDeUso = modificar;
             _confirmarPedidoCasoDeUso = confirmarPedidoCasoDeUso;
             _llamarMozoCasoDeUso = llamarMozoCasoDeUso;
-            _listarComandasActivasCocinaCasoDeUso = listarComandaActivasCasoDeUso;
             _modificarEstadoComandaCasoDeUso = modificar;
             _marcarItemsEntregadosCasoDeUso = marcarItemsEntregadosCasoDeUso;
             _mapper = mapper;
