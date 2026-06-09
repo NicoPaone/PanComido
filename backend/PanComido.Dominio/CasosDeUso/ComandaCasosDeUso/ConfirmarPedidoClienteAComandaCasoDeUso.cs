@@ -15,22 +15,29 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
         private readonly IComandaRepositorio _comandaRepositorio;
         private readonly ILoteRepositorio _loteRepositorio;
         private readonly IArticuloRepositorio _articuloRepositorio;
+        private readonly IMesaRepositorio _mesaRepositorio;
 
         private readonly IDisponibilidadArticuloServicio _disponibilidadServicio;
         private readonly IGestionStockServicio _gestionDeStockServicio;
+
+        private readonly IComandaNotificador _comandaNotificador;
 
         public ConfirmarPedidoClienteAComandaCasoDeUso(
             IComandaRepositorio comandaRepositorio,
             ILoteRepositorio loteRepositorio,
             IArticuloRepositorio articuloRepositorio,
+            IMesaRepositorio mesaRepositorio,
             IDisponibilidadArticuloServicio disponibilidadServicio,
-            IGestionStockServicio gestionDeStockServicio)
+            IGestionStockServicio gestionDeStockServicio,
+            IComandaNotificador comandaNotificador)
         {
             _comandaRepositorio = comandaRepositorio;
             _loteRepositorio = loteRepositorio;
             _articuloRepositorio = articuloRepositorio;
+            _mesaRepositorio = mesaRepositorio;
             _disponibilidadServicio = disponibilidadServicio;
             _gestionDeStockServicio = gestionDeStockServicio;
+            _comandaNotificador = comandaNotificador;
         }
 
         public async Task<Comanda> EjecutarAsync(int restauranteId, int comandaId, List<ArticuloComanda> articulosSolicitados)
@@ -87,9 +94,13 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
 
             await _comandaRepositorio.ActualizarAsync(comanda);
 
-            // despues implementar signal R para notificar a cocina y mozo el cambio de estado.
-            
+            // signalR
+            var mozosId = await _mesaRepositorio.ObtenerMozoIdsPorMesaAsync(comanda.MesaId);
+            await _comandaNotificador.NotificarEstadoModificadoAsync(comanda, mozosId);
+
+
             await _gestionDeStockServicio.DescontarStockPorArticulosAsync(restauranteId, articulosSolicitados);
+            
             // signal R para actualizar stock en tiempo real?
 
             return comanda;

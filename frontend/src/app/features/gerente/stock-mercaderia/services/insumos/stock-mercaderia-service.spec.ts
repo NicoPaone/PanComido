@@ -2,23 +2,32 @@ import { TestBed } from '@angular/core/testing';
 
 import { StockMercaderiaService } from './stock-mercaderia-service';
 import { of } from 'rxjs';
-import { Insumo } from '../../../../../core/models/insumos/insumo';
 import { ApiService } from '../../../../../core/services/api-service';
+import { CrearInsumoRequest } from '../../../../../core/models/dtos/requests/crear-insumo.request';
 
 describe('StockMercaderiaService', () => {
   let service: StockMercaderiaService;
   let mockApiService: any;
 
-  const mockInsumo: Insumo = {
+  const mockInsumoDto = {
     id: 1,
     nombre: 'Harina',
     stockActual: 10,
-    unidadMedida: 'KG',
-    vencimiento: null,
     stockMinimo: 5,
-    estadoStock: 'Normal',
-    tipo: 'Almacen',
-    categoria: 'Almacen'
+    vencimiento: null,
+    unidadMedida: 'KG',
+    categoria: 'Almacen',
+    tipo: 'Ingrediente'
+  };
+
+  const mappedDomain = {
+    id: 1,
+    nombre: 'Harina',
+    stockActual: 10,
+    stockMinimo: 5,
+    vencimiento: '',
+    unidadMedida: { id: 0, nombre: 'KG' },
+    categoriaIngrediente: { id: 0, descripcion: 'Almacen', tipoAplica: 'Ingrediente' }
   };
 
   beforeEach(() => {
@@ -45,36 +54,50 @@ describe('StockMercaderiaService', () => {
 
   describe('Métodos HTTP', () => {
     it('getStockMercaderia() debería llamar al endpoint correcto', () => {
-      mockApiService.get.mockReturnValue(of([mockInsumo]));
+      mockApiService.get.mockReturnValue(of([mockInsumoDto]));
 
-      service.getStockMercaderia().subscribe();
+      service.getStockMercaderia().subscribe(result => {
+        expect(result[0].unidadMedida).toEqual({ id: 0, nombre: 'KG' });
+      });
 
-      expect(mockApiService.get).toHaveBeenCalledWith('Insumo');
+      expect(mockApiService.get).toHaveBeenCalledWith('insumo');
     });
 
     it('getById() debería llamar con el id correcto', () => {
-      mockApiService.get.mockReturnValue(of(mockInsumo));
+      mockApiService.get.mockReturnValue(of(mockInsumoDto));
 
-      service.getById(5).subscribe();
+      service.getById(5).subscribe(result => {
+        expect(result.id).toBe(1);
+      });
 
-      expect(mockApiService.get).toHaveBeenCalledWith('Insumo/5');
+      expect(mockApiService.get).toHaveBeenCalledWith('insumo/5');
     });
 
     it('crear() debería hacer POST', () => {
-      const nuevoProducto = { nombre: 'Azúcar', stockActual: 20 } as Partial<Insumo>;
-      mockApiService.post.mockReturnValue(of(mockInsumo));
+      const nuevoProducto: CrearInsumoRequest = { 
+        nombre: 'Azúcar', 
+        descripcion: 'Azúcar blanca',
+        precioVentaFinal: 100,
+        stockMinimo: 5,
+        categoriaId: 1,
+        unidadDeMedidaId: 1,
+        bodegaId: 1,
+        cantidadInicial: 20,
+        fechaVencimiento: '2026-12-31'
+      };
+      mockApiService.post.mockReturnValue(of({ insumo: mockInsumoDto, mensaje: 'ok' }));
 
       service.crear(nuevoProducto).subscribe();
 
-      expect(mockApiService.post).toHaveBeenCalledWith('Insumo', nuevoProducto);
+      expect(mockApiService.post).toHaveBeenCalledWith('insumo', nuevoProducto);
     });
 
     it('actualizar() debería hacer PUT con id', () => {
-      mockApiService.put.mockReturnValue(of(mockInsumo));
+      mockApiService.put.mockReturnValue(of(mappedDomain));
 
-      service.actualizar(10, mockInsumo).subscribe();
+      service.actualizar(10, mappedDomain).subscribe();
 
-      expect(mockApiService.put).toHaveBeenCalledWith('Insumo/10', mockInsumo);
+      expect(mockApiService.put).toHaveBeenCalledWith('insumo/10', mappedDomain);
     });
 
     it('eliminar() debería hacer DELETE', () => {
@@ -82,7 +105,7 @@ describe('StockMercaderiaService', () => {
 
       service.eliminar(7).subscribe();
 
-      expect(mockApiService.delete).toHaveBeenCalledWith('Insumo/7');
+      expect(mockApiService.delete).toHaveBeenCalledWith('insumo/7');
     });
   });
 });

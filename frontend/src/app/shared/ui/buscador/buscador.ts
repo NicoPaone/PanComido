@@ -1,8 +1,9 @@
 
-import { Component, input,output, model } from '@angular/core';
+import { Component, input,output, model , ChangeDetectionStrategy} from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-buscador',
   imports: [FontAwesomeModule],
   templateUrl: '../buscador/buscador.html',

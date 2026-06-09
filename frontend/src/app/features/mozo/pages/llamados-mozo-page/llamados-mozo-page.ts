@@ -1,19 +1,23 @@
-import { Component, inject } from '@angular/core';
+import {  Component, inject , ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 
 import { LlamadoCard } from '../../components/llamado-card/llamado-card';
 import { LlamadoState } from '../../services/llamado-state';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-llamados-mozo-page',
   imports: [LlamadoCard],
   templateUrl: './llamados-mozo-page.html',
   styleUrl: './llamados-mozo-page.css',
 })
-export class LlamadosMozoPage {
+export class LlamadosMozoPage implements OnDestroy {
+  ngOnDestroy() { this.#state.desconectarHub(); }
   readonly #state = inject(LlamadoState);
+  readonly #auth = inject(AuthService);
 
-  readonly #mozoId = 3;
-  readonly #restauranteId = 1;
+  readonly #mozoId = this.#auth.currentMozoId;
+  readonly #restauranteId = this.#auth.currentRestauranteId;
 
   readonly pendientes = this.#state.llamados;
   readonly cargando = this.#state.cargando;

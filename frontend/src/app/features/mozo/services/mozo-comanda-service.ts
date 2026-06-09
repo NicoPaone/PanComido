@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from '../../../core/services/api-service';
 import { Observable } from 'rxjs';
-import { Comanda } from '../../../core/models/comanda/comanda';
+import { Comanda } from '../../../core/models/domain/comanda';
 
 @Injectable({
   providedIn: 'root',
@@ -18,6 +18,4 @@ export class MozoComandaService {
     return this.api.put<Comanda>(`comanda/${comandaId}/entregar-items`, articuloComandaIds)
    }
    
-
-
 }

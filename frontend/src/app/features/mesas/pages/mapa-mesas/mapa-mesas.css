@@ -1,0 +1,149 @@
+.mapa-wrapper { display: flex; flex-direction: column; gap: 1rem; padding: 1rem; }
+.header-controles { display: flex; justify-content: space-between; align-items: center; }
+.btn-editor { padding: 0.5rem 1rem; background: #c0392b; color: white; border: none; border-radius: 4px; cursor: pointer; }
+
+.acciones-edicion { display: flex; gap: 10px; }
+.btn-guardar { padding: 0.5rem 1rem; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; }
+.btn-cancelar { padding: 0.5rem 1rem; background: #7f8c8d; color: white; border: none; border-radius: 4px; cursor: pointer; }
+
+.paleta-herramientas { display: flex; gap: 1rem; align-items: center; background: #eee; padding: 10px; border-radius: 8px; }
+.btn-mesa { width: 40px; height: 40px; border: 2px dashed #999; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #666; }
+.btn-mesa:hover { border-color: #333; color: #333; }
+.btn-mesa.redonda { border-radius: 50%; }
+.btn-mesa.cuadrada { border-radius: 4px; }
+.btn-mesa.horizontal { width: 60px; border-radius: 4px; }
+.btn-mesa.vertical { height: 60px; border-radius: 4px; }
+
+/* LEYENDA */
+.leyenda-estados {
+  display: flex;
+  gap: 20px;
+  padding: 10px 15px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  align-items: center;
+}
+
+.leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.circulo-estado {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.circulo-estado.disponible { background-color: #5cb85c; }
+.circulo-estado.ocupada { background-color: #c0392b; }
+.circulo-estado.reservada { background-color: #f1c40f; }
+.circulo-estado.deshabilitada { background-color: #a6a6a6; } /* Gris para la leyenda web */
+
+.plano-fondo {
+  position: relative;
+  width: 100%;
+  height: 700px;
+  background-color: #f5f5f5;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+.modo-grilla {
+  background-color: #ffffff;
+  background-size: 15px 15px;
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+}
+
+::ng-deep .cdk-drag-placeholder {
+  opacity: 0 !important;
+}
+
+::ng-deep .cdk-drag-preview .mesa-container {
+  box-shadow: 0 15px 30px rgba(0,0,0,0.4) !important;
+  cursor: grabbing !important;
+  opacity: 1 !important;
+  z-index: 50 !important;     /* CDK preview arriba mientras arrastras */
+}
+
+::ng-deep .cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.toast-notificacion {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  font-size: 1.1rem;
+  z-index: 1200;            /* Bajo el sidebar (1500) y los modales (1400) */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+.toast-notificacion.error { background-color: #e74c3c; }
+.toast-notificacion.exito { background-color: #2ecc71; }
+.toast-notificacion.info { background-color: #34495e; } /* Gris/Azul oscuro */
+
+/* Modal */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;
+}
+.modal-content {
+  background: white; border-radius: 12px; padding: 2rem; min-width: 350px; max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+.modal-content h2 { margin-bottom: 0.5rem; color: #2c3e50; }
+.modal-content p { color: #666; margin-bottom: 1.5rem; }
+.campo { margin-bottom: 1rem; }
+.campo label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #333; }
+.campo input { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; }
+.modal-actions { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem; }
+.btn-cancelar { padding: 0.75rem 1.5rem; background: #7f8c8d; color: white; border: none; border-radius: 6px; cursor: pointer; }
+.btn-confirmar { padding: 0.75rem 1.5rem; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; }
+.btn-cancelar:hover { background: #6c7a7a; }
+.btn-confirmar:hover { background: #219a52; }
+
+@keyframes slideDown {
+  from { top: -50px; opacity: 0; }
+  to { top: 20px; opacity: 1; }
+}
+
+/* VISTA MOBILE */
+.mobile-grid {
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  min-height: 500px;
+}
+
+.mobile-mesa-btn {
+  color: white;
+  font-weight: bold;
+  font-size: 1.5rem;
+  padding: 20px 0;
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.1s;
+}
+
+.mobile-mesa-btn:active {
+  transform: scale(0.95);
+}
+
+.mobile-mesa-btn.disponible { background-color: #5cb85c; }
+.mobile-mesa-btn.ocupada { background-color: #c0392b; }
+.mobile-mesa-btn.reservada { background-color: #f1c40f; color: #333; }
+.mobile-mesa-btn.deshabilitada { background-color: #000000; color: white; }

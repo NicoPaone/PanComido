@@ -10,7 +10,9 @@ using PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
+using PanComido.Dominio.CasosDeUso.PagoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
+using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.CasosDeUso.UnidadMedidaCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
@@ -32,6 +34,7 @@ using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Servicios;
 using PanComido.Presentacion.SesionMock;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,7 +84,6 @@ builder.Services.AddScoped<InsumoConsugerenciaMapper>();
 builder.Services.AddScoped<UnidadMedidaMapper>();
 builder.Services.AddScoped<LoteRecepcionMapper>();
 builder.Services.AddScoped<MesaMapper>();
-
 builder.Services.AddScoped<LoteMapper>();
 builder.Services.AddScoped<LlamadoMapper>();
 builder.Services.AddScoped<CartaMapper>();
@@ -91,8 +93,7 @@ builder.Services.AddScoped<ArticuloCartaMapper>();
 
 
 builder.Services.AddScoped<ArticuloMapper>();
-
-
+builder.Services.AddScoped<PagoMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -109,6 +110,7 @@ builder.Services.AddScoped<ILlamadoRepositorio, LlamadoRepositorio>();
 builder.Services.AddScoped<IMozoRepositorio, MozoRepositorio>();
 builder.Services.AddScoped<IFormularioPlatoRepositorio, FormularioPlatoRepositorio>();
 builder.Services.AddScoped<IPlatoRepositorio, PlatoRepositorio>();
+builder.Services.AddScoped<IPagoRepositorio, PagoRepositorio>();
 
 
 
@@ -131,8 +133,11 @@ builder.Services.AddScoped<EnviarPedidoProveedorCasoDeUso>();
 builder.Services.AddScoped<GenerarSugerenciasRecepcionCasoDeUso>();
 builder.Services.AddScoped<RecibirPedidoProveedorCasoDeUso>();
 builder.Services.AddScoped<ListarMesasCasoDeUso>();
+builder.Services.AddScoped<GuardarMapaCasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosParaFormularioCrearPlato>();
 builder.Services.AddScoped<CrearPlatoCasoDeUso>();
+builder.Services.AddScoped<ModificarPlatoCasoDeUso>();
+builder.Services.AddScoped<ObtenerPlatoPorIdCasoDeUso>();
 builder.Services.AddScoped<ObtenerCartaCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConStockCriticoCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConVencimientoProximoCasoDeUso>();
@@ -141,9 +146,22 @@ builder.Services.AddScoped<ListarLlamadosPendientesCasoDeUso>();
 builder.Services.AddScoped<ResolverLlamadoCasoDeUso>();
 builder.Services.AddScoped<ListarComandasActivasMozoCasoDeUso>();
 builder.Services.AddScoped<ObtenerDetalleArticuloCasoDeUso>();
+builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
+builder.Services.AddScoped<SolicitarPagoEfectivoCasoDeUso>();
+builder.Services.AddScoped<ConfirmarPagoEfectivoCasoDeUso>();
 builder.Services.AddScoped<ConfirmarPedidoClienteAComandaCasoDeUso>();
 builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
+builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
 builder.Services.AddScoped<ObtenerArticulosParaCrearCartaCasoDeUso>();
+builder.Services.AddScoped<ModificarArticuloCasoDeUso>();
+builder.Services.AddScoped<LlamarMozoComandaCasoDeUso>();
+builder.Services.AddScoped<CambiarEstadoMesaCasoDeUso>();
+builder.Services.AddScoped<CrearProveedorCasoDeUso>();
+builder.Services.AddScoped<ModificarProveedorCasoDeUso>();
+builder.Services.AddScoped<EliminarProveedorCasoDeuso>();
+
+
+
 
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
 
@@ -152,6 +170,7 @@ builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio
 builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticuloServicio>();
 builder.Services.AddScoped<ISugerenciaPlatosIAServicio, GeminiSugerenciaPlatosIAServicio >();
 builder.Services.AddScoped<IGestionStockServicio, GestionStockServicio>();
+builder.Services.AddScoped<IVencimientosProximosInsumosServicio, VencimientosProximosInsumosServicio>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
@@ -196,6 +215,9 @@ app.UseExceptionHandler(o => { });
 app.UseCors("ProduccionCors");
 
 app.UseAuthorization();
+
+// para imagenes
+app.UseStaticFiles();
 
 app.MapControllers();
 

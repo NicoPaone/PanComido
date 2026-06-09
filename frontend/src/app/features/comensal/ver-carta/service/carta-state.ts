@@ -1,5 +1,6 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
-import { CartaItem } from '../../../../core/models/carta-item';
+import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CartaItem } from '../../../../core/models/domain/carta-item';
 import { CartaService } from './carta-service';
 
 @Injectable({
@@ -7,69 +8,46 @@ import { CartaService } from './carta-service';
 })
 export class CartaState {
 
-   private api = inject(CartaService);
-  private _items = signal<CartaItem[]>([]);
-  private _cargando = signal(false);
+  private api = inject(CartaService);
+  private destroyRef = inject(DestroyRef);
+  readonly #items = signal<CartaItem[]>([]);
+  readonly #cargando = signal(false);
 
-  items = this._items.asReadonly();
-  cargando = this._cargando.asReadonly();
+  items = this.#items.asReadonly();
+  cargando = this.#cargando.asReadonly();
 
   // Filtros
   busqueda = signal('');
   tiposSeleccionados = signal<string[]>([]);
-  bebidasSeleccionadas = signal<string[]>([]);
-  restriccionesSeleccionadas = signal<string[]>([]);
   ordenarPor = signal('');
 
-  // Computed: platos (esPlato = true)
+  // Computed: platos
   platos = computed(() =>
-    this._items().filter(i => i.esPlato)
+    this.#items().filter(i => i.tipoArticulo === 'Plato')
   );
 
-  // Comandas: bebidas (esPlato = false)
+  // Computed: bebidas
   bebidas = computed(() =>
-    this._items().filter(i => !i.esPlato)
-  );
-
-  // Destacados
-  destacados = computed(() =>
-    this._items().filter(i => i.esDestacado)
+    this.#items().filter(i => i.tipoArticulo === 'Bebida')
   );
 
   // Items filtrados (para la vista)
   itemsFiltrados = computed(() => {
-    let resultado = this._items();
+    let resultado = this.#items();
 
-    // Filtro por búsqueda
+    // Filtro por búsqueda (solo nombre, descripcion no existe)
     const busqueda = this.busqueda().toLowerCase();
     if (busqueda) {
       resultado = resultado.filter(i =>
-        i.nombre.toLowerCase().includes(busqueda) ||
-        i.descripcion.toLowerCase().includes(busqueda)
+        i.nombre.toLowerCase().includes(busqueda)
       );
     }
 
-    // Filtro por tipo de plato
+    // Filtro por tipo (Plato / Bebida)
     const tipos = this.tiposSeleccionados();
     if (tipos.length > 0) {
       resultado = resultado.filter(i =>
-        i.categoriaPlato && tipos.includes(i.categoriaPlato)
-      );
-    }
-
-    // Filtro por bebida
-    const bebidas = this.bebidasSeleccionadas();
-    if (bebidas.length > 0) {
-      resultado = resultado.filter(i =>
-        i.categoriaBebida && bebidas.includes(i.categoriaBebida)
-      );
-    }
-
-    // Filtro por restricciones
-    const restricciones = this.restriccionesSeleccionadas();
-    if (restricciones.length > 0) {
-      resultado = resultado.filter(i =>
-        restricciones.some(r => i.restricciones.includes(r))
+        tipos.includes(i.tipoArticulo)
       );
     }
 
@@ -77,15 +55,10 @@ export class CartaState {
     const orden = this.ordenarPor();
     switch (orden) {
       case 'precio-menor':
-        resultado = [...resultado].sort((a, b) => a.precio - b.precio);
+        resultado = [...resultado].sort((a, b) => a.precioVentaFinal - b.precioVentaFinal);
         break;
       case 'precio-mayor':
-        resultado = [...resultado].sort((a, b) => b.precio - a.precio);
-        break;
-      case 'tiempo':
-        resultado = [...resultado].sort((a, b) =>
-          (a.tiempoPreparacionBase ?? 0) - (b.tiempoPreparacionBase ?? 0)
-        );
+        resultado = [...resultado].sort((a, b) => b.precioVentaFinal - a.precioVentaFinal);
         break;
       case 'nombre':
         resultado = [...resultado].sort((a, b) =>
@@ -97,14 +70,14 @@ export class CartaState {
     return resultado;
   });
 
-  cargarCarta(restauranteId: number): void {
-    this._cargando.set(true);
-    this.api.obtenerCarta(restauranteId).subscribe({
+  cargarCarta(): void {
+    this.#cargando.set(true);
+    this.api.obtenerCarta().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
-        this._items.set(data);
-        this._cargando.set(false);
+        this.#items.set(data);
+        this.#cargando.set(false);
       },
-      error: () => this._cargando.set(false)
+      error: () => this.#cargando.set(false)
     });
   }
 
@@ -116,11 +89,26 @@ export class CartaState {
     this.ordenarPor.set(valor);
   }
 
+  toggleTipoPlato(tipo: string): void {
+    this.tiposSeleccionados.update(tipos => {
+      if (tipos.includes(tipo)) {
+        return tipos.filter(t => t !== tipo);
+      }
+      return [...tipos, tipo];
+    });
+  }
+
   limpiarFiltros(): void {
     this.busqueda.set('');
     this.tiposSeleccionados.set([]);
-    this.bebidasSeleccionadas.set([]);
-    this.restriccionesSeleccionadas.set([]);
     this.ordenarPor.set('');
   }
+
+  tieneFiltrosActivos = computed(() =>
+    this.tiposSeleccionados().length > 0
+  );
+
+  cantidadFiltrosActivos = computed(() =>
+    this.tiposSeleccionados().length
+  );
 }

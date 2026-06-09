@@ -1,0 +1,65 @@
+@if (isVisible()) {
+  <div class="modal-overlay" (click)="!cargando() && ocultar()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      
+      @if (cargando()) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary mb-3" role="status">
+            <span class="visually-hidden">Enviando pedido...</span>
+          </div>
+          <h5>Confirmando tu pedido...</h5>
+        </div>
+      } @else if (error()) {
+        <div class="text-center py-4">
+          <span class="material-symbols-outlined text-danger fs-1 mb-3">error</span>
+          <h4 class="fw-bold text-danger mb-3">Error</h4>
+          <p class="text-muted">{{ error() }}</p>
+          <button class="btn btn-primary mt-3" (click)="ocultar()">
+            Cerrar
+          </button>
+        </div>
+      } @else if (estadoPedido()) {
+        <div class="modal-success-body">
+          
+          <div class="success-header">
+            <span class="material-symbols-outlined check-icon">check_circle</span>
+            <h2 class="success-title">Pedido confirmado!</h2>
+          </div>
+          
+          <p class="success-subtitle">
+            Tu pedido ya está en cocina. Podés seguir su <strong>estado</strong> en tiempo real.
+          </p>
+
+          <div class="estados-list">
+  
+  <div class="estado-row" [class.activo]="isEstadoActivo('Recibido')">
+    <div class="estado-badge badge-recibido">
+      <span class="material-symbols-outlined">skillet</span>
+      Recibido
+    </div>
+    <div class="estado-desc">Llegó a la cocina, en breve lo empiezan a preparar</div>
+  </div>
+
+  <div class="estado-row" [class.activo]="isEstadoActivo('Preparación')">
+    <div class="estado-badge badge-preparacion">
+      <span class="material-symbols-outlined">restaurant</span>
+      Preparación
+    </div>
+    <div class="estado-desc">El cocinero ya está trabajando en tu pedido</div>
+  </div>
+
+  <div class="estado-row" [class.activo]="isEstadoActivo('Listo')">
+    <div class="estado-badge badge-listo">
+      <span class="material-symbols-outlined">room_service</span>
+      Listo
+    </div>
+    <div class="estado-desc">Tu comida está terminada y en camino a la mesa</div>
+  </div>
+
+</div>
+        </div>
+      }
+      
+    </div>
+  </div>
+}

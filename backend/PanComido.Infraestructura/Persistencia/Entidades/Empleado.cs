@@ -28,6 +28,9 @@ public partial class Empleado
     [Column("estado")]
     public string Estado { get; set; } = null!;
 
+    [Column("eliminado")]
+    public bool Eliminado { get; set; }
+
     [InverseProperty("IdEmpleadoNavigation")]
     public virtual Cocina? Cocina { get; set; }
 

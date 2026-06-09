@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
@@ -18,6 +18,7 @@ namespace PanComido.Presentacion.Controllers
         private readonly ConfirmarPedidoClienteAComandaCasoDeUso _confirmarPedidoCasoDeUso;
         private readonly MarcarItemsEntregadosCasoDeUso _marcarItemsEntregadosCasoDeUso;
         private readonly ComandaMapper _mapper;
+        private readonly LlamarMozoComandaCasoDeUso _llamarMozoCasoDeUso;
 
         private readonly IComandaRepositorio _comandaRepositorio;
 
@@ -27,12 +28,14 @@ namespace PanComido.Presentacion.Controllers
             ModificarEstadoComandaCasoDeUso modificar,
             ConfirmarPedidoClienteAComandaCasoDeUso confirmarPedidoCasoDeUso,
             MarcarItemsEntregadosCasoDeUso marcarItemsEntregadosCasoDeUso,
+            LlamarMozoComandaCasoDeUso llamarMozoCasoDeUso,
             ComandaMapper mapper,
             IComandaRepositorio comandaRepositorio)
         {
             _listarComandasActivasCocinaCasoDeUso = listarComandaActivasCasoDeUso;
             _modificarEstadoComandaCasoDeUso = modificar;
             _confirmarPedidoCasoDeUso = confirmarPedidoCasoDeUso;
+            _llamarMozoCasoDeUso = llamarMozoCasoDeUso;
             _listarComandasActivasCocinaCasoDeUso = listarComandaActivasCasoDeUso;
             _modificarEstadoComandaCasoDeUso = modificar;
             _marcarItemsEntregadosCasoDeUso = marcarItemsEntregadosCasoDeUso;
@@ -50,10 +53,10 @@ namespace PanComido.Presentacion.Controllers
             return Ok(comandasDto);
 
         }
-        [HttpPut("activas/{mesaId}/{estadoId}")]
-        public async Task<ActionResult<ComandaResponseDto>> ModificarEstadoDeComanda(int mesaId, int estadoId)
+        [HttpPut("activas/{comandaId}/{estadoId}")]
+        public async Task<ActionResult<ComandaResponseDto>> ModificarEstadoDeComanda(int comandaId, int estadoId)
         {
-            var comanda = await _modificarEstadoComandaCasoDeUso.EjecutarAsync(mesaId, estadoId);
+            var comanda = await _modificarEstadoComandaCasoDeUso.EjecutarAsync(comandaId, estadoId);
             var comandaDto = _mapper.ComandaResponseDto(comanda);
             return Ok(comandaDto);
         }
@@ -107,5 +110,22 @@ namespace PanComido.Presentacion.Controllers
 
             return Ok(responseDto);
         }
+
+        [HttpPost("{id}/llamar-mozo")]
+        public async Task<IActionResult> LlamarMozo(int id)
+        {
+            // Sacamos el ID del restaurante del token del usuario logueado
+            // var restauranteId = HttpContext.ObtenerRestauranteId();
+            var restauranteId = 1;
+            // Ejecutamos la lógica de negocio
+            await _llamarMozoCasoDeUso.EjecutarAsync(restauranteId, id);
+
+            // Devolvemos el 200 OK
+            return Ok(new { mensaje = "Notificación enviada al mozo exitosamente." });
+        }
+
+
+
+
     }
 }

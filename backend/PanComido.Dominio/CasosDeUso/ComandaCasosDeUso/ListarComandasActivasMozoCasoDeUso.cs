@@ -1,4 +1,5 @@
-﻿using PanComido.Dominio.Interfaces.Repositorios;
+﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Interfaces.Repositorios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
             _comandaRepositorio = comandaRepositorio;
         }
 
-        public async Task<List<Entidades.Comanda>> EjecutarAsync(int restauranteId, int mozoId)
+        public async Task<List<Comanda>> EjecutarAsync(int restauranteId, int mozoId)
         {
             return await _comandaRepositorio.ObtenerComandasActivasPorMozoAsync(restauranteId, mozoId);
         }

@@ -109,6 +109,21 @@ span.numero {
   border-left: 1px solid #333;
 }
 
+/* Modificadores para abrir hacia arriba cuando está cerca del fondo */
+.popup-acciones.arriba {
+  top: auto;
+  bottom: calc(100% + 12px);
+}
+
+.popup-acciones.arriba::before {
+  top: auto;
+  bottom: -6px;
+  border-top: none;
+  border-left: none;
+  border-bottom: 1px solid #333;
+  border-right: 1px solid #333;
+}
+
 .btn-accion {
   background: white;
   border: 1px solid #ccc;

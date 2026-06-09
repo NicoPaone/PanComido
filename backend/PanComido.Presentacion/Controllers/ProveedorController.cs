@@ -19,6 +19,9 @@ namespace PanComido.Presentacion.Controllers
         private readonly ObtenerHistorialPedidosCasoDeUso _obtenerHistorialCasoDeUso;
         private readonly ListarInsumosDelProveedorCasoDeUso _listarInsumosDelProveedorCasoDeUso;
         private readonly ObtenerInsumosParaPedidoCasoDeUso _obtenerInsumosParaPedidoCasoDeUso;
+        private readonly CrearProveedorCasoDeUso _crearProveedorCasoDeUso;
+        private readonly ModificarProveedorCasoDeUso _modificarProveedorCasoDeUso;
+        private readonly EliminarProveedorCasoDeuso _eliminarProveedorCasoDeUso;
 
         private readonly ProveedorMapper _proveedorMapper;
         private readonly PedidoMapper _pedidoMapper;
@@ -31,6 +34,9 @@ namespace PanComido.Presentacion.Controllers
             ObtenerHistorialPedidosCasoDeUso obtenerHistorialCasoDeUso,
             ListarInsumosDelProveedorCasoDeUso listarInsumosDelProveedorCasoDeUso,
             ObtenerInsumosParaPedidoCasoDeUso obtenerInsumosParaPedidoCasoDeUso,
+            CrearProveedorCasoDeUso crearProveedorCasoDeUso,
+            ModificarProveedorCasoDeUso modificarProveedorCasoDeUso,
+            EliminarProveedorCasoDeuso eliminarProveedorCasoDeUso,
             ProveedorMapper proveedorMapper,
             PedidoMapper pedidoMapper,
             InsumoMapper insumoMapper,
@@ -41,6 +47,9 @@ namespace PanComido.Presentacion.Controllers
             _obtenerHistorialCasoDeUso = obtenerHistorialCasoDeUso;
             _listarInsumosDelProveedorCasoDeUso = listarInsumosDelProveedorCasoDeUso;
             _obtenerInsumosParaPedidoCasoDeUso = obtenerInsumosParaPedidoCasoDeUso;
+            _crearProveedorCasoDeUso = crearProveedorCasoDeUso;
+            _modificarProveedorCasoDeUso = modificarProveedorCasoDeUso;
+            _eliminarProveedorCasoDeUso = eliminarProveedorCasoDeUso;
             _proveedorMapper = proveedorMapper;
             _pedidoMapper = pedidoMapper;
             _insumoMapper = insumoMapper;
@@ -57,6 +66,45 @@ namespace PanComido.Presentacion.Controllers
             var dtos = _proveedorMapper.aListaDto(proveedores);
             return Ok(dtos);
         }
+
+        [HttpPost("crear-proveedor")]
+        public async Task<IActionResult> CrearProveedor([FromBody] ProveedorRequestDto proveedorRequest)
+        {
+            var restauranteId = HttpContext.ObtenerRestauranteId();
+            var proveedorDominio = _proveedorMapper.aDominio(proveedorRequest);
+            proveedorDominio.RestauranteId = restauranteId;
+            var proveedorCreado = await _crearProveedorCasoDeUso.EjecutarAsync(proveedorDominio);
+            return StatusCode(201, new
+            {
+                proveedorDto = _proveedorMapper.aDto(proveedorCreado),
+                mensaje = "Proveedor creado correctamente."
+            });
+        }
+
+        [HttpPatch("{idProveedor}/modificar-proveedor")]
+        public async Task<IActionResult> ModificarProveedor(int idProveedor, [FromBody] ProveedorRequestDto proveedorRequest)
+        {
+            var restauranteId = HttpContext.ObtenerRestauranteId();
+            var proveedorDominio = _proveedorMapper.aDominio(proveedorRequest);
+            proveedorDominio.Id = idProveedor;
+            proveedorDominio.RestauranteId = restauranteId;
+
+           
+            var proveedorModificado = await _modificarProveedorCasoDeUso.EjecutarAsync(proveedorDominio);
+            return Ok(new
+            {
+                proveedorDto = _proveedorMapper.aDto(proveedorModificado),
+                mensaje = "Proveedor modificado correctamente."
+            });
+        }
+
+        [HttpDelete("{idProveedor}")]
+        public async Task<IActionResult> EliminarProveedor(int idProveedor)
+        {
+            await _eliminarProveedorCasoDeUso.EjecutarAsync(idProveedor);
+            return Ok(new { mensaje = "Proveedor eliminado correctamente." });
+        }
+
 
         [HttpGet("{idProveedor}/historial-pedidos")]
         public async Task<ActionResult<List<PedidoResponseDto>>> obtenerHistorialPedidos(int idProveedor)

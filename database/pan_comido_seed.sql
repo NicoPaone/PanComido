@@ -3,7 +3,6 @@
 -- Grupo 5 - "No se deJava"
 -- Ejecutar DESPUÉS del script DDL
 -- ============================================================
-
 BEGIN;
 
 INSERT INTO estado_mesa (descripcion) VALUES
@@ -52,7 +51,8 @@ INSERT INTO categoria_llamado (descripcion) VALUES
     ('General'),
     ('Servilleta'),
     ('Condimentos'),
-    ('Panera');
+    ('Panera'),
+    ('Pago');
 
 INSERT INTO configuracion_articulo (descripcion) VALUES
     ('Es vendible'),

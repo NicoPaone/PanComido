@@ -28,10 +28,11 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 CantComensales = efComanda.CantComensales,
                 HoraInicio = efComanda.HoraInicio,
                 HoraFin = efComanda.HoraFin,
-                HoraUltimoCambioEstado = efComanda.HoraUltimoCambioEstado,    
-               Estado = (EstadoComanda)efComanda.EstadoComandaId,
+                HoraUltimoCambioEstado = efComanda.HoraUltimoCambioEstado,
+                Estado = (EstadoComanda)efComanda.EstadoComandaId,
 
-                Items = new List<DOM.ArticuloComanda>()
+                Items = new List<DOM.ArticuloComanda>(),
+                MozoId = efComanda.Mesa?.Mozos.FirstOrDefault()?.IdEmpleado
             };
 
             if (efComanda.ArticuloComanda != null)
@@ -68,7 +69,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 CantComensales = comandaDominio.CantComensales,
                 HoraInicio = comandaDominio.HoraInicio,
                 HoraFin = comandaDominio.HoraFin,
-                HoraUltimoCambioEstado = comandaDominio.HoraUltimoCambioEstado,
+                HoraUltimoCambioEstado = comandaDominio.HoraUltimoCambioEstado ?? DateTime.Now,
                 PagoId = comandaDominio.PagoID,
 
                 ArticuloComanda = comandaDominio.Items?.Select(item => new EF.ArticuloComandum

@@ -26,6 +26,8 @@ namespace PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso
                 Restricciones = await _repositorio.ObtenerRestriccionesAsync(),
                 Ingredientes = await _repositorio.ObtenerIngredientesBaseAsync(restauranteId),
                 IngredientePreparados = await _repositorio.ObtenerIngredientesPreparadosAsync(restauranteId)
+              
+
             };
             return datos;
         }

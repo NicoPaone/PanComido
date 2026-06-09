@@ -1,8 +1,7 @@
 import { Routes } from '@angular/router';
 import { roleGuard } from './core/guards/role.guard';
 
-const DEFAULT_ROUTE = 'staff/gerente';
-
+import { DEFAULT_ROUTE } from './app.constants';
 export const routes: Routes = [
 
    {
@@ -14,6 +13,8 @@ export const routes: Routes = [
       children: [
          {
             path: 'gerente',
+            canActivate: [roleGuard],
+            data: { roles: ['Gerente'] },
             loadChildren: () =>
                import('./features/gerente/gerente.routes').then(m => m.GERENTE_ROUTES)
          },
@@ -25,15 +26,23 @@ export const routes: Routes = [
             loadChildren: () => import('./features/cocina/cocina.routes').then(m => m.COCINA_ROUTES)
          },
          {
-            path: 'mozo',
-            canActivate: [roleGuard],
-            data: { roles: ['Mozo'] },
-            loadChildren: () => import('./features/mozo/mozo.routes').then(m => m.MOZO_ROUTES)
-         },
-         {
             path: '',
             redirectTo: 'cocina',
             pathMatch: 'full'
+         }
+      ]
+   },
+
+   /* MOZO - Layout separado sin sidebar */
+   {
+      path: 'staff/mozo',
+      canActivate: [roleGuard],
+      data: { roles: ['Mozo'] },
+      loadComponent: () => import('./layouts/mozo-layout/mozo-layout').then(m => m.MozoLayout),
+      children: [
+         {
+            path: '',
+            loadChildren: () => import('./features/mozo/mozo.routes').then(m => m.MOZO_ROUTES)
          }
       ]
    },

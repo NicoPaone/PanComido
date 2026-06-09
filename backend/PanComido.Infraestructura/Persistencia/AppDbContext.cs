@@ -52,6 +52,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Ingrediente> Ingredientes { get; set; }
 
+    public virtual DbSet<IngredienteIngredientePreparado> IngredienteIngredientePreparados { get; set; }
+
     public virtual DbSet<IngredientePreparado> IngredientePreparados { get; set; }
 
     public virtual DbSet<Insumo> Insumos { get; set; }
@@ -108,6 +110,8 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("articulo_pkey");
 
+            entity.Property(e => e.Eliminado).HasDefaultValue(false);
+
             entity.HasOne(d => d.Carta).WithMany(p => p.Articulos).HasConstraintName("articulo_carta_id_fkey");
 
             entity.HasOne(d => d.Restaurante).WithMany(p => p.Articulos)
@@ -153,6 +157,8 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<Bodega>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("bodega_pkey");
+
+            entity.Property(e => e.Eliminado).HasDefaultValue(false);
 
             entity.HasOne(d => d.Restaurante).WithMany(p => p.Bodegas)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -266,6 +272,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("empleado_pkey");
 
+            entity.Property(e => e.Eliminado).HasDefaultValue(false);
             entity.Property(e => e.Estado).HasDefaultValueSql("'activo'::text");
 
             entity.HasOne(d => d.Restaurante).WithMany(p => p.Empleados)
@@ -311,6 +318,8 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("fila_virtual_pkey");
 
+            entity.Property(e => e.Habilitada).HasDefaultValue(true);
+
             entity.HasOne(d => d.Restaurante).WithMany(p => p.FilaVirtuals)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fila_virtual_restaurante_id_fkey");
@@ -345,25 +354,19 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.IdInsumoNavigation).WithOne(p => p.Ingrediente)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("ingrediente_id_insumo_fkey");
+        });
 
-            entity.HasMany(d => d.IngredientePreparados).WithMany(p => p.Ingredientes)
-                .UsingEntity<Dictionary<string, object>>(
-                    "IngredienteIngredientePreparado",
-                    r => r.HasOne<IngredientePreparado>().WithMany()
-                        .HasForeignKey("IngredientePreparadoId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("ingrediente_ingrediente_preparado_ingrediente_preparado_id_fkey"),
-                    l => l.HasOne<Ingrediente>().WithMany()
-                        .HasForeignKey("IngredienteId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("ingrediente_ingrediente_preparado_ingrediente_id_fkey"),
-                    j =>
-                    {
-                        j.HasKey("IngredienteId", "IngredientePreparadoId").HasName("ingrediente_ingrediente_preparado_pkey");
-                        j.ToTable("ingrediente_ingrediente_preparado");
-                        j.IndexerProperty<int>("IngredienteId").HasColumnName("ingrediente_id");
-                        j.IndexerProperty<int>("IngredientePreparadoId").HasColumnName("ingrediente_preparado_id");
-                    });
+        modelBuilder.Entity<IngredienteIngredientePreparado>(entity =>
+        {
+            entity.HasKey(e => new { e.IngredienteId, e.IngredientePreparadoId }).HasName("ingrediente_ingrediente_preparado_pkey");
+
+            entity.HasOne(d => d.Ingrediente).WithMany(p => p.IngredienteIngredientePreparados)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("ingrediente_ingrediente_preparado_ingrediente_id_fkey");
+
+            entity.HasOne(d => d.IngredientePreparado).WithMany(p => p.IngredienteIngredientePreparados)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("ingrediente_ingrediente_preparado_ingrediente_preparado_id_fkey");
         });
 
         modelBuilder.Entity<IngredientePreparado>(entity =>
@@ -510,9 +513,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("pago_pkey");
 
-            entity.HasOne(d => d.Cierre).WithMany(p => p.Pagos)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("pago_cierre_id_fkey");
+            entity.HasOne(d => d.Cierre).WithMany(p => p.Pagos).HasConstraintName("pago_cierre_id_fkey");
 
             entity.HasOne(d => d.MetodoPago).WithMany(p => p.Pagos)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -553,6 +554,7 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.IdArticulo).ValueGeneratedNever();
             entity.Property(e => e.Destacado).HasDefaultValue(false);
+            entity.Property(e => e.Sugerencia).HasDefaultValue(false);
 
             entity.HasOne(d => d.CategoriaPlato).WithMany(p => p.Platos)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -585,6 +587,8 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<Proveedor>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("proveedor_pkey");
+
+            entity.Property(e => e.Eliminado).HasDefaultValue(false);
 
             entity.HasOne(d => d.Restaurante).WithMany(p => p.Proveedors)
                 .OnDelete(DeleteBehavior.ClientSetNull)

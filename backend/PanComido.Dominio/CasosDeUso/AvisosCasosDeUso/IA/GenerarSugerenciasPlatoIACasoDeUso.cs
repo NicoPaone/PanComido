@@ -2,6 +2,7 @@
 using PanComido.Dominio.Entidades.IA;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Repositorios.IA;
+using PanComido.Dominio.Interfaces.Servicios;
 using PanComido.Dominio.Interfaces.Servicios.IA;
 using System;
 using System.Collections.Generic;
@@ -15,22 +16,22 @@ namespace PanComido.Dominio.CasosDeUso.AvisosCasosDeUso.IA
     {
         private readonly ISugerenciaIARepositorio _sugerenciaIARepositorio;
         private readonly IInsumoRepositorio _insumoRepositorio;
-        private readonly ListarInsumosConVencimientoProximoCasoDeUso _listarInsumosConVencimientoProximoCasoDeUso;
         private readonly ISugerenciaPlatosIAServicio _sugerenciaPlatosIAServicio;
         private readonly IArticuloRepositorio _articulosRepositorio;
+        private readonly IVencimientosProximosInsumosServicio _vencimientosProximosInsumosServicio;
 
         public GenerarSugerenciasPlatoIACasoDeUso(
         ISugerenciaIARepositorio sugerenciaIARepositorio,
         IInsumoRepositorio insumoRepositorio,
-        ListarInsumosConVencimientoProximoCasoDeUso listarInsumosConVencimientoProximoCasoDeUso,
         ISugerenciaPlatosIAServicio sugerenciaPlatosIAServicio,
-        IArticuloRepositorio articulosRepositorio)
+        IArticuloRepositorio articulosRepositorio,
+        IVencimientosProximosInsumosServicio vencimientosProximosInsumosServicio)
         {
             _sugerenciaIARepositorio = sugerenciaIARepositorio;
             _insumoRepositorio = insumoRepositorio;
-            _listarInsumosConVencimientoProximoCasoDeUso = listarInsumosConVencimientoProximoCasoDeUso;
             _sugerenciaPlatosIAServicio = sugerenciaPlatosIAServicio;
             _articulosRepositorio = articulosRepositorio;
+            _vencimientosProximosInsumosServicio = vencimientosProximosInsumosServicio;
         }
 
         public async Task<SugerenciaIA> EjecutarAsync(int restauranteId)
@@ -45,7 +46,7 @@ namespace PanComido.Dominio.CasosDeUso.AvisosCasosDeUso.IA
 
             List<Insumo> insumosDisponibles = await _insumoRepositorio.ObtenerInsumosConLotesAsync(restauranteId);
 
-            Dictionary<int, List<Lote>> vencimientosProximos = await _listarInsumosConVencimientoProximoCasoDeUso.EjecutarAsync(restauranteId);
+            Dictionary<int, List<Lote>> vencimientosProximos = _vencimientosProximosInsumosServicio.ObtenerVencimientosProximos(insumosDisponibles, 7);
 
             List<Articulo> articulos = await _articulosRepositorio.ObtenerArticulosEnCartaConIngredientesAsync(restauranteId);
 

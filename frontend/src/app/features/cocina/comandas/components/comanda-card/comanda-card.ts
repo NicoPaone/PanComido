@@ -1,8 +1,9 @@
-import { Component, computed, input, output } from '@angular/core';
-import { Comanda, EstadoComandaId } from '../../../../../core/models/comanda/comanda';
+import { Component, computed, input, output , ChangeDetectionStrategy} from '@angular/core';
+import { Comanda, EstadoComandaId } from '../../../../../core/models/domain/comanda';
 import { KdsContadorTiempo } from '../../../../../shared/ui/kds-contador-tiempo/kds-contador-tiempo';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-comanda-card',
   imports: [KdsContadorTiempo],
   templateUrl: './comanda-card.html',
@@ -12,7 +13,7 @@ export class ComandaCard {
 
 
   comanda = input.required<Comanda>();
-  accion = output<{ mesaId: number; estadoId: number }>();
+  accion = output<{ comandaId: number; estadoId: number }>();
 readonly headerClass = computed(() => {
   const map: Record<string, string> = {
     'Nueva': 'bg-danger',
@@ -42,7 +43,7 @@ readonly headerClass = computed(() => {
     if (estado === null) return;
 
     this.accion.emit({
-      mesaId: this.comanda().mesaId,
+      comandaId: this.comanda().id,
       estadoId: estado,
     });
   }

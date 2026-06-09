@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { Mesa } from '../../../core/models/mesa.model';
+import { Mesa } from '../../../core/models/domain/mesa';
 
 @Component({
   selector: 'app-mesa-item',
@@ -22,6 +22,7 @@ export class MesaItem {
   alto = computed(() => this.mesa().posicionYFin - this.mesa().posicionYInicio);
   claseEstado = computed(() => `estado-${this.mesa().estadoMesa.toLocaleLowerCase()}`);
   claseForma = computed(() => `forma-${this.mesa().dimensionMesa.forma}`);
+  abrirHaciaArriba = computed(() => this.mesa().posicionYInicio > 450);
 
   cambioNumero = output<{id: number, numero: number}>();
   eliminar = output<number>();

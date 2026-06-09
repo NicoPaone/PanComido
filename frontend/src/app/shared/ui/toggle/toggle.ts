@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output , ChangeDetectionStrategy} from '@angular/core';
 
 /**
  * Componente Toggle - Control de activación/desactivación
@@ -10,6 +10,7 @@ import { Component, input, output } from '@angular/core';
  * - No requiere @Input/@Output/@EventEmitter
  */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-toggle',
   standalone: true,
   templateUrl: './toggle.html',

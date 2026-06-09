@@ -37,6 +37,9 @@ public partial class Articulo
     [Column("url_imagen")]
     public string? UrlImagen { get; set; }
 
+    [Column("eliminado")]
+    public bool Eliminado { get; set; }
+
     [InverseProperty("Articulo")]
     public virtual ICollection<ArticuloComandum> ArticuloComanda { get; set; } = new List<ArticuloComandum>();
 
