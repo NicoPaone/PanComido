@@ -1,0 +1,48 @@
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="login-header">
+      <img src="assets/images/logo/isologo-red.png" alt="PanComido" class="login-logo" />
+    </div>
+
+    <form (submit)="onSubmit($event)" class="login-form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          [value]="email()"
+          (input)="email.set($any($event.target).value)"
+          placeholder="tu@email.com"
+          required
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="contrasenia">Contraseña</label>
+        <input
+          id="contrasenia"
+          type="password"
+          [value]="contrasenia()"
+          (input)="contrasenia.set($any($event.target).value)"
+          placeholder="Tu contrasena"
+          required
+          autocomplete="current-password"
+        />
+      </div>
+
+      @if (error()) {
+        <div class="login-error">{{ error() }}</div>
+      }
+
+      <button type="submit" [disabled]="cargando()" class="login-btn">
+        @if (cargando()) {
+          <span class="spinner"></span>
+          <span>Ingresando...</span>
+        } @else {
+          <span>Ingresar</span>
+        }
+      </button>
+    </form>
+  </div>
+</div>

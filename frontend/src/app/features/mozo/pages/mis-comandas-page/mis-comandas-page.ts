@@ -32,7 +32,7 @@ export class MisComandasPage implements OnDestroy {
 
   ngOnInit(): void {
     this.state.cargarComandas();
-    void this.state.conectarHub(this.auth.currentRestauranteId, this.auth.currentMozoId);
+    void this.state.conectarHub(this.auth.restauranteId, this.auth.empleadoId);
   }
 
   abrirDetalle(comandaId: number): void {

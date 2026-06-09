@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -35,10 +36,10 @@ using PanComido.Infraestructura.ServiciosExternos.Gemini;
 using PanComido.Infraestructura.ServiciosExternos.Gemini.Mappers;
 using PanComido.Infraestructura.ServiciosExternos.Gemini.Servicio;
 using PanComido.Presentacion;
+using PanComido.Presentacion.Filtros;
 using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Servicios;
-using PanComido.Presentacion.Filtros;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -89,6 +90,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 
 //  JWT
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
    .AddJwtBearer(options =>
    {
