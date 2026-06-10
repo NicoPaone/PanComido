@@ -105,16 +105,16 @@ export class AuthService {
         name: decodificar.name,
         email: decodificar.email,
         role: decodificar.role,
-        restauranteId: decodificar.restauranteId
+        restauranteId: decodificar.restauranteId,
+        exp: decodificar.exp,
       };
     }catch {
       return null;
     }
   }
-  private estaExpirado(payload: JwtPayload): boolean{ 
-    const exp = (payload as unknown as {exp?:number}).exp;
-    if(!exp) return false;
-    return Date.now() >= exp *1000;
+  private estaExpirado(payload: JwtPayload): boolean {
+    if (!payload.exp) return false;
+    return Date.now() >= payload.exp * 1000;
   }
   private generarIniciales(nombre:string): string{
 
