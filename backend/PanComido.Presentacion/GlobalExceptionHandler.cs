@@ -24,10 +24,19 @@ namespace PanComido.Presentacion
                     httpContext.Response.StatusCode = 409;
                     await httpContext.Response.WriteAsJsonAsync(new { error = exception.Message });
                     break;
+                // default:
+                //     httpContext.Response.StatusCode = 500;
+                //     await httpContext.Response.WriteAsJsonAsync(new { error = "Error interno del servidor." });
+                //     break;
                 default:
-                    httpContext.Response.StatusCode = 500;
-                    await httpContext.Response.WriteAsJsonAsync(new { error = "Error interno del servidor." });
-                    break;
+    httpContext.Response.StatusCode = 500;
+    await httpContext.Response.WriteAsJsonAsync(
+        new
+        {
+            error = exception.Message,
+            detalle = exception.ToString()
+        });
+    break;
             }
             return await ValueTask.FromResult(true);
         }

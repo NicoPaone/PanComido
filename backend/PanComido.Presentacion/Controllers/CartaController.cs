@@ -25,6 +25,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("obtener-articulos")]
+        [AllowAnonymous]
+
         public async Task<IActionResult> ObtenerArticulosParaCarta()
         {
             // Ejecutamos el caso de uso que trae la lista y hace la matemática

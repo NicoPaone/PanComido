@@ -2,8 +2,8 @@ import { Component, EventEmitter, input, Input, output, Output, signal , ChangeD
 
 import { ItemPedido } from '../../../../../core/models/domain/item-pedido';
 import { BotonComensal } from '../../../../../shared/ui/botones/boton-comensal/boton-comensal';
-import { configuracionRestauranteMock } from '../../../../../core/interceptors/handlers/configuracion-restaurante.mock';
-import { CartaItem } from '../../../../../core/models/carta-item';
+import { configuracionRestauranteMock } from '../../../../../infra/mocks/configuracion-restaurante.mock-data';
+import { CartaItem } from '../../../../../core/models/domain/carta-item';
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
 
 
@@ -20,6 +20,7 @@ export class CardPlatoComensalComponent {
   plato = input.required<CartaItem>();
   agregarPedido = output<ItemPedido>();
 
+  configuracion = configuracionRestauranteMock;
 
   cantidad = signal(1);
 
