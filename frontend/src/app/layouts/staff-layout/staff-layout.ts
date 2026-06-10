@@ -17,16 +17,11 @@ export class StaffLayout {
   sidebar = viewChild(SidebarComponent);
   mainContentCollapsed = computed(() => this.sidebar()?.isCollapsed() ?? true);
 
-  currentRole = computed(() => this.authService.currentRole());
+  currentRole = computed(() => this.authService.rol());
   
-  userProfile = {
-    name: 'Juan Perez',
-    role: 'Administrador',
-    initials: 'JP',
-    avatarColor: '#f5a5a5'
-  };
+  userProfile = computed(() => this.authService.obtenerPerfilUsuario());
 
   logout(): void {
-    console.warn('logout no implementado aún');
+    this.authService.logout();
   }
 }

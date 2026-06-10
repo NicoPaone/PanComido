@@ -1,17 +1,20 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
-using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.DTOs.Mesas;
+using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
-using PanComido.Presentacion.SesionMock;
+using PanComido.Presentacion.Sesion;
 
 namespace PanComido.Presentacion.Controllers
 {
     [Route("mesa")]
     [ApiController]
-    public class MesaController : ControllerBase
+   [Authorize]
+
+   public class MesaController : ControllerBase
     {
       private readonly OcuparMesaCasoDeUso _ocuparMesaCasoDeUso;
       private readonly ListarMesasCasoDeUso _listarMesas;
@@ -45,6 +48,7 @@ namespace PanComido.Presentacion.Controllers
       }
 
       [HttpPut("mapa")]
+
       public async Task<IActionResult> GuardarMapa([FromBody] List<GuardarMesaRequestDto> request)
       {
           int restauranteId = HttpContext.ObtenerRestauranteId();
@@ -56,7 +60,9 @@ namespace PanComido.Presentacion.Controllers
           return Ok(new { mensaje = "Mapa de mesas guardado correctamente." });
       }
       [HttpPost("{id}/ocupar")]
-        public async Task<IActionResult> Ocupar(int id, [FromBody] OcuparMesaRequestDto request)
+      [Authorize(Roles = "Mozo")]
+
+      public async Task<IActionResult> Ocupar(int id, [FromBody] OcuparMesaRequestDto request)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -84,7 +90,9 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPatch("{id}/estado")]
-        public async Task<IActionResult> CambiarEstado(int id, [FromBody] CambiarEstadoMesaRequestDto request)
+      [Authorize(Roles = "Mozo")]
+
+      public async Task<IActionResult> CambiarEstado(int id, [FromBody] CambiarEstadoMesaRequestDto request)
         {
             int restauranteId = HttpContext.ObtenerRestauranteId();
             if (!Enum.TryParse<PanComido.Dominio.Entidades.Enums.EstadoMesa>(request.EstadoMesa, true, out var estado))

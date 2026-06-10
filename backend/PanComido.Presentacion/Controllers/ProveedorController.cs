@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
@@ -7,13 +8,15 @@ using PanComido.Presentacion.DTOs.Insumos;
 using PanComido.Presentacion.DTOs.Pedidos;
 using PanComido.Presentacion.DTOs.Proveedores;
 using PanComido.Presentacion.Mappers;
-using PanComido.Presentacion.SesionMock;
+using PanComido.Presentacion.Sesion;
 
 namespace PanComido.Presentacion.Controllers
 {
     [Route("proveedor")]
     [ApiController]
-    public class ProveedorController : ControllerBase
+   [Authorize(Roles = "Gerente")]
+
+   public class ProveedorController : ControllerBase
     {
         private readonly ListarProveedorCasoDeUso _listarProveedorCasoDeUso;
         private readonly ObtenerHistorialPedidosCasoDeUso _obtenerHistorialCasoDeUso;

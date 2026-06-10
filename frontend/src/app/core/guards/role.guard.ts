@@ -6,13 +6,16 @@ export const roleGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  const rolesRequeridos = route.data?.['roles'] as string[];
-
-  if (!rolesRequeridos || authService.hasRole(rolesRequeridos)) {
-    return true;
+  if(!authService.esAutenticado()){
+    return router.createUrlTree(['/login']);
   }
 
-  // NOTE: El endpoint del back para verificar el token o rol de 
-  // sesión debe integrarse aquí
- return router.createUrlTree([authService.getHomeRoute()]);
+
+  const rolesRequeridos = route.data?.['roles'] as string[];
+
+  if (!rolesRequeridos || authService.tieneRoles(rolesRequeridos)) {
+    return true;
+  }
+  
+  return router.createUrlTree([authService.obtenerRutaHome()]);
 };

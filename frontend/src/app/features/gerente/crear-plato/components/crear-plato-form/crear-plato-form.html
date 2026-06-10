@@ -1,4 +1,4 @@
-<div class="form-card shadow-sm border p-4 bg-white rounded-3 h-100" [formGroup]="platoForm">
+<div class="form-card" [formGroup]="platoForm">
   <!-- Nombre -->
   <div class="mb-3">
     <label class="form-label font-bold">Nombre <strong class="field-required">*</strong></label>
@@ -24,7 +24,7 @@
           formControlName="costo">
       </div>
       @if (costoSugerido() > 0) {
-      <span class="text-success small-hint">Autocalculado: ${{ costoSugerido() }}</span>
+      <span class="text-success small-hint">Autocalculado</span>
       }
       @if (platoForm.get('costo')?.touched && platoForm.get('costo')?.hasError('min')) {
       <span class="error-text">Debe ser mayor a 0.</span>
@@ -53,7 +53,7 @@
   <!-- Tiempo de preparación -->
   <div class="mb-3">
     <label class="form-label font-bold">Tiempo de preparación <strong class="field-required">*</strong></label>
-    <div class="input-group">
+    <div class="input-group prep-time-group">
       <span class="input-group-text">
         <span class="material-symbols-outlined text-muted">schedule</span>
       </span>
@@ -62,28 +62,49 @@
         formControlName="tiempoPreparacion">
       <span class="input-group-text bg-white border-start-0 text-muted">minutos</span>
     </div>
+    @if (tiempoPreparacionLegible()) {
+    <span class="time-readable-hint">{{ tiempoPreparacionLegible() }}</span>
+    }
     @if (platoForm.get('tiempoPreparacion')?.touched && platoForm.get('tiempoPreparacion')?.hasError('min')) {
     <span class="error-text">Debe ser al menos 1 minuto.</span>
     }
   </div>
 
-  <!-- Tipo de plato -->
-  <div class="mb-3">
-    <label class="form-label font-bold">Tipo de plato <strong class="field-required">*</strong></label>
-    <div class="select-wrapper">
-      <select class="form-select custom-input"
-        [class.is-invalid]="platoForm.get('tipoPlato')?.touched && platoForm.get('tipoPlato')?.invalid"
-        formControlName="tipoPlato">
-        <option value="" disabled selected>Seleccione tipo...</option>
-        <option value="Entrada">Entrada</option>
-        <option value="Plato Principal">Plato Principal</option>
-        <option value="Postre">Postre</option>
-        <option value="Bebida">Bebida</option>
-      </select>
+  <!-- Tipo y categoría -->
+  <div class="row g-3 mb-3">
+    <div class="col-6">
+      <label class="form-label font-bold">Tipo de plato <strong class="field-required">*</strong></label>
+      <div class="select-wrapper">
+        <select class="form-select custom-input"
+          [class.is-invalid]="platoForm.get('tipoPlatoId')?.touched && platoForm.get('tipoPlatoId')?.invalid"
+          formControlName="tipoPlatoId">
+          <option [ngValue]="null" disabled>Seleccione tipo...</option>
+          @for (tipo of tiposPlato(); track tipo.id) {
+            <option [ngValue]="tipo.id">{{ tipo.descripcion }}</option>
+          }
+        </select>
+      </div>
+      @if (platoForm.get('tipoPlatoId')?.touched && platoForm.get('tipoPlatoId')?.hasError('required')) {
+      <span class="error-text">Debe seleccionar un tipo de plato.</span>
+      }
     </div>
-    @if (platoForm.get('tipoPlato')?.touched && platoForm.get('tipoPlato')?.hasError('required')) {
-    <span class="error-text">Debe seleccionar una categoría de plato.</span>
-    }
+
+    <div class="col-6">
+      <label class="form-label font-bold">Categoría <strong class="field-required">*</strong></label>
+      <div class="select-wrapper">
+        <select class="form-select custom-input"
+          [class.is-invalid]="platoForm.get('categoriaPlatoId')?.touched && platoForm.get('categoriaPlatoId')?.invalid"
+          formControlName="categoriaPlatoId">
+          <option [ngValue]="null" disabled>Seleccione categoría...</option>
+          @for (categoria of categoriasPlato(); track categoria.id) {
+            <option [ngValue]="categoria.id">{{ categoria.descripcion }}</option>
+          }
+        </select>
+      </div>
+      @if (platoForm.get('categoriaPlatoId')?.touched && platoForm.get('categoriaPlatoId')?.hasError('required')) {
+      <span class="error-text">Debe seleccionar una categoría.</span>
+      }
+    </div>
   </div>
 
   <!-- Descripción -->

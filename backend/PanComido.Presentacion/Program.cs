@@ -1,6 +1,11 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using PanComido.Dominio.CasosDeUso.ArticuloCasosDeUso;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using PanComido.Dominio.CasosDeUso.ArticuloCasosDeUso;
+using PanComido.Dominio.CasosDeUso.AutenticacionCasosDeUso;
 using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso.IA;
 using PanComido.Dominio.CasosDeUso.BodegaCasosDeUso;
@@ -12,6 +17,7 @@ using PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.PagoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
+using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.CasosDeUso.UnidadMedidaCasosDeUso;
@@ -25,10 +31,12 @@ using PanComido.Infraestructura.Persistencia.Mappers;
 using PanComido.Infraestructura.Persistencia.Mappers.IA;
 using PanComido.Infraestructura.Persistencia.Repositorios;
 using PanComido.Infraestructura.Persistencia.Repositorios.IA;
+using PanComido.Infraestructura.ServiciosExternos;
 using PanComido.Infraestructura.ServiciosExternos.Gemini;
 using PanComido.Infraestructura.ServiciosExternos.Gemini.Mappers;
 using PanComido.Infraestructura.ServiciosExternos.Gemini.Servicio;
 using PanComido.Presentacion;
+using PanComido.Presentacion.Filtros;
 using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Servicios;
@@ -50,12 +58,67 @@ builder.Services.AddControllers(options =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{  
+   options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+   {
+      Name = "Authorization",
+      Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+      Scheme = "Bearer",
+      BearerFormat = "JWT",
+      In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+      Description = "Pegá el token JWT acá"
+   });
+   
+   options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+      {
+         new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+         {
+            Reference = new Microsoft.OpenApi.Models.OpenApiReference
+            {
+               Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+               Id = "Bearer"
+            }
+         },
+         Array.Empty<string>()
+      }
+   });
+}); 
+
 builder.Services.AddSignalR();
 
 // Conexion a BD
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+//  JWT
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+   .AddJwtBearer(options =>
+   {
+      options.TokenValidationParameters = new TokenValidationParameters
+      {
+         ValidateIssuer = true,
+         ValidateAudience = true,
+         ValidateLifetime = true,
+         ValidateIssuerSigningKey = true,
+         ValidIssuer = builder.Configuration["Jwt:Issuer"],
+         ValidAudience = builder.Configuration["Jwt:Audience"],
+         IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+      };
+   });
+builder.Services.AddAuthorization();
+
+//AUTENTICACION
+builder.Services.AddScoped<JwtTokenServicio>();
+builder.Services.AddScoped<AutenticacionMapper>();
+builder.Services.AddScoped<LoginCasoDeUso>();
+builder.Services.AddScoped<IEmpleadoRepositorio, EmpleadoRepositorio>();
+builder.Services.AddScoped<IContraseniaHasher, ContraseniaHasher>();
+
 
 // Mappers de Infraestructura (Dominio <-> EF)
 builder.Services.AddScoped<InsumoEntityMapper>();
@@ -230,6 +293,8 @@ app.UseExceptionHandler(o => { });
 
 app.UseCors("ProduccionCors");
 
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 // para imagenes
