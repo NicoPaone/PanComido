@@ -9,12 +9,13 @@ import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
 import { ComensalState } from '../../services/comensal-state';
 import { ComandaState } from '../../services/comanda-state';
 import { PlatoService } from '../../services/plato.service';
+import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-personalizar-plato',
   standalone: true,
-  imports: [FormsModule, DecimalPipe, LlamarAlMozo],
+  imports: [FormsModule, DecimalPipe, LlamarAlMozo, BotonComensal],
   templateUrl: './personalizar-plato.html',
   styleUrls: ['./personalizar-plato.css']
 })

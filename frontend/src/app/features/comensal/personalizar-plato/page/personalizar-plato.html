@@ -45,12 +45,14 @@
       <h4>Agregar ingredientes</h4>
       <div class="chips-container">
         @for (ing of ingredientesExtra; track ing) {
-          <button 
+          <app-boton-comensal
+           [backgroundColor]="configuracion.paleta.botonPrimario"
+          [textColor]="configuracion.paleta.textoClaro" 
             class="chip"
             [class.seleccionado]="extrasSeleccionados.includes(ing)"
             (click)="toggleExtra(ing)">
-            + {{ ing }}
-          </button>
+            + {{ ing }} 
+          </app-boton-comensal>
         }
       </div>
     </div>
@@ -60,12 +62,14 @@
       <h4>Quitar ingredientes</h4>
       <div class="chips-container">
         @for (ing of ingredientesRemover; track ing) {
-          <button 
+          <app-boton-comensal 
+            [backgroundColor]="configuracion.paleta.botonPrimario"
+            [textColor]="configuracion.paleta.textoClaro" 
             class="chip chip-remover"
             [class.seleccionado]="removidosSeleccionados.includes(ing)"
             (click)="toggleRemover(ing)">
             - {{ ing }}
-          </button>
+          </app-boton-comensal >
         }
       </div>
     </div>
