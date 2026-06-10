@@ -18,7 +18,7 @@ namespace PanComido.Presentacion
                     break;
                 case UnauthorizedAccessException:
                     httpContext.Response.StatusCode = 401;
-                    await httpContext.Response.WriteAsJsonAsync(new { error = "No cuenta con los permisos necesarios." });
+                    await httpContext.Response.WriteAsJsonAsync(new { error = exception.Message });
                     break;
                 case InvalidOperationException:
                     httpContext.Response.StatusCode = 409;

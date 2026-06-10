@@ -16,8 +16,8 @@ export class LlamadosMozoPage implements OnDestroy {
   readonly #state = inject(LlamadoState);
   readonly #auth = inject(AuthService);
 
-  readonly #mozoId = this.#auth.currentMozoId;
-  readonly #restauranteId = this.#auth.currentRestauranteId;
+  readonly #mozoId = this.#auth.empleadoId;
+  readonly #restauranteId = this.#auth.restauranteId;
 
   readonly pendientes = this.#state.llamados;
   readonly cargando = this.#state.cargando;

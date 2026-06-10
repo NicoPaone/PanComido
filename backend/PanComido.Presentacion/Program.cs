@@ -1,6 +1,11 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using PanComido.Dominio.CasosDeUso.ArticuloCasosDeUso;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using PanComido.Dominio.CasosDeUso.ArticuloCasosDeUso;
+using PanComido.Dominio.CasosDeUso.AutenticacionCasosDeUso;
 using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso.IA;
 using PanComido.Dominio.CasosDeUso.BodegaCasosDeUso;
@@ -15,6 +20,7 @@ using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.CasosDeUso.UnidadMedidaCasosDeUso;
+using PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Repositorios.IA;
 using PanComido.Dominio.Interfaces.Servicios;
@@ -25,15 +31,16 @@ using PanComido.Infraestructura.Persistencia.Mappers;
 using PanComido.Infraestructura.Persistencia.Mappers.IA;
 using PanComido.Infraestructura.Persistencia.Repositorios;
 using PanComido.Infraestructura.Persistencia.Repositorios.IA;
+using PanComido.Infraestructura.ServiciosExternos;
 using PanComido.Infraestructura.ServiciosExternos.Gemini;
 using PanComido.Infraestructura.ServiciosExternos.Gemini.Mappers;
 using PanComido.Infraestructura.ServiciosExternos.Gemini.Servicio;
 using PanComido.Presentacion;
+using PanComido.Presentacion.Filtros;
 using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Servicios;
-using PanComido.Presentacion.SesionMock;
-using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
+using PanComido.Dominio.Interfaces;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,12 +55,67 @@ builder.Services.AddControllers(options =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{  
+   options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+   {
+      Name = "Authorization",
+      Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+      Scheme = "Bearer",
+      BearerFormat = "JWT",
+      In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+      Description = "Pegá el token JWT acá"
+   });
+   
+   options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+      {
+         new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+         {
+            Reference = new Microsoft.OpenApi.Models.OpenApiReference
+            {
+               Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+               Id = "Bearer"
+            }
+         },
+         Array.Empty<string>()
+      }
+   });
+}); 
+
 builder.Services.AddSignalR();
 
 // Conexion a BD
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+//  JWT
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+   .AddJwtBearer(options =>
+   {
+      options.TokenValidationParameters = new TokenValidationParameters
+      {
+         ValidateIssuer = true,
+         ValidateAudience = true,
+         ValidateLifetime = true,
+         ValidateIssuerSigningKey = true,
+         ValidIssuer = builder.Configuration["Jwt:Issuer"],
+         ValidAudience = builder.Configuration["Jwt:Audience"],
+         IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+      };
+   });
+builder.Services.AddAuthorization();
+
+//AUTENTICACION
+builder.Services.AddScoped<JwtTokenServicio>();
+builder.Services.AddScoped<AutenticacionMapper>();
+builder.Services.AddScoped<LoginCasoDeUso>();
+builder.Services.AddScoped<IEmpleadoRepositorio, EmpleadoRepositorio>();
+builder.Services.AddScoped<IContraseniaHasher, ContraseniaHasher>();
+
 
 // Mappers de Infraestructura (Dominio <-> EF)
 builder.Services.AddScoped<InsumoEntityMapper>();
@@ -70,6 +132,9 @@ builder.Services.AddScoped<FormularioParaCrearPlatoEntityMapper>();
 builder.Services.AddScoped<ArticuloEntityMapper>();
 builder.Services.AddScoped<PlatoEntityMapper>();
 builder.Services.AddScoped<LlamadoEntityMapper>();
+builder.Services.AddScoped<MetodoDePagoEntityMapper>();
+builder.Services.AddScoped<RestauranteEntityMapper>();
+builder.Services.AddScoped<TurnoLaboralEntityMapper>();
 
 
 
@@ -90,6 +155,9 @@ builder.Services.AddScoped<CartaMapper>();
 builder.Services.AddScoped<FormularioParaCrearPlatoMapper>();
 builder.Services.AddScoped<PlatoMapper>();
 builder.Services.AddScoped<ArticuloCartaMapper>();
+builder.Services.AddScoped<MetodoDePagoMapper>();
+builder.Services.AddScoped<RestauranteMapper>();
+builder.Services.AddScoped<TurnoLaboralMapper>();
 
 
 builder.Services.AddScoped<ArticuloMapper>();
@@ -111,6 +179,9 @@ builder.Services.AddScoped<IMozoRepositorio, MozoRepositorio>();
 builder.Services.AddScoped<IFormularioPlatoRepositorio, FormularioPlatoRepositorio>();
 builder.Services.AddScoped<IPlatoRepositorio, PlatoRepositorio>();
 builder.Services.AddScoped<IPagoRepositorio, PagoRepositorio>();
+builder.Services.AddScoped<IMetodoDePagoRepositorio, MetodoDePagoRepositorio>();
+builder.Services.AddScoped<IRestauranteRepositorio, RestauranteRepositorio>();
+builder.Services.AddScoped<ITurnoLaboralRepositorio, TurnoLaboralRepositorio>();
 
 
 
@@ -160,7 +231,12 @@ builder.Services.AddScoped<CrearProveedorCasoDeUso>();
 builder.Services.AddScoped<ModificarProveedorCasoDeUso>();
 builder.Services.AddScoped<EliminarProveedorCasoDeuso>();
 builder.Services.AddScoped<ObtenerProveedorCasoDeUso>();
-
+builder.Services.AddScoped<ObtenerMetodosDePagoCasoDeUso>();
+builder.Services.AddScoped<ActualizarMetodosDePagoCasoDeUso>();
+builder.Services.AddScoped<ObtenerDatosDelLocalCasoDeUso>();
+builder.Services.AddScoped<ActualizarDatosDelLocalCasoDeUso>();
+builder.Services.AddScoped<ObtenerTurnosLaboralesCasoDeUso>();
+builder.Services.AddScoped<ActualizarTurnosLaboralesCasoDeUso>();
 
 
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
@@ -170,6 +246,8 @@ builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio
 builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticuloServicio>();
 builder.Services.AddScoped<ISugerenciaPlatosIAServicio, GeminiSugerenciaPlatosIAServicio >();
 builder.Services.AddScoped<IGestionStockServicio, GestionStockServicio>();
+builder.Services.AddScoped<IVencimientosProximosInsumosServicio, VencimientosProximosInsumosServicio>();
+builder.Services.AddScoped<ICantidadDeMesasServicio, CantidadDeMesasServicio>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
@@ -213,6 +291,8 @@ app.UseExceptionHandler(o => { });
 
 app.UseCors("ProduccionCors");
 
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 // para imagenes

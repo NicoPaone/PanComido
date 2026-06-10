@@ -6,7 +6,7 @@
     </div>
   }
      <div class="header-controles">
-        @if (!state.isEditorMode() && auth.hasRole(['Gerente'])) {
+        @if (!state.isEditorMode() && auth.tieneRoles(['Gerente'])) {
           <button type="button" class="btn-editor" (click)="state.toggleEditorMode()">Activar Edición</button>
         } @else if (state.isEditorMode()) {
           <div class="acciones-edicion">

@@ -668,7 +668,7 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<TurnoLaboral>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("turno_laboral_pkey");
-
+            entity.Property(e => e.EsNocturno).HasDefaultValue(false);
             entity.HasOne(d => d.Restaurante).WithMany(p => p.TurnoLaborals)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("turno_laboral_restaurante_id_fkey");

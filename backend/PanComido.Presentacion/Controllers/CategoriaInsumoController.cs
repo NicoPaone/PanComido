@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Presentacion.DTOs;
@@ -8,7 +9,8 @@ namespace PanComido.Presentacion.Controllers
 {
     [Route("categoria-insumo")]
     [ApiController]
-    public class CategoriaInsumoController : ControllerBase
+   [Authorize]
+   public class CategoriaInsumoController : ControllerBase
     {
         private readonly ListarCategoriasDeInsumosCasoDeUso _listarCategoriasUseCase;
         private readonly CategoriaInsumoMapper _mapper;

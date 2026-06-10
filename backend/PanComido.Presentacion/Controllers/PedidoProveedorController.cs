@@ -1,16 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Presentacion.DTOs.Pedidos;
 using PanComido.Presentacion.Mappers;
-using PanComido.Presentacion.SesionMock;
+using PanComido.Presentacion.Sesion;
 using DOM = PanComido.Dominio.Entidades;
 
 namespace PanComido.Presentacion.Controllers
 {
     [Route("pedido-proveedor")]
     [ApiController]
-    public class PedidoProveedorController : ControllerBase
+   [Authorize(Roles = "Gerente")]
+
+   public class PedidoProveedorController : ControllerBase
     {
         private readonly CrearPedidoCasoDeUso _crearPedidoCasoDeUso;
         private readonly EnviarPedidoProveedorCasoDeUso _confirmarPedidoCasoDeUso;
