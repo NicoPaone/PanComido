@@ -16,6 +16,10 @@ export const GERENTE_ROUTES: Routes = [
     loadComponent: () => import('../mesas/pages/mapa-mesas/mapa-mesas').then(m => m.MapaMesas)
   },
   {
+    path: 'caja',
+    loadComponent: () => import('./cierre-caja/pages/cierre-caja').then(m => m.CierreCajaPage)
+  },
+  {
     path: 'modificar-carta',
     loadComponent: () => import('./modificar-carta/pages/modificar-carta').then(m => m.ModificarCartaComponent)
   },

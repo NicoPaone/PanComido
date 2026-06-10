@@ -206,3 +206,145 @@ span.flatpickr-weekday {
 .flatpickr-day.nextMonthDay {
   color: #cbd5e1;
 }
+
+/* Estilos de impresión para reportes y cierre de caja */
+@media print {
+  /* Ocultar barra de navegación, sidebar y backdrop de diálogos a nivel global */
+  app-sidebar,
+  .btn-close,
+  dialog::backdrop {
+    display: none !important;
+  }
+
+  /* Resetear contenedores de layout principales */
+  .layout-wrapper,
+  .main-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    display: block !important;
+  }
+
+  /* Resetear body y html para asegurar que no agreguen márgenes de página */
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  /* Ocultar elementos de pantalla específicos dentro de la vista de cierre de caja */
+  .caja-page > *:not(app-modal) {
+    display: none !important;
+  }
+
+  /* Resetear el elemento <dialog> para que no actúe como popup flotante */
+  .caja-page dialog.modal-dialogo {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  .caja-page .modal-header,
+  .caja-page .preview-instructions,
+  .caja-page .modal-actions-grid {
+    display: none !important;
+  }
+
+  .caja-page .modal-body {
+    padding: 0 !important;
+    background: transparent !important;
+  }
+
+  /* Forzar al contenedor del reporte a ocupar el ancho completo sin barras de scroll */
+  .caja-page #print-preview-container {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+  }
+
+  /* Asegurar formato de tabla y firmas en el reporte */
+  .caja-page .report-print-sheet {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .caja-page .report-print-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    border-bottom: 2px solid #000000 !important;
+    padding-bottom: 1rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .caja-page .report-section-title {
+    font-size: 1.15rem !important;
+    font-weight: bold !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
+    border-bottom: 1px solid #cbd5e1 !important;
+    padding-bottom: 0.25rem !important;
+  }
+
+  .caja-page .report-table {
+    display: table !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .caja-page .report-table tr {
+    display: table-row !important;
+  }
+
+  .caja-page .report-table th,
+  .caja-page .report-table td {
+    display: table-cell !important;
+    padding: 0.5rem !important;
+    text-align: left !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+
+  .caja-page .report-columns-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 2rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .caja-page .report-signatures {
+    display: flex !important;
+    justify-content: space-between !important;
+    margin-top: 3.5rem !important;
+  }
+
+  .caja-page .signature-line {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 40% !important;
+  }
+}

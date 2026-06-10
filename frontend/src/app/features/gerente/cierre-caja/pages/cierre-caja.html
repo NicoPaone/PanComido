@@ -1,0 +1,622 @@
+<main class="caja-page">
+  <!-- Definición del gradiente para el anillo de progreso visual de ventas -->
+  <svg width="0" height="0" style="position: absolute; pointer-events: none;" aria-hidden="true">
+    <defs>
+      <linearGradient id="sales-progress-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#a94f52" />
+        <stop offset="100%" stop-color="#cf7779" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <header class="caja-header">
+    <div>
+      <p class="eyebrow">Gerencia</p>
+      <h1>Cierre de caja</h1>
+      <p class="subtitle">{{ state.fechaTurno }} · {{ state.turnoSeleccionado().nombre }} · {{ state.turnoSeleccionado().horario }}</p>
+    </div>
+
+    <div class="header-actions">
+      <button type="button" class="ghost-action" (click)="logout()">
+        <span class="material-symbols-outlined" aria-hidden="true">logout</span>
+        Cerrar sesión
+      </button>
+      <div class="status-pill" [class.warning]="state.diferenciaEfectivo() !== 0" [class.locked]="state.cierreConfirmado()">
+        <span class="material-symbols-outlined" aria-hidden="true">
+          {{ state.cierreConfirmado() ? 'lock' : state.diferenciaEfectivo() === 0 ? 'check_circle' : 'error' }}
+        </span>
+        {{ state.cierreConfirmado() ? 'Cierre confirmado' : state.estadoCaja() }}
+      </div>
+    </div>
+  </header>
+
+  <section class="turno-toolbar" aria-label="Selector de turno">
+    <div class="turno-switch" role="group" aria-label="Turno a cerrar">
+      @for (turno of state.turnos; track turno.id) {
+        <button
+          type="button"
+          [class.active]="state.turnoSeleccionadoId() === turno.id"
+          [disabled]="state.cierreConfirmado()"
+          (click)="state.seleccionarTurno(turno.id)">
+          <span>{{ turno.nombre }}</span>
+          <small>{{ turno.horario }}</small>
+        </button>
+      }
+    </div>
+    <p class="toolbar-note">Elegí la franja horaria para revisar sus cobros y cerrar el turno correcto.</p>
+  </section>
+
+  <section class="flow-steps" aria-label="Progreso del cierre">
+    @for (paso of state.pasosCierre; track paso.id) {
+      <div class="flow-step" 
+        [class.active]="state.pasoActual() === paso.id" 
+        [class.done]="esPasoCompletado(paso.id)">
+        <span class="material-symbols-outlined" aria-hidden="true">
+          {{ esPasoCompletado(paso.id) ? 'check_circle' : paso.icono }}
+        </span>
+        <div>
+          <strong>{{ paso.label }}</strong>
+          <small>{{ esPasoCompletado(paso.id) ? 'Completado' : paso.detalle }}</small>
+        </div>
+      </div>
+    }
+  </section>
+
+  <section class="hero-panel" aria-label="Resumen financiero del cierre">
+    <div class="hero-stack">
+      <article class="total-card">
+        <div class="total-card-info">
+          <span class="card-label">Ventas totales del turno</span>
+          <div class="total-amount-wrapper">
+            <strong>{{ state.totalRecaudado() | arsCurrency }}</strong>
+            <small>{{ state.totalOperaciones() }} cobros registrados</small>
+          </div>
+          <div class="total-foot">
+            <span>Gerente</span>
+            <b>{{ state.gerente }}</b>
+          </div>
+        </div>
+
+        <div class="total-card-visual" aria-hidden="true">
+          <div class="sales-progress-ring">
+            <svg class="progress-ring-svg" width="90" height="90">
+              <circle class="progress-ring-bg" cx="45" cy="45" r="38" />
+              <circle class="progress-ring-bar" cx="45" cy="45" r="38" [style.strokeDashoffset]="progressStrokeOffset()" />
+            </svg>
+            <div class="progress-ring-label">
+              <span class="percentage">{{ progressPercentage() }}%</span>
+              <small>de la meta</small>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="metric-card horizontal-metric">
+        <div class="metric-left">
+          <span class="material-symbols-outlined" aria-hidden="true">receipt_long</span>
+          <span class="metric-title">Comandas procesadas</span>
+        </div>
+        <div class="metric-right">
+          <strong>{{ state.resumenTurno.comandasProcesadas }}</strong>
+        </div>
+      </article>
+    </div>
+
+    <article class="cash-check">
+      <div class="cash-heading">
+        <div>
+          <span class="card-label">Caja física</span>
+          <h2>{{ state.efectivoContado() | arsCurrency }}</h2>
+          <small>Efectivo esperado: {{ state.efectivoEsperado() | arsCurrency }}</small>
+        </div>
+        <span class="material-symbols-outlined icon-display" aria-hidden="true">point_of_sale</span>
+      </div>
+
+      <div class="cash-values">
+        <div>
+          <span>Esperado</span>
+          <strong>{{ state.efectivoEsperado() | arsCurrency }}</strong>
+        </div>
+        <label class="cash-input">
+          Contado
+          <input
+            type="number"
+            inputmode="numeric"
+            min="0"
+            [disabled]="state.cierreConfirmado()"
+            [ngModel]="state.efectivoContado()"
+            (ngModelChange)="state.setEfectivoContado($event)">
+        </label>
+      </div>
+
+      <label class="observation-field" 
+        [class.required]="state.requiereObservacion()"
+        [class.invalid]="state.requiereObservacion() && state.observacion().trim().length < 8">
+        <div class="field-label-wrapper">
+          <span>Observación de cierre</span>
+          @if (state.requiereObservacion()) {
+            <span class="required-badge">Obligatorio</span>
+          }
+        </div>
+        <textarea
+          rows="3"
+          [disabled]="state.cierreConfirmado()"
+          [ngModel]="state.observacion()"
+          (ngModelChange)="state.setObservacion($event)"
+          placeholder="Describir motivo detallado del descuadre en caja..."></textarea>
+        @if (state.requiereObservacion()) {
+          <span class="char-counter" [class.valid]="state.observacion().trim().length >= 8">
+            {{ state.observacion().trim().length }}/8 caracteres mínimos
+          </span>
+        }
+      </label>
+
+      <div class="difference-box" [class.positive]="state.diferenciaEfectivo() > 0" [class.negative]="state.diferenciaEfectivo() < 0">
+        <div class="diff-info">
+          <span class="material-symbols-outlined" aria-hidden="true">
+            {{ state.diferenciaEfectivo() === 0 ? 'check_circle' : state.diferenciaEfectivo() > 0 ? 'trending_up' : 'trending_down' }}
+          </span>
+          <span>{{ state.estadoCaja() }} de efectivo</span>
+        </div>
+        <strong>
+          {{ state.diferenciaEfectivo() > 0 ? '+' : '' }}{{ state.diferenciaEfectivo() | arsCurrency }}
+        </strong>
+      </div>
+    </article>
+
+    <article class="confirm-card" [class.confirmed]="state.cierreConfirmado()">
+      @if (state.cierreConfirmado()) {
+        <div class="success-state">
+          <span class="material-symbols-outlined success-icon" aria-hidden="true">check_circle</span>
+          <h3>Cierre completado</h3>
+          <p>La información del turno ha sido guardada en modo de solo lectura.</p>
+          <button type="button" class="primary-action pdf-download-btn" (click)="modalPdfPreview.abrir()">
+            <span class="material-symbols-outlined" aria-hidden="true">picture_as_pdf</span>
+            Descargar reporte PDF
+          </button>
+        </div>
+      } @else {
+        <div class="confirm-card-content">
+          <span class="card-label">Confirmación</span>
+          <h2>Confirmar cierre del turno</h2>
+          <p>{{ state.confirmacionMensaje() }}</p>
+        </div>
+
+        <div class="confirm-checklist">
+          <!-- Item 1: Turno Seleccionado -->
+          <div class="checklist-item done">
+            <span class="material-symbols-outlined icon" aria-hidden="true">check_circle</span>
+            <div class="item-text">
+              <strong>Turno validado</strong>
+              <small>{{ state.turnoSeleccionado().nombre }}</small>
+            </div>
+          </div>
+
+          <!-- Item 2: Conciliación de Efectivo -->
+          @if (!state.requiereObservacion()) {
+            <div class="checklist-item done">
+              <span class="material-symbols-outlined icon" aria-hidden="true">check_circle</span>
+              <div class="item-text">
+                <strong>Caja conciliada</strong>
+                <small>Efectivo cuadra sin diferencias</small>
+              </div>
+            </div>
+          } @else if (state.observacion().trim().length >= 8) {
+            <div class="checklist-item done justified">
+              <span class="material-symbols-outlined icon" aria-hidden="true">verified</span>
+              <div class="item-text">
+                <strong>Diferencia justificada</strong>
+                <small>Observación de descuadre válida</small>
+              </div>
+            </div>
+          } @else {
+            <div class="checklist-item pending">
+              <span class="material-symbols-outlined icon" aria-hidden="true">pending</span>
+              <div class="item-text">
+                <strong>Justificación pendiente</strong>
+                <small>Se requiere motivo del descuadre</small>
+              </div>
+            </div>
+          }
+
+          <!-- Item 3: Transacciones del Turno -->
+          <div class="checklist-item done">
+            <span class="material-symbols-outlined icon" aria-hidden="true">receipt_long</span>
+            <div class="item-text">
+              <strong>Cobros registrados</strong>
+              <small>{{ state.totalOperaciones() }} operaciones a cerrar</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="confirm-card-actions">
+          <button type="button" class="primary-action" [disabled]="!state.puedeConfirmar()" (click)="modalConfirmar.abrir()">
+            <span class="material-symbols-outlined" aria-hidden="true">task_alt</span>
+            {{ state.confirmacionLabel() }}
+          </button>
+          <small>Luego se guardará como historial de cierre para el turno seleccionado.</small>
+        </div>
+      }
+    </article>
+  </section>
+
+  <section class="financial-grid" aria-label="Indicadores financieros">
+    <article class="metric-card horizontal-metric upcoming">
+      <div class="metric-left">
+        <span class="material-symbols-outlined" aria-hidden="true">volunteer_activism</span>
+        <span class="metric-title">Propinas</span>
+      </div>
+      <div class="metric-right">
+        <strong>{{ state.propinas() | arsCurrency }}</strong>
+        <em title="Pendiente de soporte en modelo de datos">Próximamente</em>
+      </div>
+    </article>
+
+    <article class="metric-card horizontal-metric">
+      <div class="metric-left">
+        <span class="material-symbols-outlined" aria-hidden="true">groups</span>
+        <span class="metric-title">Comensales</span>
+      </div>
+      <div class="metric-right">
+        <strong>{{ state.resumenTurno.comensales }}</strong>
+      </div>
+    </article>
+
+    <article class="metric-card horizontal-metric">
+      <div class="metric-left">
+        <span class="material-symbols-outlined" aria-hidden="true">timer</span>
+        <span class="metric-title">Promedio comandas</span>
+      </div>
+      <div class="metric-right">
+        <strong>{{ state.resumenTurno.tiempoPromedioComandas }}</strong>
+      </div>
+    </article>
+  </section>
+
+  <section class="payment-grid" aria-label="Medios de pago">
+    @for (medio of state.mediosPago(); track medio.id) {
+      <article class="payment-card" [class]="medio.tono">
+        <div class="payment-icon">
+          <span class="material-symbols-outlined" aria-hidden="true">{{ medio.icono }}</span>
+        </div>
+        <div class="payment-copy">
+          <span>{{ medio.nombre }}</span>
+          <strong>{{ medio.esperado | arsCurrency }}</strong>
+          <small>{{ medio.operaciones }} cobros · {{ medio.detalle }}</small>
+        </div>
+        <div class="payment-meter" aria-hidden="true">
+          <span [style.width.%]="porcentajeMedio(medio.esperado)"></span>
+        </div>
+      </article>
+    }
+  </section>
+
+  <div class="section-title">
+    <div>
+      <span class="card-label">Resumen operativo del turno</span>
+      <h2>Producción, consumo y satisfacción</h2>
+    </div>
+    <p>Indicadores complementarios para revisar el rendimiento de la jornada.</p>
+  </div>
+
+  <section class="history-panel panel-card" aria-label="Historial de cierres">
+    <div class="panel-heading">
+      <h2>Historial de cierres</h2>
+      <span>Fecha · Turno · Total · Diferencia</span>
+    </div>
+    <div class="history-table">
+      @for (cierre of state.historialCierres; track cierre.fecha + cierre.turno) {
+        <div class="history-row" [class.negative]="cierre.diferencia < 0" [class.positive]="cierre.diferencia > 0">
+          <span>{{ cierre.fecha }}</span>
+          <strong>{{ cierre.turno }}</strong>
+          <b>{{ cierre.total | arsCurrency }}</b>
+          <em>{{ cierre.diferencia > 0 ? '+' : '' }}{{ cierre.diferencia | arsCurrency }}</em>
+          <small class="history-status">{{ cierre.estado }}</small>
+          <button type="button" class="icon-action" (click)="verDetalleCierre(cierre, modalDetalle)" title="Ver detalle" aria-label="Ver detalle">
+            <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+          </button>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="detail-grid">
+    <article class="panel-card ranking-panel shift-report">
+      <div class="panel-heading">
+        <h2>Platos más vendidos</h2>
+        <span class="shift-badge gold">Shift Top</span>
+      </div>
+      <div class="shift-list">
+        @for (plato of state.platosMasVendidos; track plato.nombre; let index = $index) {
+          <div class="shift-row top-dish">
+            <span class="shift-rank">#{{ index + 1 }}</span>
+            <div class="shift-info">
+              <strong>{{ plato.nombre }}</strong>
+              <small class="shift-qty-label">{{ plato.valor }} unidades vendidas</small>
+            </div>
+            <div class="shift-connector"></div>
+            <div class="shift-financial">
+              <strong>{{ plato.detalle }}</strong>
+            </div>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="panel-card ranking-panel quiet shift-report">
+      <div class="panel-heading">
+        <h2>Platos menos vendidos</h2>
+        <span class="shift-badge review">Revisión</span>
+      </div>
+      <div class="shift-list">
+        @for (plato of state.platosMenosVendidos; track plato.nombre; let index = $index) {
+          <div class="shift-row low-dish">
+            <span class="shift-rank">#{{ index + 1 }}</span>
+            <div class="shift-info">
+              <strong>{{ plato.nombre }}</strong>
+              <small class="shift-qty-label">{{ plato.valor }} unidades vendidas</small>
+            </div>
+            <div class="shift-connector"></div>
+            <div class="shift-financial">
+              <strong>{{ plato.detalle }}</strong>
+            </div>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="panel-card shift-report">
+      <div class="panel-heading">
+        <h2>Insumos más usados</h2>
+        <span class="shift-badge inventory">Consumo</span>
+      </div>
+      <div class="shift-list">
+        @for (insumo of state.insumosMasUsados; track insumo.nombre) {
+          <div class="shift-row supply-row-modern">
+            <span class="shift-rank supply-icon-circle">
+              <span class="material-symbols-outlined" aria-hidden="true">kitchen</span>
+            </span>
+            <div class="shift-info">
+              <strong>{{ insumo.nombre }}</strong>
+              <small class="shift-qty-label">Consumo de la jornada</small>
+            </div>
+            <div class="shift-connector"></div>
+            <div class="shift-financial supply-qty">
+              <strong>{{ insumo.valor }} <small class="supply-unit">{{ insumo.detalle.replace(' usados', '') }}</small></strong>
+            </div>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="panel-card survey-panel upcoming-panel">
+      <div class="panel-heading">
+        <h2>Encuestas a comensales</h2>
+        <span title="Pendiente de soporte en modelo de datos">Próximamente</span>
+      </div>
+      <p class="upcoming-note">Pendiente de soporte en modelo de datos. Se deja visible para validar alcance.</p>
+      @for (encuesta of state.encuestas; track encuesta.label) {
+        <div class="survey-row">
+          <div>
+            <strong>{{ encuesta.label }}</strong>
+            <small>{{ encuesta.detalle }}</small>
+          </div>
+          <span>{{ encuesta.valor }}%</span>
+          <div class="survey-meter" aria-hidden="true">
+            <i [style.width.%]="encuesta.valor"></i>
+          </div>
+        </div>
+      }
+    </article>
+  </section>
+
+  <!-- MODAL DE DETALLE DE CIERRE (HISTORIAL) -->
+  <app-modal #modalDetalle [titulo]="'Detalle de cierre de caja'" [maxWidth]="480">
+    @if (cierreSeleccionado(); as cierre) {
+      <div class="modal-cierre-content">
+        <div class="modal-cierre-summary">
+          <div class="summary-badge" [class]="cierre.diferencia < 0 ? 'negative' : cierre.diferencia > 0 ? 'positive' : 'neutral'">
+            <span class="material-symbols-outlined" aria-hidden="true">
+              {{ cierre.diferencia === 0 ? 'check_circle' : cierre.diferencia > 0 ? 'trending_up' : 'trending_down' }}
+            </span>
+            <strong>{{ cierre.estado }}</strong>
+          </div>
+          <h2>{{ cierre.total | arsCurrency }}</h2>
+          <p>Total de ventas del turno</p>
+        </div>
+
+        <div class="modal-cierre-details">
+          <div class="detail-item">
+            <span>Fecha de cierre</span>
+            <strong>{{ cierre.fecha }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>Turno correspondiente</span>
+            <strong>{{ cierre.turno }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>Diferencia calculada</span>
+            <strong [class.negative]="cierre.diferencia < 0" [class.positive]="cierre.diferencia > 0">
+              {{ cierre.diferencia > 0 ? '+' : '' }}{{ cierre.diferencia | arsCurrency }}
+            </strong>
+          </div>
+          <div class="detail-item">
+            <span>Responsable</span>
+            <strong>Carlos López (Gerente)</strong>
+          </div>
+        </div>
+        <button type="button" class="primary-action" (click)="modalDetalle.cerrar()">
+          Cerrar ventana
+        </button>
+      </div>
+    }
+  </app-modal>
+
+  <!-- MODAL DE DOBLE CONFIRMACIÓN DE SEGURIDAD -->
+  <app-modal #modalConfirmar [titulo]="'Confirmar cierre de turno'" [maxWidth]="480">
+    <div class="confirm-modal-content">
+      <div class="warning-banner">
+        <span class="material-symbols-outlined" aria-hidden="true">warning</span>
+        <div>
+          <strong>Acción irreversible</strong>
+          <p>Una vez confirmado, el turno quedará bloqueado y la información no podrá ser modificada.</p>
+        </div>
+      </div>
+
+      <div class="confirm-summary-box">
+        <div class="summary-row-item">
+          <span>Turno a cerrar</span>
+          <strong>{{ state.turnoSeleccionado().nombre }}</strong>
+        </div>
+        <div class="summary-row-item">
+          <span>Ventas totales</span>
+          <strong>{{ state.totalRecaudado() | arsCurrency }}</strong>
+        </div>
+        <div class="summary-row-item">
+          <span>Efectivo contado</span>
+          <strong>{{ state.efectivoContado() | arsCurrency }}</strong>
+        </div>
+        <div class="summary-row-item">
+          <span>Diferencia</span>
+          <strong [class.negative]="state.diferenciaEfectivo() < 0" [class.positive]="state.diferenciaEfectivo() > 0">
+            {{ state.diferenciaEfectivo() > 0 ? '+' : '' }}{{ state.diferenciaEfectivo() | arsCurrency }}
+          </strong>
+        </div>
+      </div>
+
+      <div class="pdf-option-checkbox">
+        <label class="checkbox-container">
+          <input type="checkbox" [checked]="descargarPdfAlConfirmar()" (change)="togglePdfOption()">
+          <span>Descargar reporte del día automáticamente</span>
+        </label>
+      </div>
+
+      <div class="modal-actions-grid">
+        <button type="button" class="ghost-action" (click)="modalConfirmar.cerrar()">
+          Cancelar
+        </button>
+        <button type="button" class="primary-action" (click)="ejecutarCierreConConfirmacion(modalConfirmar, modalPdfPreview)">
+          Confirmar y cerrar turno
+        </button>
+      </div>
+    </div>
+  </app-modal>
+
+  <!-- MODAL DE VISTA PREVIA PDF (IMPRESIÓN / GUARDADO) -->
+  <app-modal #modalPdfPreview [titulo]="'Vista previa de Reporte PDF'" [maxWidth]="700">
+    <div class="pdf-preview-modal-content">
+      <p class="preview-instructions">Revisá el formato y contenido del reporte de cierre antes de guardarlo en PDF o imprimirlo.</p>
+      
+      <!-- Contenedor del Reporte Imprimible -->
+      <div id="print-preview-container" class="report-print-sheet">
+        <div class="report-print-header">
+          <div class="brand-info">
+            <h2>PanComido</h2>
+            <span>Gestión de Gerencia</span>
+          </div>
+          <div class="report-meta">
+            <h1>REPORTE DE CIERRE DE CAJA</h1>
+            <span>Fecha: <strong>{{ state.fechaTurno }}</strong></span>
+            <span>Turno: <strong>{{ state.turnoSeleccionado().nombre }}</strong></span>
+          </div>
+        </div>
+
+        <div class="report-section-title">Resumen de Caja</div>
+        
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Concepto</th>
+              <th>Esperado</th>
+              <th>Contado</th>
+              <th>Diferencia</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Efectivo (Caja Física)</td>
+              <td>{{ state.efectivoEsperado() | arsCurrency }}</td>
+              <td>{{ state.efectivoContado() | arsCurrency }}</td>
+              <td [class.red-text]="state.diferenciaEfectivo() !== 0">
+                {{ state.diferenciaEfectivo() > 0 ? '+' : '' }}{{ state.diferenciaEfectivo() | arsCurrency }}
+              </td>
+            </tr>
+            <tr>
+              <td>Ventas Totales</td>
+              <td>{{ state.totalRecaudado() | arsCurrency }}</td>
+              <td>-</td>
+              <td>-</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="report-section-title">Desglose de Cobros</div>
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Medio de Pago</th>
+              <th>Transacciones</th>
+              <th>Monto Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (medio of state.mediosPago(); track medio.id) {
+              <tr>
+                <td>{{ medio.nombre }}</td>
+                <td>{{ medio.operaciones }} cobros</td>
+                <td>{{ medio.esperado | arsCurrency }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        @if (state.requiereObservacion()) {
+          <div class="report-section-title">Justificación de Diferencia</div>
+          <div class="report-observation-text">
+            {{ state.observacion().trim() || 'Sin observaciones registradas.' }}
+          </div>
+        }
+
+        <div class="report-section-title">Rendimiento del Turno</div>
+        <div class="report-columns-grid">
+          <div>
+            <strong>Platos más vendidos</strong>
+            <ul>
+              @for (plato of state.platosMasVendidos; track plato.nombre) {
+                <li>{{ plato.nombre }} ({{ plato.valor }} uds. · {{ plato.detalle }})</li>
+              }
+            </ul>
+          </div>
+          <div>
+            <strong>Insumos más usados</strong>
+            <ul>
+              @for (insumo of state.insumosMasUsados; track insumo.nombre) {
+                <li>{{ insumo.nombre }}: {{ insumo.valor }} {{ insumo.detalle.replace(' usados', '') }}</li>
+              }
+            </ul>
+          </div>
+        </div>
+
+        <div class="report-signatures">
+          <div class="signature-line">
+            <span>Firma del Gerente</span>
+            <strong>Carlos López</strong>
+          </div>
+          <div class="signature-line">
+            <span>Control de Caja</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions-grid">
+        <button type="button" class="ghost-action" (click)="modalPdfPreview.cerrar()">
+          Cerrar vista previa
+        </button>
+        <button type="button" class="primary-action" (click)="imprimirReporte()">
+          <span class="material-symbols-outlined" aria-hidden="true">print</span>
+          Guardar PDF / Imprimir
+        </button>
+      </div>
+    </div>
+  </app-modal>
+</main>
