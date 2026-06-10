@@ -1,16 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso;
 using PanComido.Dominio.Entidades;
 using PanComido.Presentacion.DTOs.MetodoDePago;
 using PanComido.Presentacion.DTOs.Restaurante;
 using PanComido.Presentacion.DTOs.TurnoLaboral;
 using PanComido.Presentacion.Mappers;
-using PanComido.Presentacion.SesionMock;
+using PanComido.Presentacion.Sesion;
 
 namespace PanComido.Presentacion.Controllers
 {
     [Route("configuracion")]
     [ApiController]
+    [Authorize(Roles = "Gerente")]
     public class ConfiguracionController : ControllerBase
     {
         private readonly ObtenerMetodosDePagoCasoDeUso _obtenerMetodosDePagoCasoDeUso;

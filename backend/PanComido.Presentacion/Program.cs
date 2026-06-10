@@ -18,9 +18,9 @@ using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.PagoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
-using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.CasosDeUso.UnidadMedidaCasosDeUso;
+using PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Repositorios.IA;
 using PanComido.Dominio.Interfaces.Servicios;
@@ -40,9 +40,6 @@ using PanComido.Presentacion.Filtros;
 using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Servicios;
-using PanComido.Presentacion.SesionMock;
-using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
-using PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso;
 using PanComido.Dominio.Interfaces;
 
 
