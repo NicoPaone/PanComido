@@ -18,9 +18,9 @@ using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.PagoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
-using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.CasosDeUso.UnidadMedidaCasosDeUso;
+using PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Repositorios.IA;
 using PanComido.Dominio.Interfaces.Servicios;
@@ -40,6 +40,8 @@ using PanComido.Presentacion.Filtros;
 using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Servicios;
+using PanComido.Dominio.Interfaces;
+
 using PanComido.Dominio.CasosDeUso.Dashboard;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -131,6 +133,9 @@ builder.Services.AddScoped<FormularioParaCrearPlatoEntityMapper>();
 builder.Services.AddScoped<ArticuloEntityMapper>();
 builder.Services.AddScoped<PlatoEntityMapper>();
 builder.Services.AddScoped<LlamadoEntityMapper>();
+builder.Services.AddScoped<MetodoDePagoEntityMapper>();
+builder.Services.AddScoped<RestauranteEntityMapper>();
+builder.Services.AddScoped<TurnoLaboralEntityMapper>();
 
 
 
@@ -151,6 +156,9 @@ builder.Services.AddScoped<CartaMapper>();
 builder.Services.AddScoped<FormularioParaCrearPlatoMapper>();
 builder.Services.AddScoped<PlatoMapper>();
 builder.Services.AddScoped<ArticuloCartaMapper>();
+builder.Services.AddScoped<MetodoDePagoMapper>();
+builder.Services.AddScoped<RestauranteMapper>();
+builder.Services.AddScoped<TurnoLaboralMapper>();
 builder.Services.AddScoped<DashboardMapper>();
 
 builder.Services.AddScoped<ArticuloMapper>();
@@ -172,6 +180,9 @@ builder.Services.AddScoped<IMozoRepositorio, MozoRepositorio>();
 builder.Services.AddScoped<IFormularioPlatoRepositorio, FormularioPlatoRepositorio>();
 builder.Services.AddScoped<IPlatoRepositorio, PlatoRepositorio>();
 builder.Services.AddScoped<IPagoRepositorio, PagoRepositorio>();
+builder.Services.AddScoped<IMetodoDePagoRepositorio, MetodoDePagoRepositorio>();
+builder.Services.AddScoped<IRestauranteRepositorio, RestauranteRepositorio>();
+builder.Services.AddScoped<ITurnoLaboralRepositorio, TurnoLaboralRepositorio>();
 
 
 
@@ -222,6 +233,12 @@ builder.Services.AddScoped<ModificarProveedorCasoDeUso>();
 builder.Services.AddScoped<EliminarProveedorCasoDeuso>();
 builder.Services.AddScoped<ObtenerProveedorCasoDeUso>();
 builder.Services.AddScoped<ObtenerVencimientosYCriticidadDashboardCasoDeUso>();
+builder.Services.AddScoped<ObtenerMetodosDePagoCasoDeUso>();
+builder.Services.AddScoped<ActualizarMetodosDePagoCasoDeUso>();
+builder.Services.AddScoped<ObtenerDatosDelLocalCasoDeUso>();
+builder.Services.AddScoped<ActualizarDatosDelLocalCasoDeUso>();
+builder.Services.AddScoped<ObtenerTurnosLaboralesCasoDeUso>();
+builder.Services.AddScoped<ActualizarTurnosLaboralesCasoDeUso>();
 
 
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
@@ -232,6 +249,7 @@ builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticu
 builder.Services.AddScoped<ISugerenciaPlatosIAServicio, GeminiSugerenciaPlatosIAServicio >();
 builder.Services.AddScoped<IGestionStockServicio, GestionStockServicio>();
 builder.Services.AddScoped<IVencimientosProximosInsumosServicio, VencimientosProximosInsumosServicio>();
+builder.Services.AddScoped<ICantidadDeMesasServicio, CantidadDeMesasServicio>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 

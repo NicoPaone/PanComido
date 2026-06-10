@@ -22,6 +22,9 @@ public partial class TurnoLaboral
     [Column("horario_laboral_fin")]
     public TimeOnly HorarioLaboralFin { get; set; }
 
+    [Column("es_nocturno")]
+    public bool EsNocturno { get; set; }
+
     [InverseProperty("TurnoLaboral")]
     public virtual ICollection<Cierre> Cierres { get; set; } = new List<Cierre>();
 
