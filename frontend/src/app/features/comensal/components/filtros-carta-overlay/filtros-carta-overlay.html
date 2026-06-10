@@ -132,12 +132,7 @@
 
         @if (seccionRestriccionesAbierta()) {
         <div class="subcategorias-list">
-          <label class="checkbox-item">
-            <input type="checkbox" [checked]="cartaState.tiposSeleccionados().includes('Restriccion')"
-              (change)="cartaState.toggleTipoPlato('Restriccion')">
-            <span class="checkbox-label">Todas las restricciones</span>
-            
-          </label>
+          
           <label class="checkbox-item">
   <input
     type="checkbox"

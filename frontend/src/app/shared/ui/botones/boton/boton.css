@@ -58,6 +58,7 @@
 .btn-danger {
   background-color: var(--status-danger);
   color: white;
+  width: 100%;
 }
 
 .btn-teal {
@@ -68,6 +69,7 @@
 .btn-warning {
   background-color: var(--primary-yellow, #ffea00);
   color: var(--gray-800, #333);
+  width: 100%;
 }
 
 .btn-success {
