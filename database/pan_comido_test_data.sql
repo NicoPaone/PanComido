@@ -37,9 +37,9 @@ INSERT INTO carta (id, restaurante_id) VALUES
 -- TURNOS LABORALES
 -- ============================================================
 
-INSERT INTO turno_laboral (id, restaurante_id, horario_laboral_inicio, horario_laboral_fin) VALUES
-    (1, 1, '08:00', '16:00'),
-    (2, 1, '16:00', '00:00');
+INSERT INTO turno_laboral (id, restaurante_id, horario_laboral_inicio, horario_laboral_fin, es_nocturno) VALUES
+    (1, 1, '08:00', '16:00', FALSE),
+    (2, 1, '16:00', '00:00', TRUE);
 
 -- ============================================================
 -- EMPLEADOS Y ROLES
