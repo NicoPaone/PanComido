@@ -19,7 +19,7 @@
   --comensal-yellow-dark: #f9a825;
   
   /* Colores adicionales */
-  --gray-50: #f9fafb;
+  --gray-50: #f0f7f9; /* Soft teal tint for the whole app */
   --gray-100: #f3f4f6;
   --gray-200: #e5e7eb;
   --gray-300: #d1d5db;
@@ -84,11 +84,9 @@ body {
 
 .panel-card,
 .info-card,
-.nested-section,
 .predictive-item,
 .predictive-empty,
-.proveedor-form .form-control,
-.panel-section {
+.proveedor-form .form-control {
   background: #ffffff !important;
 }
 
@@ -102,8 +100,7 @@ body {
 
 /* Ensure panel cards remain white on hover */
 .panel-card:hover,
-.info-card:hover,
-.nested-section:hover {
+.info-card:hover {
   background: #ffffff !important;
 }
 
@@ -124,3 +121,4 @@ button {
 a {
   font-family: var(--font-family);
 }
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }

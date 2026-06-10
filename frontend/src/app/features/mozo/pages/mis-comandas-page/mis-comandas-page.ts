@@ -1,18 +1,22 @@
-import { Component, effect, inject, signal } from '@angular/core';
-import { Comanda } from '../../../../core/models/comanda/comanda';
+import {  Component, effect, inject, signal , ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import { Comanda } from '../../../../core/models/domain/comanda';
 import { MozoComandaState } from '../../services/mozo-comanda-state';
 import { ComandaMozoCard } from "../../components/comanda-mozo-card/comanda-mozo-card";
 import { ComandaMozoDetalle } from "../../components/comanda-mozo-detalle/comanda-mozo-detalle";
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-mis-comandas-page',
   imports: [ComandaMozoCard, ComandaMozoDetalle],
   templateUrl: './mis-comandas-page.html',
   styleUrl: './mis-comandas-page.css',
 })
-export class MisComandasPage { 
+export class MisComandasPage implements OnDestroy {
+  ngOnDestroy() { this.state.desconectarHub(); }
   
   state = inject(MozoComandaState);
+  auth = inject(AuthService);
   comandaSeleccionada = signal<Comanda | null>(null);
 
   constructor() {
@@ -26,10 +30,10 @@ export class MisComandasPage {
     });
   }
 
- ngOnInit(): void {
+  ngOnInit(): void {
     this.state.cargarComandas();
-    void this.state.conectarHub(1, 3);
-}
+    void this.state.conectarHub(this.auth.restauranteId, this.auth.empleadoId);
+  }
 
   abrirDetalle(comandaId: number): void {
     const comanda = this.state.comandas().find(c => c.id === comandaId);

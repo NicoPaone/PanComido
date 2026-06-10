@@ -3,7 +3,6 @@
 -- Grupo 5 - "No se deJava"
 -- Ejecutar DESPUÉS del script DDL
 -- ============================================================
-
 BEGIN;
 
 INSERT INTO estado_mesa (descripcion) VALUES

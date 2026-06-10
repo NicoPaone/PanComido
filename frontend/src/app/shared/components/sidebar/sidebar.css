@@ -10,7 +10,8 @@
   width: 280px;
   height: 100vh;
   background-color: #ffffff;
-  border-right: 1px solid var(--gray-200, #e5e7eb);
+  border-right: none;
+  box-shadow: 4px 0 24px rgba(15, 23, 42, 0.04);
   transition: width 0.3s ease;
   position: fixed;
   left: 0;
@@ -35,6 +36,11 @@
   justify-content: center;
 }
 
+.sidebar.collapsed .menu-item {
+  margin: 0.25rem 0.5rem;
+  border-radius: 12px;
+}
+
 .sidebar.collapsed .menu-item,
 .sidebar.collapsed .menu-item a {
   justify-content: center;
@@ -43,7 +49,16 @@
 }
 
 .sidebar.collapsed .user-profile {
-  justify-content: center;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--gray-50, #f9fafb);
+  padding: 0.6rem;
+  border-radius: 12px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.user-profile:hover {
+  background: var(--gray-100, #f3f4f6);
 }
 
 /* ===== HEADER ===== */
@@ -51,13 +66,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2.5rem 1rem;
-  border-bottom: 1px solid var(--gray-200, #e5e7eb);
-  min-height: 120px;
+  padding: 1.5rem 1rem 1rem; /* Reduced top padding, even less bottom padding */
+  border-bottom: none; /* Removed the rigid line for a softer look */
+  min-height: 80px; /* Reduced from 120px */
 }
 
 .logo-full {
-  height: 80px;
+  height: 55px; /* Reduced from 80px so it doesn't take up too much vertical space */
   width: auto;
   object-fit: contain;
 }
@@ -97,11 +112,13 @@
 .menu-item {
   display: flex;
   align-items: center;
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 1rem;
+  margin: 0.25rem 1rem;
+  border-radius: 12px;
   color: var(--gray-800, #1f2937);
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   font-weight: 700;
 }
@@ -114,7 +131,7 @@
 .menu-item.active {
   background-color: rgba(216, 8, 28, 0.08);
   color: var(--primary-red, #d8081c);
-  border-left: 4px solid var(--primary-red, #d8081c);
+  border-left: none;
 }
 
 .menu-item.active .menu-icon {
@@ -151,21 +168,24 @@
 
 /* ===== SUBMENÚ ===== */
 .submenu {
-  padding-left: 2.5rem;
-  border-left: 2px solid var(--primary-red, #d8081c);
-  margin-left: 2rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--gray-100, #f3f4f6);
+  margin-left: 2.75rem; /* Exact center of the 24px icon (1rem margin + 1rem padding + 12px) */
   margin-top: 0.25rem;
   margin-bottom: 0.5rem;
+  position: relative;
 }
 
 .submenu-item {
   display: block;
-  padding: 0.75rem 1rem;
-  color: var(--gray-700, #374151);
+  padding: 0.5rem 0.8rem;
+  margin: 0.15rem 1rem 0.15rem 0;
+  border-radius: 8px;
+  color: var(--gray-600, #4b5563);
   text-decoration: none;
-  font-size: 0.9375rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
 }
 
@@ -176,8 +196,32 @@
 
 .submenu-item.active {
   color: var(--primary-red, #d8081c);
-  font-weight: 600;
-  background-color: rgba(216, 8, 28, 0.06);
+  font-weight: 700;
+  background-color: var(--gray-50, #f9fafb);
+}
+.submenu-item.active::before {
+  content: '';
+  position: absolute;
+  left: calc(-1rem - 1px); /* Exactly centers the dot on the 2px border */
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--primary-red, #d8081c);
+  box-shadow: 0 0 0 3px rgba(216, 8, 28, 0.15);
+}
+.submenu-item.active::before {
+  content: '';
+  position: absolute;
+  left: -1rem;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--primary-red, #d8081c);
+  box-shadow: 0 0 0 4px rgba(216, 8, 28, 0.1);
 }
 
 .submenu-label {
@@ -186,7 +230,7 @@
 
 /* ===== FOOTER (PERFIL) ===== */
 .sidebar-footer {
-  border-top: 1px solid #e5e7eb;
+  border-top: none;
   padding: 1rem;
   margin-top: auto;
 }
@@ -195,6 +239,13 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  background: var(--gray-50, #f9fafb);
+  padding: 0.6rem;
+  border-radius: 12px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.user-profile:hover {
+  background: var(--gray-100, #f3f4f6);
 }
 
 .avatar {
@@ -259,4 +310,29 @@
     width: 80px;
     transform: translateX(0);
   }
+}
+
+/* Fix avatar overflow in collapsed state */
+.sidebar.collapsed .sidebar-footer {
+  padding: 0.75rem;
+}
+.sidebar.collapsed .user-profile {
+  padding: 0.5rem;
+}
+.sidebar.collapsed .avatar {
+  width: 36px;
+  height: 36px;
+  font-size: 0.85rem;
+}
+
+/* Separadores lógicos */
+.menu-divider {
+  height: 1px;
+  background-color: var(--gray-200, #e5e7eb);
+  margin: 0.5rem 1.5rem;
+  opacity: 0.6;
+}
+
+.sidebar.collapsed .menu-divider {
+  margin: 0.5rem 1rem;
 }

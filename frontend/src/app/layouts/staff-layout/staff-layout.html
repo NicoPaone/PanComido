@@ -1,7 +1,11 @@
 
 <div class="layout-wrapper" [class.sidebar-collapsed]="mainContentCollapsed()">
   
-  <app-sidebar></app-sidebar>
+  <app-sidebar 
+    [currentRole]="currentRole()" 
+    [userProfile]="userProfile()"
+    (onLogout)="logout()">
+  </app-sidebar>
 
   <main class="main-content">
     <router-outlet></router-outlet>

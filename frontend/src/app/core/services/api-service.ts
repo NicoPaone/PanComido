@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -16,15 +16,15 @@ export class ApiService {
     return this.http.get<T>(`${this.baseUrl}/${endpoint}`, { params });
   }
 
-  post<T>(endpoint: string, body:any, headers?:HttpHeaders): Observable<T>{
+  post<T>(endpoint: string, body: unknown, headers?:HttpHeaders): Observable<T>{
     return this.http.post<T>(`${this.baseUrl}/${endpoint}`, body, { headers });
   }
   
-  put<T>(endpoint: string, body?: any): Observable<T> {
+  put<T>(endpoint: string, body?: unknown): Observable<T> {
     return this.http.put<T>(`${this.baseUrl}/${endpoint}`, body);
   }
   
-  patch<T>(endpoint: string, body?: any): Observable<T> {
+  patch<T>(endpoint: string, body?: unknown): Observable<T> {
     return this.http.patch<T>(`${this.baseUrl}/${endpoint}`, body);
   }
   

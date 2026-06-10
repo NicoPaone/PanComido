@@ -37,10 +37,7 @@ namespace PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso
             if (mozoId == 0)
                 throw new KeyNotFoundException("No se encontro un mozo asignado a esta mesa.");
             
-            if (mesaId == 0)
-                throw new KeyNotFoundException("No se encontro la mesa.");
-            
-            if (mesaId == null) throw new KeyNotFoundException("No se encontro la mesa.");
+            if (mesaObtenidaId == null) throw new KeyNotFoundException("No se encontro la mesa.");
 
  
             var llamado = new DOM.Llamado

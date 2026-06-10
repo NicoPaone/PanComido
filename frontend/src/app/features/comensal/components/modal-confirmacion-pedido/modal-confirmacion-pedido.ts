@@ -1,9 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, input, output, signal , ChangeDetectionStrategy} from '@angular/core';
 import { Router } from '@angular/router';
-import { ComandaStateService } from '../../services/comanda-state.service';
-import { ComandaClienteResponse } from '../../../../core/models/comanda-cliente-response';
+import { EstadoPedido } from '../../../../core/models/domain/comanda';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-modal-confirmacion-pedido',
   standalone: true,
   templateUrl: './modal-confirmacion-pedido.html',
@@ -11,30 +11,25 @@ import { ComandaClienteResponse } from '../../../../core/models/comanda-cliente-
 })
 export class ModalConfirmacionPedido {
   private router = inject(Router);
-  comandaState = inject(ComandaStateService);
+
+  cargando = input<boolean>(false);
+  error = input<string | null>(null);
+  estadoPedido = input<EstadoPedido | null>(null);
+
+  confirmar = output<void>();
 
   isVisible = signal(false);
-  estadoPedido = signal<ComandaClienteResponse | null>(null);
 
   mostrar(): void {
     this.isVisible.set(true);
-    this.confirmarPedidoYActualizarEstado();
+    this.confirmar.emit();
   }
 
-ocultar(): void {
+  ocultar(): void {
     const huboExito = this.estadoPedido() !== null;
     this.isVisible.set(false);
     if (huboExito) {
       this.router.navigate(['/comensal/estado-pedido']);
-    }
-  }
-
-  private async confirmarPedidoYActualizarEstado(): Promise<void> {
-    try {
-      const response = await this.comandaState.confirmarPedido();
-      this.estadoPedido.set(response);
-    } catch (error) {
-      console.error('Error en confirmación:', error);
     }
   }
 

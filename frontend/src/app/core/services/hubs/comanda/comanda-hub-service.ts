@@ -1,5 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { Comanda } from '../../../models/comanda/comanda';
+import { Comanda } from '../../../models/domain/comanda';
 import { SignalRConexionService } from '../base-hub-service';
 
 @Injectable({
@@ -41,6 +41,11 @@ export class ComandaHubService  {
   
   public detener():void{
     this.conexion.detener();
+  }
+
+  /** Remueve solo el listener de EsteComandaModificada — NO detiene el hub compartido */
+  public desconectarEscucha(): void {
+    this.conexion.hub.off("EstadoComandaModificada");
   }
  
 }

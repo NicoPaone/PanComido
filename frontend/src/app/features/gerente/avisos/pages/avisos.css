@@ -1,7 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
 .avisos-page {
   padding: 1rem 1.25rem 2rem;
   font-family: var(--font-family);
-  background: #f9fafb;
+  --font-secondary: 'Inter', sans-serif;
+  --glass-base: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.48);
+  --stock-tint: rgba(239, 68, 68, 0.08);
+  --expiry-tint: rgba(245, 158, 11, 0.09);
+  --ai-tint: rgba(139, 92, 246, 0.09);
 }
 
 .avisos-toast {
@@ -25,16 +32,18 @@
 
 /* Accordion */
 .accordion-section {
-  background: #ffffff;
+  background: var(--glass-base);
   border-radius: 12px;
-  border: 1px solid rgba(15,23,42,0.06);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.055);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   overflow: hidden;
   transition: all 0.2s ease;
 }
 
 .accordion-section.expanded {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.075);
 }
 
 .accordion-header {
@@ -50,8 +59,7 @@
 }
 
 .accordion-header:hover {
-  background: #f8fafc;
-}
+  }
 
 .accordion-header-left {
   display: flex;
@@ -70,8 +78,8 @@
   color: white;
 }
 
-.accordion-icon.stock { background: #A8041A; }
-.accordion-icon.vencimiento { background: #F7D627; color: #111; }
+.accordion-icon.stock { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+.accordion-icon.vencimiento { background: rgba(245, 158, 11, 0.15); color: #d97706; }
 
 .accordion-title {
   display: block;
@@ -88,10 +96,15 @@
 }
 
 .accordion-badge {
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 0.75rem;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .badge-stock { background: #fee2e2; color: #991b1b; }
@@ -105,8 +118,7 @@
 .accordion-body {
   padding: 0 20px 20px 20px;
   border-top: 1px solid rgba(15,23,42,0.06);
-  background: #f8fafc;
-}
+  }
 
 .accordion-empty {
   display: flex;
@@ -120,9 +132,9 @@
 
 /* List Items inside accordion */
 .avisos-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+  gap: 16px;
   margin-top: 16px;
   max-height: 460px;
   overflow-y: auto;
@@ -149,14 +161,43 @@
 
 .aviso-item {
   display: grid;
-  grid-template-columns: 48px 1fr auto;
-  gap: 16px;
-  align-items: center;
+  grid-template-columns: 48px 1fr;
+  grid-template-rows: auto auto;
+  gap: 12px 16px;
+  align-items: start;
   padding: 16px;
-  background: #ffffff;
-  border-radius: 10px;
-  border: 1px solid rgba(15,23,42,0.04);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  background: rgba(255, 255, 255, 0.76);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.045);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.aviso-item-icon {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.aviso-item-content {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.aviso-item-actions {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid rgba(15,23,42,0.06);
+  padding-top: 16px;
+  margin-top: 4px;
+}
+
+.aviso-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
 .aviso-item-icon {
@@ -169,8 +210,8 @@
   color: white;
 }
 
-.aviso-item-icon.tipo-stock { background: #A8041A; }
-.aviso-item-icon.tipo-vencimiento { background: #F7D627; color: #111; }
+.aviso-item-icon.tipo-stock { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+.aviso-item-icon.tipo-vencimiento { background: rgba(245, 158, 11, 0.15); color: #d97706; }
 
 .aviso-item-title {
   display: block;
@@ -183,6 +224,7 @@
   color: #475569;
   font-size: 0.9rem;
   margin-top: 2px;
+  font-family: var(--font-secondary);
 }
 
 .aviso-item-info {
@@ -190,6 +232,7 @@
   color: #94a3b8;
   font-size: 0.85rem;
   margin-top: 4px;
+  font-family: var(--font-secondary);
 }
 
 .aviso-item-actions {
@@ -205,11 +248,13 @@
 }
 
 .sugerencia-card {
-  background: #ffffff;
+  background: var(--glass-base);
   border-radius: 16px;
   padding: 24px;
-  border: 1px solid rgba(15,23,42,0.08);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.055);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   display: flex;
   flex-direction: column;
 }
@@ -237,8 +282,8 @@
 }
 
 .sugerencia-card-icon.ia {
-  background: #fdf4ff;
-  color: #a21caf;
+  background: rgba(139, 92, 246, 0.12);
+  color: #7c3aed;
 }
 
 .sugerencia-card-title {
@@ -260,6 +305,7 @@
   line-height: 1.5;
   margin-bottom: 24px;
   flex-grow: 1;
+  font-family: var(--font-secondary);
 }
 
 .sugerencia-proximamente {
@@ -340,12 +386,175 @@
 @media (max-width: 768px) {
   .aviso-item {
     grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
     text-align: center;
+    gap: 12px;
   }
   .aviso-item-icon {
+    grid-column: 1;
+    grid-row: 1;
     margin: 0 auto;
   }
+  .aviso-item-content {
+    grid-column: 1;
+    grid-row: 2;
+  }
   .aviso-item-actions {
+    grid-column: 1;
+    grid-row: 3;
     justify-content: center;
   }
+}
+
+app-boton {
+  transition: transform 0.15s ease;
+  display: inline-block;
+}
+app-boton:active {
+  transform: scale(0.96);
+}
+
+/* Skeleton Loader */
+.skeleton {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: skeletonLoading 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes skeletonLoading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-text { height: 16px; margin-bottom: 8px; width: 100%; }
+.skeleton-text.short { width: 60%; }
+.skeleton-title { height: 24px; margin-bottom: 12px; width: 40%; }
+.skeleton-card {
+  padding: 16px;
+  border: 1px solid rgba(15,23,42,0.04);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.72);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sugerencia-card.ia {
+  background: linear-gradient(135deg, var(--ai-tint), rgba(255, 255, 255, 0.66)) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 8px 32px 0 rgba(124, 58, 237, 0.06) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.sugerencia-card.ia::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at top right, rgba(139, 92, 246, 0.12), transparent 58%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sugerencia-card.ia > * {
+  position: relative;
+  z-index: 1;
+}
+
+.sugerencia-preview-panel {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04) !important;
+}
+
+::ng-deep .avisos-page .btn {
+  border-radius: 11px !important;
+  font-weight: 700 !important;
+  border: none !important;
+  padding: 0.5rem 1.25rem !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .avisos-page .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+::ng-deep .avisos-page .btn:active {
+  transform: scale(0.96);
+  box-shadow: none !important;
+}
+
+::ng-deep .avisos-page .btn-warning {
+  background: #fde047 !important;
+  color: #1c1917 !important;
+}
+::ng-deep .avisos-page .btn-warning:hover {
+  background: #facc15 !important;
+}
+
+::ng-deep .avisos-page .btn-success {
+  background: #6ee7b7 !important;
+  color: #064e3b !important;
+}
+::ng-deep .avisos-page .btn-success:hover {
+  background: #34d399 !important;
+}
+::ng-deep .avisos-page .btn-success * {
+  color: #064e3b !important;
+}
+
+::ng-deep .avisos-page .btn-outline {
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  color: #475569 !important;
+}
+::ng-deep .avisos-page .btn-outline:hover {
+  background: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.2) !important;
+  color: #0f172a !important;
+}
+
+.accordion-header.header-stock {
+  background: linear-gradient(135deg, var(--stock-tint) 0%, rgba(255, 255, 255, 0) 100%);
+  transition: background 0.2s ease;
+}
+.accordion-header.header-stock:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.10) 0%, rgba(239, 68, 68, 0.02) 100%);
+}
+
+.accordion-header.header-vencimiento {
+  background: linear-gradient(135deg, var(--expiry-tint) 0%, rgba(255, 255, 255, 0) 100%);
+  transition: background 0.2s ease;
+}
+.accordion-header.header-vencimiento:hover {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.11) 0%, rgba(245, 158, 11, 0.02) 100%);
+}
+
+/* Radius system: main containers 8px, inner containers 10px, buttons 11px */
+.accordion-section,
+.sugerencia-card,
+.avisos-modal-card {
+  border-radius: 8px;
+}
+
+.aviso-item,
+.accordion-badge,
+.skeleton-card,
+.sugerencia-preview-panel {
+  border-radius: 10px;
+}
+
+.accordion-icon,
+.sugerencia-card-icon {
+  border-radius: 10px;
 }

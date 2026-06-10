@@ -14,5 +14,7 @@ namespace PanComido.Dominio.Entidades
         public string? NumeroTelefonoWsp { get; set; }
         public DateOnly? FechaUltimoPedido { get; set; }
         public List<string> Categorias { get; set; } = new();
+        public List<int> CategoriaIds { get; set; } = new();
+        public bool Eliminado { get; set; }
     }
 }

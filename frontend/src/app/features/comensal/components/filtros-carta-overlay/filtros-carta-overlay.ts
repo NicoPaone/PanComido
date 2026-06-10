@@ -3,6 +3,7 @@ import { CartaState } from '../../ver-carta/service/carta-state';
 import {Boton} from "../../../../shared/ui/botones/boton/boton";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-filtros-carta-overlay',
   standalone: true,
   templateUrl: './filtros-carta-overlay.html',
@@ -10,8 +11,13 @@ import {Boton} from "../../../../shared/ui/botones/boton/boton";
   imports: [Boton]
 })
 export class FiltrosCartaOverlay {
-  cartaState = inject(CartaState);
+  cantidadFiltrosActivos = input<number>(0);
+  tiposSeleccionados = input<string[]>([]);
+  tieneFiltrosActivos = input<boolean>(false);
+
   cerrar = output<void>();
+  toggleTipo = output<string>();
+  limpiar = output<void>();
 
   seccionPlatosAbierta = signal(true);
   seccionBebidasAbierta = signal(true);
@@ -28,6 +34,6 @@ export class FiltrosCartaOverlay {
   }
 
   limpiarFiltros(): void {
-    this.cartaState.limpiarFiltros();
+    this.limpiar.emit();
   }
 }

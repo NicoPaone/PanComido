@@ -95,6 +95,18 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             return diccionarioStock;
         }
 
+        public async Task<List<DOM.Lote>> ObtenerLotesPorRestauranteAsync(int restauranteId)
+        {
+            List<EF.Lote> efLotes = await _ctx.Lotes
+                .AsNoTracking()
+                .Where(l => l.Bodega.RestauranteId == restauranteId && l.Cantidad > 0)
+                .OrderBy(l => l.FechaVencimiento)
+                .ThenBy(l => l.Nombre)
+                .ToListAsync();
+
+            return efLotes.Select(l => _loteEntityMapper.paraDominio(l)).ToList();
+        }
+
         public async Task<List<DOM.Lote>> ObtenerLotesPorFechaVencimientoAscendenteAsync(int restauranteId, int insumoId)
         {
             List<EF.Lote> efLotes = await _ctx.Lotes

@@ -1,37 +1,42 @@
-import { inject, Injectable, signal } from '@angular/core';
-import { LlamadoService } from '../../../core/services/llamados/llamado-service';
-import { LlamarMozoRequest } from '../../../core/models/llamados/llamado';
+import { DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { LlamadoService } from './llamado.service';
+import { LlamadoMozo } from '../../../core/models/domain/llamado';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ComensalState {
   readonly #api = inject(LlamadoService);
-  readonly #_llamadoEnviado = signal<boolean>(false);
+  readonly #destroyRef = inject(DestroyRef);
+  readonly #_enviando = signal<boolean>(false);
   readonly #_exito = signal<boolean>(false);
   readonly #_error = signal<string | null>(null);
-  readonly llamadoEnviado = this.#_llamadoEnviado.asReadonly();
+
+  readonly enviando = this.#_enviando.asReadonly();
   readonly exito = this.#_exito.asReadonly();
   readonly error = this.#_error.asReadonly();
 
-  solicitarMozo(request: LlamarMozoRequest): void {
-    this.#api.crearLlamado(request).subscribe({
+  solicitarMozo(request: LlamadoMozo): void {
+    this.#_enviando.set(true);
+    this.#_error.set(null);
+    this.#_exito.set(false);
+
+    this.#api.crearLlamado(request).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe({
       next: () => {
-        this.#_llamadoEnviado.set(true);
-        console.log('Mozo solicitado');
+        this.#_enviando.set(false);
         this.#_exito.set(true);
       },
       error: (e) => {
-        console.error('Error', e);
-        this.#_error.set('Error al solicitar mozo');
+        this.#_enviando.set(false);
+        this.#_error.set(e.error?.error ?? 'Error al solicitar mozo');
       }
     });    
-
   }
+
   limpiarEstado(): void {
     this.#_error.set(null);
     this.#_exito.set(false);
+    this.#_enviando.set(false);
   }
-   
 }
-

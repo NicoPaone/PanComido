@@ -1,13 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
 using PanComido.Presentacion.DTOs.Comanda;
 using PanComido.Presentacion.Mappers;
-using PanComido.Presentacion.SesionMock;
+using PanComido.Presentacion.Sesion;
 
 namespace PanComido.Presentacion.Controllers
 {
     [Route("mozo")]
     [ApiController]
+    [Authorize(Roles = "Mozo")]
     public class MozoController : ControllerBase
     {
         private readonly ListarComandasActivasMozoCasoDeUso _listarComandasActivasMozoCasoDeUso;
@@ -23,7 +25,7 @@ namespace PanComido.Presentacion.Controllers
         public async Task<ActionResult<List<ComandaResponseDto>>> ObtenerComandasActivas()
         {
             int restauranteId = HttpContext.ObtenerRestauranteId();
-            int mozoId = HttpContext.ObtenerMozoId();
+            int mozoId = HttpContext.ObtenerEmpleadoId();
             var comandas = await _listarComandasActivasMozoCasoDeUso.EjecutarAsync(restauranteId, mozoId);
             var comandasDto = _comandaMapper.ComandaResponseDtoList(comandas);
             return Ok(comandasDto);

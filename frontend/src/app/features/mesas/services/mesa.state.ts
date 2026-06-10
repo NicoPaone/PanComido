@@ -1,13 +1,14 @@
-import { App } from './../../../app';
-import { Injectable, inject, signal } from '@angular/core';
-import { MesaService } from '../../../core/services/mesa.service';
-import { Mesa, EstadoMesa, FormaMesa } from '../../../core/models/mesa.model';
+import { DestroyRef, Injectable, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MesaService } from './mesa.service';
+import { Mesa, EstadoMesa, FormaMesa } from '../../../core/models/domain/mesa';
 import { MesaLecturaState } from '../shared/mesa-lectura-state';
 
 @Injectable({ providedIn: 'root' })
-export class MesaStateService {
+export class MesaState {
   private lectura = inject(MesaLecturaState);
   private mesaService = inject(MesaService);
+  private destroyRef = inject(DestroyRef);
 
   // Expone lo que ya tiene MesaLecturaState
   mesas = this.lectura.mesas;
@@ -15,9 +16,9 @@ export class MesaStateService {
   notificacion = this.lectura.notificacion;
 
   // Estado de edición (solo gerente)
-  private _isEditorMode = signal<boolean>(false);
-  private _mesasBackup: Mesa[] = [];
-  isEditorMode = this._isEditorMode.asReadonly();
+  readonly #isEditorMode = signal<boolean>(false);
+  #mesasBackup: Mesa[] = [];
+  isEditorMode = this.#isEditorMode.asReadonly();
 
   // Métodos que delega a MesaLecturaState
   cargarMesas(): void { this.lectura.cargarMesas(); }
@@ -28,16 +29,16 @@ export class MesaStateService {
 
   // Métodos de EDICIÓN (solo gerente)
   toggleEditorMode(): void {
-    if (!this._isEditorMode()) {
-      this._mesasBackup = JSON.parse(JSON.stringify(this.lectura.mesas()));
+    if (!this.#isEditorMode()) {
+      this.#mesasBackup = JSON.parse(JSON.stringify(this.lectura.mesas()));
     }
     this.lectura.seleccionarMesa(null);
-    this._isEditorMode.set(!this._isEditorMode());
+    this.#isEditorMode.set(!this.#isEditorMode());
   }
 
   cancelarEdicion(): void {
-    this.lectura['_mesas'].set(JSON.parse(JSON.stringify(this._mesasBackup)));
-    this._isEditorMode.set(false);
+    this.lectura.setMesas(JSON.parse(JSON.stringify(this.#mesasBackup)));
+    this.#isEditorMode.set(false);
   }
 
   moverMesa(id: number, deltaX: number, deltaY: number): void {
@@ -45,7 +46,7 @@ export class MesaStateService {
     const mesa = mesas.find(m => m.id === id);
     if (!mesa) return;
 
-    this.lectura['_mesas'].update(mesas =>
+    this.lectura.updateMesas(mesas =>
       mesas.map(m => m.id === id ? {
         ...m,
         posicionXInicio: m.posicionXInicio + deltaX,
@@ -77,7 +78,7 @@ export class MesaStateService {
       posicionYInicio: 15, posicionYFin: 15 + alto
     };
 
-    this.lectura['_mesas'].update(m => [...m, nuevaMesa]);
+    this.lectura.updateMesas(m => [...m, nuevaMesa]);
   }
 
   eliminarMesa(id: number): void {
@@ -89,11 +90,11 @@ export class MesaStateService {
       return;
     }
 
-    this.lectura['_mesas'].update(mesas => mesas.filter(m => m.id !== id));
+    this.lectura.updateMesas(mesas => mesas.filter(m => m.id !== id));
   }
 
   actualizarNumero(id: number, nuevoNumero: number): void {
-    this.lectura['_mesas'].update(mesas =>
+    this.lectura.updateMesas(mesas =>
       mesas.map(m => m.id === id ? { ...m, numeroMesa: nuevoNumero } : m)
     );
   }
@@ -129,9 +130,9 @@ export class MesaStateService {
       }
     }
 
-    this.mesaService.guardarMapa(mesas).subscribe({
+    this.mesaService.guardarMapa(mesas).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
-        this._isEditorMode.set(false);
+        this.#isEditorMode.set(false);
         this.lectura.mostrarNotificacion('Mapa guardado con éxito', 'exito');
       },
       error: (err) => {

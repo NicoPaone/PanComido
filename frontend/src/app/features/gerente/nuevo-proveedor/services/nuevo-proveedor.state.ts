@@ -1,11 +1,11 @@
 import { Injectable, inject, signal, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NuevoProveedorApiService } from './nuevo-proveedor.api';
-import { NuevoProveedor } from '../../../../core/models/proveedor';
+import { ProveedorApiService } from '../../services/proveedor.api';
+import { ProveedorNuevo } from '../../../../core/models/domain/proveedor';
 
 @Injectable({ providedIn: 'root' })
-export class NuevoProveedorStateService {
-  private api = inject(NuevoProveedorApiService);
+export class NuevoProveedorState {
+  private api = inject(ProveedorApiService);
   private destroyRef = inject(DestroyRef);
 
   // Estado mutable expuesto como writeable signals
@@ -15,33 +15,7 @@ export class NuevoProveedorStateService {
   cargandoGerente = signal(false);
   availableCategories = signal<string[]>(['Distribuidora', 'Mayorista', 'Minorista', 'Insumos']);
 
-  validarCredencialesGerente(user: string, pass: string, onValid: () => void): void {
-    if (!user || !pass) {
-      this.mensajeErrorGerente.set('Por favor, ingresa credenciales válidas (Usuario >= 3 car., Contraseña >= 6 car.).');
-      return;
-    }
-
-    this.cargandoGerente.set(true);
-    this.mensajeErrorGerente.set(null);
-
-    this.api.validateManagerCredentials(user, pass)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (esValido) => {
-          this.cargandoGerente.set(false);
-          this.gerenteValidado.set(esValido);
-          if (!esValido) {
-            this.mensajeErrorGerente.set('Usuario o contraseña de gerente incorrectos. (Prueba con "gerente" / "123456")');
-          } else {
-            onValid();
-          }
-        },
-        error: () => {
-          this.cargandoGerente.set(false);
-          this.mensajeErrorGerente.set('Error de red al validar credenciales.');
-        }
-      });
-  }
+ 
 
   toggleCategoria(cat: string): void {
     const actuales = [...this.categorias()];
@@ -74,7 +48,7 @@ export class NuevoProveedorStateService {
     this.categorias.set(actuales);
   }
 
-  guardarProveedor(proveedor: NuevoProveedor, onSuccess: () => void): void {
+  guardarProveedor(proveedor: ProveedorNuevo, onSuccess: () => void): void {
     this.api.crearProveedor(proveedor)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

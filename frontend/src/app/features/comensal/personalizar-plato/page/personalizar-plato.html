@@ -91,4 +91,12 @@
 
 </div>
 
-<app-llamar-al-mozo [configuracion]="configuracion" #llamarMozoRef />
+<app-llamar-al-mozo 
+  [configuracion]="configuracion" 
+  [mesaId]="comandaState.mesaId() ?? 0"
+  [enviando]="comensalState.enviando()"
+  [enviado]="comensalState.exito()"
+  [error]="comensalState.error()"
+  (llamadoMozo)="comensalState.solicitarMozo($event)"
+  (modalCerrado)="comensalState.limpiarEstado()"
+  #llamarMozoRef />

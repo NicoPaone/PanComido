@@ -2,7 +2,7 @@
 using PanComido.Dominio.CasosDeUso.PagoCasoDeUso;
 using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.Mappers;
-using PanComido.Presentacion.SesionMock;
+using PanComido.Presentacion.Sesion;
 
 namespace PanComido.Presentacion.Controllers
 {

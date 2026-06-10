@@ -1,23 +1,26 @@
-﻿
+
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.DTOs.Plato;
 using PanComido.Presentacion.Mappers;
-using PanComido.Presentacion.SesionMock;
-using System.Threading.Tasks;
+using PanComido.Presentacion.Sesion;
 
 namespace PanComido.Presentacion.Controllers
 {
     [Route("/plato")]
     [ApiController]
-    public class PlatoController : ControllerBase
+   [Authorize]
+
+   public class PlatoController : ControllerBase
     {
 
         //dependencias del GET (formulario para crear plato)
         private readonly ObtenerDatosParaFormularioCrearPlato _obtenerDatosCasoDeUso;
-        private readonly FormularioParaCrearPlatoMapper   _mapper;
+        private readonly FormularioParaCrearPlatoMapper _mapper;
 
         // dependencias del POST (crear plato)
         private readonly CrearPlatoCasoDeUso _crearPlatoCasoDeUso;
@@ -27,14 +30,33 @@ namespace PanComido.Presentacion.Controllers
 
 
 
-        public PlatoController(ObtenerDatosParaFormularioCrearPlato obtenerDatosCasoDeUso, FormularioParaCrearPlatoMapper mapper, CrearPlatoCasoDeUso crearPlatoCasoDeUso, PlatoMapper platoMapper)
+        private readonly ModificarPlatoCasoDeUso _modificarPlatoCasoDeUso;
+        private readonly ObtenerPlatoPorIdCasoDeUso _obtenerPlatoPorIdCasoDeUso;
+
+
+        public PlatoController(ObtenerDatosParaFormularioCrearPlato obtenerDatosCasoDeUso, FormularioParaCrearPlatoMapper mapper, CrearPlatoCasoDeUso crearPlatoCasoDeUso, PlatoMapper platoMapper, ModificarPlatoCasoDeUso modificarPlatoCasoDeUso, ObtenerPlatoPorIdCasoDeUso obtenerPlatoPorIdCasoDeUso)
         {
             _obtenerDatosCasoDeUso = obtenerDatosCasoDeUso;
             this._mapper = mapper;
             _crearPlatoCasoDeUso = crearPlatoCasoDeUso;
             _platoMapper = platoMapper;
+            _modificarPlatoCasoDeUso = modificarPlatoCasoDeUso;
+            _obtenerPlatoPorIdCasoDeUso = obtenerPlatoPorIdCasoDeUso;
 
+        }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> ObtenerPlatoPorId(int id)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+            var platoDominio = await _obtenerPlatoPorIdCasoDeUso.EjecutarAsync(id, restauranteId);
+            
+            if (platoDominio == null)
+            {
+                return NotFound(new { mensaje = "El plato no existe." });
+            }
+
+            return Ok(_platoMapper.aDto(platoDominio));
         }
 
         [HttpGet("formulario-plato")]
@@ -56,6 +78,7 @@ namespace PanComido.Presentacion.Controllers
                 return BadRequest(ModelState);
             }
 
+            // Cero Try-Catch en nuevos endpoints según reglas, pero este es el viejo, lo dejo intacto
             try
             {
                 // 1. Obtenemos el ID del restaurante del token/contexto de forma segura
@@ -82,14 +105,26 @@ namespace PanComido.Presentacion.Controllers
             }
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Modificar(int id, [FromBody] ModificarPlatoDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+
+            var platoDominio = _platoMapper.ModificarADominio(id, request);
+
+            await _modificarPlatoCasoDeUso.EjecutarAsync(restauranteId, platoDominio);
+
+            return Ok(new { mensaje = "Plato modificado correctamente." });
+        }
+
+
 
 
     }
-
-
-
-
-
-
 
 }

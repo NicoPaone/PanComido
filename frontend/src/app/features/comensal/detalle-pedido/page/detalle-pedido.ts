@@ -1,23 +1,26 @@
-import { Component, inject, computed, ViewChild } from '@angular/core';
+import { Component, inject, computed, ViewChild , ChangeDetectionStrategy} from '@angular/core';
 import { Router } from '@angular/router';
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
-import { configuracionRestauranteMock } from '../../../../core/interceptors/handlers/configuracion-restaurante.mock';
+import { configuracionRestauranteMock } from '../../../../infra/mocks/configuracion-restaurante.mock-data';
 import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
-import { PedidoService } from '../../../../core/services/pedido.service';
-import { ComandaStateService } from '../../services/comanda-state.service';
+import { PedidoState } from '../../services/pedido.state';
+import { ComandaState } from '../../services/comanda-state';
 import { ModalConfirmacionPedido } from '../../components/modal-confirmacion-pedido/modal-confirmacion-pedido';
+import { ComensalState } from '../../services/comensal-state';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-detalle-pedido',
   standalone: true,
-  imports: [BotonComensal, LlamarAlMozo, ModalConfirmacionPedido],
+  imports: [LlamarAlMozo, ModalConfirmacionPedido],
   templateUrl: './detalle-pedido.html',
   styleUrls: ['./detalle-pedido.css']
 })
 export class DetallePedido {
   private router = inject(Router);
-  private pedidoService = inject(PedidoService);
-  comandaState = inject(ComandaStateService);
+  private pedidoService = inject(PedidoState);
+  comandaState = inject(ComandaState);
+  comensalState = inject(ComensalState);
 
   @ViewChild(ModalConfirmacionPedido) modal!: ModalConfirmacionPedido;
 

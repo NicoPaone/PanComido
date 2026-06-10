@@ -19,6 +19,9 @@ public partial class Llamado
     [Column("gerente_id")]
     public int? GerenteId { get; set; }
 
+    [Column("mesa_id")]
+    public int? MesaId { get; set; }
+
     [Column("categoria_llamado_id")]
     public int CategoriaLlamadoId { get; set; }
 
@@ -27,9 +30,6 @@ public partial class Llamado
 
     [Column("resuelto")]
     public bool Resuelto { get; set; }
-
-    [Column("mesa_id")]
-    public int? MesaId { get; set; }
 
     [ForeignKey("CategoriaLlamadoId")]
     [InverseProperty("Llamados")]
