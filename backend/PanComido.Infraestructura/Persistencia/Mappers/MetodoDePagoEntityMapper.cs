@@ -11,13 +11,13 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
 {
     public class MetodoDePagoEntityMapper
     {
-        public DOM.MetodoDePago paraDominio(EF.MetodoDePago efMetodoDePago, EF.MetodoDePagoRestaurante efRelacion)
+        public DOM.MetodoDePago paraDominio(EF.MetodoDePago efMetodoDePago, EF.MetodoDePagoRestaurante efRestaurtante)
         {
             return new DOM.MetodoDePago
             {
                Id = efMetodoDePago.Id,
                Descripcion = efMetodoDePago.Descripcion,
-               Habilitado = efRelacion.Habilitado
+               Habilitado = efRestaurtante.Habilitado
             };
         }
 

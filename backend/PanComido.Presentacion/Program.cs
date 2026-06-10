@@ -72,6 +72,7 @@ builder.Services.AddScoped<ArticuloEntityMapper>();
 builder.Services.AddScoped<PlatoEntityMapper>();
 builder.Services.AddScoped<LlamadoEntityMapper>();
 builder.Services.AddScoped<MetodoDePagoEntityMapper>();
+builder.Services.AddScoped<RestauranteEntityMapper>();
 
 
 
@@ -93,6 +94,7 @@ builder.Services.AddScoped<FormularioParaCrearPlatoMapper>();
 builder.Services.AddScoped<PlatoMapper>();
 builder.Services.AddScoped<ArticuloCartaMapper>();
 builder.Services.AddScoped<MetodoDePagoMapper>();
+builder.Services.AddScoped<RestauranteMapper>();
 
 
 builder.Services.AddScoped<ArticuloMapper>();
@@ -115,6 +117,7 @@ builder.Services.AddScoped<IFormularioPlatoRepositorio, FormularioPlatoRepositor
 builder.Services.AddScoped<IPlatoRepositorio, PlatoRepositorio>();
 builder.Services.AddScoped<IPagoRepositorio, PagoRepositorio>();
 builder.Services.AddScoped<IMetodoDePagoRepositorio, MetodoDePagoRepositorio>();
+builder.Services.AddScoped<IRestauranteRepositorio, RestauranteRepositorio>();
 
 
 
@@ -166,6 +169,8 @@ builder.Services.AddScoped<EliminarProveedorCasoDeuso>();
 builder.Services.AddScoped<ObtenerProveedorCasoDeUso>();
 builder.Services.AddScoped<ObtenerMetodosDePagoCasoDeUso>();
 builder.Services.AddScoped<ActualizarMetodosDePagoCasoDeUso>();
+builder.Services.AddScoped<ObtenerDatosDelLocalCasoDeUso>();
+builder.Services.AddScoped<ActualizarDatosDelLocalCasoDeUso>();
 
 
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
