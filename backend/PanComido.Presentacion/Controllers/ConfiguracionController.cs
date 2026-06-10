@@ -3,6 +3,7 @@ using PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso;
 using PanComido.Dominio.Entidades;
 using PanComido.Presentacion.DTOs.MetodoDePago;
 using PanComido.Presentacion.DTOs.Restaurante;
+using PanComido.Presentacion.DTOs.TurnoLaboral;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.SesionMock;
 
@@ -16,23 +17,32 @@ namespace PanComido.Presentacion.Controllers
         private readonly ActualizarMetodosDePagoCasoDeUso _actualizarMetodosDePagoCasoDeUso;
         private readonly ObtenerDatosDelLocalCasoDeUso _obtenerDatosDelLocalCasoDeUso;
         private readonly ActualizarDatosDelLocalCasoDeUso _actualizarDatosDelLocalCasoDeUso;
+        private readonly ObtenerTurnosLaboralesCasoDeUso _obtenerTurnosLaboralesCasoDeUso;
+        private readonly ActualizarTurnosLaboralesCasoDeUso _actualizarTurnosLaboralesCasoDeUso;
         private readonly MetodoDePagoMapper _metodoDePagoMapper;
         private readonly RestauranteMapper _restauranteMapper;
+        private readonly TurnoLaboralMapper _turnoLaboralMapper;
 
         public ConfiguracionController(
             ObtenerMetodosDePagoCasoDeUso obtenerMetodosDePagoCasoDeUso,
             ActualizarMetodosDePagoCasoDeUso actualizarMetodosDePagoCasoDeUso,
             ObtenerDatosDelLocalCasoDeUso obtenerDatosDelLocalCasoDeUso,
             ActualizarDatosDelLocalCasoDeUso actualizarDatosDelLocalCasoDeUso,
+            ObtenerTurnosLaboralesCasoDeUso obtenerTurnosLaboralesCasoDeUso,
+            ActualizarTurnosLaboralesCasoDeUso actualizarTurnosLaboralesCasoDeUso,
             MetodoDePagoMapper metodoDePagoMapper,
-            RestauranteMapper restauranteMapper)
+            RestauranteMapper restauranteMapper,
+            TurnoLaboralMapper turnoLaboralMapper)
         {
             _obtenerMetodosDePagoCasoDeUso = obtenerMetodosDePagoCasoDeUso;
             _actualizarMetodosDePagoCasoDeUso = actualizarMetodosDePagoCasoDeUso;
             _obtenerDatosDelLocalCasoDeUso = obtenerDatosDelLocalCasoDeUso;
             _actualizarDatosDelLocalCasoDeUso = actualizarDatosDelLocalCasoDeUso;
+            _obtenerTurnosLaboralesCasoDeUso = obtenerTurnosLaboralesCasoDeUso;
+            _actualizarTurnosLaboralesCasoDeUso = actualizarTurnosLaboralesCasoDeUso;
             _metodoDePagoMapper = metodoDePagoMapper;
             _restauranteMapper = restauranteMapper;
+            _turnoLaboralMapper = turnoLaboralMapper;
         }
 
         [HttpGet("datos-local")]
@@ -69,12 +79,34 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPut("habilitar-metodos-pago")]
-        public async Task<ActionResult<List<MetodoDePagoRequestDto>>> HabilitarMetodoDePago([FromBody] List<MetodoDePagoRequestDto> metodoDePagoRequestDto)
+        public async Task<ActionResult<List<MetodoDePagoRequestDto>>> HabilitarMetodoDePago([FromBody] List<MetodoDePagoRequestDto> metodoDePagoRequest)
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
-            List<MetodoDePago> metodosDePago = _metodoDePagoMapper.aListaDominio(metodoDePagoRequestDto);
+            List<MetodoDePago> metodosDePago = _metodoDePagoMapper.aListaDominio(metodoDePagoRequest);
 
             await _actualizarMetodosDePagoCasoDeUso.EjecutarAsync(restauranteId, metodosDePago);
+
+            return Ok();
+        }
+
+        [HttpGet("turno")]
+        public async Task<ActionResult<List<TurnoLaboralResponseDto>>> ObtenerTurnosLaborales()
+        {
+            var restauranteId = HttpContext.ObtenerRestauranteId();
+
+            var turnosLaborales = await _obtenerTurnosLaboralesCasoDeUso.EjecutarAsync(restauranteId);
+
+            var dtos = _turnoLaboralMapper.aListaDto(turnosLaborales);
+            return Ok(dtos);
+        }
+
+        [HttpPut("actualizar-turno")]
+        public async Task<ActionResult<List<TurnoLaboralResponseDto>>> ActualizarTurnoLaboral([FromBody] List<TurnoLaboralRequestDto> turnosLaboralesRequest)
+        {
+            var restauranteId = HttpContext.ObtenerRestauranteId();
+            List<TurnoLaboral> turnosLaborales = _turnoLaboralMapper.aListaDominio(turnosLaboralesRequest);
+
+            await _actualizarTurnosLaboralesCasoDeUso.EjecutarAsync(restauranteId, turnosLaborales);
 
             return Ok();
         }
