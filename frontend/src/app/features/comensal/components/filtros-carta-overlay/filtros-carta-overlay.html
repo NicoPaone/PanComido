@@ -138,6 +138,29 @@
             <span class="checkbox-label">Todas las restricciones</span>
             
           </label>
+          <label class="checkbox-item">
+  <input
+    type="checkbox"
+    [checked]="cartaState.restriccionesSeleccionadas().includes('Vegetariano')"
+    (change)="cartaState.toggleRestriccion('Vegetariano')">
+  <span class="checkbox-label">Vegetariano</span>
+</label>
+
+<label class="checkbox-item">
+  <input
+    type="checkbox"
+    [checked]="cartaState.restriccionesSeleccionadas().includes('Vegano')"
+    (change)="cartaState.toggleRestriccion('Vegano')">
+  <span class="checkbox-label">Vegano</span>
+</label>
+
+<label class="checkbox-item">
+  <input
+    type="checkbox"
+    [checked]="cartaState.restriccionesSeleccionadas().includes('Sin TACC')"
+    (change)="cartaState.toggleRestriccion('Sin TACC')">
+  <span class="checkbox-label">Sin TACC</span>
+</label>
         </div>
         }
         <div class="divider"></div>

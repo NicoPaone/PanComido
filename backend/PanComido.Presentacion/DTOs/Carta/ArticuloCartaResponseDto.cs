@@ -12,5 +12,7 @@ namespace PanComido.Presentacion.DTOs.Carta
         public string Categoria { get; set; }
 
         public int? TiempoPreparacionBase { get; set; }
+
+        public List<string> Restricciones { get; set; } = new();
     }
 }

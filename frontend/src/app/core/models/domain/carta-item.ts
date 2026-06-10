@@ -9,4 +9,6 @@ export interface CartaItem {
   categoria: string;
 
   tiempoPreparacionBase?: number;
+
+  restricciones: string[];
 }

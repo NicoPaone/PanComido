@@ -22,7 +22,7 @@
     <button class="btn-filtro-icono" (click)="mostrarFiltros.set(true)">
       <span class="material-symbols-outlined">filter_alt</span>
       @if (state.cantidadFiltrosActivos() > 0) {
-        <span class="filtro-badge">{{ state.cantidadFiltrosActivos() }}</span>
+      <span class="filtro-badge">{{ state.cantidadFiltrosActivos() }}</span>
       }
     </button>
   </div>
@@ -30,37 +30,29 @@
   <!-- Dropdown Ordenar (restaurado) -->
   <div class="ordenar-section">
     <div class="dropdown-ordenar">
-      <button 
-        class="dropdown-trigger" 
-        [class.abierto]="menuOrdenarAbierto()"
-        (click)="toggleMenuOrdenar()">
+      <button class="dropdown-trigger" [class.abierto]="menuOrdenarAbierto()" (click)="toggleMenuOrdenar()">
         <span class="material-symbols-outlined icon-ordenar">sort</span>
         <span class="label-ordenar">{{ ordenSeleccionado() || 'Ordenar' }}</span>
       </button>
 
       @if (menuOrdenarAbierto()) {
-        <div class="dropdown-menu">
-          <button 
-            class="dropdown-item" 
-            (click)="seleccionarOrden('precio-menor', 'Menor precio')">
-            Menor precio
-          </button>
-          <button 
-            class="dropdown-item" 
-            (click)="seleccionarOrden('precio-mayor', 'Mayor precio')">
-            Mayor precio
-          </button>
-          <button 
-            class="dropdown-item" 
-            (click)="seleccionarOrden('tiempo', 'Más rápidos')">
-            Más rápidos
-          </button>
-          <button 
-            class="dropdown-item" 
-            (click)="seleccionarOrden('nombre', 'A-Z')">
-            A-Z
-          </button>
-        </div>
+      <div class="dropdown-menu">
+        <button class="dropdown-item" (click)="seleccionarOrden('', 'Predeterminado')">
+          Orden predeterminado
+        </button>
+        <button class="dropdown-item" (click)="seleccionarOrden('precio-menor', 'Menor precio')">
+          Menor precio
+        </button>
+        <button class="dropdown-item" (click)="seleccionarOrden('precio-mayor', 'Mayor precio')">
+          Mayor precio
+        </button>
+        <button class="dropdown-item" (click)="seleccionarOrden('tiempo', 'Más rápidos')">
+          Más rápidos
+        </button>
+        <button class="dropdown-item" (click)="seleccionarOrden('nombre', 'A-Z')">
+          A-Z
+        </button>
+      </div>
       }
     </div>
   </div>
@@ -68,33 +60,20 @@
   <!-- Lista de Platos -->
   <div class="platos-lista-container">
     @if (state.cargando()) {
-      <p class="text-center text-muted py-5">Cargando carta...</p>
+    <p class="text-center text-muted py-5">Cargando carta...</p>
     } @else {
-      <app-lista-platos-comensal
-        [platos]="state.itemsFiltrados()"
-        (agregarPedido)="agregarAlPedido($event)" />
+    <app-lista-platos-comensal [platos]="state.itemsFiltrados()" (agregarPedido)="agregarAlPedido($event)" />
     }
   </div>
 
 </div>
 
 @if (mostrarFiltros()) {
-  <app-filtros-carta-overlay (cerrar)="mostrarFiltros.set(false)"
-    (toggleTipo)="state.toggleTipoPlato($event)"
-    (limpiar)="state.limpiarFiltros()"
-     />
+<app-filtros-carta-overlay (cerrar)="mostrarFiltros.set(false)" (toggleTipo)="state.toggleTipoPlato($event)"
+  (limpiar)="state.limpiarFiltros()" />
 }
 
-<app-comensal-footer-cart
-  [cantidadItems]="cantidadTotalPedido()"
-  [total]="totalPedido()"
-  [configuracion]="configuracion"
-  (verPedido)="irAPedido()" 
-  [mesaId]="mesaId()"
-  [enviando]="comensalState.enviando()"
-  [enviado]="comensalState.exito()"
-  [error]="comensalState.error()"
-  (llamadoMozo)="comensalState.solicitarMozo($event)"
-  (modalCerrado)="comensalState.limpiarEstado()"/>
-
-
+<app-comensal-footer-cart [cantidadItems]="cantidadTotalPedido()" [total]="totalPedido()"
+  [configuracion]="configuracion" (verPedido)="irAPedido()" [mesaId]="mesaId()" [enviando]="comensalState.enviando()"
+  [enviado]="comensalState.exito()" [error]="comensalState.error()" (llamadoMozo)="comensalState.solicitarMozo($event)"
+  (modalCerrado)="comensalState.limpiarEstado()" />

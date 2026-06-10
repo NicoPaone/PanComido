@@ -19,6 +19,7 @@ export class CartaState {
   tiposSeleccionados = signal<string[]>([]);
   ordenarPor = signal('');
   categoriasSeleccionadas = signal<string[]>([]);
+restriccionesSeleccionadas = signal<string[]>([]);
 
 
   
@@ -54,6 +55,16 @@ toggleCategoria(categoria: string): void {
 //     categorias.includes(item.categoria)
 //   );
 // }
+
+const restricciones = this.restriccionesSeleccionadas();
+
+if (restricciones.length > 0) {
+  resultado = resultado.filter(item =>
+    item.restricciones?.some(r =>
+      restricciones.includes(r)
+    )
+  );
+}
 
 if (categorias.length > 0) {
   resultado = resultado.filter(item =>
@@ -100,11 +111,15 @@ if (categorias.length > 0) {
     this._cargando.set(true);
     this.api.obtenerCarta().subscribe({
       next: (data) => {
+         console.log('Primer item:', data[0]);
+  console.log('Restricciones primer item:', data[0]?.restricciones);
+
         this._items.set(data);
         this._cargando.set(false);
       },
       error: () => this._cargando.set(false)
     });
+    
   }
 
   setBusqueda(valor: string): void {
@@ -124,15 +139,38 @@ if (categorias.length > 0) {
     });
   }
 
-  limpiarFiltros(): void {
-    this.busqueda.set('');
-    this.tiposSeleccionados.set([]);
-    this.ordenarPor.set('');
-  }
+  toggleRestriccion(restriccion: string): void {
+  this.restriccionesSeleccionadas.update(actual => {
+    if (actual.includes(restriccion)) {
+      return actual.filter(r => r !== restriccion);
+    }
+    return [...actual, restriccion];
+  });
+}
 
+  // limpiarFiltros(): void {
+  //   this.busqueda.set('');
+  //   this.tiposSeleccionados.set([]);
+  //   this.ordenarPor.set('');
+  // }
+
+  limpiarFiltros(): void {
+  this.busqueda.set('');
+  this.tiposSeleccionados.set([]);
+  this.categoriasSeleccionadas.set([]);
+  this.ordenarPor.set('');
+  this.restriccionesSeleccionadas.set([]);
+}
+
+  // tieneFiltrosActivos = computed(() =>
+  //   this.tiposSeleccionados().length > 0
+  // );
   tieneFiltrosActivos = computed(() =>
-    this.tiposSeleccionados().length > 0
-  );
+  this.tiposSeleccionados().length > 0 ||
+  this.categoriasSeleccionadas().length > 0 ||
+  this.busqueda().trim() !== '' ||
+  this.ordenarPor() !== ''
+);
 
   cantidadFiltrosActivos = computed(() =>
     this.tiposSeleccionados().length

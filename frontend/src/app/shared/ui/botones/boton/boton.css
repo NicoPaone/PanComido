@@ -73,6 +73,7 @@
 .btn-success {
   background-color: var(--status-success, #6abf3f);
   color: white;
+  width: 100%;
 }
 
 .btn-outline {
