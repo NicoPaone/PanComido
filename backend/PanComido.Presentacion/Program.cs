@@ -232,6 +232,7 @@ builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticu
 builder.Services.AddScoped<ISugerenciaPlatosIAServicio, GeminiSugerenciaPlatosIAServicio >();
 builder.Services.AddScoped<IGestionStockServicio, GestionStockServicio>();
 builder.Services.AddScoped<IVencimientosProximosInsumosServicio, VencimientosProximosInsumosServicio>();
+builder.Services.AddScoped<ICantidadDeMesasServicio, CantidadDeMesasServicio>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
