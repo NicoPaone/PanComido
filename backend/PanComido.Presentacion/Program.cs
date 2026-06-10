@@ -40,7 +40,7 @@ using PanComido.Presentacion.Filtros;
 using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Servicios;
-
+using PanComido.Dominio.CasosDeUso.Dashboard;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -151,7 +151,7 @@ builder.Services.AddScoped<CartaMapper>();
 builder.Services.AddScoped<FormularioParaCrearPlatoMapper>();
 builder.Services.AddScoped<PlatoMapper>();
 builder.Services.AddScoped<ArticuloCartaMapper>();
-
+builder.Services.AddScoped<DashboardMapper>();
 
 builder.Services.AddScoped<ArticuloMapper>();
 builder.Services.AddScoped<PagoMapper>();
@@ -221,7 +221,7 @@ builder.Services.AddScoped<CrearProveedorCasoDeUso>();
 builder.Services.AddScoped<ModificarProveedorCasoDeUso>();
 builder.Services.AddScoped<EliminarProveedorCasoDeuso>();
 builder.Services.AddScoped<ObtenerProveedorCasoDeUso>();
-
+builder.Services.AddScoped<ObtenerVencimientosYCriticidadDashboardCasoDeUso>();
 
 
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
