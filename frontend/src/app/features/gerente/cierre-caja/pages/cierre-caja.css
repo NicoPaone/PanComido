@@ -838,6 +838,32 @@ h1 {
   gap: 1rem;
 }
 
+/* Estado vacío para contenedores sin datos */
+.empty-state-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 100px;
+  padding: 1.5rem;
+  color: #a09099;
+  text-align: center;
+}
+
+.empty-state-list .material-symbols-outlined {
+  font-size: 2rem;
+  opacity: 0.45;
+}
+
+.empty-state-list p {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.4;
+  max-width: 220px;
+}
+
 .payment-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   margin-bottom: 1rem;
@@ -1880,3 +1906,283 @@ h1 {
     box-shadow: 0 0 0 0 rgba(169, 79, 82, 0.12);
   }
 }
+
+/* ─────────────────────────────────────────
+   TUTORIAL INTERACTIVO — CIERRE DE CAJA
+   ───────────────────────────────────────── */
+
+.tutorial-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1500;
+  animation: tutorialFadeIn 0.25s ease-out;
+}
+
+@keyframes tutorialFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Elementos destacados por el tutorial */
+.tutorial-focused {
+  position: relative !important;
+  z-index: 1600 !important;
+  pointer-events: none !important;
+  border-color: rgba(2, 89, 108, 0.6) !important;
+  box-shadow:
+    0 0 0 5px rgba(2, 89, 108, 0.22),
+    0 20px 45px rgba(31, 17, 24, 0.15) !important;
+  background: white !important;
+  border-radius: 14px !important;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* ─── ATENUACIÓN DE HERMANOS NO ENFOCADOS ─── */
+
+/* Turno toolbar hermanos: atenuar el resto de la sección de pasos de flujo */
+.caja-page.tutorial-active .flow-steps:not(.tutorial-focused),
+.caja-page.tutorial-active .hero-panel:not(:has(.tutorial-focused)) {
+  opacity: 0.22;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease;
+}
+
+/* Cuando el foco está dentro del hero-panel, atenuar los hermanos directos no enfocados */
+.caja-page.tutorial-active .hero-panel:has(.tutorial-focused) > *:not(.tutorial-focused) {
+  opacity: 0.22;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease;
+}
+
+/* Atenuar payment-grid cuando no tiene foco (ni su parent class tampoco) */
+.caja-page.tutorial-active .payment-grid:not(.tutorial-parent-focused) {
+  opacity: 0.22;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease;
+}
+
+/* ─── STACKING CONTEXT: payment-grid ─── */
+/* Eleva la section padre por encima del backdrop con el glow propio */
+.caja-page.tutorial-active .payment-grid.tutorial-parent-focused {
+  position: relative !important;
+  z-index: 1600 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-radius: 14px !important;
+  outline: 5px solid rgba(2, 89, 108, 0.28) !important;
+  box-shadow:
+    0 0 0 2px rgba(2, 89, 108, 0.55),
+    0 20px 45px rgba(31, 17, 24, 0.15) !important;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Neutraliza backdrop-filter de los payment-card para evitar stacking context anidado */
+.caja-page.tutorial-active .payment-grid.tutorial-parent-focused .payment-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Atenuar financial-grid, detail-grid, history-panel y section-title siempre durante tutorial */
+.caja-page.tutorial-active .financial-grid,
+.caja-page.tutorial-active .detail-grid,
+.caja-page.tutorial-active .history-panel,
+.caja-page.tutorial-active .section-title {
+  opacity: 0.18;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease;
+}
+
+/* Atenuar turno-toolbar cuando no está enfocado */
+.caja-page.tutorial-active .turno-toolbar:not(.tutorial-focused) {
+  opacity: 0.22;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease;
+}
+
+/* ─── DIÁLOGO FLOTANTE DEL TUTORIAL ─── */
+
+.tutorial-dialog-card {
+  position: fixed;
+  bottom: 2.5rem;
+  right: 2.5rem;
+  width: 380px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(2, 89, 108, 0.18);
+  border-radius: 18px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.22);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 1.35rem 1.5rem;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  animation: slideInDialog 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes slideInDialog {
+  from { transform: translateY(15px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.tour-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.tour-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #02596c;
+}
+
+.tour-title-group h4 {
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.tour-icon {
+  font-size: 1.35rem;
+  color: #02596c;
+}
+
+.tour-close-btn {
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: color 0.2s ease;
+  padding: 0;
+}
+
+.tour-close-btn:hover {
+  color: #ef4444;
+}
+
+.tour-body p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #4b5563;
+  line-height: 1.45;
+  font-weight: 650;
+}
+
+.tour-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding-top: 0.85rem;
+}
+
+.tour-progress {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.progress-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  transition: all 0.25s ease;
+}
+
+.progress-dot.active {
+  width: 22px;
+  border-radius: 4px;
+  background: #02596c;
+}
+
+.tour-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-tour-skip {
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  padding: 0;
+}
+
+.btn-tour-skip:hover {
+  color: #64748b;
+}
+
+.tour-nav-btns {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.btn-tour-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #f1f5f9;
+  color: #475569;
+  border: 0;
+  padding: 0.38rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 850;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-tour-nav:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.btn-tour-nav.primary {
+  background: linear-gradient(135deg, #02596c, #0d7c94);
+  color: white;
+  box-shadow: 0 4px 10px rgba(2, 89, 108, 0.15);
+}
+
+.btn-tour-nav.primary:hover {
+  box-shadow: 0 6px 14px rgba(2, 89, 108, 0.25);
+  transform: translateY(-0.5px);
+}
+
+.btn-tour-nav span.material-symbols-outlined {
+  font-size: 0.95rem;
+}
+
+/* ─── RESPONSIVIDAD PARA MÓVIL ─── */
+
+@keyframes slideUpMobileTour {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+@media (max-width: 680px) {
+  .tutorial-dialog-card {
+    width: 100%;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    border-radius: 22px 22px 0 0;
+    box-shadow: 0 -10px 30px rgba(15, 23, 42, 0.15);
+    padding: 1.5rem 1.5rem 2rem;
+    animation: slideUpMobileTour 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+

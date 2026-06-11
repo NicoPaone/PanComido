@@ -691,6 +691,24 @@ h1 {
 .expiry-row {
   align-items: flex-start;
   min-height: 104px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.expiry-row.highlight {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.03);
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15);
+  transform: scale(1.02);
+  z-index: 10;
+  position: relative;
+}
+
+.expiry-recommendation-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  width: min(520px, 56%);
 }
 
 .expiry-recommendation {
@@ -698,7 +716,7 @@ h1 {
   grid-template-columns: auto minmax(0, 1fr);
   gap: 0.55rem;
   align-items: center;
-  width: min(520px, 56%);
+  width: 100%;
   min-height: 0;
   border: 1px solid rgba(22, 145, 172, 0.18);
   border-radius: 11px;
@@ -706,6 +724,26 @@ h1 {
   background:
     linear-gradient(135deg, rgba(22, 145, 172, 0.06), rgba(245, 158, 11, 0.08)),
     #ffffff;
+  cursor: pointer;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.expiry-recommendation:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.expiry-recommendation.active {
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+}
+
+.expiry-hint {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  font-style: italic;
+  font-weight: 550;
+  padding-right: 0.5rem;
 }
 
 .expiry-recommendation .material-symbols-outlined {

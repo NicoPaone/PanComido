@@ -126,21 +126,13 @@ export class CierreCajaStateService {
   }
 
   // Elementos adicionales del resumen y encuestas requeridos por el HTML
+  // Estos datos todavía no tienen soporte en el backend; se mantienen como proxies
+  // con valores neutros hasta que la API los exponga.
   readonly resumenTurno = {
-    comandasProcesadas: 259,
-    platosRealizados: 216,
-    comensales: 184,
-    tiempoPromedioComandas: '18 min',
-    encuestasRespondidas: 67,
-    satisfaccionPromedio: 88
+    comandasProcesadas: this.totalOperaciones,
+    comensales: null as number | null,
+    tiempoPromedioComandas: null as string | null,
   };
-
-  readonly encuestas: EncuestaCajaItem[] = [
-    { label: 'Atencion', valor: 92, detalle: 'muy buena o excelente' },
-    { label: 'Comida', valor: 88, detalle: 'satisfechos' },
-    { label: 'Tiempo de espera', valor: 79, detalle: 'lo percibio correcto' },
-    { label: 'Volveria', valor: 94, detalle: 'probabilidad alta' }
-  ];
 
   readonly propinas = computed(() => 0);
 

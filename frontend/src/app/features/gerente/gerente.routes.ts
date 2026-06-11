@@ -2,6 +2,11 @@ import { Routes } from '@angular/router';
 
 export const GERENTE_ROUTES: Routes = [
   {
+    path: '',
+    redirectTo: 'dashboard',
+    pathMatch: 'full'
+  },
+  {
     path: 'dashboard',
     loadComponent: () => import('./dashboard/pages/dashboard').then(m => m.DashboardPage)
   },
@@ -54,5 +59,9 @@ export const GERENTE_ROUTES: Routes = [
   {
     path: 'aviso-vencimientos',
     loadComponent: () => import('./aviso-vencimientos/pages/aviso-vencimientos').then(m => m.VencimientosPage)
+  },
+  {
+    path: 'plato-dia',
+    loadComponent: () => import('./plato-dia/pages/plato-dia').then(m => m.PlatoDiaComponent)
   }
 ];

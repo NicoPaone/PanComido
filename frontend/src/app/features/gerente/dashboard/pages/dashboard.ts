@@ -40,6 +40,7 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
   private calendarioHasta: Instance | null = null;
 
   readonly diaSeleccionado = signal<DashboardVentaDia | null>(null);
+  readonly resaltarCriticos = signal<boolean>(false);
 
   readonly calendarOffset = computed(() => {
     const dias = this.state.ventasCalendarioMes();
@@ -194,6 +195,10 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
 
   cerrarDetalle(): void {
     this.diaSeleccionado.set(null);
+  }
+
+  toggleResaltarCriticos(): void {
+    this.resaltarCriticos.update(v => !v);
   }
 
   calcularPedidosDia(ventas: number): number {

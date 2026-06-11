@@ -1,4 +1,4 @@
-<main class="caja-page">
+<main class="caja-page" [class.tutorial-active]="pasoTutorial() !== null">
   <!-- Definición del gradiente para el anillo de progreso visual de ventas -->
   <svg width="0" height="0" style="position: absolute; pointer-events: none;" aria-hidden="true">
     <defs>
@@ -17,6 +17,10 @@
     </div>
 
     <div class="header-actions">
+      <button type="button" class="ghost-action" (click)="iniciarTutorial()">
+        <span class="material-symbols-outlined" aria-hidden="true">help</span>
+        ¿Cómo funciona?
+      </button>
       <button type="button" class="ghost-action" (click)="logout()">
         <span class="material-symbols-outlined" aria-hidden="true">logout</span>
         Cerrar sesión
@@ -30,7 +34,7 @@
     </div>
   </header>
 
-  <section class="turno-toolbar" aria-label="Selector de turno">
+  <section id="tutorial-turno" class="turno-toolbar" aria-label="Selector de turno" [class.tutorial-focused]="pasoTutorial() === 0">
     <div class="turno-switch" role="group" aria-label="Turno a cerrar">
       @for (turno of state.turnos; track turno.id) {
         <button
@@ -63,7 +67,7 @@
   </section>
 
   <section class="hero-panel" aria-label="Resumen financiero del cierre">
-    <div class="hero-stack">
+    <div id="tutorial-recaudacion" class="hero-stack" [class.tutorial-focused]="pasoTutorial() === 1">
       <article class="total-card">
         <div class="total-card-info">
           <span class="card-label">Ventas totales del turno</span>
@@ -94,15 +98,15 @@
       <article class="metric-card horizontal-metric">
         <div class="metric-left">
           <span class="material-symbols-outlined" aria-hidden="true">receipt_long</span>
-          <span class="metric-title">Comandas procesadas</span>
+          <span class="metric-title">Cobros registrados</span>
         </div>
         <div class="metric-right">
-          <strong>{{ state.resumenTurno.comandasProcesadas }}</strong>
+          <strong>{{ state.totalOperaciones() }}</strong>
         </div>
       </article>
     </div>
 
-    <article class="cash-check">
+    <article id="tutorial-caja" class="cash-check" [class.tutorial-focused]="pasoTutorial() === 2">
       <div class="cash-heading">
         <div>
           <span class="card-label">Caja física</span>
@@ -164,7 +168,7 @@
       </div>
     </article>
 
-    <article class="confirm-card" [class.confirmed]="state.cierreConfirmado()">
+    <article id="tutorial-confirmacion" class="confirm-card" [class.confirmed]="state.cierreConfirmado()" [class.tutorial-focused]="pasoTutorial() === 4">
       @if (state.cierreConfirmado()) {
         <div class="success-state">
           <span class="material-symbols-outlined success-icon" aria-hidden="true">check_circle</span>
@@ -252,43 +256,53 @@
       </div>
     </article>
 
-    <article class="metric-card horizontal-metric">
+    <article class="metric-card horizontal-metric upcoming">
       <div class="metric-left">
         <span class="material-symbols-outlined" aria-hidden="true">groups</span>
         <span class="metric-title">Comensales</span>
       </div>
       <div class="metric-right">
-        <strong>{{ state.resumenTurno.comensales }}</strong>
+        @if (state.resumenTurno.comensales !== null) {
+          <strong>{{ state.resumenTurno.comensales }}</strong>
+        } @else {
+          <em>Próximamente</em>
+        }
       </div>
     </article>
 
-    <article class="metric-card horizontal-metric">
+    <article class="metric-card horizontal-metric upcoming">
       <div class="metric-left">
         <span class="material-symbols-outlined" aria-hidden="true">timer</span>
         <span class="metric-title">Promedio comandas</span>
       </div>
       <div class="metric-right">
-        <strong>{{ state.resumenTurno.tiempoPromedioComandas }}</strong>
+        @if (state.resumenTurno.tiempoPromedioComandas !== null) {
+          <strong>{{ state.resumenTurno.tiempoPromedioComandas }}</strong>
+        } @else {
+          <em>Próximamente</em>
+        }
       </div>
     </article>
   </section>
 
-  <section class="payment-grid" aria-label="Medios de pago">
-    @for (medio of state.mediosPago(); track medio.id) {
-      <article class="payment-card" [class]="medio.tono">
-        <div class="payment-icon">
-          <span class="material-symbols-outlined" aria-hidden="true">{{ medio.icono }}</span>
-        </div>
-        <div class="payment-copy">
-          <span>{{ medio.nombre }}</span>
-          <strong>{{ medio.esperado | arsCurrency }}</strong>
-          <small>{{ medio.operaciones }} cobros · {{ medio.detalle }}</small>
-        </div>
-        <div class="payment-meter" aria-hidden="true">
-          <span [style.width.%]="porcentajeMedio(medio.esperado)"></span>
-        </div>
-      </article>
-    }
+  <section id="tutorial-medios-pago" class="payment-grid" aria-label="Medios de pago" [class.tutorial-parent-focused]="pasoTutorial() === 3">
+    <div [class.tutorial-focused]="pasoTutorial() === 3" style="display: contents">
+      @for (medio of state.mediosPago(); track medio.id) {
+        <article class="payment-card" [class]="medio.tono">
+          <div class="payment-icon">
+            <span class="material-symbols-outlined" aria-hidden="true">{{ medio.icono }}</span>
+          </div>
+          <div class="payment-copy">
+            <span>{{ medio.nombre }}</span>
+            <strong>{{ medio.esperado | arsCurrency }}</strong>
+            <small>{{ medio.operaciones }} cobros · {{ medio.detalle }}</small>
+          </div>
+          <div class="payment-meter" aria-hidden="true">
+            <span [style.width.%]="porcentajeMedio(medio.esperado)"></span>
+          </div>
+        </article>
+      }
+    </div>
   </section>
 
   <div class="section-title">
@@ -305,17 +319,24 @@
       <span>Fecha · Turno · Total · Diferencia</span>
     </div>
     <div class="history-table">
-      @for (cierre of state.historialCierres; track cierre.fecha + cierre.turno) {
-        <div class="history-row" [class.negative]="cierre.diferencia < 0" [class.positive]="cierre.diferencia > 0">
-          <span>{{ cierre.fecha }}</span>
-          <strong>{{ cierre.turno }}</strong>
-          <b>{{ cierre.total | arsCurrency }}</b>
-          <em>{{ cierre.diferencia > 0 ? '+' : '' }}{{ cierre.diferencia | arsCurrency }}</em>
-          <small class="history-status">{{ cierre.estado }}</small>
-          <button type="button" class="icon-action" (click)="verDetalleCierre(cierre, modalDetalle)" title="Ver detalle" aria-label="Ver detalle">
-            <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
-          </button>
+      @if (state.historialCierres.length === 0) {
+        <div class="empty-state-list">
+          <span class="material-symbols-outlined" aria-hidden="true">history</span>
+          <p>No hay cierres registrados aún</p>
         </div>
+      } @else {
+        @for (cierre of state.historialCierres; track cierre.fecha + cierre.turno) {
+          <div class="history-row" [class.negative]="cierre.diferencia < 0" [class.positive]="cierre.diferencia > 0">
+            <span>{{ cierre.fecha }}</span>
+            <strong>{{ cierre.turno }}</strong>
+            <b>{{ cierre.total | arsCurrency }}</b>
+            <em>{{ cierre.diferencia > 0 ? '+' : '' }}{{ cierre.diferencia | arsCurrency }}</em>
+            <small class="history-status">{{ cierre.estado }}</small>
+            <button type="button" class="icon-action" (click)="verDetalleCierre(cierre, modalDetalle)" title="Ver detalle" aria-label="Ver detalle">
+              <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+            </button>
+          </div>
+        }
       }
     </div>
   </section>
@@ -327,18 +348,25 @@
         <span class="shift-badge gold">Shift Top</span>
       </div>
       <div class="shift-list">
-        @for (plato of state.platosMasVendidos; track plato.nombre; let index = $index) {
-          <div class="shift-row top-dish">
-            <span class="shift-rank">#{{ index + 1 }}</span>
-            <div class="shift-info">
-              <strong>{{ plato.nombre }}</strong>
-              <small class="shift-qty-label">{{ plato.valor }} unidades vendidas</small>
-            </div>
-            <div class="shift-connector"></div>
-            <div class="shift-financial">
-              <strong>{{ plato.detalle }}</strong>
-            </div>
+        @if (state.platosMasVendidos.length === 0) {
+          <div class="empty-state-list">
+            <span class="material-symbols-outlined" aria-hidden="true">bar_chart</span>
+            <p>Sin datos para el turno seleccionado</p>
           </div>
+        } @else {
+          @for (plato of state.platosMasVendidos; track plato.nombre; let index = $index) {
+            <div class="shift-row top-dish">
+              <span class="shift-rank">#{{ index + 1 }}</span>
+              <div class="shift-info">
+                <strong>{{ plato.nombre }}</strong>
+                <small class="shift-qty-label">{{ plato.valor }} unidades vendidas</small>
+              </div>
+              <div class="shift-connector"></div>
+              <div class="shift-financial">
+                <strong>{{ plato.detalle }}</strong>
+              </div>
+            </div>
+          }
         }
       </div>
     </article>
@@ -349,18 +377,25 @@
         <span class="shift-badge review">Revisión</span>
       </div>
       <div class="shift-list">
-        @for (plato of state.platosMenosVendidos; track plato.nombre; let index = $index) {
-          <div class="shift-row low-dish">
-            <span class="shift-rank">#{{ index + 1 }}</span>
-            <div class="shift-info">
-              <strong>{{ plato.nombre }}</strong>
-              <small class="shift-qty-label">{{ plato.valor }} unidades vendidas</small>
-            </div>
-            <div class="shift-connector"></div>
-            <div class="shift-financial">
-              <strong>{{ plato.detalle }}</strong>
-            </div>
+        @if (state.platosMenosVendidos.length === 0) {
+          <div class="empty-state-list">
+            <span class="material-symbols-outlined" aria-hidden="true">bar_chart</span>
+            <p>Sin datos para el turno seleccionado</p>
           </div>
+        } @else {
+          @for (plato of state.platosMenosVendidos; track plato.nombre; let index = $index) {
+            <div class="shift-row low-dish">
+              <span class="shift-rank">#{{ index + 1 }}</span>
+              <div class="shift-info">
+                <strong>{{ plato.nombre }}</strong>
+                <small class="shift-qty-label">{{ plato.valor }} unidades vendidas</small>
+              </div>
+              <div class="shift-connector"></div>
+              <div class="shift-financial">
+                <strong>{{ plato.detalle }}</strong>
+              </div>
+            </div>
+          }
         }
       </div>
     </article>
@@ -371,20 +406,27 @@
         <span class="shift-badge inventory">Consumo</span>
       </div>
       <div class="shift-list">
-        @for (insumo of state.insumosMasUsados; track insumo.nombre) {
-          <div class="shift-row supply-row-modern">
-            <span class="shift-rank supply-icon-circle">
-              <span class="material-symbols-outlined" aria-hidden="true">kitchen</span>
-            </span>
-            <div class="shift-info">
-              <strong>{{ insumo.nombre }}</strong>
-              <small class="shift-qty-label">Consumo de la jornada</small>
-            </div>
-            <div class="shift-connector"></div>
-            <div class="shift-financial supply-qty">
-              <strong>{{ insumo.valor }} <small class="supply-unit">{{ insumo.detalle.replace(' usados', '') }}</small></strong>
-            </div>
+        @if (state.insumosMasUsados.length === 0) {
+          <div class="empty-state-list">
+            <span class="material-symbols-outlined" aria-hidden="true">kitchen</span>
+            <p>Sin consumo registrado para este turno</p>
           </div>
+        } @else {
+          @for (insumo of state.insumosMasUsados; track insumo.nombre) {
+            <div class="shift-row supply-row-modern">
+              <span class="shift-rank supply-icon-circle">
+                <span class="material-symbols-outlined" aria-hidden="true">kitchen</span>
+              </span>
+              <div class="shift-info">
+                <strong>{{ insumo.nombre }}</strong>
+                <small class="shift-qty-label">Consumo de la jornada</small>
+              </div>
+              <div class="shift-connector"></div>
+              <div class="shift-financial supply-qty">
+                <strong>{{ insumo.valor }} <small class="supply-unit">{{ insumo.detalle.replace(' usados', '') }}</small></strong>
+              </div>
+            </div>
+          }
         }
       </div>
     </article>
@@ -394,19 +436,10 @@
         <h2>Encuestas a comensales</h2>
         <span title="Pendiente de soporte en modelo de datos">Próximamente</span>
       </div>
-      <p class="upcoming-note">Pendiente de soporte en modelo de datos. Se deja visible para validar alcance.</p>
-      @for (encuesta of state.encuestas; track encuesta.label) {
-        <div class="survey-row">
-          <div>
-            <strong>{{ encuesta.label }}</strong>
-            <small>{{ encuesta.detalle }}</small>
-          </div>
-          <span>{{ encuesta.valor }}%</span>
-          <div class="survey-meter" aria-hidden="true">
-            <i [style.width.%]="encuesta.valor"></i>
-          </div>
-        </div>
-      }
+      <div class="empty-state-list">
+        <span class="material-symbols-outlined" aria-hidden="true">rate_review</span>
+        <p>Este módulo estará disponible cuando el modelo de datos de encuestas esté implementado en el backend.</p>
+      </div>
     </article>
   </section>
 
@@ -619,4 +652,53 @@
       </div>
     </div>
   </app-modal>
+
 </main>
+
+<!-- TOUR INTERACTIVO TUTORIAL -->
+@if (pasoTutorial() !== null) {
+  <div class="tutorial-backdrop" (click)="cerrarTutorial()"></div>
+
+  <div class="tutorial-dialog-card" [class]="'step-' + pasoTutorial()">
+    <div class="tour-header">
+      <div class="tour-title-group">
+        <span class="material-symbols-outlined tour-icon">explore</span>
+        <h4>{{ pasosTutorial[pasoTutorial()!].titulo }}</h4>
+      </div>
+      <button type="button" class="tour-close-btn" (click)="cerrarTutorial()" title="Cerrar guía">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="tour-body">
+      <p>{{ pasosTutorial[pasoTutorial()!].descripcion }}</p>
+    </div>
+
+    <div class="tour-footer">
+      <div class="tour-progress">
+        @for (s of pasosTutorial; track $index) {
+          <span class="progress-dot" [class.active]="$index === pasoTutorial()"></span>
+        }
+      </div>
+
+      <div class="tour-actions">
+        <button type="button" class="btn-tour-skip" (click)="cerrarTutorial()">Saltar guía</button>
+
+        <div class="tour-nav-btns">
+          @if (pasoTutorial()! > 0) {
+            <button type="button" class="btn-tour-nav" (click)="anteriorPaso()">
+              <span class="material-symbols-outlined">chevron_left</span>
+              Atrás
+            </button>
+          }
+          <button type="button" class="btn-tour-nav primary" (click)="siguientePaso()">
+            {{ pasoTutorial() === pasosTutorial.length - 1 ? 'Finalizar' : 'Siguiente' }}
+            @if (pasoTutorial()! < pasosTutorial.length - 1) {
+              <span class="material-symbols-outlined">chevron_right</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

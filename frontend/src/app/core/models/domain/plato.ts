@@ -28,5 +28,6 @@ export interface Plato {
   tiempoPreparacion?: number;
   categoria?: string;
   recomendado?: boolean;
+  precioPromocional?: number;
   ventas?: number;
 }

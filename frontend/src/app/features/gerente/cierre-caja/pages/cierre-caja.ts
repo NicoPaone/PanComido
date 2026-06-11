@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ArsCurrencyPipe } from '../../../../shared/pipes/ars-currency.pipe';
 import { CierreCajaStateService, RankingCajaItem, HistorialCierreItem } from '../services/cierre-caja.state';
@@ -17,6 +18,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 export class CierreCajaPage {
   readonly state = inject(CierreCajaStateService);
   private readonly authService = inject(AuthService);
+  private readonly document = inject(DOCUMENT);
 
   readonly modalDetalle = viewChild.required<Modal>('modalDetalle');
   readonly modalConfirmar = viewChild.required<Modal>('modalConfirmar');
@@ -24,6 +26,81 @@ export class CierreCajaPage {
   readonly diferenciaAbsoluta = computed(() => Math.abs(this.state.diferenciaEfectivo()));
   readonly cierreSeleccionado = signal<HistorialCierreItem | null>(null);
   readonly descargarPdfAlConfirmar = signal(false);
+
+  // Estado del Tutorial
+  readonly pasoTutorial = signal<number | null>(null);
+
+  // IDs de los elementos de cada paso del tutorial
+  private readonly tutorialTargetIds = [
+    'tutorial-turno',
+    'tutorial-recaudacion',
+    'tutorial-caja',
+    'tutorial-medios-pago',
+    'tutorial-confirmacion'
+  ];
+
+  constructor() {
+    // Auto-scroll al elemento del paso activo cuando cambia el tutorial
+    effect(() => {
+      const paso = this.pasoTutorial();
+      if (paso !== null) {
+        const id = this.tutorialTargetIds[paso];
+        if (id) {
+          setTimeout(() => {
+            const el = this.document.getElementById(id);
+            el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 80);
+        }
+      }
+    });
+  }
+
+  readonly pasosTutorial = [
+    {
+      titulo: '1. Selección de Turno',
+      descripcion: 'Elegí el turno (Día o Noche) que querés conciliar y cerrar. La información financiera se cargará dinámicamente según esta selección.'
+    },
+    {
+      titulo: '2. Recaudación del Turno',
+      descripcion: 'Visualizá el total facturado, la cantidad de cobros y el avance respecto a la meta de ventas establecida para el turno.'
+    },
+    {
+      titulo: '3. Arqueo de Caja Física',
+      descripcion: 'Ingresá el efectivo contado físicamente en caja. Si hay diferencias respecto al sistema, se calculará automáticamente y deberás justificarla en el campo de observaciones.'
+    },
+    {
+      titulo: '4. Desglose de Medios de Pago',
+      descripcion: 'Revisá los cobros acumulados en cada método de pago (Efectivo, Débito, Transferencia, QR, etc.) para facilitar la conciliación de cada canal.'
+    },
+    {
+      titulo: '5. Checklist y Cierre de Caja',
+      descripcion: 'Verificá el estado del checklist. Cuando todos los requisitos estén listos (verde), podrás confirmar el cierre de forma permanente y descargar el reporte PDF detallado.'
+    }
+  ];
+
+  iniciarTutorial(): void {
+    this.pasoTutorial.set(0);
+  }
+
+  siguientePaso(): void {
+    const pasoActual = this.pasoTutorial();
+    if (pasoActual !== null && pasoActual < this.pasosTutorial.length - 1) {
+      this.pasoTutorial.set(pasoActual + 1);
+    } else {
+      this.cerrarTutorial();
+    }
+  }
+
+  anteriorPaso(): void {
+    const pasoActual = this.pasoTutorial();
+    if (pasoActual !== null && pasoActual > 0) {
+      this.pasoTutorial.set(pasoActual - 1);
+    }
+  }
+
+  cerrarTutorial(): void {
+    this.pasoTutorial.set(null);
+  }
 
   readonly salesMeta = computed(() => this.state.turnoSeleccionadoId() === 'dia' ? 600000 : 1000000);
   readonly progressPercentage = computed(() => {

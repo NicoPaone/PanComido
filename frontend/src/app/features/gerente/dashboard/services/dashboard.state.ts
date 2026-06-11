@@ -1,4 +1,5 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, Injectable, signal, inject } from '@angular/core';
+import { ApiService } from '../../../../core/services/api-service';
 
 export type DashboardPeriodo = '1d' | '3d' | '7d' | '30d' | '365d' | 'custom';
 
@@ -30,6 +31,7 @@ export interface DashboardVentaDia {
 
 export interface DashboardInsumoVencimiento {
   nombre: string;
+  loteNombre?: string;
   fecha: string;
   cantidad: string;
   criticidad: 'alta' | 'media' | 'baja';
@@ -213,9 +215,40 @@ const MOCK_ACCIONES: DashboardAccionItem[] = [
 
 @Injectable({ providedIn: 'root' })
 export class DashboardStateService {
+  private api = inject(ApiService);
   private _periodo = signal<DashboardPeriodo>('7d');
   private _fechaDesde = signal<string>('');
   private _fechaHasta = signal<string>('');
+  private _insumosBackend = signal<DashboardInsumoVencimiento[]>([]);
+
+  constructor() {
+    this.cargarVencimientos();
+  }
+
+  private cargarVencimientos(): void {
+    this.api.get<any[]>('gerente/dashboard/vencimientos').subscribe({
+      next: (res) => {
+        const mapeados: DashboardInsumoVencimiento[] = (res || []).map(item => {
+          let fechaNormalizada = item.fecha;
+          if (item.fecha && item.fecha.includes('/')) {
+            const [dia, mes] = item.fecha.split('/');
+            const year = new Date().getFullYear();
+            fechaNormalizada = `${year}-${mes}-${dia}`;
+          }
+          return {
+            nombre: item.nombre,
+            loteNombre: item.loteNombre,
+            fecha: fechaNormalizada,
+            cantidad: item.cantidad,
+            criticidad: (item.criticidad || 'baja').toLowerCase() as 'alta' | 'media' | 'baja',
+            relativo: item.relativo
+          };
+        });
+        this._insumosBackend.set(mapeados);
+      },
+      error: (err) => console.error('Error cargando vencimientos dashboard', err)
+    });
+  }
 
   periodo = this._periodo.asReadonly();
   fechaDesde = this._fechaDesde.asReadonly();
@@ -278,7 +311,7 @@ export class DashboardStateService {
 
   insumosPorVencer = computed<DashboardInsumoVencimiento[]>(() => {
     const horizonte = this.horizonteDias();
-    return MOCK_INSUMOS_VENCEN.filter(insumo => this.diasHasta(insumo.fecha) <= horizonte);
+    return this._insumosBackend().filter(insumo => this.diasHasta(insumo.fecha) <= horizonte);
   });
 
   vencimientosResumen = computed(() => {
@@ -297,8 +330,21 @@ export class DashboardStateService {
       return 'Sin insumos de prioridad alta. Mantener seguimiento de media y baja criticidad.';
     }
 
-    const nombres = criticos.map(item => item.nombre).join(' y ');
-    return `Priorizar ${nombres} en preparaciones del dia para reducir merma y evitar faltantes.`;
+    const maxItems = 3;
+    const nombres = criticos.slice(0, maxItems).map(item => item.nombre);
+    
+    let textoNombres = '';
+    if (criticos.length > maxItems) {
+      const resto = criticos.length - maxItems;
+      textoNombres = nombres.join(', ') + ` y ${resto} más`;
+    } else if (nombres.length === 1) {
+      textoNombres = nombres[0];
+    } else {
+      const ultimo = nombres.pop();
+      textoNombres = nombres.join(', ') + ' y ' + ultimo;
+    }
+
+    return `Priorizar ${textoNombres} en preparaciones del dia para reducir merma y evitar faltantes.`;
   });
 
   facturacionPorCentro = computed<DashboardFacturacionCentro[]>(() => {

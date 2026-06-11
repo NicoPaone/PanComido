@@ -378,12 +378,15 @@
           <h2>Insumos proximos a vencer</h2>
           <p>Priorizado por fecha, cantidad y criticidad</p>
         </div>
-        <div class="expiry-recommendation">
-          <span class="material-symbols-outlined" aria-hidden="true">tips_and_updates</span>
-          <div>
-            <strong>Sugerencia operativa</strong>
-            <small>{{ state.recomendacionOperativa() }}</small>
+        <div class="expiry-recommendation-wrapper">
+          <div class="expiry-recommendation" [class.active]="resaltarCriticos()" (click)="toggleResaltarCriticos()" role="button" tabindex="0">
+            <span class="material-symbols-outlined" aria-hidden="true">tips_and_updates</span>
+            <div>
+              <strong>Sugerencia operativa</strong>
+              <small>{{ state.recomendacionOperativa() }}</small>
+            </div>
           </div>
+          <span class="expiry-hint">Haz clic en la sugerencia para {{ resaltarCriticos() ? 'quitar el resaltado' : 'resaltar los insumos críticos abajo' }}</span>
         </div>
       </div>
 
@@ -398,10 +401,10 @@
 
       <div class="expiry-list">
         @for (insumo of state.insumosPorVencer(); track insumo.nombre) {
-          <div class="expiry-row" [class]="insumo.criticidad">
+          <div class="expiry-row" [class]="insumo.criticidad" [class.highlight]="resaltarCriticos() && insumo.criticidad === 'alta'">
             <div class="expiry-copy">
               <strong>{{ insumo.nombre }}</strong>
-              <small>{{ insumo.relativo }} · {{ insumo.cantidad }} disponibles</small>
+              <small>{{ insumo.relativo }} · {{ insumo.cantidad }}</small>
             </div>
             <div class="expiry-meta">
               <time>{{ insumo.fecha | date:'dd/MM' }}</time>
