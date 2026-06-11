@@ -42,6 +42,7 @@ using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Servicios;
 using PanComido.Dominio.Interfaces;
 
+using PanComido.Dominio.CasosDeUso.Dashboard;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -158,7 +159,7 @@ builder.Services.AddScoped<ArticuloCartaMapper>();
 builder.Services.AddScoped<MetodoDePagoMapper>();
 builder.Services.AddScoped<RestauranteMapper>();
 builder.Services.AddScoped<TurnoLaboralMapper>();
-
+builder.Services.AddScoped<DashboardMapper>();
 
 builder.Services.AddScoped<ArticuloMapper>();
 builder.Services.AddScoped<PagoMapper>();
@@ -231,6 +232,7 @@ builder.Services.AddScoped<CrearProveedorCasoDeUso>();
 builder.Services.AddScoped<ModificarProveedorCasoDeUso>();
 builder.Services.AddScoped<EliminarProveedorCasoDeuso>();
 builder.Services.AddScoped<ObtenerProveedorCasoDeUso>();
+builder.Services.AddScoped<ObtenerVencimientosYCriticidadDashboardCasoDeUso>();
 builder.Services.AddScoped<ObtenerMetodosDePagoCasoDeUso>();
 builder.Services.AddScoped<ActualizarMetodosDePagoCasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosDelLocalCasoDeUso>();
