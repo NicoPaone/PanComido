@@ -1,0 +1,12 @@
+.custom-time-input {
+  border: 1px solid var(--primary-orange);
+  border-radius: 4px;
+  font-weight: 600;
+  color: #1f2937;
+  padding: 0.375rem 0.75rem;
+  width: 140px;
+}
+.custom-time-input:focus {
+  border-color: var(--primary-orange);
+  box-shadow: 0 0 0 0.2rem rgba(240, 143, 26, 0.25);
+}

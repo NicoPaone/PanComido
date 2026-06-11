@@ -1,0 +1,142 @@
+ <div class="container-fluid py-4" style="max-width: 1200px;">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h4 mb-0 fw-bold" style="color: #1f2937;">Datos del local</h2>
+
+    <div class="d-flex gap-3">
+      <button
+        class="btn px-4 text-white"
+        style="background-color: var(--status-success); border: none; font-weight: 600; border-radius: 4px;"
+        [disabled]="guardando()"
+        (click)="state.guardarTodo()"
+      >
+        @if (guardando()) {
+          <span class="spinner-border spinner-border-sm"></span>
+        } @else {
+          Aplicar cambios
+        }
+      </button>
+    </div>
+  </div>
+
+  <!-- Feedback -->
+  @if (error(); as msg) {
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      {{ msg }}
+      <button type="button" class="btn-close" (click)="state.limpiarFeedback()"></button>
+    </div>
+  }
+
+  @if (exito(); as msg) {
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="bi bi-check-circle me-2"></i>
+      {{ msg }}
+      <button type="button" class="btn-close" (click)="state.limpiarFeedback()"></button>
+    </div>
+  }
+
+  <!-- Loader -->
+  @if (loading()) {
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 300px">
+      <div class="text-center">
+        <div class="spinner-border text-primary mb-3" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="text-muted">Cargando configuración...</p>
+      </div>
+    </div>
+  }
+
+  <!-- Contenido -->
+  @if (!loading() && datosLocal(); as datos) {
+    <div class="row g-4">
+      <div class="col-12">
+        <app-datos-local-form
+          [datosLocal]="datos"
+          (datosLocalChange)="onDatosLocalChange($event)"
+        />
+      </div>
+
+      <div class="col-md-5">
+        <h2 class="config-section-title">Métodos de pago habilitados</h2>
+        <app-metodos-pago-list
+          [metodosPago]="metodosPago()"
+          (toggleMetodo)="onToggleMetodoPago($event)"
+        />
+      </div>
+
+      <div class="col-md-7">
+        <h2 class="config-section-title">Configuración de turnos</h2>
+        <app-turnos-laborales-list
+          [turnos]="turnos()"
+          (turnoChange)="onTurnoChange($event)"
+        />
+      </div>
+    </div>
+
+    <!-- Secciones Estáticas: Porcentaje de ganancia y Fila virtual -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <h2 class="config-section-title">Porcentaje de ganancia</h2>
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+          <div class="card-body p-4">
+            <div class="row">
+              <div class="col-md-6">
+                <h6 class="fs-5 mb-4 fw-bold text-dark">Platos</h6>
+                <div class="row g-3">
+                  <div class="col-6 d-flex align-items-center justify-content-between">
+                    <span>Entradas</span>
+                    <input type="text" class="form-control custom-number-input" value="80" readonly>
+                  </div>
+                  <div class="col-6 d-flex align-items-center justify-content-between">
+                    <span>Guarniciones</span>
+                    <input type="text" class="form-control custom-number-input" value="80" readonly>
+                  </div>
+                  <div class="col-6 d-flex align-items-center justify-content-between">
+                    <span>Principales</span>
+                    <input type="text" class="form-control custom-number-input" value="75" readonly>
+                  </div>
+                  <div class="col-6 d-flex align-items-center justify-content-between">
+                    <span>Postres</span>
+                    <input type="text" class="form-control custom-number-input" value="75" readonly>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <h6 class="fs-5 mb-4 fw-bold text-dark">Bebidas</h6>
+                <div class="d-flex align-items-center gap-4 mt-2">
+                  <div class="d-flex align-items-center gap-3">
+                    <span>Con alcohol</span>
+                    <input type="text" class="form-control custom-number-input" value="100" readonly>
+                  </div>
+                  <div class="d-flex align-items-center gap-3">
+                    <span>Sin alcohol</span>
+                    <input type="text" class="form-control custom-number-input" value="90" readonly>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <h2 class="config-section-title">Fila virtual</h2>
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+          <div class="card-body p-4 d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="mb-1 fw-bold fs-5 text-dark">Habilitar fila virtual</h6>
+              <span class="text-muted">Los clientes pueden anotarse desde la puerta cuando no hay mesas disponibles.</span>
+            </div>
+            <div class="form-check form-switch custom-switch mb-0">
+              <input class="form-check-input" type="checkbox" role="switch" checked disabled>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

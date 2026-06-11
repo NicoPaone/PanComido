@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -24,7 +23,7 @@ interface StockRow {
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-insumo-list',
-  imports: [CommonModule, ScrollingModule, ArsCurrencyPipe],
+  imports: [ ScrollingModule, ArsCurrencyPipe],
   templateUrl: './insumo-list.html',
   styleUrl: './insumo-list.css',
 })

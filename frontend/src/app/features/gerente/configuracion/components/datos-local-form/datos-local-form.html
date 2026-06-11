@@ -1,0 +1,106 @@
+<div class="card shadow-sm border-0 rounded-3 mb-4">
+  <div class="card-body p-4">
+    <div class="d-flex flex-wrap gap-4 align-items-start">
+      <!-- Image Logo -->
+      <div 
+        class="position-relative d-flex flex-column align-items-center justify-content-center flex-shrink-0"
+        style="width: 160px; height: 160px; background-color: #1f5a37; cursor: pointer;"
+        (click)="fileInput.click()"
+      >
+        @if (previewUrl(); as url) {
+          <img [src]="url" alt="Logo preview" class="img-fluid w-100 h-100" style="object-fit: contain;" />
+          <button
+            type="button"
+            class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1"
+            style="padding: 0.1rem 0.3rem;"
+            (click)="removerImagen(); $event.stopPropagation()"
+          >×</button>
+        } @else {
+          <i class="bi bi-image text-white" style="font-size: 2rem; opacity: 0.6;"></i>
+          <span class="text-white fw-semibold mt-2" style="font-size: 0.9rem;">Subir imagen</span>
+          <span class="text-white" style="font-size: 0.72rem; line-height: 1.2; opacity: 0.7;">PNG o JPG, máx. 2MB</span>
+        }
+      </div>
+      <input #fileInput type="file" accept="image/png, image/jpeg, image/webp" class="d-none" (change)="onFileSelected($event)"/>
+
+      <!-- Controls -->
+      <div class="flex-grow-1">
+        <div class="row gx-4 gy-3">
+
+          <!-- Column 2: Color principal -->
+          <div class="col-auto d-flex flex-column" style="width: 130px;">
+            <label class="form-label" style="font-size: 0.85rem; margin-bottom: 2px; color: #4b5563;">Color principal</label>
+            <div class="custom-color-container mb-2" style="height: 40px;">
+               <input 
+                 type="color" 
+                 class="custom-color-input" 
+                 [value]="datosLocal().colorPrincipal ?? '#000000'"
+                 (input)="emitir('colorPrincipal', $any($event.target).value)"
+               >
+            </div>
+
+            <label class="form-label mt-1" style="font-size: 0.85rem; margin-bottom: 2px; color: #4b5563;">Color texto</label>
+            <input 
+              type="text" 
+              class="form-control custom-text-input" 
+              style="height: 40px;"
+              [value]="datosLocal().textoPrincipal"
+              (input)="emitir('textoPrincipal', $any($event.target).value)"
+            >
+          </div>
+
+          <!-- Column 3: Color secundario -->
+          <div class="col-auto d-flex flex-column" style="width: 130px;">
+            <label class="form-label" style="font-size: 0.85rem; margin-bottom: 2px; color: #4b5563;">Color secundario</label>
+            <div class="custom-color-container mb-2" style="height: 40px;">
+               <input 
+                 type="color" 
+                 class="custom-color-input" 
+                 [value]="datosLocal().colorSecundario ?? '#000000'"
+                 (input)="emitir('colorSecundario', $any($event.target).value)"
+               >
+            </div>
+
+            <label class="form-label mt-1" style="font-size: 0.85rem; margin-bottom: 2px; color: #4b5563;">Color texto</label>
+            <div class="custom-color-container" style="height: 40px;">
+               <input 
+                 type="color" 
+                 class="custom-color-input" 
+                 [value]="datosLocal().textoSecundario ?? '#000000'"
+                 (input)="emitir('textoSecundario', $any($event.target).value)"
+               >
+            </div>
+          </div>
+
+          <!-- Column 4: Text inputs -->
+          <div class="col d-flex flex-column min-w-0" style="min-width: 250px;">
+            <div>
+              <label class="form-label" style="font-size: 0.85rem; margin-bottom: 2px; color: #4b5563;">
+                Nombre del local
+              </label>
+              <input 
+                type="text" 
+                class="form-control custom-text-input" 
+                style="height: 40px;"
+                [value]="datosLocal().nombre"
+                (input)="emitir('nombre', $any($event.target).value)"
+              >
+            </div>
+            <div class="mt-2">
+              <label class="form-label" style="font-size: 0.85rem; margin-bottom: 2px; color: #4b5563;">
+                Dirección
+              </label>
+              <input 
+                type="text" 
+                class="form-control custom-text-input" 
+                style="height: 40px;"
+                [value]="datosLocal().direccion"
+                readonly
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

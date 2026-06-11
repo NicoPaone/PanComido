@@ -1,0 +1,30 @@
+.custom-color-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 100%;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.custom-color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.custom-color-input::-webkit-color-swatch {
+  border: none;
+}
+.custom-color-container {
+  border: 1px solid var(--primary-orange);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.custom-text-input {
+  border: 1px solid var(--primary-orange);
+  border-radius: 2px;
+  box-shadow: none;
+}
+.custom-text-input:focus {
+  border-color: var(--primary-orange);
+  box-shadow: 0 0 0 0.2rem rgba(240, 143, 26, 0.25);
+}
