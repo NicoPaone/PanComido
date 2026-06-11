@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Infraestructura.Persistencia.Entidades;
@@ -50,6 +50,30 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                                     .ThenInclude(i => i.Lotes).ToListAsync();
 
             return efLista.Select(a => (DOM.Insumo)_mapper.paraDominio(a)).ToList();
+        }
+
+        public async Task<List<DOM.Insumo>> ObtenerInsumosProximosAVencerAsync(int restauranteId)
+        {
+            var efData = await BaseQuery(restauranteId)
+                .Where(a => a.Insumo != null && a.Insumo.Lotes.Any(l => l.FechaVencimiento != null))
+                .Select(a => new
+                {
+                    Articulo = a,
+                    ProximoVencimiento = a.Insumo.Lotes.Where(l => l.FechaVencimiento != null).Min(l => l.FechaVencimiento)
+                })
+                .Where(x => x.ProximoVencimiento != null)
+                .OrderBy(x => x.ProximoVencimiento)
+                .ToListAsync();
+
+            var domLista = new List<DOM.Insumo>();
+            foreach (var item in efData)
+            {
+                var domInsumo = (DOM.Insumo)_mapper.paraDominio(item.Articulo);
+                domInsumo.Vencimiento = item.ProximoVencimiento;
+                domLista.Add(domInsumo);
+            }
+
+            return domLista;
         }
 
         public async Task<List<DOM.Insumo>> ObtenerInsumosDelProveedorAsync(int proveedorId, int restauranteId)

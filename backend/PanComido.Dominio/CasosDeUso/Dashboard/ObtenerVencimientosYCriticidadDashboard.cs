@@ -22,30 +22,18 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
 
         public async Task<List<Insumo>> EjecutarAsync(int restauranteId)
         {
-            
-            var insumos = await _insumoRepositorio.ObtenerInsumosConLotesAsync(restauranteId);
+            var insumos = await _insumoRepositorio.ObtenerInsumosProximosAVencerAsync(restauranteId);
             var hoy = DateOnly.FromDateTime(DateTime.Now);
 
             foreach (var insumo in insumos)
             {
-                // Buscamos la fecha de vencimiento más próxima de los lotes
-                var fechaMasProxima = insumo.Lotes
-                    .Where(l => l.FechaVencimiento.HasValue)
-                    .OrderBy(l => l.FechaVencimiento)
-                    .Select(l => l.FechaVencimiento)
-                    .FirstOrDefault();
-
-                if (fechaMasProxima.HasValue)
+                if (insumo.Vencimiento.HasValue)
                 {
-                    insumo.Vencimiento = fechaMasProxima;
-                    insumo.CriticidadVencimiento = CalcularCriticidad(hoy, fechaMasProxima.Value);
+                    insumo.CriticidadVencimiento = CalcularCriticidad(hoy, insumo.Vencimiento.Value);
                 }
             }
 
-            // Filtramos los que tienen vencimiento y los ordenamos por fecha
-            return insumos.Where(i => i.Vencimiento.HasValue)
-                          .OrderBy(i => i.Vencimiento)
-                          .ToList();
+            return insumos;
         }
 
         private CriticidadVencimiento? CalcularCriticidad(DateOnly hoy, DateOnly vencimiento)
