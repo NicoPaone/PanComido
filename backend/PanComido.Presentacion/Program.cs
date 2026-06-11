@@ -233,6 +233,7 @@ builder.Services.AddScoped<ModificarProveedorCasoDeUso>();
 builder.Services.AddScoped<EliminarProveedorCasoDeuso>();
 builder.Services.AddScoped<ObtenerProveedorCasoDeUso>();
 builder.Services.AddScoped<ObtenerVencimientosYCriticidadDashboardCasoDeUso>();
+builder.Services.AddScoped<PanComido.Dominio.CasosDeUso.Dashboard.ObtenerRendimientoComercialCasoDeUso>();
 builder.Services.AddScoped<ObtenerMetodosDePagoCasoDeUso>();
 builder.Services.AddScoped<ActualizarMetodosDePagoCasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosDelLocalCasoDeUso>();

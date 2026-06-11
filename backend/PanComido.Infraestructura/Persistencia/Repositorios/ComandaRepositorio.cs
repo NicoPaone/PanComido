@@ -150,6 +150,34 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
             await _ctx.SaveChangesAsync();
         }
+
+        public async Task<List<DOM.RendimientoPlato>> ObtenerRendimientoPlatosAsync(int restauranteId, DateTime fechaDesde, DateTime fechaHasta)
+        {
+            var platos = await _ctx.Articulos
+                .Where(a => a.RestauranteId == restauranteId && a.Plato != null)
+                .Select(a => new DOM.RendimientoPlato
+                {
+                    PlatoId = a.Id,
+                    Nombre = a.Nombre,
+                    UnidadesVendidas = _ctx.ArticuloComanda
+                        .Where(ac => ac.ArticuloId == a.Id 
+                                  && ac.Comanda.RestauranteId == restauranteId
+                                  && ac.Comanda.HoraInicio >= fechaDesde
+                                  && ac.Comanda.HoraInicio <= fechaHasta
+                                  && ac.Comanda.PagoId != null)
+                        .Sum(ac => (int?)ac.Cantidad) ?? 0,
+                    FacturacionTotal = _ctx.ArticuloComanda
+                        .Where(ac => ac.ArticuloId == a.Id 
+                                  && ac.Comanda.RestauranteId == restauranteId
+                                  && ac.Comanda.HoraInicio >= fechaDesde
+                                  && ac.Comanda.HoraInicio <= fechaHasta
+                                  && ac.Comanda.PagoId != null)
+                        .Sum(ac => (decimal?)(ac.Cantidad * a.PrecioVentaFinal)) ?? 0m
+                })
+                .ToListAsync();
+
+            return platos;
+        }
     }
 
 }
