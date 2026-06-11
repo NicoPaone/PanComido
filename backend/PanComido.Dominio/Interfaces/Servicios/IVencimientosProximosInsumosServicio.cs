@@ -1,4 +1,5 @@
 ﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,6 @@ namespace PanComido.Dominio.Interfaces.Servicios
         Dictionary<int, List<Lote>> ObtenerVencimientosProximos(
             List<Insumo> insumos,
             int diasAnticipacion);
+
     }
 }

@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
-
+import { jwtDecode } from "jwt-decode";
 
 import { ROLE_ROUTES, DEFAULT_ROUTE } from '../../app.constants';
 import { ApiService } from './api-service';
@@ -93,28 +93,19 @@ export class AuthService {
   }
   private decodificarToken(): JwtPayload | null{
 
-    const fila = localStorage.getItem(TOKEN_KEY);
-    if(!fila) return null;
+    const token = localStorage.getItem(TOKEN_KEY);
+    if(!token) return null;
 
     try{
-      const payload = fila.split('.')[1];
-      const decodificar = JSON.parse(atob(payload));
-
-      return {
-        sub: decodificar.sub,
-        name: decodificar.name,
-        email: decodificar.email,
-        role: decodificar.role,
-        restauranteId: decodificar.restauranteId
-      };
+      return jwtDecode<JwtPayload>(token);
+     
     }catch {
       return null;
     }
   }
-  private estaExpirado(payload: JwtPayload): boolean{ 
-    const exp = (payload as unknown as {exp?:number}).exp;
-    if(!exp) return false;
-    return Date.now() >= exp *1000;
+  private estaExpirado(payload: JwtPayload): boolean {
+    if (!payload.exp) return false;
+    return Date.now() >= payload.exp * 1000;
   }
   private generarIniciales(nombre:string): string{
 
