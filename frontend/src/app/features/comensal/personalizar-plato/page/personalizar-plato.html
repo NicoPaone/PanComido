@@ -45,14 +45,16 @@
       <h4>Agregar ingredientes</h4>
       <div class="chips-container">
         @for (ing of ingredientesExtra; track ing) {
-          <app-boton-comensal
-           [backgroundColor]="configuracion.paleta.botonPrimario"
-          [textColor]="configuracion.paleta.textoClaro" 
-            class="chip"
-            [class.seleccionado]="extrasSeleccionados.includes(ing)"
-            (click)="toggleExtra(ing)">
-            + {{ ing }} 
-          </app-boton-comensal>
+         <app-boton-comensal
+  [backgroundColor]="extrasSeleccionados.includes(ing) ? '#28a745' : configuracion.paleta.botonSecundario"
+  [textColor]="configuracion.paleta.textoOscuro"
+  class="chip"
+  [class.seleccionado]="extrasSeleccionados.includes(ing)"
+  (click)="toggleExtra(ing)"
+  [disabled]="removidosSeleccionados.includes(ing)">
+  
+  + {{ ing }}
+</app-boton-comensal>
         }
       </div>
     </div>
@@ -63,11 +65,12 @@
       <div class="chips-container">
         @for (ing of ingredientesRemover; track ing) {
           <app-boton-comensal 
-            [backgroundColor]="configuracion.paleta.botonPrimario"
-            [textColor]="configuracion.paleta.textoClaro" 
+          [backgroundColor]="removidosSeleccionados.includes(ing) ? '#dc3545' : configuracion.paleta.botonSecundario"
+            [textColor]="configuracion.paleta.textoOscuro" 
             class="chip chip-remover"
             [class.seleccionado]="removidosSeleccionados.includes(ing)"
-            (click)="toggleRemover(ing)">
+            (click)="toggleRemover(ing)"
+             [disabled]="extrasSeleccionados.includes(ing)">
             - {{ ing }}
           </app-boton-comensal >
         }
@@ -88,9 +91,9 @@
 
   <!-- Botones de Acción -->
   <div class="action-buttons">
-    <button class="btn-accion btn-agregar" (click)="guardarCambios()">
+    <app-boton variante="success" (click)="guardarCambios()">
       Guardar cambios
-    </button>
+    </app-boton>
   </div>
 
 </div>

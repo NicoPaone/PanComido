@@ -1,3 +1,29 @@
+h3{
+  margin: 20px;
+}
+
+h4{
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin: 20px;
+}
+
+.chips-container{
+  margin: 20px;
+}
+
+textarea{
+  margin-left: 20px;
+  width: 90%;
+  height: 100px;
+  padding: 10px;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--border-radius-md);
+  font-size: 1rem;
+  color: var(--gray-700);
+}
+
 .personalizar-container {
   min-height: 100vh;
   background-color: var(--gray-50);

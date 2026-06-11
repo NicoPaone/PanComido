@@ -10,12 +10,13 @@ import { ComensalState } from '../../services/comensal-state';
 import { ComandaState } from '../../services/comanda-state';
 import { PlatoService } from '../../services/plato.service';
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
+import { Boton } from '../../../../shared/ui/botones/boton/boton';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-personalizar-plato',
   standalone: true,
-  imports: [FormsModule, DecimalPipe, LlamarAlMozo, BotonComensal],
+  imports: [FormsModule, DecimalPipe, LlamarAlMozo, BotonComensal, Boton],
   templateUrl: './personalizar-plato.html',
   styleUrls: ['./personalizar-plato.css']
 })
@@ -82,24 +83,35 @@ export class PersonalizarPlato implements OnInit {
     this.router.navigate(['/comensal/pedido']);
   }
 
-  toggleExtra(ingrediente: string) {
-    if (this.extrasSeleccionados.includes(ingrediente)) {
-      this.extrasSeleccionados = this.extrasSeleccionados.filter(i => i !== ingrediente);
-    } else {
-      this.extrasSeleccionados.push(ingrediente);
-    }
-    this.cdr.markForCheck();
+
+
+  toggleExtra(ing: string) {
+
+  if (this.removidosSeleccionados.includes(ing)) {
+    return;
   }
 
-  toggleRemover(ingrediente: string) {
-    if (this.removidosSeleccionados.includes(ingrediente)) {
-      this.removidosSeleccionados = this.removidosSeleccionados.filter(i => i !== ingrediente);
-    } else {
-      this.removidosSeleccionados.push(ingrediente);
-    }
-    this.cdr.markForCheck();
+  if (this.extrasSeleccionados.includes(ing)) {
+    this.extrasSeleccionados =
+      this.extrasSeleccionados.filter(i => i !== ing);
+  } else {
+    this.extrasSeleccionados.push(ing);
+  }
+}
+
+  toggleRemover(ing: string) {
+
+  if (this.extrasSeleccionados.includes(ing)) {
+    return;
   }
 
+  if (this.removidosSeleccionados.includes(ing)) {
+    this.removidosSeleccionados =
+      this.removidosSeleccionados.filter(i => i !== ing);
+  } else {
+    this.removidosSeleccionados.push(ing);
+  }
+}
   guardarCambios() {
     if (this.itemIndex === -1) return;
 
