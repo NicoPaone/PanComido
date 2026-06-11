@@ -13,12 +13,12 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
     public class MetodoDePagoRepositorio : IMetodoDePagoRepositorio
     {
         private readonly AppDbContext _ctx;
-        private readonly MetodoDePagoEntityMapper _metodoDePagoMapper;
+        private readonly MetodoDePagoEntityMapper _metodoDePagoEntityMapper;
 
         public MetodoDePagoRepositorio(AppDbContext context, MetodoDePagoEntityMapper metodoDePagoMapper)
         {
             _ctx = context;
-            _metodoDePagoMapper = metodoDePagoMapper;
+            _metodoDePagoEntityMapper = metodoDePagoMapper;
         }
 
         public async Task<List<MetodoDePago>> ObtenerMetodosDePagoAsync(int restauranteId)
@@ -28,7 +28,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     .Where(r => r.RestauranteId == restauranteId))
                 .ToListAsync();
 
-            return efMetodos.Select(m => _metodoDePagoMapper.paraDominio(m, m.MetodoDePagoRestaurantes.FirstOrDefault())).ToList();
+            return efMetodos.Select(m => _metodoDePagoEntityMapper.paraDominio(m, m.MetodoDePagoRestaurantes.FirstOrDefault())).ToList();
         }
 
         public async Task ActualizarEstadoAsync(int restauranteId, List<MetodoDePago> metodosDePago)

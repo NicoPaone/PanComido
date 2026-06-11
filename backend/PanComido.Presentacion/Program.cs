@@ -40,7 +40,6 @@ using PanComido.Presentacion.Filtros;
 using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Servicios;
-using PanComido.Dominio.Interfaces;
 
 using PanComido.Dominio.CasosDeUso.Dashboard;
 
@@ -136,6 +135,7 @@ builder.Services.AddScoped<LlamadoEntityMapper>();
 builder.Services.AddScoped<MetodoDePagoEntityMapper>();
 builder.Services.AddScoped<RestauranteEntityMapper>();
 builder.Services.AddScoped<TurnoLaboralEntityMapper>();
+builder.Services.AddScoped<FilaVirtualEntityMapper>();
 
 
 
@@ -159,6 +159,7 @@ builder.Services.AddScoped<ArticuloCartaMapper>();
 builder.Services.AddScoped<MetodoDePagoMapper>();
 builder.Services.AddScoped<RestauranteMapper>();
 builder.Services.AddScoped<TurnoLaboralMapper>();
+builder.Services.AddScoped<FilaVirtualMapper>();
 builder.Services.AddScoped<DashboardMapper>();
 
 builder.Services.AddScoped<ArticuloMapper>();
@@ -183,6 +184,7 @@ builder.Services.AddScoped<IPagoRepositorio, PagoRepositorio>();
 builder.Services.AddScoped<IMetodoDePagoRepositorio, MetodoDePagoRepositorio>();
 builder.Services.AddScoped<IRestauranteRepositorio, RestauranteRepositorio>();
 builder.Services.AddScoped<ITurnoLaboralRepositorio, TurnoLaboralRepositorio>();
+builder.Services.AddScoped<IFilaVirtualRepositorio, FilaVirtualRepositorio>();
 
 
 
@@ -239,6 +241,8 @@ builder.Services.AddScoped<ObtenerDatosDelLocalCasoDeUso>();
 builder.Services.AddScoped<ActualizarDatosDelLocalCasoDeUso>();
 builder.Services.AddScoped<ObtenerTurnosLaboralesCasoDeUso>();
 builder.Services.AddScoped<ActualizarTurnosLaboralesCasoDeUso>();
+builder.Services.AddScoped<ObtenerFilaVirtualCasoDeUso>();
+builder.Services.AddScoped<ActualizarFilaVirtualCasoDeUSo>();
 
 
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
