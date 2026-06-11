@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.Entidades;
-using PanComido.Dominio.Interfaces;
+using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Infraestructura.Persistencia.Mappers;
 using System;
 using System.Collections.Generic;

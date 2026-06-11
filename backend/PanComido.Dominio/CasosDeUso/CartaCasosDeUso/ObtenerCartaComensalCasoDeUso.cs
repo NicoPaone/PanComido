@@ -9,21 +9,24 @@ using System.Threading.Tasks;
 
 namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
 {
-    public class ObtenerCartaCasoDeUso
+    public class ObtenerCartaComensalCasoDeUso
     {
         private readonly IArticuloRepositorio _articuloRepositorio;
         private readonly ILoteRepositorio _loteRepositorio;
 
         private readonly IDisponibilidadArticuloServicio _disponibilidadServicio;
+        private readonly ITiempoDePreparacionPlatoServicio _tiempoDePreparacionPlatoServicio;
 
-        public ObtenerCartaCasoDeUso(
+        public ObtenerCartaComensalCasoDeUso(
             IArticuloRepositorio articuloRepositorio,
             ILoteRepositorio loteRepositorio,
-            IDisponibilidadArticuloServicio disponibilidadServicio)
+            IDisponibilidadArticuloServicio disponibilidadServicio,
+            ITiempoDePreparacionPlatoServicio tiempoDePreparacionPlatoServicio)
         {
             _articuloRepositorio = articuloRepositorio;
             _loteRepositorio = loteRepositorio;
             _disponibilidadServicio = disponibilidadServicio;
+            _tiempoDePreparacionPlatoServicio = tiempoDePreparacionPlatoServicio;
         }
 
         public async Task<List<Articulo>> EjecutarAsync(int restauranteId)
@@ -37,6 +40,9 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
             {
                 if (_disponibilidadServicio.VerificarDisponibilidad(articulo, stockDeInsumosActual))
                 {
+                    if (articulo is Plato plato)
+                        plato.TiempoPreparacionEstimado = _tiempoDePreparacionPlatoServicio.CalcularTiempoPreparacionDinamico(plato);
+                    
                     articulosDisponiblesEnCarta.Add(articulo);
                 }
             }

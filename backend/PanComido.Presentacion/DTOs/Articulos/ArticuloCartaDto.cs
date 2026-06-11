@@ -11,6 +11,7 @@
         public bool EsPlato { get; set; }
         public bool EsDestacado { get; set; }
         public int? TiempoPreparacionBase { get; set; }
+        public int? TiempoPreparacionEstimado { get; set; }
 
         public string CategoriaPlato { get; set; }
         public string TipoPlato { get; set; }

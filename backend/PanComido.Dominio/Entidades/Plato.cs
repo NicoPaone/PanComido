@@ -10,11 +10,9 @@ namespace PanComido.Dominio.Entidades
     {
         public int TiempoPreparacionBase { get; set; }
 
-        // PASADOS A CLASE ArticuloComanda N:N entre articulo y comanda, Comanda tiene una lista de ArticulosComanda
-        //public int Cantidad { get; set; }
-        //public bool Entregado { get; set; }
-        //public string ? ObservacionesIngredientes { get; set; }
-        //public string ? ObservacionesGenerales { get; set; }
+        // campo calculado en el dominio
+        public int TiempoPreparacionEstimado { get; set; }
+
         public bool Destacado { get; set; }
         public bool Sugerencia { get; set; }
         public int CategoriaPlatoId { get; set; }

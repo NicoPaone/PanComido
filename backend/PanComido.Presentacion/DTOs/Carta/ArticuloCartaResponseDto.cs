@@ -11,5 +11,6 @@ namespace PanComido.Presentacion.DTOs.Carta
         public string TipoArticulo { get; set; }
         public string Categoria { get; set; }
         public int? TiempoPreparacionBase { get; set; }
+        public int? TiempoPreparacionEstimado { get; set; }
     }
 }
