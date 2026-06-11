@@ -63,14 +63,13 @@
   <!-- BOTONES -->
   <div>
     <!-- Botón siempre visible para agregar más platos -->
-    <app-boton-comensal
+    <app-boton
       class="w-100 mb-3 d-block"
-      backgroundColor="#2f7a40"
-      textColor="#ffffff"
-      [tieneBorde]="true"
+      variante="success"
+    
       (clicked)="volver()">
       <div class="fw-bold fs-5 py-1">+ Agregar más platos</div>
-    </app-boton-comensal>
+    </app-boton>
 
     <!-- Botones extras -->
     <div class="d-flex gap-2">

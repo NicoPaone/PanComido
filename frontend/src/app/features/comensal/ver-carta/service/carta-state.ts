@@ -165,15 +165,18 @@ if (categorias.length > 0) {
   // tieneFiltrosActivos = computed(() =>
   //   this.tiposSeleccionados().length > 0
   // );
-  tieneFiltrosActivos = computed(() =>
+tieneFiltrosActivos = computed(() =>
   this.tiposSeleccionados().length > 0 ||
   this.categoriasSeleccionadas().length > 0 ||
+  this.restriccionesSeleccionadas().length > 0 ||
   this.busqueda().trim() !== '' ||
   this.ordenarPor() !== ''
 );
 
   cantidadFiltrosActivos = computed(() =>
-    this.tiposSeleccionados().length
+    this.tiposSeleccionados().length +
+    this.categoriasSeleccionadas().length +
+    this.restriccionesSeleccionadas().length
   );
 
   
