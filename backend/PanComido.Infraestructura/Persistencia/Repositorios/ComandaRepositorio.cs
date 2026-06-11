@@ -151,9 +151,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             await _ctx.SaveChangesAsync();
         }
 
-        public async Task<List<DOM.RendimientoPlato>> ObtenerRendimientoPlatosAsync(int restauranteId, DateTime fechaDesde, DateTime fechaHasta)
+        private IQueryable<DOM.RendimientoPlato> BaseQueryRendimiento(int restauranteId, DateTime fechaDesde, DateTime fechaHasta)
         {
-            var platos = await _ctx.Articulos
+            return _ctx.Articulos
                 .Where(a => a.RestauranteId == restauranteId && a.Plato != null)
                 .Select(a => new DOM.RendimientoPlato
                 {
@@ -173,10 +173,23 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                                   && ac.Comanda.HoraInicio <= fechaHasta
                                   && ac.Comanda.PagoId != null)
                         .Sum(ac => (decimal?)(ac.Cantidad * a.PrecioVentaFinal)) ?? 0m
-                })
-                .ToListAsync();
+                });
+        }
 
-            return platos;
+        public async Task<List<DOM.RendimientoPlato>> ObtenerTopPlatosMasVendidosAsync(int restauranteId, DateTime fechaDesde, DateTime fechaHasta, int limite = 5)
+        {
+            return await BaseQueryRendimiento(restauranteId, fechaDesde, fechaHasta)
+                .OrderByDescending(p => p.UnidadesVendidas)
+                .Take(limite)
+                .ToListAsync();
+        }
+
+        public async Task<List<DOM.RendimientoPlato>> ObtenerTopPlatosMenosVendidosAsync(int restauranteId, DateTime fechaDesde, DateTime fechaHasta, int limite = 5)
+        {
+            return await BaseQueryRendimiento(restauranteId, fechaDesde, fechaHasta)
+                .OrderBy(p => p.UnidadesVendidas)
+                .Take(limite)
+                .ToListAsync();
         }
     }
 
