@@ -20,10 +20,10 @@ namespace PanComido.Presentacion.Servicios
 
          var claims = new[]
          {
-            new Claim(ClaimTypes.NameIdentifier, empleadoId.ToString()),
-            new Claim(ClaimTypes.Name, nombre),
-            new Claim(ClaimTypes.Email, email),
-            new Claim(ClaimTypes.Role, rol),
+            new Claim("sub" , empleadoId.ToString()),
+            new Claim("name", nombre),
+            new Claim("email", email),
+            new Claim("role", rol),
             new Claim("restauranteId", restauranteId.ToString())
 
          };
