@@ -116,7 +116,8 @@ CREATE TABLE turno_laboral (
     id                      SERIAL PRIMARY KEY,
     restaurante_id          INTEGER NOT NULL REFERENCES restaurante(id),
     horario_laboral_inicio  TIME NOT NULL,
-    horario_laboral_fin     TIME NOT NULL
+    horario_laboral_fin     TIME NOT NULL,
+    es_nocturno             BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE grilla (

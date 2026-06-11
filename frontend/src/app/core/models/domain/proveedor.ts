@@ -52,13 +52,8 @@ export interface SugerenciaPedidoItem {
 
 export interface ProveedorNuevo {
   nombre: string;
-  contacto: string;
-  telefono: string;
-  email: string;
-  calle?: string;
-  numero?: string;
-  ciudad?: string;
-  categorias?: string[];
+  numeroTelefonoWsp?: string;
+  categoriaIds: number[];
 }
 
 export interface PedidoProveedorRequest {

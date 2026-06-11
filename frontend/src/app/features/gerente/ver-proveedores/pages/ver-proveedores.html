@@ -537,7 +537,7 @@
             <span class="section-icon material-symbols-outlined">storefront</span>
             <div>
               <h4 class="section-title mb-0">Datos del proveedor</h4>
-              <p class="section-subtitle mb-0">Cambios locales hasta conectar el backend.</p>
+              <p class="section-subtitle mb-0">Información que usa el proveedor para pedidos.</p>
             </div>
           </div>
 
@@ -554,44 +554,14 @@
               }
             </label>
 
-            <label class="field-group">
-              <span>Contacto <strong class="field-required">*</strong></span>
-              <input type="text" class="form-control custom-input" formControlName="contacto"
-                [class.is-invalid]="proveedorForm.get('contacto')?.touched && proveedorForm.get('contacto')?.invalid">
-              @if (proveedorForm.get('contacto')?.touched && proveedorForm.get('contacto')?.hasError('required')) {
-                <span class="error-text">El contacto es obligatorio.</span>
-              }
-            </label>
-
-            <label class="field-group">
-              <span>Teléfono</span>
+            <label class="field-group field-span-2">
+              <span>WhatsApp</span>
               <input type="text" class="form-control custom-input" formControlName="telefono"
+                placeholder="Ej. +54 11 5555-1234"
                 [class.is-invalid]="proveedorForm.get('telefono')?.touched && proveedorForm.get('telefono')?.invalid">
               @if (proveedorForm.get('telefono')?.touched && proveedorForm.get('telefono')?.hasError('pattern')) {
                 <span class="error-text">Formato de teléfono inválido.</span>
               }
-            </label>
-
-            <label class="field-group">
-              <span>Email</span>
-              <input type="email" class="form-control custom-input" formControlName="email"
-                [class.is-invalid]="proveedorForm.get('email')?.touched && proveedorForm.get('email')?.invalid">
-              @if (proveedorForm.get('email')?.touched && proveedorForm.get('email')?.hasError('email')) {
-                <span class="error-text">Correo inválido.</span>
-              }
-            </label>
-
-            <label class="field-group">
-              <span>Estado</span>
-              <select class="form-select custom-input" formControlName="activo">
-                <option [ngValue]="true">Activo</option>
-                <option [ngValue]="false">Inactivo</option>
-              </select>
-            </label>
-
-            <label class="field-group field-span-2">
-              <span>Dirección</span>
-              <input type="text" class="form-control custom-input" formControlName="direccion" placeholder="Ej. Av. San Martín 1200, CABA">
             </label>
           </div>
         </section>
@@ -606,42 +576,39 @@
           </div>
 
           <ul class="category-list">
-            @for (cat of categoriasDisponiblesEdicion(); track cat) {
+            @for (cat of categoriasDisponiblesEdicion(); track cat.id) {
               <li>
                 <label class="category-checkbox">
-                  <input type="checkbox" [checked]="categoriasEdicion().includes(cat)" (change)="toggleCategoriaEdicion(cat)">
-                  <span class="checkbox-pill">{{ cat }}</span>
+                  <input type="checkbox" [checked]="categoriaSeleccionadaEdicion(cat.id)" (change)="toggleCategoriaEdicion(cat)">
+                  <span class="checkbox-pill">{{ cat.descripcion }}</span>
                 </label>
               </li>
             }
           </ul>
 
-          <div class="add-category">
-            <input type="text" class="form-control custom-input" placeholder="Presiona Enter para agregar" formControlName="customCategory" (keyup.enter)="agregarCategoriaEdicion()">
-            <app-boton label="Agregar" variante="outline" tamanio="sm" (clicked)="agregarCategoriaEdicion()"></app-boton>
-          </div>
-
-          @if (categoriasEdicion().length === 0) {
+          @if (categoriaIdsEdicion().length === 0) {
             <span class="error-text">Debes seleccionar al menos una categoría.</span>
           } @else {
             <div class="category-chips">
-              @for (c of categoriasEdicion(); track c) {
+              @for (c of categoriasDisponiblesEdicion(); track c.id) {
+                @if (categoriaSeleccionadaEdicion(c.id)) {
                 <span class="chip">
-                  <span class="chip-label">{{ c }}</span>
-                  <button type="button" class="chip-remove" [attr.aria-label]="'Eliminar ' + c" (click)="removerCategoriaEdicion(c)">
+                  <span class="chip-label">{{ c.descripcion }}</span>
+                  <button type="button" class="chip-remove" [attr.aria-label]="'Eliminar ' + c.descripcion" (click)="removerCategoriaEdicion(c.id)">
                     <span class="material-symbols-outlined">close</span>
                   </button>
                 </span>
+                }
               }
             </div>
           }
         </section>
 
         <div class="modal-footer-actions">
-          <span class="form-hint">Edición temporal hasta integrar backend.</span>
+          <span class="form-hint">Los campos marcados con * son obligatorios.</span>
           <div class="footer-buttons">
             <app-boton label="Cancelar" variante="outline" tamanio="md" (clicked)="cerrarEditarProveedor()"></app-boton>
-            <app-boton label="Guardar cambios" variante="secondary" tamanio="md" [disabled]="proveedorForm.invalid || categoriasEdicion().length === 0" (clicked)="guardarEdicionProveedor()"></app-boton>
+            <app-boton label="Guardar cambios" variante="secondary" tamanio="md" [disabled]="proveedorForm.invalid || categoriaIdsEdicion().length === 0" (clicked)="guardarEdicionProveedor()"></app-boton>
           </div>
         </div>
       </form>
@@ -656,7 +623,7 @@
         </div>
         <h3 id="eliminar-proveedor-title" class="pedido-modal-title mb-2">Eliminar proveedor</h3>
         <p class="detail-text mb-0">
-          Vas a quitar <strong>{{ proveedor.nombre }}</strong> de esta vista. Por ahora el cambio es solo local.
+          Vas a eliminar <strong>{{ proveedor.nombre }}</strong> del listado de proveedores.
         </p>
 
         <div class="delete-modal-actions">

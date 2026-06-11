@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using System.Threading.Tasks;
 
@@ -19,7 +19,10 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
             // Ahora usamos el ID real que viene de la sesión
             var articulo = await _articuloRepositorio.ObtenerDetalleAsync(restauranteId, articuloId);
 
-            if (articulo == null) return;
+            if (articulo == null)
+            {
+                throw new System.ArgumentException("El artículo que intenta modificar no existe o no pertenece al restaurante.");
+            }
 
             if (visibleEnCarta.HasValue)
             {

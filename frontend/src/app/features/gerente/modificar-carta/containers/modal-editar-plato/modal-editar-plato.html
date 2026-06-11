@@ -145,13 +145,9 @@
                     (ngModelChange)="onCantidadCambiada(ing)">
                 </div>
                 
-                <select class="unit-select form-select form-select-sm bg-light border-0 fw-semibold rounded-pill" [(ngModel)]="ing.unidadMedida">
-                  <option value="GR">gr</option>
-                  <option value="ML">ml</option>
-                  <option value="L">l</option>
-                  <option value="KG">kg</option>
-                  <option value="UN">un</option>
-                </select>
+                <span class="unit-pill bg-light fw-semibold rounded-pill" title="La unidad depende del insumo">
+                  {{ ing.unidadMedida || 's/u' }}
+                </span>
 
                 <button class="btn-delete-pill border-0 bg-transparent text-danger p-1 d-flex align-items-center justify-content-center" (click)="eliminarIngrediente(ing.id)">
                   <span class="material-symbols-outlined fs-5">close</span>

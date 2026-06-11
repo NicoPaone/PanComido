@@ -26,6 +26,8 @@ namespace PanComido.Dominio.Entidades
         public decimal StockActual { get; set; }
         public EstadoStock? EstadoStock { get; set; }
 
+        public CriticidadVencimiento? CriticidadVencimiento { get; set; }
+
         // para crear la carta 
         public List <PedidoInsumo> PedidoInsumos { get; set; } = new List<PedidoInsumo>();
 

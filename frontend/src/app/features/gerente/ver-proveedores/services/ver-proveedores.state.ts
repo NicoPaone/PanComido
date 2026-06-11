@@ -1,11 +1,12 @@
 import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ProveedorApiService } from '../../services/proveedor.api';
-import { Proveedor, PedidoProveedor, PedidoProveedorItem } from '../../../../core/models/domain/proveedor';
+import { Proveedor, PedidoProveedor, PedidoProveedorItem, ProveedorNuevo } from '../../../../core/models/domain/proveedor';
 import { RecepcionPedidoItem } from '../../../../core/models/domain/proveedor';
 import { Insumo } from '../../../../core/models/domain/insumo';
 import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
 import { Bodega } from '../../../../core/models/domain/bodega';
+import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo';
 
 @Injectable({ providedIn: 'root' })
 export class VerProveedoresState {
@@ -34,6 +35,7 @@ export class VerProveedoresState {
   recepcionPedido = signal<PedidoProveedor | null>(null);
   recepcionItems = signal<RecepcionPedidoItem[]>([]);
   bodegas = signal<Bodega[]>([]);
+  categoriasInsumo = signal<CategoriaInsumo[]>([]);
 
   readonly #loading = signal(false);
   loading = this.#loading.asReadonly();
@@ -162,6 +164,8 @@ export class VerProveedoresState {
       .subscribe(bodegas => {
         this.bodegas.set(bodegas);
       });
+
+    this.cargarCategoriasInsumo();
   }
 
   /**
@@ -189,6 +193,17 @@ export class VerProveedoresState {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(bodegas => {
         this.bodegas.set(bodegas);
+      });
+
+    this.cargarCategoriasInsumo();
+  }
+
+  cargarCategoriasInsumo(): void {
+    this.api.getCategoriasInsumo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: categorias => this.categoriasInsumo.set(categorias),
+        error: () => this.categoriasInsumo.set([])
       });
   }
 
@@ -254,36 +269,56 @@ export class VerProveedoresState {
     this.panelModo.set('historial');
   }
 
-  actualizarProveedorLocal(proveedorActualizado: Proveedor): void {
-    this.proveedores.update(proveedores =>
-      proveedores.map(proveedor =>
-        proveedor.id === proveedorActualizado.id ? { ...proveedor, ...proveedorActualizado } : proveedor
-      )
-    );
-    this.proveedorSeleccionadoId.set(proveedorActualizado.id);
-    this.mensajeAccion.set('Proveedor actualizado localmente. Se sincronizará cuando esté disponible el backend.');
+  actualizarProveedor(proveedorId: number | string, proveedorActualizado: ProveedorNuevo, onSuccess?: () => void): void {
+    this.api.modificarProveedor(proveedorId, proveedorActualizado)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: proveedorModificado => {
+          this.proveedores.update(proveedores =>
+            proveedores.map(proveedor =>
+              proveedor.id === proveedorModificado.id ? { ...proveedor, ...proveedorModificado } : proveedor
+            )
+          );
+          this.proveedorSeleccionadoId.set(proveedorModificado.id);
+          this.mensajeAccion.set('Proveedor actualizado correctamente.');
+          onSuccess?.();
+        },
+        error: () => {
+          this.mensajeAccion.set('No pudimos actualizar el proveedor. Revisá los datos e intentá nuevamente.');
+        }
+      });
   }
 
-  eliminarProveedorLocal(proveedorId: number | string): void {
-    const proveedoresRestantes = this.proveedores().filter(proveedor => proveedor.id !== proveedorId);
-    this.proveedores.set(proveedoresRestantes);
+  eliminarProveedor(proveedorId: number | string, onSuccess?: () => void): void {
+    this.api.eliminarProveedor(proveedorId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          const proveedoresRestantes = this.proveedores().filter(proveedor => proveedor.id !== proveedorId);
+          this.proveedores.set(proveedoresRestantes);
 
-    if (this.proveedorSeleccionadoId() === proveedorId) {
-      const siguiente = proveedoresRestantes[0] ?? null;
-      this.proveedorSeleccionadoId.set(siguiente?.id ?? null);
-      this.#historialProveedor.set([]);
-      this.productos.set([]);
-      this.pedidoItems.set([]);
-      this.pedidoHistorialSeleccionado.set(null);
-      this.panelModo.set('historial');
+          if (this.proveedorSeleccionadoId() === proveedorId) {
+            const siguiente = proveedoresRestantes[0] ?? null;
+            this.proveedorSeleccionadoId.set(siguiente?.id ?? null);
+            this.#historialProveedor.set([]);
+            this.productos.set([]);
+            this.pedidoItems.set([]);
+            this.pedidoHistorialSeleccionado.set(null);
+            this.panelModo.set('historial');
 
-      if (siguiente) {
-        this.cargarHistorial(siguiente.id);
-        this.cargarInsumosProveedor(siguiente.id);
-      }
-    }
+            if (siguiente) {
+              this.cargarHistorial(siguiente.id);
+              this.cargarInsumosProveedor(siguiente.id);
+            }
+          }
 
-    this.mensajeAccion.set('Proveedor eliminado localmente. Se sincronizará cuando esté disponible el backend.');
+          this.mensajeAccion.set('Proveedor eliminado correctamente.');
+          onSuccess?.();
+        },
+        error: () => {
+          this.mensajeAccion.set('No pudimos eliminar el proveedor. Intentá nuevamente.');
+        }
+      });
   }
 
   abrirDetallePedido(pedido: PedidoProveedor): void {

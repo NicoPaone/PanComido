@@ -4,7 +4,7 @@
       <div>
         <p class="detail-kicker mb-1">Alta de proveedor</p>
         <h1 class="page-title mb-0">Nuevo proveedor</h1>
-        <p class="page-subtitle mb-0">Registrá sus datos, asociá categorías y validá la operación con credenciales de gerente.</p>
+        <p class="page-subtitle mb-0">Registrá sus datos y asociá categorías.</p>
       </div>
 
       <button type="button" class="soft-link-btn" (click)="cancelar()">
@@ -25,7 +25,6 @@
           </div>
 
           <div class="form-grid">
-            <!-- Nombre -->
             <label class="field-group field-span-2">
               <span>Nombre <strong class="field-required">*</strong></span>
               <input 
@@ -42,26 +41,8 @@
               }
             </label>
 
-            <!-- Contacto -->
-            <label class="field-group">
-              <span>Contacto <strong class="field-required">*</strong></span>
-              <input 
-                type="text" 
-                class="form-control custom-input" 
-                [class.is-invalid]="proveedorForm.get('contacto')?.touched && proveedorForm.get('contacto')?.invalid"
-                placeholder="Ej. Laura Pérez" 
-                formControlName="contacto">
-              @if (proveedorForm.get('contacto')?.touched && proveedorForm.get('contacto')?.hasError('required')) {
-                <span class="error-text">El nombre del contacto es obligatorio.</span>
-              }
-              @if (proveedorForm.get('contacto')?.touched && proveedorForm.get('contacto')?.hasError('minlength')) {
-                <span class="error-text">El contacto debe tener al menos 3 caracteres.</span>
-              }
-            </label>
-
-            <!-- Teléfono -->
-            <label class="field-group">
-              <span>Teléfono</span>
+            <label class="field-group field-span-2">
+              <span>WhatsApp</span>
               <input 
                 type="text" 
                 class="form-control custom-input" 
@@ -70,58 +51,6 @@
                 formControlName="telefono">
               @if (proveedorForm.get('telefono')?.touched && proveedorForm.get('telefono')?.hasError('pattern')) {
                 <span class="error-text">Formato de teléfono inválido.</span>
-              }
-            </label>
-
-            <!-- Email -->
-            <label class="field-group">
-              <span>Email</span>
-              <input 
-                type="email" 
-                class="form-control custom-input" 
-                [class.is-invalid]="proveedorForm.get('email')?.touched && proveedorForm.get('email')?.invalid"
-                placeholder="Ej. ventas@empresa.com" 
-                formControlName="email">
-              @if (proveedorForm.get('email')?.touched && proveedorForm.get('email')?.hasError('email')) {
-                <span class="error-text">Dirección de correo electrónico inválida.</span>
-              }
-            </label>
-
-            <!-- Calle -->
-            <label class="field-group">
-              <span>Calle <strong class="field-required">*</strong></span>
-              <input 
-                type="text" 
-                class="form-control custom-input" 
-                [class.is-invalid]="proveedorForm.get('calle')?.touched && proveedorForm.get('calle')?.invalid"
-                placeholder="Ej. Av. San Martín" 
-                formControlName="calle">
-              @if (proveedorForm.get('calle')?.touched && proveedorForm.get('calle')?.hasError('required')) {
-                <span class="error-text">La calle es obligatoria.</span>
-              }
-            </label>
-
-            <!-- Número -->
-            <label class="field-group">
-              <span>Número</span>
-              <input 
-                type="text" 
-                class="form-control custom-input" 
-                placeholder="Ej. 1200" 
-                formControlName="numero">
-            </label>
-
-            <!-- Ciudad -->
-            <label class="field-group field-span-2">
-              <span>Ciudad <strong class="field-required">*</strong></span>
-              <input 
-                type="text" 
-                class="form-control custom-input" 
-                [class.is-invalid]="proveedorForm.get('ciudad')?.touched && proveedorForm.get('ciudad')?.invalid"
-                placeholder="Ej. CABA" 
-                formControlName="ciudad">
-              @if (proveedorForm.get('ciudad')?.touched && proveedorForm.get('ciudad')?.hasError('required')) {
-                <span class="error-text">La ciudad es obligatoria.</span>
               }
             </label>
           </div>
@@ -139,52 +68,43 @@
           <label class="field-group categories-group">
             <span>Categorías <strong class="field-required">*</strong></span>
 
+            @if (errorCategorias()) {
+              <span class="error-text">{{ errorCategorias() }}</span>
+            }
+
             <ul class="category-list">
-              @for (cat of availableCategories; track cat) {
+              @for (cat of categoriasDisponibles(); track cat.id) {
                 <li>
                   <label class="category-checkbox">
                     <input 
                       type="checkbox" 
-                      [checked]="categorias().includes(cat)" 
+                      [checked]="categoriaSeleccionada(cat.id)" 
                       (change)="toggleCategoria(cat)">
-                    <span class="checkbox-pill">{{ cat }}</span>
+                    <span class="checkbox-pill">{{ cat.descripcion }}</span>
                   </label>
                 </li>
               }
             </ul>
 
-            <div class="add-category">
-              <input 
-                type="text" 
-                class="form-control custom-input" 
-                placeholder="Presiona Enter para agregar" 
-                formControlName="customCategory" 
-                (keyup.enter)="agregarCategoriaPersonalizada()">
-              <app-boton 
-                label="Agregar" 
-                variante="outline" 
-                tamanio="sm" 
-                (clicked)="agregarCategoriaPersonalizada()">
-              </app-boton>
-            </div>
-
-            @if (categorias().length === 0) {
+            @if (categoriaIds().length === 0) {
               <span class="error-text">Debes seleccionar al menos una categoría.</span>
             }
 
             @if (categorias().length > 0) {
               <div class="category-chips">
-                @for (c of categorias(); track c) {
+                @for (c of categoriasDisponibles(); track c.id) {
+                  @if (categoriaSeleccionada(c.id)) {
                   <span class="chip">
-                    <span class="chip-label">{{ c }}</span>
+                    <span class="chip-label">{{ c.descripcion }}</span>
                     <button 
                       type="button" 
                       class="chip-remove" 
-                      [attr.aria-label]="'Eliminar ' + c" 
-                      (click)="removerCategoria(c)">
+                      [attr.aria-label]="'Eliminar ' + c.descripcion" 
+                      (click)="removerCategoria(c.id)">
                       <fa-icon [icon]="faTrash"></fa-icon>
                     </button>
                   </span>
+                  }
                 }
               </div>
             }
@@ -213,75 +133,14 @@
       </form>
 
       <aside class="side-panel">
-        <section class="credentials-section" [formGroup]="gerenteForm">
-          <div class="section-heading compact">
-            <span class="section-icon material-symbols-outlined">admin_panel_settings</span>
-            <div>
-              <h2 class="section-title mb-0">Validación</h2>
-              <p class="section-subtitle mb-0">Necesaria para crear el proveedor.</p>
-            </div>
-          </div>
-
-          <div class="side-form">
-            <label class="field-group">
-              <span>Usuario gerente <strong class="field-required">*</strong></span>
-              <input 
-                type="text" 
-                class="form-control custom-input" 
-                [class.is-invalid]="gerenteForm.get('usuario')?.touched && gerenteForm.get('usuario')?.invalid"
-                formControlName="usuario">
-              @if (gerenteForm.get('usuario')?.touched && gerenteForm.get('usuario')?.hasError('required')) {
-                <span class="error-text">El usuario es requerido.</span>
-              }
-            </label>
-
-            <label class="field-group">
-              <span>Contraseña gerente <strong class="field-required">*</strong></span>
-              <input 
-                type="password" 
-                class="form-control custom-input" 
-                [class.is-invalid]="gerenteForm.get('contrasena')?.touched && gerenteForm.get('contrasena')?.invalid"
-                formControlName="contrasena">
-              @if (gerenteForm.get('contrasena')?.touched && gerenteForm.get('contrasena')?.hasError('required')) {
-                <span class="error-text">La contraseña es requerida.</span>
-              }
-              @if (gerenteForm.get('contrasena')?.touched && gerenteForm.get('contrasena')?.hasError('minlength')) {
-                <span class="error-text">Debe tener al menos 6 caracteres.</span>
-              }
-            </label>
-          </div>
-
-          <div class="credentials-actions">
-            <app-boton 
-              label="Validar" 
-              variante="teal" 
-              tamanio="sm" 
-              [disabled]="gerenteForm.invalid || gerenteValidado() || cargandoGerente()"
-              >
-            </app-boton>
-            
-            @if (cargandoGerente()) {
-              <span class="text-muted">Validando...</span>
-            } @else {
-              <span class="cred-status" [class.ok]="gerenteValidado()">
-                {{ gerenteValidado() ? 'Credenciales válidas' : 'No validadas' }}
-              </span>
-            }
-          </div>
-          
-          @if (mensajeErrorGerente()) {
-            <div class="error-text mt-2">{{ mensajeErrorGerente() }}</div>
-          }
-        </section>
 
         <section class="summary-card">
           <span class="summary-icon material-symbols-outlined">checklist</span>
           <h2 class="section-title mb-2">Antes de guardar</h2>
           <ul class="summary-list">
             <li [class.done]="proveedorForm.get('nombre')?.valid">Nombre cargado</li>
-            <li [class.done]="proveedorForm.get('contacto')?.valid">Contacto cargado</li>
-            <li [class.done]="categorias().length > 0">Categoría seleccionada</li>
-            <li [class.done]="gerenteValidado()">Gerente validado</li>
+            <li [class.done]="proveedorForm.get('telefono')?.valid">WhatsApp revisado</li>
+            <li [class.done]="categoriaIds().length > 0">Categoría seleccionada</li>
           </ul>
         </section>
       </aside>

@@ -10,9 +10,9 @@ namespace PanComido.Presentacion.Controllers
 {
     [Route("carta")]
     [ApiController]
-   [Authorize]
+    [Authorize]
 
-   public class CartaController : ControllerBase
+    public class CartaController : ControllerBase
     {
         private readonly ObtenerArticulosParaCrearCartaCasoDeUso _obtenerArticulosCasoDeUso;
         private readonly ArticuloCartaMapper _mapper;
@@ -37,9 +37,9 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPatch("articulos/{id}")]
-      [Authorize(Roles = "Gerente")]
+        [Authorize(Roles = "Gerente")]
 
-      public async Task<IActionResult> ModificarArticulo(int id, [FromBody] ModificarArticuloRequestDto request)
+        public async Task<IActionResult> ModificarArticulo(int id, [FromBody] ModificarArticuloRequestDto request)
         {
             // 3. Usamos el método de tu compañero para obtener el ID limpio
             var restauranteId = HttpContext.ObtenerRestauranteId();
