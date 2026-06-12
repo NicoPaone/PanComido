@@ -9,6 +9,7 @@ import {
   } from '../../../../core/models/dtos/requests/configuracion.requests';
 import { MetodoPago } from '../../../../core/models/domain/metodo-pago';
 import { TurnoLaboral } from '../../../../core/models/domain/turno-laboral';
+import { FamiliaTipografica } from '../../../../core/models/domain/familia-tipografica';
 
 @Injectable({
   providedIn: 'root',
@@ -43,6 +44,9 @@ export class ConfiguracionService {
       this.#aRequestTurnos(data)
     );
   }
+  obtenerFamiliasTipograficas(): Observable<FamiliaTipografica[]>{
+    return this.api.get<FamiliaTipografica[]>(`${this.endpoint}/familias-tipograficas`);
+  }
 
   //MAPPERS PRIVADOS
   //viven aca porque es la unica capa quenecesitan saber cómo convertir el domain
@@ -56,6 +60,7 @@ export class ConfiguracionService {
       colorSecundario: datos.colorSecundario,
       textoPrincipal: datos.textoPrincipal,
       textoSecundario: datos.textoSecundario,
+      familiaTipograficaId: datos.familiaTipograficaId
     };
   }
 

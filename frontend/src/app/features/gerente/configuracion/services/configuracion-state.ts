@@ -5,6 +5,7 @@ import { MetodoPago } from '../../../../core/models/domain/metodo-pago';
 import { TurnoLaboral } from '../../../../core/models/domain/turno-laboral';
 import { forkJoin } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FamiliaTipografica } from '../../../../core/models/domain/familia-tipografica';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +18,7 @@ export class ConfiguracionState {
   readonly #datosLocal = signal<DatosLocal | null>(null);
   readonly #metodosPago = signal<MetodoPago[]>([]);
   readonly #turnos = signal<TurnoLaboral[]>([]);
+  readonly #familiasTipograficas = signal<FamiliaTipografica[]>([]);
  
   readonly #loading = signal(false);
   readonly #guardando = signal(false);
@@ -27,6 +29,7 @@ export class ConfiguracionState {
   readonly datosLocal = this.#datosLocal.asReadonly();
   readonly metodosPago = this.#metodosPago.asReadonly();
   readonly turnos = this.#turnos.asReadonly();
+  readonly familiasTipograficas = this.#familiasTipograficas.asReadonly();
   readonly loading = this.#loading.asReadonly();
   readonly guardando = this.#guardando.asReadonly();
   readonly error = this.#error.asReadonly();
@@ -40,15 +43,18 @@ export class ConfiguracionState {
     forkJoin({
       datosLocal: this.api.obtenerDatosLocal(),
       metodosPago: this.api.obtenerMetodosPago(),
-      turnos: this.api.obtenerTurnos()
+      turnos: this.api.obtenerTurnos(),
+      fTipograficas: this.api.obtenerFamiliasTipograficas()
     })
     .pipe(takeUntilDestroyed(this.destroyRef))
     .subscribe({
-      next: ({datosLocal, metodosPago, turnos}) => {
+      next: ({datosLocal, metodosPago, turnos, fTipograficas}) => {
         this.#datosLocal.set(datosLocal);
         this.#metodosPago.set(metodosPago);
         this.#turnos.set(turnos);
+        this.#familiasTipograficas.set(fTipograficas);  
         this.#loading.set(false);
+        
       },
       error:() => { 
         this.#loading.set(false);

@@ -5,6 +5,7 @@ export interface ActualizarDatosLocalRequest {
   colorSecundario: string | null;
   textoPrincipal: string | null;
   textoSecundario: string | null;
+  familiaTipograficaId:number | null;
 }
 
 export interface ActualizarMetodoPagoRequest {
