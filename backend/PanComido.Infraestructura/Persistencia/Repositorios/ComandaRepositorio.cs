@@ -191,6 +191,91 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .Take(limite)
                 .ToListAsync();
         }
+
+        public async Task<DOM.TotalesPeriodo> ObtenerTotalesPeriodoAsync(int restauranteId, DateTime desde, DateTime hasta)
+        {
+            var query = _ctx.Comanda
+                .Where(c => c.RestauranteId == restauranteId
+                         && c.HoraInicio >= desde
+                         && c.HoraInicio <= hasta
+                         && c.PagoId != null);
+
+            var result = await query
+                .GroupBy(c => 1)
+                .Select(g => new DOM.TotalesPeriodo
+                {
+                    CantidadPedidos = g.Count(),
+                    TotalFacturado = g.Sum(c => c.Pago.Total)
+                })
+                .FirstOrDefaultAsync();
+
+            return result ?? new DOM.TotalesPeriodo { CantidadPedidos = 0, TotalFacturado = 0 };
+        }
+
+        public async Task<List<DOM.VentaAgrupada>> ObtenerVentasAgrupadasAsync(int restauranteId, DateTime desde, DateTime hasta, string tipoAgrupacion)
+        {
+            var query = _ctx.Comanda
+                .Where(c => c.RestauranteId == restauranteId
+                         && c.HoraInicio >= desde
+                         && c.HoraInicio <= hasta
+                         && c.PagoId != null);
+
+            if (tipoAgrupacion == "Hora")
+            {
+                var resultDb = await query
+                    .GroupBy(c => c.HoraInicio.Hour)
+                    .Select(g => new
+                    {
+                        Key = g.Key,
+                        Total = g.Sum(c => c.Pago.Total)
+                    })
+                    .OrderBy(x => x.Key)
+                    .ToListAsync();
+
+                return resultDb.Select(x => new DOM.VentaAgrupada
+                {
+                    Etiqueta = x.Key + "h",
+                    Total = x.Total
+                }).ToList();
+            }
+            else if (tipoAgrupacion == "Dia")
+            {
+                var resultDb = await query
+                    .GroupBy(c => c.HoraInicio.Date)
+                    .Select(g => new
+                    {
+                        Key = g.Key,
+                        Total = g.Sum(c => c.Pago.Total)
+                    })
+                    .OrderBy(x => x.Key)
+                    .ToListAsync();
+
+                return resultDb.Select(x => new DOM.VentaAgrupada
+                {
+                    Etiqueta = x.Key.ToString("yyyy-MM-dd"),
+                    Total = x.Total
+                }).ToList();
+            }
+            else // Mes
+            {
+                var resultDb = await query
+                    .GroupBy(c => new { c.HoraInicio.Year, c.HoraInicio.Month })
+                    .Select(g => new
+                    {
+                        Year = g.Key.Year,
+                        Month = g.Key.Month,
+                        Total = g.Sum(c => c.Pago.Total)
+                    })
+                    .OrderBy(x => x.Year).ThenBy(x => x.Month)
+                    .ToListAsync();
+
+                return resultDb.Select(x => new DOM.VentaAgrupada
+                {
+                    Etiqueta = x.Year + "-" + x.Month.ToString("D2"),
+                    Total = x.Total
+                }).ToList();
+            }
+        }
     }
 
 }
