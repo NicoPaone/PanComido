@@ -69,7 +69,8 @@ export class PagoCheckout implements OnInit, OnDestroy {
     this.cargandoPago.set(true);
     this.error.set(null);
 
-    this.pagoService.solicitarPagoEfectivo(comandaId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    const restauranteId = this.comandaState.restauranteId() ?? 1;
+    this.pagoService.solicitarPagoEfectivo(comandaId, restauranteId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.cargandoPago.set(false);
         this.pagoSolicitado.set(true);

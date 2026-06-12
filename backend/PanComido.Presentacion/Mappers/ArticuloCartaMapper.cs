@@ -7,6 +7,12 @@ namespace PanComido.Presentacion.Mappers
     {
         public ArticuloCartaResponseDto aDto(Articulo articulo)
         {
+            Plato plato = articulo as Plato;
+            Insumo insumo = articulo as Insumo;
+
+            bool esPlato = plato != null;
+            bool esInsumo = insumo != null;
+
             return new ArticuloCartaResponseDto
             {
                 ArticuloId = articulo.Id,
@@ -14,11 +20,9 @@ namespace PanComido.Presentacion.Mappers
                 UrlImagen = articulo.UrlImagen,
 
                 PrecioVentaFinal = articulo.PrecioVentaFinal ?? 0,
-
                 VisibleEnCarta = articulo.EsVisibleEnCarta,
 
-                TipoArticulo = articulo is Plato ? "Plato" : "Bebida",
-
+                TipoArticulo = esPlato ? "Plato" : "Bebida",
                 Costo = articulo.CostoCalculado,
 
                 // Inyectamos la categoria para el filtrado en frontend

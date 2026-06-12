@@ -1,6 +1,5 @@
 import { Component, inject, computed, ViewChild , ChangeDetectionStrategy} from '@angular/core';
 import { Router } from '@angular/router';
-import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
 import { configuracionRestauranteMock } from '../../../../infra/mocks/configuracion-restaurante.mock-data';
 import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
 import { PedidoState } from '../../services/pedido.state';

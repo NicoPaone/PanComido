@@ -1,5 +1,6 @@
-import { inject, Injectable, signal, computed, effect } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { DestroyRef, inject, Injectable, signal, computed, effect } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Observable, tap, catchError, throwError, map } from 'rxjs';
 import { ComandaService } from './comanda.service';
 import { PedidoState } from './pedido.state';
 import { EstadoPedido } from '../../../core/models/domain/comanda';
@@ -11,8 +12,10 @@ export class ComandaState {
   private comandaService = inject(ComandaService);
   private pedidoService = inject(PedidoState);
   private comandaHub = inject(ComandaHubService);
+  readonly #destroyRef = inject(DestroyRef);
 
   // Signals de estado (inicializan desde sessionStorage si existe)
+  readonly #restauranteId = signal<number | null>(this.leerNumeroDeStorage('restauranteId'));
   readonly #comandaId = signal<number | null>(this.leerNumeroDeStorage('comandaId'));
   readonly #mesaId = signal<number | null>(this.leerNumeroDeStorage('mesaId'));
   readonly #mesaInfo = signal<Mesa | null>(null);
@@ -21,6 +24,7 @@ export class ComandaState {
   readonly #error = signal<string | null>(null);
 
   // Readonly signals
+  restauranteId = this.#restauranteId.asReadonly();
   comandaId = this.#comandaId.asReadonly();
   mesaId = this.#mesaId.asReadonly();
   mesaInfo = this.#mesaInfo.asReadonly();
@@ -50,44 +54,50 @@ export class ComandaState {
 
   /**
    * Ocupar mesa y crear comanda
-   * Llamar DESPUÉS de que el usuario ingrese la cantidad de personas
+   * Devuelve Observable para que el componente pueda reaccionar cuando termina
    */
-  async ocuparMesa(mesaId: number, cantidadComensales: number): Promise<void> {
+  ocuparMesa(mesaId: number, cantidadComensales: number, restauranteId: number): Observable<void> {
+    this.#restauranteId.set(restauranteId);
     this.#mesaId.set(mesaId);
     this.#cargando.set(true);
     this.#error.set(null);
 
-    try {
-      const response = await firstValueFrom(this.comandaService.ocuparMesa(mesaId, cantidadComensales));
-      this.#mesaInfo.set(response.mesa);
-      this.#comandaId.set(response.idComandaGenerada);
-      sessionStorage.setItem('comandaId', String(response.idComandaGenerada));
-      sessionStorage.setItem('mesaId', String(mesaId));
-      this.#cargando.set(false);
-    } catch (err: any) {
-      console.error('Error al ocupar mesa:', err);
-      this.#error.set('No se pudo ocupar la mesa. Intenta nuevamente.');
-      this.#cargando.set(false);
-      throw err;
-    }
+    return this.comandaService.ocuparMesa(restauranteId, mesaId, cantidadComensales).pipe(
+      tap(response => {
+        this.#mesaInfo.set(response.mesa);
+        this.#comandaId.set(response.idComandaGenerada);
+        sessionStorage.setItem('restauranteId', String(restauranteId));
+        sessionStorage.setItem('comandaId', String(response.idComandaGenerada));
+        sessionStorage.setItem('mesaId', String(mesaId));
+        this.#cargando.set(false);
+      }),
+      catchError(err => {
+        console.error('Error al ocupar mesa:', err);
+        this.#error.set('No se pudo ocupar la mesa. Intenta nuevamente.');
+        this.#cargando.set(false);
+        return throwError(() => err);
+      }),
+      map(() => void 0)
+    );
   }
 
   /**
-   * PASO 2: Confirmar pedido (envía items al backend)
+   * Confirmar pedido (envía items al backend)
    */
-  async confirmarPedido(): Promise<EstadoPedido> {
+  confirmarPedido(): void {
     const comandaId = this.#comandaId();
-    
-    if (!comandaId) {
+    const restauranteId = this.#restauranteId();
+
+    if (!comandaId || !restauranteId) {
       this.#error.set('No hay comanda activa. Escanea el QR de la mesa.');
-      return Promise.reject('No hay comanda activa');
+      return;
     }
 
     const pedidos = this.pedidoService.obtenerPedidos();
-    
+
     if (pedidos.length === 0) {
       this.#error.set('El carrito está vacío');
-      return Promise.reject('Carrito vacío');
+      return;
     }
 
     this.#cargando.set(true);
@@ -100,72 +110,74 @@ export class ComandaState {
       observacionesGenerales: p.observacionesGenerales ?? null
     }));
 
-    try {
-      const response = await firstValueFrom(this.comandaService.confirmarPedido(comandaId, { items }));
-      const estado: EstadoPedido = {
-        comandaId: response.comandaId,
-        estadoUI: response.estadoUI,
-        totalAPagar: response.totalAPagar,
-        items: response.items
-      };
-      this.#estadoPedido.set(estado);
-      this.#cargando.set(false);
-      this.pedidoService.limpiarPedidos();
-      return estado;
-    } catch (err: any) {
-      console.error('Error al confirmar pedido:', err);
-      this.#error.set('Error al confirmar el pedido. Intenta nuevamente.');
-      this.#cargando.set(false);
-      throw err;
-    }
+    this.comandaService.confirmarPedido(comandaId, restauranteId, { items })
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe({
+        next: (response) => {
+          const estado: EstadoPedido = {
+            comandaId: response.comandaId,
+            estadoUI: response.estadoUI,
+            totalAPagar: response.totalAPagar,
+            items: response.items
+          };
+          this.#estadoPedido.set(estado);
+          this.#cargando.set(false);
+          this.pedidoService.limpiarPedidos();
+        },
+        error: (err) => {
+          console.error('Error al confirmar pedido:', err);
+          this.#error.set('Error al confirmar el pedido. Intenta nuevamente.');
+          this.#cargando.set(false);
+        }
+      });
   }
 
   /**
-   * PASO 3: Consultar estado del pedido
+   * Consultar estado del pedido
    */
-  async consultarEstado(): Promise<EstadoPedido> {
+  consultarEstado(): void {
     const comandaId = this.#comandaId();
-    
-    if (!comandaId) {
-      return Promise.reject('No hay comanda activa');
-    }
+    const restauranteId = this.#restauranteId();
 
-    try {
-      const response = await firstValueFrom(this.comandaService.obtenerEstado(comandaId));
-      const estado: EstadoPedido = {
-        comandaId: response.comandaId,
-        estadoUI: response.estadoUI,
-        totalAPagar: response.totalAPagar,
-        items: response.items
-      };
-      this.#estadoPedido.set(estado);
-      return estado;
-    } catch (err: any) {
-      console.error('Error al consultar estado:', err);
-      throw err;
-    }
+    if (!comandaId || !restauranteId) return;
+
+    this.comandaService.obtenerEstado(comandaId, restauranteId)
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe({
+        next: (response) => {
+          const estado: EstadoPedido = {
+            comandaId: response.comandaId,
+            estadoUI: response.estadoUI,
+            totalAPagar: response.totalAPagar,
+            items: response.items
+          };
+          this.#estadoPedido.set(estado);
+        },
+        error: (err) => {
+          console.error('Error al consultar estado:', err);
+        }
+      });
   }
 
   /**
    * Limpiar estado (para nueva comanda)
    */
   limpiarEstado(): void {
+    this.#restauranteId.set(null);
     this.#comandaId.set(null);
     this.#mesaId.set(null);
     this.#mesaInfo.set(null);
     this.#estadoPedido.set(null);
     this.#error.set(null);
+    sessionStorage.removeItem('restauranteId');
     sessionStorage.removeItem('comandaId');
     sessionStorage.removeItem('mesaId');
   }
 
-  /**
-   * Limpiar solo el error
-   */
   limpiarError(): void {
     this.#error.set(null);
   }
-  
+
   private leerNumeroDeStorage(key: string): number | null {
     const val = sessionStorage.getItem(key);
     if (val === null) return null;

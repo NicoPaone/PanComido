@@ -153,7 +153,7 @@ builder.Services.AddScoped<LoteRecepcionMapper>();
 builder.Services.AddScoped<MesaMapper>();
 builder.Services.AddScoped<LoteMapper>();
 builder.Services.AddScoped<LlamadoMapper>();
-builder.Services.AddScoped<CartaMapper>();
+builder.Services.AddScoped<CartaComensalMapper>();
 builder.Services.AddScoped<FormularioParaCrearPlatoMapper>();
 builder.Services.AddScoped<PlatoMapper>();
 builder.Services.AddScoped<ArticuloCartaMapper>();
@@ -215,7 +215,7 @@ builder.Services.AddScoped<ObtenerDatosParaFormularioCrearPlato>();
 builder.Services.AddScoped<CrearPlatoCasoDeUso>();
 builder.Services.AddScoped<ModificarPlatoCasoDeUso>();
 builder.Services.AddScoped<ObtenerPlatoPorIdCasoDeUso>();
-builder.Services.AddScoped<ObtenerCartaCasoDeUso>();
+builder.Services.AddScoped<ObtenerCartaComensalCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConStockCriticoCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConVencimientoProximoCasoDeUso>();
 builder.Services.AddScoped<LlamarMozoCasoDeUso>();
@@ -258,7 +258,7 @@ builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticu
 builder.Services.AddScoped<ISugerenciaPlatosIAServicio, GeminiSugerenciaPlatosIAServicio >();
 builder.Services.AddScoped<IGestionStockServicio, GestionStockServicio>();
 builder.Services.AddScoped<IVencimientosProximosInsumosServicio, VencimientosProximosInsumosServicio>();
-builder.Services.AddScoped<ICantidadDeMesasServicio, CantidadDeMesasServicio>();
+builder.Services.AddScoped<ITiempoDePreparacionPlatoServicio, TiempoDePreparacionPlatoServicio>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
