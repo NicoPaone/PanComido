@@ -1,59 +1,59 @@
- <div class="container-fluid py-4" style="max-width: 1200px;">
-  <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="h4 mb-0 fw-bold" style="color: #1f2937;">Datos del local</h2>
+<div class="container-fluid py-4" style="max-width: 1200px;">
 
-    <div class="d-flex gap-3">
-      <button
-        class="btn px-4 text-white"
-        style="background-color: var(--status-success); border: none; font-weight: 600; border-radius: 4px;"
-        [disabled]="guardando()"
-        (click)="state.guardarTodo()"
-      >
-        @if (guardando()) {
-          <span class="spinner-border spinner-border-sm"></span>
-        } @else {
-          Aplicar cambios
-        }
-      </button>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="h4 mb-1 fw-bold" style="color: #1f2937;">Datos del local</h2>
+      <p class="text-muted mb-0" style="font-size: 0.88rem;">Personalizá la identidad visual de tu menú digital</p>
     </div>
+    <button
+      class="btn px-4 text-white d-flex align-items-center gap-2"
+      style="background-color: var(--status-success); border: none; font-weight: 600; border-radius: 6px; height: 40px;"
+      [disabled]="guardando()"
+      (click)="state.guardarTodo()"
+    >
+      @if (guardando()) {
+        <span class="spinner-border spinner-border-sm"></span>
+      } @else {
+        <i class="bi bi-check-lg" style="font-size: 1rem;"></i>
+        Aplicar cambios
+      }
+    </button>
   </div>
 
-  <!-- Feedback -->
   @if (error(); as msg) {
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      <i class="bi bi-exclamation-triangle me-2"></i>
-      {{ msg }}
+    <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 py-2" role="alert" style="border-radius: 8px;">
+      <i class="bi bi-exclamation-triangle"></i>
+      <span class="flex-grow-1">{{ msg }}</span>
       <button type="button" class="btn-close" (click)="state.limpiarFeedback()"></button>
     </div>
   }
 
   @if (exito(); as msg) {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      <i class="bi bi-check-circle me-2"></i>
-      {{ msg }}
+    <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 py-2" role="alert" style="border-radius: 8px;">
+      <i class="bi bi-check-circle"></i>
+      <span class="flex-grow-1">{{ msg }}</span>
       <button type="button" class="btn-close" (click)="state.limpiarFeedback()"></button>
     </div>
   }
 
-  <!-- Loader -->
   @if (loading()) {
-    <div class="d-flex justify-content-center align-items-center" style="min-height: 300px">
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 300px;">
       <div class="text-center">
-        <div class="spinner-border text-primary mb-3" role="status">
+        <div class="spinner-border mb-3" style="color: var(--status-success);" role="status">
           <span class="visually-hidden">Cargando...</span>
         </div>
-        <p class="text-muted">Cargando configuración...</p>
+        <p class="text-muted" style="font-size: 0.9rem;">Cargando configuración...</p>
       </div>
     </div>
   }
 
-  <!-- Contenido -->
   @if (!loading() && datosLocal(); as datos) {
     <div class="row g-4">
+
       <div class="col-12">
         <app-datos-local-form
           [datosLocal]="datos"
+          [familiasTipograficas]="familiasTipograficas()"
           (datosLocalChange)="onDatosLocalChange($event)"
         />
       </div>
@@ -75,7 +75,6 @@
       </div>
     </div>
 
-    <!-- Secciones Estáticas: Porcentaje de ganancia y Fila virtual -->
     <div class="row mt-5">
       <div class="col-12">
         <h2 class="config-section-title">Porcentaje de ganancia</h2>

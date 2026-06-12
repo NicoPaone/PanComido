@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, effect, input, output, signal } from '@angular/core';
 import { DatosLocal, DatosLocalEditables } from '../../../../../core/models/domain/datos-local';
 import { FormsModule } from '@angular/forms';
+import { FamiliaTipografica } from '../../../../../core/models/domain/familia-tipografica';
 
 @Component({
   selector: 'app-datos-local-form',
@@ -12,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 export class DatosLocalForm {
   readonly datosLocal = input.required<DatosLocal>();
   readonly datosLocalChange = output<Partial<DatosLocalEditables>>();
+  readonly familiasTipograficas = input<FamiliaTipografica[]>([]); 
 
   previewUrl = signal<string | null>(null);
 
@@ -42,6 +44,9 @@ export class DatosLocalForm {
     reader.readAsDataURL(file);
 
     input.value = '';
+  }
+  onCambiarFuente(familiaId: number):void{
+    this.datosLocalChange.emit({familiaTipograficaId:familiaId})
   }
 
   removerImagen(): void {

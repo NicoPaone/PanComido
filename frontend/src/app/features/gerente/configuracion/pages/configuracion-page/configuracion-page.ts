@@ -17,6 +17,7 @@ export class ConfiguracionPage {
   readonly state = inject(ConfiguracionState);
   readonly datosLocal = this.state.datosLocal;
   readonly metodosPago =this.state.metodosPago;
+  readonly familiasTipograficas  = this.state.familiasTipograficas;
   readonly turnos = this.state.turnos;
   readonly loading = this.state.loading;
   readonly guardando = this.state.guardando;
