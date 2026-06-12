@@ -262,7 +262,7 @@ INSERT INTO bodega (id, restaurante_id, tipo_bodega_id, nombre, eliminado) VALUE
     (3, 1, 3, 'Freezer',           FALSE);
 
 -- ============================================================
--- LOTES
+-- LOTES (Refactorizado con fechas dinámicas)
 -- ============================================================
 
 INSERT INTO lote (id, insumo_id, bodega_id, nombre, cantidad, fecha_adquisicion, fecha_vencimiento) VALUES

@@ -59,38 +59,38 @@ namespace PanComido.Presentacion.Controllers
 
           return Ok(new { mensaje = "Mapa de mesas guardado correctamente." });
       }
-      [HttpPost("{id}/ocupar")]
-      [Authorize(Roles = "Mozo")]
 
-      public async Task<IActionResult> Ocupar(int id, [FromBody] OcuparMesaRequestDto request)
+    [HttpPost("comensal/{restauranteId}/{idMesa}/ocupar")]
+    [AllowAnonymous]
+        public async Task<IActionResult> Ocupar(int restauranteId, int idMesa, [FromBody] OcuparMesaRequestDto request)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, idMesa, request.CantidadComensales.Value);
 
-            try
-            {
-                int restauranteId = HttpContext.ObtenerRestauranteId();
+            return StatusCode(201,
+                new OcuparMesaResponseDto
+                {
+                    Mesa = _mapper.aDto(mesaConPosiciones),
+                    IdComandaGenerada = mesaConPosiciones.idComanda.Value
+                });
+        }
 
-                var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, id, request.CantidadComensales.Value);
+        [HttpPost("{idMesa}/ocupar")]
+        [Authorize(Roles = "Mozo, Gerente")]
+        public async Task<IActionResult> Ocupar(int idMesa, [FromBody] OcuparMesaRequestDto request)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
 
-                return StatusCode(201,
-                    new OcuparMesaResponseDto {
-                        Mesa = _mapper.aDto(mesaConPosiciones),
-                        IdComandaGenerada = mesaConPosiciones.idComanda.Value
-                    });
+            var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, idMesa, request.CantidadComensales.Value);
 
-            }
-            catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, new { error = "Error interno del servidor." });
-            }
+            return StatusCode(201,
+                new OcuparMesaResponseDto {
+                    Mesa = _mapper.aDto(mesaConPosiciones),
+                    IdComandaGenerada = mesaConPosiciones.idComanda.Value
+                });
         }
 
         [HttpPatch("{id}/estado")]
-      [Authorize(Roles = "Mozo")]
+      [Authorize(Roles = "Mozo, Gerente")]
 
       public async Task<IActionResult> CambiarEstado(int id, [FromBody] CambiarEstadoMesaRequestDto request)
         {
