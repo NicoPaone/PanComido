@@ -338,14 +338,14 @@ h1 {
 
 .insight-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(340px, 0.65fr);
+  grid-template-columns: 1fr;
   gap: 1rem;
   align-items: stretch;
   margin-bottom: 1.25rem;
 }
 
 .insight-grid.month-mode {
-  grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.55fr);
+  grid-template-columns: 1fr;
 }
 
 .operations-grid {

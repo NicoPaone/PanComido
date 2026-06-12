@@ -67,7 +67,9 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
   ];
 
   readonly mayorVenta = computed(() => {
-    return Math.max(...this.state.platosMasVendidos().map(item => item.valor));
+    const platos = this.state.platosMasVendidos();
+    if (platos.length === 0) return 0;
+    return Math.max(...platos.map(item => item.valor));
   });
 
   readonly mayorVentaMensual = this.state.maxVentasMensuales;
@@ -154,7 +156,9 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
   }
 
   porcentajeRanking(valor: number): number {
-    return Math.max(8, Math.round((valor / this.mayorVenta()) * 100));
+    const mayor = this.mayorVenta();
+    if (mayor === 0) return 8;
+    return Math.max(8, Math.round((valor / mayor) * 100));
   }
 
   porcentajeVentaMensual(valor: number): number {

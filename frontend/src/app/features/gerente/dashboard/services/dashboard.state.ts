@@ -1,4 +1,4 @@
-import { computed, Injectable, signal, inject } from '@angular/core';
+import { computed, Injectable, signal, inject, effect } from '@angular/core';
 import { ApiService } from '../../../../core/services/api-service';
 
 export type DashboardPeriodo = '1d' | '3d' | '7d' | '30d' | '365d' | 'custom';
@@ -220,9 +220,19 @@ export class DashboardStateService {
   private _fechaDesde = signal<string>('');
   private _fechaHasta = signal<string>('');
   private _insumosBackend = signal<DashboardInsumoVencimiento[]>([]);
+  private _platosMasVendidosBackend = signal<DashboardRankingItem[]>([]);
+  private _platosMenosVendidosBackend = signal<DashboardRankingItem[]>([]);
 
   constructor() {
     this.cargarVencimientos();
+    
+    effect(() => {
+      const p = this._periodo();
+      const fd = this._fechaDesde();
+      const fh = this._fechaHasta();
+      if (p === 'custom' && (!fd || !fh)) return;
+      this.cargarRendimiento();
+    });
   }
 
   private cargarVencimientos(): void {
@@ -279,11 +289,11 @@ export class DashboardStateService {
   });
 
   platosMasVendidos = computed<DashboardRankingItem[]>(() => {
-    return this.escalarRanking(MOCK_PLATOS_VENDIDOS, this.factorPeriodo());
+    return this._platosMasVendidosBackend();
   });
 
   platosMenosVendidos = computed<DashboardRankingItem[]>(() => {
-    return this.escalarRanking(MOCK_PLATOS_MENOS_VENDIDOS, Math.max(0.2, this.factorPeriodo() * 0.75));
+    return this._platosMenosVendidosBackend();
   });
 
   ventasMensuales = computed<DashboardVentaMensual[]>(() => {
@@ -441,6 +451,17 @@ export class DashboardStateService {
   lecturaComercial = computed<DashboardLecturaComercial[]>(() => {
     const top = this.platosMasVendidosPreview();
     const bajos = this.platosMenosVendidosPreview();
+    
+    if (top.length === 0) {
+      return [
+        {
+          titulo: 'Sin datos de ventas',
+          detalle: 'No hay platos registrados en este periodo.',
+          tono: 'info'
+        }
+      ];
+    }
+    
     const lider = top[0];
     const totalTop = top.reduce((total, item) => total + this.extraerImporte(item.detalle), 0);
     const revisar = bajos.filter((_, index) => index < 2).length;
@@ -466,6 +487,7 @@ export class DashboardStateService {
 
   recomendacionTopVentas = computed(() => {
     const top = this.platosMasVendidosPreview();
+    if (top.length === 0) return 'Sin datos suficientes.';
     const principales = top.slice(0, 2).map(item => item.nombre).join(' y ');
     return `Usar ${principales} como base para combos o destacados del dia.`;
   });
@@ -635,5 +657,62 @@ export class DashboardStateService {
       currency: 'ARS',
       maximumFractionDigits: 0
     }).format(value);
+  }
+
+  private cargarRendimiento(): void {
+    const { desde, hasta } = this.getFechasPeriodo();
+    const isoDesde = desde.toISOString().split('T')[0];
+    const isoHasta = hasta.toISOString().split('T')[0];
+
+    this.api.get<any>(`gerente/dashboard/rendimiento?desde=${isoDesde}&hasta=${isoHasta}`).subscribe({
+      next: (res) => {
+        if (!res) return;
+        const masVendidosData = res.masVendidos || res.MasVendidos || [];
+        const menosVendidosData = res.menosVendidos || res.MenosVendidos || [];
+
+        const masVendidos = masVendidosData.map((item: any) => ({
+          nombre: item.nombre || item.Nombre,
+          valor: Number((item.unidades || item.Unidades)?.replace(/[^0-9]/g, '') || 0),
+          detalle: item.facturacion || item.Facturacion
+        })).filter((item: any) => item.valor > 0);
+        
+        const menosVendidos = menosVendidosData.map((item: any) => ({
+          nombre: item.nombre || item.Nombre,
+          valor: Number((item.unidades || item.Unidades)?.replace(/[^0-9]/g, '') || 0),
+          detalle: item.facturacion || item.Facturacion
+        })).filter((item: any) => item.valor > 0);
+        
+        this._platosMasVendidosBackend.set(masVendidos);
+        this._platosMenosVendidosBackend.set(menosVendidos);
+      },
+      error: (err) => console.error('Error cargando rendimiento dashboard', err)
+    });
+  }
+
+  private getFechasPeriodo(): { desde: Date, hasta: Date } {
+    const periodo = this._periodo();
+    const hasta = new Date();
+    const desde = new Date();
+    
+    if (periodo === '1d') {
+      desde.setDate(hasta.getDate() - 1);
+    } else if (periodo === '3d') {
+      desde.setDate(hasta.getDate() - 3);
+    } else if (periodo === '7d') {
+      desde.setDate(hasta.getDate() - 7);
+    } else if (periodo === '30d') {
+      desde.setDate(hasta.getDate() - 30);
+    } else if (periodo === '365d') {
+      desde.setDate(hasta.getDate() - 365);
+    } else if (periodo === 'custom') {
+      const fd = this.parseFecha(this._fechaDesde());
+      const fh = this.parseFecha(this._fechaHasta());
+      if (fd && fh) {
+        return { desde: fd, hasta: fh };
+      } else {
+        desde.setDate(hasta.getDate() - 7);
+      }
+    }
+    return { desde, hasta };
   }
 }

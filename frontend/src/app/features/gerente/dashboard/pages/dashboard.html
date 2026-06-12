@@ -226,59 +226,7 @@
       }
     </article>
 
-    <article class="panel-card billing-panel" [class.month-mode]="state.periodo() === '30d'">
-      <div class="panel-heading">
-        <div>
-          <h2>Facturacion por centro</h2>
-          <p>Distribucion por canal operativo</p>
-        </div>
-      </div>
 
-      <div class="billing-donut-layout">
-        <div
-          class="billing-donut"
-          [style.background]="state.facturacionDonutGradient()"
-          aria-label="Distribucion de facturacion por centro">
-          <div class="donut-center">
-            <span>Total</span>
-            <strong>{{ state.totalFacturacion() | arsCurrency }}</strong>
-          </div>
-        </div>
-
-        <div class="billing-legend">
-          @for (centro of state.facturacionPorCentro(); track centro.centro) {
-            <div class="legend-row">
-              <span class="legend-dot" [style.background]="centro.color"></span>
-              <div>
-                <strong>{{ centro.centro }}</strong>
-                <small>{{ centro.total | arsCurrency }}</small>
-              </div>
-              <em>{{ centro.porcentaje }}%</em>
-            </div>
-          }
-        </div>
-
-        @if (state.periodo() === '30d') {
-          <div class="channel-reading">
-            <div class="channel-reading-heading">
-              <span class="material-symbols-outlined" aria-hidden="true">insights</span>
-              <strong>Lectura del canal</strong>
-            </div>
-            <div class="channel-reading-list">
-              @for (lectura of state.lecturaCanales(); track lectura.titulo) {
-                <div class="channel-reading-item">
-                  <span></span>
-                  <div>
-                    <strong>{{ lectura.titulo }}</strong>
-                    <small>{{ lectura.detalle }}</small>
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-        }
-      </div>
-    </article>
   </section>
 
   <section class="section-heading">
