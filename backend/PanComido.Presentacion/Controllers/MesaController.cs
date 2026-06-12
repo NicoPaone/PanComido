@@ -60,7 +60,7 @@ namespace PanComido.Presentacion.Controllers
           return Ok(new { mensaje = "Mapa de mesas guardado correctamente." });
       }
       [HttpPost("{id}/ocupar")]
-      [Authorize(Roles = "Mozo")]
+      [Authorize(Roles = "Mozo,Gerente")]
 
       public async Task<IActionResult> Ocupar(int id, [FromBody] OcuparMesaRequestDto request)
         {
@@ -90,7 +90,7 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPatch("{id}/estado")]
-      [Authorize(Roles = "Mozo")]
+      [Authorize(Roles = "Mozo,Gerente")]
 
       public async Task<IActionResult> CambiarEstado(int id, [FromBody] CambiarEstadoMesaRequestDto request)
         {
