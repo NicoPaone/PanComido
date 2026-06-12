@@ -31,7 +31,7 @@
   cursor: pointer;
   transition: transform 0.1s ease;
   
-  max-width: 280px; 
+  max-width: 265px; 
 }
 .cart-pill-btn:disabled {
   opacity: 0.5;
@@ -62,7 +62,7 @@
 }
 
 .cart-label {
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.3px;
 }

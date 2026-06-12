@@ -38,5 +38,19 @@ namespace PanComido.Presentacion.Controllers
             // Retornamos 200 OK con la lista limpia
             return Ok(respuestaDto);
         }
+        [HttpGet("rendimiento")]
+        public async Task<IActionResult> ObtenerRendimiento(
+            [FromServices] ObtenerRendimientoComercialCasoDeUso obtenerRendimientoCasoDeUso,
+            [FromQuery] DateTime desde, 
+            [FromQuery] DateTime hasta)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+
+            var resumen = await obtenerRendimientoCasoDeUso.EjecutarAsync(restauranteId, desde, hasta);
+
+            var respuestaDto = _mapper.aRendimientoComercialDto(resumen);
+
+            return Ok(respuestaDto);
+        }
     }
 }

@@ -94,6 +94,8 @@ namespace PanComido.Presentacion.Mappers
                     InsumoId = i.InsumoId,
                     Cantidad = i.Cantidad,
                     Opcional = i.Opcional
+                    ,
+                    Nombre = i.Insumo?.Nombre
                 }).ToList() ?? new List<IngredienteRecetaDto>()
             };
         }

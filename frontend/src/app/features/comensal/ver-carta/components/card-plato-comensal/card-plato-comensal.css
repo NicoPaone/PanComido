@@ -108,7 +108,7 @@
 /* ===== CONTROLES ===== */
 .dish-controls {
   display: flex;
-  gap: 0.5rem;
+  gap: 1.5rem;
   align-items: center;
 }
 
@@ -125,7 +125,7 @@
 .btn-counter {
   background: none;
   border: none;
-  width: 28px;
+  width: 20px;
   height: 28px;
   display: flex;
   align-items: center;

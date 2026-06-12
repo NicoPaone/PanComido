@@ -26,5 +26,7 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task MarcarItemsEntregadosAsync(int comandaId, List<int> articuloComandaIds);
         Task ActualizarAsync(Comanda comanda);
         Task ActualizarComandaParaPagoAsync(Comanda comanda);
+        Task<List<RendimientoPlato>> ObtenerTopPlatosMasVendidosAsync(int restauranteId, DateTime fechaDesde, DateTime fechaHasta, int limite = 5);
+        Task<List<RendimientoPlato>> ObtenerTopPlatosMenosVendidosAsync(int restauranteId, DateTime fechaDesde, DateTime fechaHasta, int limite = 5);
     }
 }

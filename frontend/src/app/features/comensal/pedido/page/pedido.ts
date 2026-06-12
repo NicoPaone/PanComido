@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { PedidoState } from '../../services/pedido.state';
 import { ItemPedido } from '../../../../core/models/domain/item-pedido';
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
+import {Boton} from '../../../../shared/ui/botones/boton/boton';
 import { configuracionRestauranteMock } from '../../../../infra/mocks/configuracion-restaurante.mock-data';
 import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
 import { ComensalState } from '../../services/comensal-state';
@@ -12,7 +13,7 @@ import { ComandaState } from '../../services/comanda-state';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-pedido',
   standalone: true,
-  imports: [BotonComensal, LlamarAlMozo],
+  imports: [BotonComensal, Boton, LlamarAlMozo],
   templateUrl: './pedido.html'
 })
 export class Pedido {
@@ -50,4 +51,12 @@ export class Pedido {
       state: { plato: item, index }
     });
   }
+
+  agregarAlPedido(index: number): void {
+  this.pedidoService.incrementarCantidad(index);
+}
+
+eliminarUno(index: number): void {
+  this.pedidoService.decrementarCantidad(index);
+}
 }
