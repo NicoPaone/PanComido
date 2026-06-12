@@ -42,16 +42,36 @@ export class CantidadPersonas {
     this.cantidadPersonas = numero;
   }
 
+  // async aceptar() {
+  //   try {
+  //     await this.comandaState.ocuparMesa(this.mesaId, this.cantidadPersonas);
+  //     this.router.navigate(['/comensal/ver-carta'], {
+  //       state: { mesaId: this.mesaId, cantidadPersonas: this.cantidadPersonas }
+  //     });
+  //   } catch (error) {
+  //     console.error('Error al ocupar mesa:', error);
+  //   }
+  // }
   async aceptar() {
-    try {
-      await this.comandaState.ocuparMesa(this.mesaId, this.cantidadPersonas);
-      this.router.navigate(['/comensal/ver-carta'], {
-        state: { mesaId: this.mesaId, cantidadPersonas: this.cantidadPersonas }
-      });
-    } catch (error) {
-      console.error('Error al ocupar mesa:', error);
-    }
+  try {
+    console.log('Mesa:', this.mesaId);
+    console.log('Cantidad:', this.cantidadPersonas);
+
+    await this.comandaState.ocuparMesa(this.mesaId, this.cantidadPersonas);
+
+    console.log('Comanda creada:', this.comandaState.comandaId());
+    console.log('Mesa guardada:', this.comandaState.mesaId());
+
+    this.router.navigate(['/comensal/ver-carta'], {
+      state: {
+        mesaId: this.mesaId,
+        cantidadPersonas: this.cantidadPersonas
+      }
+    });
+  } catch (error) {
+    console.error('Error al ocupar mesa:', error);
   }
+}
 
   volverAtras() {
     this.router.navigate(['/comensal/nro-de-mesa'], {

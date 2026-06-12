@@ -13,25 +13,56 @@ export class ComandaService {
    * POST /mesa/{mesaId}/ocupar
    * Body: { cantidadComensales: number }
    */
-  ocuparMesa(mesaId: number, cantidadComensales: number): Observable<MesaOcuparResponse> {
-    return this.api.post<MesaOcuparResponse>(
-      `mesa/${mesaId}/ocupar`,
-      { cantidadComensales }
-    );
-  }
+  // ocuparMesa(mesaId: number, cantidadComensales: number): Observable<MesaOcuparResponse> {
+  //   return this.api.post<MesaOcuparResponse>(
+  //     `mesa/${mesaId}/ocupar`,
+  //     { cantidadComensales }
+  //   );
+  // }
+
+ocuparMesaComensal(
+  restauranteId: number,
+  mesaId: number,
+  cantidadComensales: number
+): Observable<MesaOcuparResponse> {
+  return this.api.post<MesaOcuparResponse>(
+    `mesa/comensal/${restauranteId}/${mesaId}/ocupar`,
+    { cantidadComensales }
+  );
+}
+
+ocuparMesaMozo(
+  mesaId: number,
+  cantidadComensales: number
+): Observable<MesaOcuparResponse> {
+  return this.api.post<MesaOcuparResponse>(
+    `mesa/${mesaId}/ocupar`,
+    { cantidadComensales }
+  );
+}
 
   /**
    * Confirmar pedido con items del carrito
    */
+  // confirmarPedido(
+  //   comandaId: number,
+  //   request: ConfirmarPedidoRequest
+  // ): Observable<ComandaClienteResponse> {
+  //   return this.api.post<ComandaClienteResponse>(
+  //     `comanda/${comandaId}/cliente/confirmar-pedido`,
+  //     request
+  //   );
+  // }
   confirmarPedido(
-    comandaId: number,
-    request: ConfirmarPedidoRequest
-  ): Observable<ComandaClienteResponse> {
-    return this.api.post<ComandaClienteResponse>(
-      `comanda/${comandaId}/cliente/confirmar-pedido`,
-      request
-    );
-  }
+  comandaId: number,
+  restauranteId: number,
+  request: ConfirmarPedidoRequest
+): Observable<ComandaClienteResponse> {
+  return this.api.post<ComandaClienteResponse>(
+    `comanda/${comandaId}/comensal/${restauranteId}/confirmar-pedido`,
+    request
+  );
+}
 
   /**
    * Consultar estado actual del pedido

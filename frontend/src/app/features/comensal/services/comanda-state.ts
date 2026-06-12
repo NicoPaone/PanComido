@@ -52,25 +52,62 @@ export class ComandaState {
    * Ocupar mesa y crear comanda
    * Llamar DESPUÉS de que el usuario ingrese la cantidad de personas
    */
-  async ocuparMesa(mesaId: number, cantidadComensales: number): Promise<void> {
-    this.#mesaId.set(mesaId);
-    this.#cargando.set(true);
-    this.#error.set(null);
+  // async ocuparMesa(mesaId: number, cantidadComensales: number): Promise<void> {
+  //   this.#mesaId.set(mesaId);
+  //   this.#cargando.set(true);
+  //   this.#error.set(null);
 
-    try {
-      const response = await firstValueFrom(this.comandaService.ocuparMesa(mesaId, cantidadComensales));
-      this.#mesaInfo.set(response.mesa);
-      this.#comandaId.set(response.idComandaGenerada);
-      sessionStorage.setItem('comandaId', String(response.idComandaGenerada));
-      sessionStorage.setItem('mesaId', String(mesaId));
-      this.#cargando.set(false);
-    } catch (err: any) {
-      console.error('Error al ocupar mesa:', err);
-      this.#error.set('No se pudo ocupar la mesa. Intenta nuevamente.');
-      this.#cargando.set(false);
-      throw err;
-    }
+  //   try {
+  //     const response = await firstValueFrom(this.comandaService.ocuparMesa(mesaId, cantidadComensales));
+  //     this.#mesaInfo.set(response.mesa);
+  //     this.#comandaId.set(response.idComandaGenerada);
+  //     sessionStorage.setItem('comandaId', String(response.idComandaGenerada));
+  //     sessionStorage.setItem('mesaId', String(mesaId));
+  //     this.#cargando.set(false);
+  //   } catch (err: any) {
+  //     console.error('Error al ocupar mesa:', err);
+  //     this.#error.set('No se pudo ocupar la mesa. Intenta nuevamente.');
+  //     this.#cargando.set(false);
+  //     throw err;
+  //   }
+  // }
+
+  async ocuparMesa(mesaId: number, cantidadComensales: number): Promise<void> {
+  this.#mesaId.set(mesaId);
+  this.#cargando.set(true);
+  this.#error.set(null);
+
+  try {
+    const response = await firstValueFrom(
+      this.comandaService.ocuparMesaComensal(
+        1, // restauranteId hardcodeado
+        mesaId,
+        cantidadComensales
+      )
+    );
+
+    this.#mesaInfo.set(response.mesa);
+    this.#comandaId.set(response.idComandaGenerada);
+
+    sessionStorage.setItem(
+      'comandaId',
+      String(response.idComandaGenerada)
+    );
+
+    sessionStorage.setItem(
+      'mesaId',
+      String(mesaId)
+    );
+
+    this.#cargando.set(false);
+
+  } catch (err: any) {
+    console.error('Error al ocupar mesa:', err);
+    this.#error.set('No se pudo ocupar la mesa. Intenta nuevamente.');
+    this.#cargando.set(false);
+    throw err;
   }
+}
 
   /**
    * PASO 2: Confirmar pedido (envía items al backend)
@@ -94,14 +131,19 @@ export class ComandaState {
     this.#error.set(null);
 
     const items = pedidos.map(p => ({
-      articuloId: p.plato.articuloId,
+      //articuloId: p.plato.articuloId,
+      articuloId: p.plato.id,
       cantidad: p.cantidad,
       observacionesIngredientes: p.observacionesIngredientes ?? null,
       observacionesGenerales: p.observacionesGenerales ?? null
     }));
 
     try {
-      const response = await firstValueFrom(this.comandaService.confirmarPedido(comandaId, { items }));
+     const restauranteId = 1;
+
+const response = await firstValueFrom(
+  this.comandaService.confirmarPedido(comandaId, restauranteId, { items })
+);
       const estado: EstadoPedido = {
         comandaId: response.comandaId,
         estadoUI: response.estadoUI,

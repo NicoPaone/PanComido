@@ -45,6 +45,8 @@ export class DetallePedido {
 
   confirmarPedido(): void {
     // Validación: debe haber comanda activa
+      console.log('Entró a confirmarPedido');
+
     if (!this.comandaState.tieneComandaActiva()) {
       alert('No hay mesa seleccionada. Por favor, escanea el QR de la mesa.');
       return;
