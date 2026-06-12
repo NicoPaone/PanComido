@@ -54,9 +54,11 @@
       [mesa]="mesa"
       [isEditorMode]="state.isEditorMode()"
       [isSeleccionada]="state.mesaSeleccionada() === mesa.id"
+      [enColision]="colisionesActivas()[mesa.id] || false"
       cdkDrag
       cdkDragBoundary=".plano-fondo"
       [cdkDragDisabled]="!state.isEditorMode()"
+      (cdkDragMoved)="onDragMoved(mesa.id, $event)"
       (cdkDragEnded)="onDragEnded(mesa.id, $event)"
       (clickMesa)="state.seleccionarMesa($event)"
       (cambioNumero)="state.actualizarNumero($event.id, $event.numero)"

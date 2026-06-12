@@ -1,5 +1,5 @@
 <div class="mesa-container"
-     [ngClass]="[claseEstado(), claseForma(), isSeleccionada() ? 'seleccionada' : '']"
+     [ngClass]="[claseEstado(), claseForma(), isSeleccionada() ? 'seleccionada' : '', enColision() ? 'colision-activa' : '']"
      [style.width.px]="ancho()"
      [style.height.px]="alto()"
      (click)="manejarClickMesa($event)">

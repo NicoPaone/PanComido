@@ -18,6 +18,12 @@
   z-index: 1000;        
 }
 
+.mesa-container.colision-activa {
+  background-color: rgba(255, 0, 0, 0.7) !important;
+  border: 2px dashed red;
+  z-index: 1000;
+}
+
 /* Cuando el usuario mantiene presionado el click */
 .mesa-container:active {
   cursor: grabbing;
