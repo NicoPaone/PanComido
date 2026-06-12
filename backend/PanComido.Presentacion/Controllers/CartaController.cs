@@ -30,16 +30,25 @@ namespace PanComido.Presentacion.Controllers
             _cartaComensalMapper = cartaComensalMapper;
         }
 
-        [HttpGet("comensal")]
-        public async Task<IActionResult> ObtenerCartaParaComensal()
+        [HttpGet("{restauranteId}/comensal")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ObtenerCartaParaComensal(int restauranteId)
         {
-            var restauranteId = HttpContext.ObtenerRestauranteId();
-
             var articulosDisponibles = await _obtenerCartaComensalCasoDeUso.EjecutarAsync(restauranteId);
 
             var respuestaJson = _cartaComensalMapper.ParaDtoList(articulosDisponibles);
 
             return Ok(respuestaJson);
+        }
+
+        [HttpGet("mozo")]
+        [Authorize(Roles = "Mozo")]
+        public async Task<IActionResult> ObtenerCartaParaMozo()
+        {
+            var restauranteId = HttpContext.ObtenerRestauranteId();
+
+            var articulos = await _obtenerCartaComensalCasoDeUso.EjecutarAsync(restauranteId);
+            return Ok(_cartaComensalMapper.ParaDtoList(articulos));
         }
 
         [HttpGet("obtener-articulos")]

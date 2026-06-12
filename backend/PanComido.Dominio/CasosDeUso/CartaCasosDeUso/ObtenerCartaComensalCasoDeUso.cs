@@ -31,6 +31,7 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
 
         public async Task<List<Articulo>> EjecutarAsync(int restauranteId)
         {
+            // TODO: verificar que el restaurante exista y este abierto
             List<Articulo> articulosEnCarta = await _articuloRepositorio.ObtenerArticulosEnCartaConIngredientesAsync(restauranteId);
             Dictionary<int, decimal> stockDeInsumosActual = await _loteRepositorio.ObtenerStockTotalDeInsumosDisponible(restauranteId, DateOnly.FromDateTime(DateTime.UtcNow));
 

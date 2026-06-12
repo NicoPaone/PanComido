@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.ArticuloCasosDeUso;
 using PanComido.Dominio.Entidades;
@@ -22,25 +23,23 @@ namespace PanComido.Presentacion.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("{id}/comensal")]
-        public async Task<IActionResult> ObtenerDetalle(int id)
+        [HttpGet("{restauranteId}/{id}/comensal")]
+        public async Task<IActionResult> ObtenerDetalle(int restauranteId, int id)
         {
-            try
-            {
-                int restauranteId = HttpContext.ObtenerRestauranteId();
+            Articulo articuloDominio = await _obtenerDetalleArticuloCasoDeUso.EjecutarAsync(restauranteId, id);
 
-                Articulo articuloDominio = await _obtenerDetalleArticuloCasoDeUso.EjecutarAsync(restauranteId, id);
+            return Ok(_mapper.aDto(articuloDominio));
+        }
 
-                return Ok(_mapper.aDto(articuloDominio));
-            }
-            catch (ArgumentException ex)
-            {
-                return NotFound(new { mensaje = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { error = "Error interno.", detalle = ex.Message });
-            }
+        [HttpGet("{id}/mozo")]
+        [Authorize(Roles = "Mozo")]
+        public async Task<IActionResult> ObtenerDetalleMozo(int id)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+
+            Articulo articuloDominio = await _obtenerDetalleArticuloCasoDeUso.EjecutarAsync(restauranteId, id);
+
+            return Ok(_mapper.aDto(articuloDominio));
         }
     }
 }
