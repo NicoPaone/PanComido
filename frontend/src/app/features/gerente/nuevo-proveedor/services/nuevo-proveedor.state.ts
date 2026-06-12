@@ -1,80 +1,62 @@
 import { Injectable, inject, signal, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NuevoProveedorApiService } from './nuevo-proveedor.api';
-import { NuevoProveedor } from '../../../../core/models/proveedor';
+import { ProveedorApiService } from '../../services/proveedor.api';
+import { ProveedorNuevo } from '../../../../core/models/domain/proveedor';
+import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo';
 
 @Injectable({ providedIn: 'root' })
-export class NuevoProveedorStateService {
-  private api = inject(NuevoProveedorApiService);
+export class NuevoProveedorState {
+  private api = inject(ProveedorApiService);
   private destroyRef = inject(DestroyRef);
 
   // Estado mutable expuesto como writeable signals
   categorias = signal<string[]>([]);
+  categoriaIds = signal<number[]>([]);
+  categoriasDisponibles = signal<CategoriaInsumo[]>([]);
   gerenteValidado = signal(false);
   mensajeErrorGerente = signal<string | null>(null);
   cargandoGerente = signal(false);
-  availableCategories = signal<string[]>(['Distribuidora', 'Mayorista', 'Minorista', 'Insumos']);
+  errorCategorias = signal<string | null>(null);
 
-  validarCredencialesGerente(user: string, pass: string, onValid: () => void): void {
-    if (!user || !pass) {
-      this.mensajeErrorGerente.set('Por favor, ingresa credenciales válidas (Usuario >= 3 car., Contraseña >= 6 car.).');
-      return;
-    }
-
-    this.cargandoGerente.set(true);
-    this.mensajeErrorGerente.set(null);
-
-    this.api.validateManagerCredentials(user, pass)
+  cargarCategorias(): void {
+    this.errorCategorias.set(null);
+    this.api.getCategoriasInsumo()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (esValido) => {
-          this.cargandoGerente.set(false);
-          this.gerenteValidado.set(esValido);
-          if (!esValido) {
-            this.mensajeErrorGerente.set('Usuario o contraseña de gerente incorrectos. (Prueba con "gerente" / "123456")');
-          } else {
-            onValid();
-          }
-        },
-        error: () => {
-          this.cargandoGerente.set(false);
-          this.mensajeErrorGerente.set('Error de red al validar credenciales.');
-        }
+        next: categorias => this.categoriasDisponibles.set(categorias),
+        error: () => this.errorCategorias.set('No pudimos cargar las categorías de insumo.')
       });
   }
 
-  toggleCategoria(cat: string): void {
-    const actuales = [...this.categorias()];
-    const idx = actuales.indexOf(cat);
+ 
+
+  toggleCategoria(categoria: CategoriaInsumo): void {
+    const idsActuales = [...this.categoriaIds()];
+    const idx = idsActuales.indexOf(categoria.id);
     if (idx >= 0) {
-      actuales.splice(idx, 1);
+      idsActuales.splice(idx, 1);
     } else {
-      actuales.push(cat);
+      idsActuales.push(categoria.id);
     }
-    this.categorias.set(actuales);
+    this.categoriaIds.set(idsActuales);
+    this.categorias.set(
+      this.categoriasDisponibles()
+        .filter(categoriaDisponible => idsActuales.includes(categoriaDisponible.id))
+        .map(categoriaDisponible => categoriaDisponible.descripcion)
+    );
   }
 
-  agregarCategoriaPersonalizada(text: string, onReset: () => void): void {
-    const cleanText = text.trim();
-    if (!cleanText) return;
-    const actuales = [...this.categorias()];
-    if (!actuales.includes(cleanText)) {
-      actuales.push(cleanText);
-      this.categorias.set(actuales);
-    }
-    const avail = [...this.availableCategories()];
-    if (!avail.includes(cleanText)) {
-      this.availableCategories.set([...avail, cleanText]);
-    }
-    onReset();
+  removerCategoria(id: number): void {
+    const actuales = this.categoriaIds().filter(categoriaId => categoriaId !== id);
+    this.categoriaIds.set(actuales);
+    this.categorias.set(
+      this.categoriasDisponibles()
+        .filter(categoriaDisponible => actuales.includes(categoriaDisponible.id))
+        .map(categoriaDisponible => categoriaDisponible.descripcion)
+    );
   }
 
-  removerCategoria(cat: string): void {
-    const actuales = this.categorias().filter(c => c !== cat);
-    this.categorias.set(actuales);
-  }
-
-  guardarProveedor(proveedor: NuevoProveedor, onSuccess: () => void): void {
+  guardarProveedor(proveedor: ProveedorNuevo, onSuccess: () => void): void {
     this.api.crearProveedor(proveedor)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

@@ -1,6 +1,16 @@
 .btn-container{
    gap: 8px;
 }
+:host {
+  display: inline-flex;
+  width: auto;
+}
+
+app-boton-comensal {
+  width: auto !important;
+  display: inline-flex;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;

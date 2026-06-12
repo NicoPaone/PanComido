@@ -2,6 +2,10 @@ import { Routes } from '@angular/router';
 
 export const GERENTE_ROUTES: Routes = [
   {
+    path: 'dashboard',
+    loadComponent: () => import('./dashboard/pages/dashboard').then(m => m.DashboardPage)
+  },
+  {
     path: 'stock-mercaderia',
     loadComponent: () => import('./stock-mercaderia/page/insumo/insumo-page').then(m => m.InsumoPage)
 
@@ -9,7 +13,7 @@ export const GERENTE_ROUTES: Routes = [
   },
   {
     path: 'mapa-de-mesas',
-    loadComponent: () => import('../mesas/components/mapa-mesas/mapa-mesas').then(m => m.MapaMesas)
+    loadComponent: () => import('../mesas/pages/mapa-mesas/mapa-mesas').then(m => m.MapaMesas)
   },
   {
     path: 'modificar-carta',
@@ -29,7 +33,7 @@ export const GERENTE_ROUTES: Routes = [
   },
   {
     path: 'crear-plato',
-    loadComponent: () => import('./crear-plato/pages/crear-plato').then(m => m.CrearPlatoComponent)
+    loadComponent: () => import('./crear-plato/pages/crear-plato').then(m => m.CrearPlatoPage)
   },
   {
     path: 'realizar-pedido-sugerido',

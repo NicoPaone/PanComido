@@ -1,12 +1,11 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Buscador } from '../../../../shared/ui/buscador/buscador';
-import { Boton } from '../../../../shared/ui/botones/boton/boton';
-import { Plato } from '../../../../core/models/plato';
+import { Plato } from '../../../../core/models/domain/plato';
 import { ListaPlatosComponent } from '../components/lista-platos/lista-platos';
 import { PageToolbar } from '../../../../shared/ui/page-toolbar/page-toolbar';
 import { Dropdown } from '../../../../shared/ui/dropdown/dropdown';
-import { ModalEditarPlatoComponent } from '../components/modal-editar-plato/modal-editar-plato';
+import { ModalEditarPlatoComponent } from '../containers/modal-editar-plato/modal-editar-plato';
 import { ModalEliminarPlatoComponent } from '../components/modal-eliminar-plato/modal-eliminar-plato';
 import { ModificarCartaStateService } from '../services/modificar-carta.state';
 
@@ -15,7 +14,6 @@ import { ModificarCartaStateService } from '../services/modificar-carta.state';
   standalone: true,
   imports: [
     Buscador, 
-    Boton, 
     ListaPlatosComponent, 
     Dropdown, 
     PageToolbar,
@@ -36,16 +34,39 @@ export class ModificarCartaComponent implements OnInit {
   platos = this.state.platos;
   filteredPlatos = this.state.filteredPlatos;
   platosRecomendados = this.state.platosRecomendados;
-  platosNormales = this.state.platosNormales;
+  platosComidas = this.state.platosComidas;
+  platosBebidas = this.state.platosBebidas;
   explodingPlatoId = this.state.explodingPlatoId;
   platoAEditar = this.state.platoAEditar;
   platoAEliminar = this.state.platoAEliminar;
   selectedCategoria = this.state.selectedCategoria;
   loading = this.state.loading;
   categoriasDisponibles = this.state.categoriasDisponibles;
+  tiposBebidaDisponibles = this.state.tiposBebidaDisponibles;
+  selectedTipoBebida = this.state.selectedTipoBebida;
+  totalBebidasCount = this.state.totalBebidasCount;
+
+  tiposComidaDisponibles = this.state.tiposComidaDisponibles;
+  selectedTipoComida = this.state.selectedTipoComida;
+  totalComidasCount = this.state.totalComidasCount;
+
+  sortOrder = this.state.sortOrder;
 
   ngOnInit() {
     this.state.cargarPlatos();
+  }
+
+  onTipoBebidaSeleccionado(tipo: string | null) {
+    this.state.setTipoBebida(tipo);
+  }
+
+  onTipoComidaSeleccionado(tipo: string | null) {
+    this.state.setTipoComida(tipo);
+  }
+
+  onSortChanged(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    this.state.setSortOrder(select.value as 'default' | 'ventas-desc' | 'ventas-asc');
   }
 
   toggleRecomendado(plato: Plato) {

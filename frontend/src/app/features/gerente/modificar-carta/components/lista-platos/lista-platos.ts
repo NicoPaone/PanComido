@@ -1,5 +1,5 @@
 import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
-import { Plato } from '../../../../../core/models/plato';
+import { Plato } from '../../../../../core/models/domain/plato';
 import { CardPlatoComponent } from '../card-plato/card-plato';
 
 @Component({

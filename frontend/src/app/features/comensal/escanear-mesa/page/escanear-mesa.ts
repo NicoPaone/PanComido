@@ -1,10 +1,11 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy , ChangeDetectionStrategy} from '@angular/core';
 import { Router } from '@angular/router';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 import { IScannerControls } from '@zxing/browser/esm/common/IScannerControls';
 import { HeaderEscanearMesa } from '../components/header-escanear-mesa/header-escanear-mesa';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-escanear-mesa',
   imports: [HeaderEscanearMesa],
   templateUrl: './escanear-mesa.html',
@@ -25,7 +26,7 @@ export class ScanQr implements AfterViewInit, OnDestroy {
     try {
       const devices = await BrowserMultiFormatReader.listVideoInputDevices();
       if (devices.length === 0) {
-        console.error('No se encontró cámara');
+        console.warn('No se encontraron dispositivos de cámara');
         return;
       }
 
@@ -46,7 +47,7 @@ export class ScanQr implements AfterViewInit, OnDestroy {
         }
       );
     } catch (e) {
-      console.error('Error al acceder a la cámara', e);
+      console.error('Error al inicializar escáner:', e);
     }
   }
 

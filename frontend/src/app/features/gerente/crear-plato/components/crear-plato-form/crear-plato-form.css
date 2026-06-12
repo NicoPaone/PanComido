@@ -1,0 +1,108 @@
+.form-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 11px;
+  padding: 1.5rem;
+  background: #f7f7f7 !important;
+  border-color: rgba(255, 144, 4, 0.22);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.045);
+}
+
+.font-bold {
+  font-weight: 700;
+  color: #374151;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.custom-input {
+  background-color: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  color: #1f2937;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.custom-input:focus {
+  background-color: #ffffff;
+  border-color: rgba(255, 144, 4, 0.46);
+  box-shadow: 0 0 0 4px rgba(255, 144, 4, 0.1);
+}
+
+.input-group-text {
+  background-color: rgba(255, 144, 4, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  color: #9a3412;
+  font-weight: 600;
+}
+
+.prep-time-group {
+  max-width: 300px;
+}
+
+.prep-time-group .custom-input {
+  max-width: 92px;
+}
+
+.time-readable-hint {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-top: 0.45rem;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  background: rgba(255, 144, 4, 0.12);
+  color: #9a3412;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.custom-textarea {
+  resize: none;
+}
+
+.diet-tag-btn {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.diet-tag-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.diet-tag-btn.active {
+  background-color: #22c55e;
+  color: #ffffff;
+  border-color: #22c55e;
+}
+
+.error-text {
+  color: #dc2626;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.small-hint {
+  font-size: 0.75rem;
+  margin-top: 0.2rem;
+  display: block;
+}
+
+.custom-input.is-invalid {
+  border-color: #f87171 !important;
+  background-color: #fef2f2 !important;
+}

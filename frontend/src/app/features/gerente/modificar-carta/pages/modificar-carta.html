@@ -7,51 +7,57 @@
       placeholder="Buscar plato" 
       (busquedaCambiada)="onSearch($event)">
     </app-buscador>
-   <app-dropdown filtros #filtroDropdown>
+   @if(false) {
+     <app-dropdown filtros #filtroDropdown>
+       <button 
+         trigger
+         class="btn-soft-filter d-flex align-items-center gap-2">
+         <span class="material-symbols-outlined fs-5">filter_list</span>
+         {{ selectedCategoria() ? selectedCategoria() : 'Categorías' }}
+       </button>
+       <div menu>
+         <ul>
+           <li (click)="onCategoriaSeleccionada(null); filtroDropdown.cerrar()">Todas</li>
+           @for (cat of categoriasDisponibles(); track cat) {
+             <li (click)="onCategoriaSeleccionada(cat); filtroDropdown.cerrar()">{{ cat }}</li>
+           }
+         </ul>
+       </div>
+     </app-dropdown>
+   }
 
-      <app-boton 
-      trigger
-      [label]="selectedCategoria() ? 'Categoría: ' + selectedCategoria() : 'Categorías'" 
-      variante="teal" 
-      tamanio="md">
-     </app-boton>
-     <div menu>
-       <ul>
-         <li (click)="onCategoriaSeleccionada(null); filtroDropdown.cerrar()">Todas</li>
-         @for (cat of categoriasDisponibles(); track cat) {
-           <li (click)="onCategoriaSeleccionada(cat); filtroDropdown.cerrar()">{{ cat }}</li>
-         }
-       </ul>
+   <div filtros class="d-flex align-items-center gap-2 gap-sm-3">
+     <select class="form-select form-select-sm border-0 text-secondary fw-semibold shadow-sm" style="border-radius: 10px; background-color: #ffffff; min-width: 140px; cursor: pointer; padding-top: 6px; padding-bottom: 6px;" (change)="onSortChanged($event)">
+       <option value="default" [selected]="sortOrder() === 'default'">Por Relevancia</option>
+       <option value="ventas-desc" [selected]="sortOrder() === 'ventas-desc'">Más Vendidos</option>
+       <option value="ventas-asc" [selected]="sortOrder() === 'ventas-asc'">Menos Vendidos</option>
+     </select>
+
+     <div class="segmented-control">
+       <button 
+         class="segmented-btn" 
+         [class.active]="layoutMode() === 'grid'" 
+         (click)="setLayoutMode('grid')"
+         title="Vista en cuadrícula">
+         <span class="material-symbols-outlined fs-5">grid_view</span>
+       </button>
+       <button 
+         class="segmented-btn" 
+         [class.active]="layoutMode() === 'list'" 
+         (click)="setLayoutMode('list')"
+         title="Vista en lista">
+         <span class="material-symbols-outlined fs-5">view_list</span>
+       </button>
      </div>
-    
-  </app-dropdown>
-
-  <div filtros class="d-flex gap-1">
-    <app-boton 
-      [activo]="layoutMode() === 'grid'" 
-      variante="tab" 
-      tamanio="md"
-      style="flex: 1;"
-      (clicked)="setLayoutMode('grid')">
-      <span class="material-symbols-outlined fs-5" style="vertical-align: middle;">grid_view</span>
-    </app-boton>
-    <app-boton 
-      [activo]="layoutMode() === 'list'" 
-      variante="tab" 
-      tamanio="md"
-      style="flex: 1;"
-      (clicked)="setLayoutMode('list')">
-      <span class="material-symbols-outlined fs-5" style="vertical-align: middle;">view_list</span>
-    </app-boton>
-  </div>
+   </div>
    
- <app-boton 
-      acciones
-      label="Nuevo plato" 
-      variante="secondary" 
-      tamanio="md"
-      (clicked)="irACrearPlato()">
-    </app-boton>
+   <button 
+     acciones
+     class="btn-premium-primary d-flex align-items-center gap-2"
+     (click)="irACrearPlato()">
+     <span class="material-symbols-outlined fs-5">add</span>
+     <span class="fw-semibold">Nuevo plato</span>
+   </button>
 
 
   </app-page-toolbar>
@@ -59,7 +65,7 @@
   @if (loading()) {
     <div class="mb-5">
       @if (layoutMode() === 'grid') {
-        <div class="row row-cols-1 row-cols-lg-2 g-4">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
           @for (i of [1, 2, 3, 4]; track i) {
             <div class="col mb-4">
               <div class="skeleton-card-container h-100">
@@ -159,25 +165,79 @@
       </div>
     }
 
-    <div class="mb-4">
-      <h4 class="fw-bold mb-3 text-dark d-flex align-items-center gap-2">
-        <span class="material-symbols-outlined text-secondary" style="font-size: 1.8rem; vertical-align: middle;">restaurant_menu</span>
-        @if (platosRecomendados().length > 0) {
-          Otros Platos
-        } @else {
-          Todos los Platos
-        }
-      </h4>
-      <app-lista-platos 
-        [platos]="platosNormales()" 
-        [layoutMode]="layoutMode()"
-        [explodingId]="explodingPlatoId()"
-        (toggleVisible)="toggleVisibility($event)"
-        (editPlato)="onEditPlato($event)"
-        (deletePlato)="onDeletePlato($event)"
-        (toggleRecomendado)="toggleRecomendado($event)">
-      </app-lista-platos>
-    </div>
+    @if (platosComidas().length > 0 || selectedTipoComida()) {
+      <div class="mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-3">
+          <h4 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-secondary" style="font-size: 1.8rem; vertical-align: middle;">restaurant_menu</span>
+            Platos
+          </h4>
+          
+          <!-- Filtros de Comida Inline -->
+          @if (tiposComidaDisponibles().length > 0) {
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn-pill-filter" [class.active]="!selectedTipoComida()" (click)="onTipoComidaSeleccionado(null)">
+                <span>Todos</span>
+                <span class="filter-badge">{{ totalComidasCount() }}</span>
+              </button>
+              @for (item of tiposComidaDisponibles(); track item.tipo) {
+                <button class="btn-pill-filter" [class.active]="selectedTipoComida() === item.tipo" (click)="onTipoComidaSeleccionado(item.tipo)">
+                  <span class="material-symbols-outlined" style="font-size: 16px;">restaurant</span>
+                  <span>{{ item.tipo }}</span>
+                  <span class="filter-badge">{{ item.count }}</span>
+                </button>
+              }
+            </div>
+          }
+        </div>
+        <app-lista-platos 
+          [platos]="platosComidas()" 
+          [layoutMode]="layoutMode()"
+          [explodingId]="explodingPlatoId()"
+          (toggleVisible)="toggleVisibility($event)"
+          (editPlato)="onEditPlato($event)"
+          (deletePlato)="onDeletePlato($event)"
+          (toggleRecomendado)="toggleRecomendado($event)">
+        </app-lista-platos>
+      </div>
+    }
+
+    @if (platosBebidas().length > 0 || selectedTipoBebida()) {
+      <div class="mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-3">
+          <h4 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-secondary" style="font-size: 1.8rem; vertical-align: middle;">local_bar</span>
+            Bebidas
+          </h4>
+          
+          <!-- Filtros de Bebida Inline -->
+          @if (tiposBebidaDisponibles().length > 0) {
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn-pill-filter" [class.active]="!selectedTipoBebida()" (click)="onTipoBebidaSeleccionado(null)">
+                <span>Todas</span>
+                <span class="filter-badge">{{ totalBebidasCount() }}</span>
+              </button>
+              @for (item of tiposBebidaDisponibles(); track item.tipo) {
+                <button class="btn-pill-filter" [class.active]="selectedTipoBebida() === item.tipo" (click)="onTipoBebidaSeleccionado(item.tipo)">
+                  <span class="material-symbols-outlined" style="font-size: 16px;">local_drink</span>
+                  <span>{{ item.tipo }}</span>
+                  <span class="filter-badge">{{ item.count }}</span>
+                </button>
+              }
+            </div>
+          }
+        </div>
+        <app-lista-platos 
+          [platos]="platosBebidas()" 
+          [layoutMode]="layoutMode()"
+          [explodingId]="explodingPlatoId()"
+          (toggleVisible)="toggleVisibility($event)"
+          (editPlato)="onEditPlato($event)"
+          (deletePlato)="onDeletePlato($event)"
+          (toggleRecomendado)="toggleRecomendado($event)">
+        </app-lista-platos>
+      </div>
+    }
   }
 
   @if (platoAEditar()) {

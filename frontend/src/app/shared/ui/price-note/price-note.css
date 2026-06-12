@@ -1,0 +1,12 @@
+.price-note {
+  margin: 0.35rem 0 0;
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.price-note.compact {
+  margin-top: 0.18rem;
+  font-size: 0.74rem;
+}

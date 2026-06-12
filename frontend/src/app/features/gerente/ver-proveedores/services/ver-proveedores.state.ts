@@ -1,14 +1,16 @@
 import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { VerProveedoresApiService } from './ver-proveedores.api';
-import { Proveedor, PedidoProveedor, PedidoProveedorItem, PreRecepcionPedidoItem } from '../../../../core/models/proveedor';
-import { Insumo } from '../../../../core/models/insumos/insumo';
-import { UnidadMedida } from '../../../../core/models/unidad-medida';
-import { Bodega } from '../../../../core/models/bodega/bodega';
+import { ProveedorApiService } from '../../services/proveedor.api';
+import { Proveedor, PedidoProveedor, PedidoProveedorItem, ProveedorNuevo } from '../../../../core/models/domain/proveedor';
+import { RecepcionPedidoItem } from '../../../../core/models/domain/proveedor';
+import { Insumo } from '../../../../core/models/domain/insumo';
+import { UnidadMedida } from '../../../../core/models/domain/unidad-medida';
+import { Bodega } from '../../../../core/models/domain/bodega';
+import { CategoriaInsumo } from '../../../../core/models/domain/categoria-insumo';
 
 @Injectable({ providedIn: 'root' })
-export class VerProveedoresStateService {
-  private api = inject(VerProveedoresApiService);
+export class VerProveedoresState {
+  private api = inject(ProveedorApiService);
   private destroyRef = inject(DestroyRef);
 
   /*private readonly preciosMock: Record<string, number> = {
@@ -17,6 +19,7 @@ export class VerProveedoresStateService {
   };*/
 
   termino = signal('');
+  filtroEstado = signal<'Todos' | 'Activos' | 'Inactivos'>('Todos');
   proveedores = signal<Proveedor[]>([]);
   productos = signal<Insumo[]>([]);
   proveedorSeleccionadoId = signal<number | string | null>(null);
@@ -30,30 +33,37 @@ export class VerProveedoresStateService {
   pedidoItems = signal<PedidoProveedorItem[]>([]);
   pedidoHistorialSeleccionado = signal<PedidoProveedor | null>(null);
   recepcionPedido = signal<PedidoProveedor | null>(null);
-  recepcionItems = signal<PreRecepcionPedidoItem[]>([]);
+  recepcionItems = signal<RecepcionPedidoItem[]>([]);
   bodegas = signal<Bodega[]>([]);
+  categoriasInsumo = signal<CategoriaInsumo[]>([]);
 
-  private _loading = signal(false);
-  loading = this._loading.asReadonly();
-  private _error = signal<string | null>(null);
-  error = this._error.asReadonly();
+  readonly #loading = signal(false);
+  loading = this.#loading.asReadonly();
+  readonly #error = signal<string | null>(null);
+  error = this.#error.asReadonly();
 
-  private _historialProveedor = signal<PedidoProveedor[]>([]);
-  historialProveedor = this._historialProveedor.asReadonly();
+  readonly #historialProveedor = signal<PedidoProveedor[]>([]);
+  historialProveedor = this.#historialProveedor.asReadonly();
 
-  private _loadingHistorial = signal(false);
-  loadingHistorial = this._loadingHistorial.asReadonly();
-  private _errorHistorial = signal<string | null>(null);
-  errorHistorial = this._errorHistorial.asReadonly();
+  readonly #loadingHistorial = signal(false);
+  loadingHistorial = this.#loadingHistorial.asReadonly();
+  readonly #errorHistorial = signal<string | null>(null);
+  errorHistorial = this.#errorHistorial.asReadonly();
 
-  private _loadingInsumos = signal(false);
-  loadingInsumos = this._loadingInsumos.asReadonly();
-  private _errorInsumos = signal<string | null>(null);
-  errorInsumos = this._errorInsumos.asReadonly();
+  readonly #loadingInsumos = signal(false);
+  loadingInsumos = this.#loadingInsumos.asReadonly();
+  readonly #errorInsumos = signal<string | null>(null);
+  errorInsumos = this.#errorInsumos.asReadonly();
 
   proveedoresFiltrados = computed(() => {
     const texto = this.termino().toLowerCase().trim();
-    const lista = [...this.proveedores()].sort((a, b) => {
+    const filtro = this.filtroEstado();
+
+    const lista = [...this.proveedores()].filter(prov => {
+      if (filtro === 'Activos' && !prov.activo) return false;
+      if (filtro === 'Inactivos' && prov.activo) return false;
+      return true;
+    }).sort((a, b) => {
       const fechaA = a.fechaUltimoPedido ? new Date(a.fechaUltimoPedido).getTime() : 0;
       const fechaB = b.fechaUltimoPedido ? new Date(b.fechaUltimoPedido).getTime() : 0;
       return fechaB - fechaA;
@@ -94,11 +104,11 @@ export class VerProveedoresStateService {
   });
 
   totalPedidosSeleccionado = computed(() => {
-    return this._historialProveedor().length;
+    return this.#historialProveedor().length;
   });
 
   pedidosListosParaRecibir = computed(() => {
-    return this._historialProveedor().filter(pedido => pedido.estado === 'Enviado');
+    return this.#historialProveedor().filter(pedido => pedido.estado === 'Enviado');
   });
 
  montoEstimado = computed(() => {
@@ -125,8 +135,8 @@ export class VerProveedoresStateService {
   });
 
   cargarDatos(): void {
-    this._loading.set(true);
-    this._error.set(null);
+    this.#loading.set(true);
+    this.#error.set(null);
     this.api.getProveedores()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -137,15 +147,15 @@ export class VerProveedoresStateService {
             this.cargarHistorial(provs[0].id);
             this.cargarInsumosProveedor(provs[0].id);
           }
-          this._loading.set(false);
+          this.#loading.set(false);
         },
         error: () => {
           this.proveedores.set([]);
           this.proveedorSeleccionadoId.set(null);
-          this._historialProveedor.set([]);
+          this.#historialProveedor.set([]);
           this.productos.set([]);
-          this._error.set('No pudimos cargar los proveedores. Revisá la conexión e intentá nuevamente.');
-          this._loading.set(false);
+          this.#error.set('No pudimos cargar los proveedores. Revisá la conexión e intentá nuevamente.');
+          this.#loading.set(false);
         }
       });
 
@@ -154,6 +164,8 @@ export class VerProveedoresStateService {
       .subscribe(bodegas => {
         this.bodegas.set(bodegas);
       });
+
+    this.cargarCategoriasInsumo();
   }
 
   /**
@@ -161,19 +173,19 @@ export class VerProveedoresStateService {
    * Usar desde vistas que ya gestionan la selección del proveedor (ej: historial-proveedor).
    */
   cargarProveedoresSolos(): void {
-    this._loading.set(true);
-    this._error.set(null);
+    this.#loading.set(true);
+    this.#error.set(null);
     this.api.getProveedores()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (provs) => {
           this.proveedores.set(provs);
-          this._loading.set(false);
+          this.#loading.set(false);
         },
         error: () => {
           this.proveedores.set([]);
-          this._error.set('No pudimos cargar los proveedores. Revisá la conexión e intentá nuevamente.');
-          this._loading.set(false);
+          this.#error.set('No pudimos cargar los proveedores. Revisá la conexión e intentá nuevamente.');
+          this.#loading.set(false);
         }
       });
 
@@ -182,54 +194,65 @@ export class VerProveedoresStateService {
       .subscribe(bodegas => {
         this.bodegas.set(bodegas);
       });
+
+    this.cargarCategoriasInsumo();
+  }
+
+  cargarCategoriasInsumo(): void {
+    this.api.getCategoriasInsumo()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: categorias => this.categoriasInsumo.set(categorias),
+        error: () => this.categoriasInsumo.set([])
+      });
   }
 
   seleccionarProveedor(proveedorId: number | string): void {
     this.proveedorSeleccionadoId.set(proveedorId);
     this.mensajeAccion.set(null);
     this.pedidoHistorialSeleccionado.set(null);
-    this._historialProveedor.set([]);
+    this.#historialProveedor.set([]);
     this.productoTexto.set('');
     this.productoSeleccionadoId.set(null);
     this.productos.set([]);
-    this._errorHistorial.set(null);
-    this._errorInsumos.set(null);
+    this.#errorHistorial.set(null);
+    this.#errorInsumos.set(null);
     this.cargarHistorial(proveedorId);
     this.cargarInsumosProveedor(proveedorId);
   }
 
   cargarInsumosProveedor(proveedorId: number | string): void {
-    this._loadingInsumos.set(true);
-    this._errorInsumos.set(null);
+    this.#loadingInsumos.set(true);
+    this.#errorInsumos.set(null);
     this.api.getInsumosProveedor(proveedorId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (productos) => {
           this.productos.set(productos.filter(producto => producto.nombre?.trim()));
-          this._loadingInsumos.set(false);
+          this.#loadingInsumos.set(false);
         },
         error: () => {
           this.productos.set([]);
-          this._errorInsumos.set('No pudimos cargar los insumos de este proveedor.');
-          this._loadingInsumos.set(false);
+          this.#errorInsumos.set('No pudimos cargar los insumos de este proveedor.');
+          this.#loadingInsumos.set(false);
         }
       });
   }
 
   cargarHistorial(id: number | string): void {
-    this._loadingHistorial.set(true);
-    this._errorHistorial.set(null);
+    this.#loadingHistorial.set(true);
+    this.#errorHistorial.set(null);
     this.api.getHistorialPedidos(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (pedidos) => {
-          this._historialProveedor.set(pedidos);
-          this._loadingHistorial.set(false);
+          this.#historialProveedor.set(pedidos);
+          this.#loadingHistorial.set(false);
         },
         error: () => {
-          this._historialProveedor.set([]);
-          this._errorHistorial.set('No pudimos cargar el historial de este proveedor.');
-          this._loadingHistorial.set(false);
+          this.#historialProveedor.set([]);
+          this.#errorHistorial.set('No pudimos cargar el historial de este proveedor.');
+          this.#loadingHistorial.set(false);
         }
       });
   }
@@ -244,6 +267,58 @@ export class VerProveedoresStateService {
   abrirHistorial(proveedorId: number | string): void {
     this.seleccionarProveedor(proveedorId);
     this.panelModo.set('historial');
+  }
+
+  actualizarProveedor(proveedorId: number | string, proveedorActualizado: ProveedorNuevo, onSuccess?: () => void): void {
+    this.api.modificarProveedor(proveedorId, proveedorActualizado)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: proveedorModificado => {
+          this.proveedores.update(proveedores =>
+            proveedores.map(proveedor =>
+              proveedor.id === proveedorModificado.id ? { ...proveedor, ...proveedorModificado } : proveedor
+            )
+          );
+          this.proveedorSeleccionadoId.set(proveedorModificado.id);
+          this.mensajeAccion.set('Proveedor actualizado correctamente.');
+          onSuccess?.();
+        },
+        error: () => {
+          this.mensajeAccion.set('No pudimos actualizar el proveedor. Revisá los datos e intentá nuevamente.');
+        }
+      });
+  }
+
+  eliminarProveedor(proveedorId: number | string, onSuccess?: () => void): void {
+    this.api.eliminarProveedor(proveedorId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          const proveedoresRestantes = this.proveedores().filter(proveedor => proveedor.id !== proveedorId);
+          this.proveedores.set(proveedoresRestantes);
+
+          if (this.proveedorSeleccionadoId() === proveedorId) {
+            const siguiente = proveedoresRestantes[0] ?? null;
+            this.proveedorSeleccionadoId.set(siguiente?.id ?? null);
+            this.#historialProveedor.set([]);
+            this.productos.set([]);
+            this.pedidoItems.set([]);
+            this.pedidoHistorialSeleccionado.set(null);
+            this.panelModo.set('historial');
+
+            if (siguiente) {
+              this.cargarHistorial(siguiente.id);
+              this.cargarInsumosProveedor(siguiente.id);
+            }
+          }
+
+          this.mensajeAccion.set('Proveedor eliminado correctamente.');
+          onSuccess?.();
+        },
+        error: () => {
+          this.mensajeAccion.set('No pudimos eliminar el proveedor. Intentá nuevamente.');
+        }
+      });
   }
 
   abrirDetallePedido(pedido: PedidoProveedor): void {
@@ -283,7 +358,7 @@ export class VerProveedoresStateService {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ pedido: pedidoConfirmado, linkWpp }) => {
-          this._historialProveedor.update(pedidos =>
+          this.#historialProveedor.update(pedidos =>
             pedidos.map(item => item.id === pedido.id ? pedidoConfirmado : item)
           );
           this.pedidoHistorialSeleccionado.update(seleccionado =>
@@ -307,7 +382,7 @@ agregarIngredienteAPedido(pedido: PedidoProveedor, productoId: number | string, 
       precioUnitario: precio
     };
 
-    const pedidos = this._historialProveedor().map(itemPedido => {
+    const pedidos = this.#historialProveedor().map(itemPedido => {
       if (itemPedido.id !== pedido.id) return itemPedido;
 
       const existe = itemPedido.items.some(pedidoItem => pedidoItem.id.toString() === item.id.toString());
@@ -321,7 +396,7 @@ agregarIngredienteAPedido(pedido: PedidoProveedor, productoId: number | string, 
       return { ...itemPedido, items, monto };
     });
 
-    this._historialProveedor.set(pedidos);
+    this.#historialProveedor.set(pedidos);
     this.pedidoHistorialSeleccionado.set(pedidos.find(itemPedido => itemPedido.id === pedido.id) ?? null);
     this.mensajeAccion.set('Ingrediente agregado');
   }
@@ -336,7 +411,7 @@ seleccionarProducto(producto: Insumo): void {
   private ultimoPrecioDeInsumo(insumoId: number | string): number | null {
     // Busca en el historial el último pedido (ordenado por fecha desc) que tenga este insumo
     // y devuelve el precio de compra que se pagó en ese pedido.
-    const historial = [...this._historialProveedor()].sort((a, b) => {
+    const historial = [...this.#historialProveedor()].sort((a, b) => {
       const fa = new Date(a.fecha).getTime();
       const fb = new Date(b.fecha).getTime();
       return fb - fa;
@@ -435,7 +510,7 @@ seleccionarProducto(producto: Insumo): void {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (pedidoCreado) => {
-          this._historialProveedor.update(pedidos => [pedidoCreado, ...pedidos]);
+          this.#historialProveedor.update(pedidos => [pedidoCreado, ...pedidos]);
           this.proveedores.update(lista => lista.map(item => item.id === proveedor.id ? {
             ...item,
             fechaUltimoPedido: pedidoCreado.fecha
@@ -464,7 +539,7 @@ seleccionarProducto(producto: Insumo): void {
     this.recepcionItems.set([]);
   }
 
-  actualizarRecepcionItem(insumoId: number, cambios: Partial<PreRecepcionPedidoItem>): void {
+  actualizarRecepcionItem(insumoId: number, cambios: Partial<RecepcionPedidoItem>): void {
     this.recepcionItems.update(items =>
       items.map(item => item.insumoId === insumoId ? { ...item, ...cambios } : item)
     );
@@ -480,7 +555,7 @@ seleccionarProducto(producto: Insumo): void {
       .subscribe({
         next: () => {
           const recibido: PedidoProveedor = { ...pedido, estado: 'Recibido' };
-          this._historialProveedor.update(pedidos =>
+          this.#historialProveedor.update(pedidos =>
             pedidos.map(item => item.id === pedido.id ? recibido : item)
           );
           this.pedidoHistorialSeleccionado.update(seleccionado =>

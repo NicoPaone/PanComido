@@ -2,8 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { HistorialProveedorComponent } from './historial-proveedor';
-import { VerProveedoresStateService } from '../../services/ver-proveedores.state';
-import { Proveedor, PedidoProveedor } from '../../../../../core/models/proveedor';
+import { VerProveedoresState } from '../../services/ver-proveedores.state';
+import { Proveedor, PedidoProveedor } from '../../../../../core/models/domain/proveedor';
 import { vi } from 'vitest';
 
 describe('HistorialProveedorComponent', () => {
@@ -43,6 +43,7 @@ describe('HistorialProveedorComponent', () => {
       pedidoHistorialSeleccionado: vi.fn().mockReturnValue(null),
       proveedores: vi.fn().mockReturnValue([mockProveedor]),
       cargarDatos: vi.fn(),
+      cargarProveedoresSolos: vi.fn(),
       seleccionarProveedor: vi.fn(),
       cargarHistorial: vi.fn(),
       abrirDetallePedido: vi.fn(),
@@ -56,7 +57,7 @@ describe('HistorialProveedorComponent', () => {
     TestBed.configureTestingModule({
       imports: [HistorialProveedorComponent],
       providers: [
-        { provide: VerProveedoresStateService, useValue: stateMock },
+        { provide: VerProveedoresState, useValue: stateMock },
         { provide: Router, useValue: routerMock },
         {
           provide: ActivatedRoute,
@@ -80,15 +81,15 @@ describe('HistorialProveedorComponent', () => {
       expect(stateMock.cargarHistorial).toHaveBeenCalledWith(1);
     });
 
-    it('debería cargar los datos si la lista de proveedores está vacía', () => {
+    it('debería cargar los proveedores si la lista está vacía', () => {
       stateMock.proveedores = vi.fn().mockReturnValue([]);
       component.ngOnInit();
-      expect(stateMock.cargarDatos).toHaveBeenCalled();
+      expect(stateMock.cargarProveedoresSolos).toHaveBeenCalled();
     });
 
-    it('no debería llamar a cargarDatos si los proveedores ya están cargados', () => {
+    it('no debería llamar a cargarProveedoresSolos si los proveedores ya están cargados', () => {
       component.ngOnInit();
-      expect(stateMock.cargarDatos).not.toHaveBeenCalled();
+      expect(stateMock.cargarProveedoresSolos).not.toHaveBeenCalled();
     });
 
     it('debería navegar a ver-proveedores si no hay id en la ruta', () => {
@@ -96,7 +97,7 @@ describe('HistorialProveedorComponent', () => {
       TestBed.configureTestingModule({
         imports: [HistorialProveedorComponent],
         providers: [
-          { provide: VerProveedoresStateService, useValue: stateMock },
+          { provide: VerProveedoresState, useValue: stateMock },
           { provide: Router, useValue: routerMock },
           {
             provide: ActivatedRoute,

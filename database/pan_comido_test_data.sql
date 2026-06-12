@@ -9,6 +9,14 @@
 --   18-37: Ingredientes simples (artículo + insumo + ingrediente)
 --   38-41: Ingredientes preparados (artículo + insumo + ingrediente + ingrediente_preparado)
 -- ============================================================
+-- Pedidos (estado Recibido = id 3):
+--   4  → Verdulería Don José  (insumos: verduras + fruta)
+--   5  → Carnicería El Gaucho (insumos: carnes)
+--   6  → Distribuidora Central (insumos: cereales, aceites, bebidas)
+--   7  → Lácteos del Campo    (insumos: lácteos, huevos)
+--   8  → Panadería San Martín (insumos: harinas y panificados)
+-- Los pedidos 1-3 se mantienen igual que antes.
+-- ============================================================
 
 BEGIN;
 
@@ -29,21 +37,50 @@ INSERT INTO carta (id, restaurante_id) VALUES
 -- TURNOS LABORALES
 -- ============================================================
 
-INSERT INTO turno_laboral (id, restaurante_id, horario_laboral_inicio, horario_laboral_fin) VALUES
-    (1, 1, '08:00', '16:00'),
-    (2, 1, '16:00', '00:00');
+INSERT INTO turno_laboral (id, restaurante_id, horario_laboral_inicio, horario_laboral_fin, es_nocturno) VALUES
+    (1, 1, '08:00', '16:00', FALSE),
+    (2, 1, '16:00', '00:00', TRUE);
 
 -- ============================================================
 -- EMPLEADOS Y ROLES
+-- CAMBIO: todos con eliminado = FALSE por defecto
 -- ============================================================
 
-INSERT INTO empleado (id, restaurante_id, nombre, email, contrasena, estado) VALUES
-    (1, 1, 'Carlos López',     'carlos@pancomido.com',    '$2b$10$hash_simulado_gerente',  'activo'),
-    (2, 1, 'Cocina',            'cocina@pancomido.com',    '$2b$10$hash_simulado_cocina1',  'activo'),
-    (3, 1, 'Ana Rodríguez',    'ana@pancomido.com',       '$2b$10$hash_simulado_mozo1',    'activo'),
-    (4, 1, 'Pedro Martínez',   'pedro@pancomido.com',     '$2b$10$hash_simulado_mozo2',    'activo'),
-    (5, 1, 'Laura Fernández',  'laura@pancomido.com',     '$2b$10$hash_simulado_mozo3',    'activo'),
-    (6, 1, 'Diego Sánchez',    'diego@pancomido.com',     '$2b$10$hash_simulado_inactivo', 'inactivo');
+
+
+INSERT INTO empleado (id, restaurante_id, nombre, email, contrasena, estado, eliminado) VALUES
+    (1, 1, 'Carlos López',     'carlos@pancomido.com',    '$2b$10$hash_simulado_gerente',  'activo',   FALSE),
+    (2, 1, 'Cocina',            'cocina@pancomido.com',    '$2b$10$hash_simulado_cocina1',  'activo',   FALSE),
+    (3, 1, 'Ana Rodríguez',    'ana@pancomido.com',       '$2b$10$hash_simulado_mozo1',    'activo',   FALSE),
+    (4, 1, 'Pedro Martínez',   'pedro@pancomido.com',     '$2b$10$hash_simulado_mozo2',    'activo',   FALSE),
+    (5, 1, 'Laura Fernández',  'laura@pancomido.com',     '$2b$10$hash_simulado_mozo3',    'activo',   FALSE),
+    (6, 1, 'Diego Sánchez',    'diego@pancomido.com',     '$2b$10$hash_simulado_inactivo', 'inactivo', TRUE); -- eliminado lógicamente
+
+SELECT setval('empleado_id_seq', (SELECT MAX(id) FROM empleado));
+
+-- Gerente
+INSERT INTO empleado (restaurante_id, nombre, email, contrasena, estado)
+VALUES (1, 'Lucia Gerente', 'lucia@pancomido.com', '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42', 'activo');
+
+INSERT INTO gerente (id_empleado)
+VALUES (currval('empleado_id_seq'));
+
+-- Mozo
+INSERT INTO empleado (restaurante_id, nombre, email, contrasena, estado)
+VALUES (1, 'Martin Mozo', 'martin@pancomido.com', '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42', 'activo');
+
+INSERT INTO mozo (id_empleado, activo)
+VALUES (currval('empleado_id_seq'), true);
+
+-- Cocina
+INSERT INTO empleado (restaurante_id, nombre, email, contrasena, estado)
+VALUES (1, 'Sofia Cocina', 'sofia@pancomido.com', '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42', 'activo');
+
+INSERT INTO cocina (id_empleado)
+VALUES (currval('empleado_id_seq'));
+
+
+
 
 INSERT INTO gerente (id_empleado) VALUES (1);
 INSERT INTO cocina (id_empleado) VALUES (2);
@@ -80,11 +117,11 @@ INSERT INTO grilla (id, restaurante_id, cant_columnas, cant_filas) VALUES
 -- estado_mesa: 1=Disponible, 2=Ocupada, 3=Reservada, 4=Deshabilitada
 INSERT INTO mesa (id, grilla_id, estado_mesa_id, dimension_mesa_id, posicion_x_inicio, posicion_x_fin, posicion_y_inicio, posicion_y_fin, numero, codigo_invitacion, cant_personas_max) VALUES
     (1, 1, 1, 1, 30, 120, 30, 120, 1, NULL, 4),
-    (2, 1, 3, 1, 30, 120, 165, 255, 2, NULL, 4), -- Reservada (reserva id 2)
-    (3, 1, 2, 1, 30, 120, 300, 390, 3, NULL, 4), -- Ocupada por comanda activa 1
-    (4, 1, 2, 1, 30, 120, 435, 525, 4, NULL, 4), -- Ocupada por comanda activa 2
-    (5, 1, 3, 1, 30, 120, 570, 660, 5, NULL, 4), -- Reservada (reserva id 1)
-    (6, 1, 3, 1, 165, 255, 30, 120, 6, NULL, 4), -- Reservada (reserva id 3)
+    (2, 1, 3, 1, 30, 120, 165, 255, 2, NULL, 4),
+    (3, 1, 2, 1, 30, 120, 300, 390, 3, NULL, 4),
+    (4, 1, 2, 1, 30, 120, 435, 525, 4, NULL, 4),
+    (5, 1, 3, 1, 30, 120, 570, 660, 5, NULL, 4),
+    (6, 1, 3, 1, 165, 255, 30, 120, 6, NULL, 4),
     (7, 1, 1, 1, 165, 255, 165, 255, 7, NULL, 4),
     (8, 1, 1, 1, 165, 255, 300, 390, 8, NULL, 4),
     (9, 1, 1, 1, 165, 255, 435, 525, 9, NULL, 4),
@@ -95,7 +132,7 @@ INSERT INTO mesa (id, grilla_id, estado_mesa_id, dimension_mesa_id, posicion_x_i
     (14, 1, 1, 6, 300, 450, 585, 660, 14, NULL, 4),
     (15, 1, 1, 6, 510, 660, 585, 660, 15, NULL, 4),
     (16, 1, 1, 6, 300, 450, 480, 555, 16, NULL, 4),
-    (17, 1, 1, 7, 930, 1005, 30, 180, 17, NULL, 4), -- Corregido: era 18
+    (17, 1, 1, 7, 930, 1005, 30, 180, 17, NULL, 4),
     (18, 1, 1, 6, 510, 660, 480, 555, 18, NULL, 4),
     (19, 1, 1, 7, 1080, 1155, 30, 180, 19, NULL, 4),
     (20, 1, 1, 7, 930, 1005, 240, 390, 20, NULL, 4),
@@ -127,57 +164,58 @@ INSERT INTO reserva (id, mesa_id, cant_comensales, nombre_titular, fecha, horari
 
 -- ============================================================
 -- ARTÍCULOS
+-- CAMBIO: todos con eliminado = FALSE por defecto
 -- ============================================================
 
-INSERT INTO articulo (id, carta_id, restaurante_id, nombre, descripcion, precio_venta_final, precio_ganancia, precio_promocional) VALUES
+INSERT INTO articulo (id, carta_id, restaurante_id, nombre, descripcion, precio_venta_final, precio_ganancia, precio_promocional, eliminado) VALUES
     -- === PLATOS (vendibles, en carta) ===
-    (1,  1, 1, 'Pizza Muzzarella',         'Pizza clásica con mozzarella y salsa de tomate',           4500,  2800, NULL),
-    (2,  1, 1, 'Pizza Napolitana',          'Pizza con tomate, mozzarella y ajo',                       5000,  3200, NULL),
-    (3,  1, 1, 'Milanesa Napolitana',       'Milanesa de pollo con jamón, queso y salsa',               6500,  4000, NULL),
-    (4,  1, 1, 'Hamburguesa Clásica',       'Carne vacuna, lechuga, tomate, cebolla',                   5500,  3500, NULL),
-    (5,  1, 1, 'Ensalada César',            'Lechuga, pollo grillado, croutons, parmesano',             4000,  2500, 3500),
-    (6,  1, 1, 'Bife de Chorizo',           'Bife de chorizo a la parrilla con guarnición',             8500,  5500, NULL),
-    (7,  1, 1, 'Spaghetti Bolognesa',       'Pasta con salsa bolognesa casera',                         5000,  3000, NULL),
-    (8,  1, 1, 'Empanadas de Carne (x3)',   'Empanadas de carne cortada a cuchillo',                    3000,  1800, NULL),
-    (9,  1, 1, 'Papas Fritas',              'Porción de papas fritas',                                  2500,  1500, NULL),
-    (10, 1, 1, 'Ensalada Mixta',            'Lechuga, tomate, cebolla, huevo',                          2000,  1200, NULL),
-    (11, 1, 1, 'Wok de Pollo y Verduras',   'Pollo salteado con pimiento, cebolla y salsa de soja',     5500,  3300, 4800),
+    (1,  1, 1, 'Pizza Muzzarella',         'Pizza clásica con mozzarella y salsa de tomate',           4500,  2800, NULL,   FALSE),
+    (2,  1, 1, 'Pizza Napolitana',          'Pizza con tomate, mozzarella y ajo',                       5000,  3200, NULL,   FALSE),
+    (3,  1, 1, 'Milanesa Napolitana',       'Milanesa de pollo con jamón, queso y salsa',               6500,  4000, NULL,   FALSE),
+    (4,  1, 1, 'Hamburguesa Clásica',       'Carne vacuna, lechuga, tomate, cebolla',                   5500,  3500, NULL,   FALSE),
+    (5,  1, 1, 'Ensalada César',            'Lechuga, pollo grillado, croutons, parmesano',             4000,  2500, 3500,   FALSE),
+    (6,  1, 1, 'Bife de Chorizo',           'Bife de chorizo a la parrilla con guarnición',             8500,  5500, NULL,   FALSE),
+    (7,  1, 1, 'Spaghetti Bolognesa',       'Pasta con salsa bolognesa casera',                         5000,  3000, NULL,   FALSE),
+    (8,  1, 1, 'Empanadas de Carne (x3)',   'Empanadas de carne cortada a cuchillo',                    3000,  1800, NULL,   FALSE),
+    (9,  1, 1, 'Papas Fritas',              'Porción de papas fritas',                                  2500,  1500, NULL,   FALSE),
+    (10, 1, 1, 'Ensalada Mixta',            'Lechuga, tomate, cebolla, huevo',                          2000,  1200, NULL,   FALSE),
+    (11, 1, 1, 'Wok de Pollo y Verduras',   'Pollo salteado con pimiento, cebolla y salsa de soja',     5500,  3300, 4800,   FALSE),
 
-    -- === BEBIDAS (vendibles, en carta, son insumo con categoria_insumo tipo_aplica=2) ===
-    (12, 1, 1, 'Coca-Cola 500ml',           'Gaseosa línea Coca-Cola',         1500, 900,  NULL),
-    (13, 1, 1, 'Agua Mineral 500ml',        'Agua mineral sin gas',            1000, 600,  NULL),
-    (14, 1, 1, 'Cerveza Artesanal IPA',     'Pinta de cerveza artesanal IPA',  2500, 1500, NULL),
-    (15, 1, 1, 'Vino Malbec (copa)',        'Copa de Malbec Reserva',          2000, 1200, NULL),
-    (16, 1, 1, 'Sprite 500ml',              'Gaseosa Sprite',                  1500, 900,  NULL),
-    (17, 1, 1, 'Fernet con Coca',           'Fernet Branca con Coca-Cola',     2500, 1500, NULL),
+    -- === BEBIDAS (vendibles, en carta) ===
+    (12, 1, 1, 'Coca-Cola 500ml',           'Gaseosa línea Coca-Cola',         1500, 900,  NULL, FALSE),
+    (13, 1, 1, 'Agua Mineral 500ml',        'Agua mineral sin gas',            1000, 600,  NULL, FALSE),
+    (14, 1, 1, 'Cerveza Artesanal IPA',     'Pinta de cerveza artesanal IPA',  2500, 1500, NULL, FALSE),
+    (15, 1, 1, 'Vino Malbec (copa)',        'Copa de Malbec Reserva',          2000, 1200, NULL, FALSE),
+    (16, 1, 1, 'Sprite 500ml',              'Gaseosa Sprite',                  1500, 900,  NULL, FALSE),
+    (17, 1, 1, 'Fernet con Coca',           'Fernet Branca con Coca-Cola',     2500, 1500, NULL, FALSE),
 
     -- === INGREDIENTES SIMPLES (no vendibles, sin carta) ===
-    (18, NULL, 1, 'Harina 000',             NULL, NULL, NULL, NULL),
-    (19, NULL, 1, 'Mozzarella',             NULL, NULL, NULL, NULL),
-    (20, NULL, 1, 'Tomate perita',          NULL, NULL, NULL, NULL),
-    (21, NULL, 1, 'Pechuga de pollo',       NULL, NULL, NULL, NULL),
-    (22, NULL, 1, 'Aceite de oliva',        NULL, NULL, NULL, NULL),
-    (23, NULL, 1, 'Crema de leche',         NULL, NULL, NULL, NULL),
-    (24, NULL, 1, 'Sal',                    NULL, NULL, NULL, NULL),
-    (25, NULL, 1, 'Pimienta',              NULL, NULL, NULL, NULL),
-    (26, NULL, 1, 'Lechuga',               NULL, NULL, NULL, NULL),
-    (27, NULL, 1, 'Huevos',                NULL, NULL, NULL, NULL),
-    (28, NULL, 1, 'Carne vacuna (bife)',    NULL, NULL, NULL, NULL),
-    (29, NULL, 1, 'Papa',                  NULL, NULL, NULL, NULL),
-    (30, NULL, 1, 'Cebolla',              NULL, NULL, NULL, NULL),
-    (31, NULL, 1, 'Ajo',                  NULL, NULL, NULL, NULL),
-    (32, NULL, 1, 'Pan de hamburguesa',    NULL, NULL, NULL, NULL),
-    (33, NULL, 1, 'Fideos secos',          NULL, NULL, NULL, NULL),
-    (34, NULL, 1, 'Albahaca',             NULL, NULL, NULL, NULL),
-    (35, NULL, 1, 'Pimiento rojo',        NULL, NULL, NULL, NULL),
-    (36, NULL, 1, 'Orégano',              NULL, NULL, NULL, NULL),
-    (37, NULL, 1, 'Jamón cocido',          NULL, NULL, NULL, NULL),
+    (18, NULL, 1, 'Harina 000',             NULL, NULL, NULL, NULL, FALSE),
+    (19, NULL, 1, 'Mozzarella',             NULL, NULL, NULL, NULL, FALSE),
+    (20, NULL, 1, 'Tomate perita',          NULL, NULL, NULL, NULL, FALSE),
+    (21, NULL, 1, 'Pechuga de pollo',       NULL, NULL, NULL, NULL, FALSE),
+    (22, NULL, 1, 'Aceite de oliva',        NULL, NULL, NULL, NULL, FALSE),
+    (23, NULL, 1, 'Crema de leche',         NULL, NULL, NULL, NULL, FALSE),
+    (24, NULL, 1, 'Sal',                    NULL, NULL, NULL, NULL, FALSE),
+    (25, NULL, 1, 'Pimienta',              NULL, NULL, NULL, NULL, FALSE),
+    (26, NULL, 1, 'Lechuga',               NULL, NULL, NULL, NULL, FALSE),
+    (27, NULL, 1, 'Huevos',                NULL, NULL, NULL, NULL, FALSE),
+    (28, NULL, 1, 'Carne vacuna (bife)',    NULL, NULL, NULL, NULL, FALSE),
+    (29, NULL, 1, 'Papa',                  NULL, NULL, NULL, NULL, FALSE),
+    (30, NULL, 1, 'Cebolla',              NULL, NULL, NULL, NULL, FALSE),
+    (31, NULL, 1, 'Ajo',                  NULL, NULL, NULL, NULL, FALSE),
+    (32, NULL, 1, 'Pan de hamburguesa',    NULL, NULL, NULL, NULL, FALSE),
+    (33, NULL, 1, 'Fideos secos',          NULL, NULL, NULL, NULL, FALSE),
+    (34, NULL, 1, 'Albahaca',             NULL, NULL, NULL, NULL, FALSE),
+    (35, NULL, 1, 'Pimiento rojo',        NULL, NULL, NULL, NULL, FALSE),
+    (36, NULL, 1, 'Orégano',              NULL, NULL, NULL, NULL, FALSE),
+    (37, NULL, 1, 'Jamón cocido',          NULL, NULL, NULL, NULL, FALSE),
 
     -- === INGREDIENTES PREPARADOS (no vendibles, sin carta) ===
-    (38, NULL, 1, 'Salsa de tomate casera', NULL, NULL, NULL, NULL),
-    (39, NULL, 1, 'Masa de pizza',          NULL, NULL, NULL, NULL),
-    (40, NULL, 1, 'Masa de empanada',       NULL, NULL, NULL, NULL),
-    (41, NULL, 1, 'Salsa bechamel',         NULL, NULL, NULL, NULL);
+    (38, NULL, 1, 'Salsa de tomate casera', NULL, NULL, NULL, NULL, FALSE),
+    (39, NULL, 1, 'Masa de pizza',          NULL, NULL, NULL, NULL, FALSE),
+    (40, NULL, 1, 'Masa de empanada',       NULL, NULL, NULL, NULL, FALSE),
+    (41, NULL, 1, 'Salsa bechamel',         NULL, NULL, NULL, NULL, FALSE);
 
 -- ============================================================
 -- CONFIGURACIÓN DE ARTÍCULOS
@@ -205,9 +243,6 @@ INSERT INTO articulo_configuracion_articulo (articulo_id, configuracion_articulo
 -- ============================================================
 -- PLATOS (subtipo de Articulo)
 -- ============================================================
--- tipo_plato: 1=Pasta, 2=Minuta, 3=Pizza, 4=Parrilla, 5=Sandwich,
---   6=Ensalada, 7=Mariscos, 8=Wok y Salteado, 9=Tarta y Empanada
--- categoria_plato: 1=Entrada, 2=Principal, 3=Postre, 4=Guarnición
 
 INSERT INTO plato (id_articulo, tipo_plato_id, categoria_plato_id, tiempo_preparacion_base, destacado, sugerencia) VALUES
     (1,  3, 2, 20, TRUE,  TRUE),
@@ -223,55 +258,47 @@ INSERT INTO plato (id_articulo, tipo_plato_id, categoria_plato_id, tiempo_prepar
     (11, 8, 2, 15, FALSE, TRUE);
 
 -- ============================================================
--- INSUMOS (subtipo de Articulo) — ahora con categoria_insumo_id y unidad_medida_id
+-- INSUMOS (subtipo de Articulo)
 -- ============================================================
--- categoria_insumo: 1=Fruta, 2=Verdura, 3=Carne, 4=Lácteos, 5=Cereales,
---   6=Pescado y Mariscos, 7=Huevos, 8=Condimentos y Especias, 9=Aceites y Grasas,
---   10=Legumbres, 11=Harinas y Panificados, 12=Con alcohol, 13=Sin alcohol
--- unidad_medida: 1=Kg, 2=Gr, 3=Lt, 4=Ml, 5=Unidad, 6=Porción
 
 INSERT INTO insumo (id_articulo, categoria_insumo_id, unidad_medida_id, stock_minimo) VALUES
-    -- Bebidas (tipo_aplica = 2)
-    (12, 13, 5, 5),      -- Coca-Cola → Sin alcohol, Unidad
-    (13, 13, 5, 3),      -- Agua mineral → Sin alcohol, Unidad
-    (14, 12, 5, 2),      -- Cerveza IPA → Con alcohol, Unidad
-    (15, 12, 5, 2),      -- Vino Malbec → Con alcohol, Unidad
-    (16, 13, 5, 3),      -- Sprite → Sin alcohol, Unidad
-    (17, 12, 5, 1),      -- Fernet → Con alcohol, Unidad
-
-    -- Ingredientes simples (tipo_aplica = 1)
-    (18, 11, 1, 2),      -- Harina 000 → Harinas y Panificados, Kg
-    (19, 4,  1, 1),      -- Mozzarella → Lácteos, Kg
-    (20, 2,  1, 0.5),    -- Tomate perita → Verdura, Kg
-    (21, 3,  1, 1),      -- Pechuga de pollo → Carne, Kg
-    (22, 9,  3, 0.5),    -- Aceite de oliva → Aceites y Grasas, Lt
-    (23, 4,  3, 0.3),    -- Crema de leche → Lácteos, Lt
-    (24, 8,  1, 2),      -- Sal → Condimentos y Especias, Kg
-    (25, 8,  2, 1),      -- Pimienta → Condimentos y Especias, Gr
-    (26, 2,  1, 0.5),    -- Lechuga → Verdura, Kg
-    (27, 7,  5, 0.3),    -- Huevos → Huevos, Unidad
-    (28, 3,  1, 1),      -- Carne vacuna → Carne, Kg
-    (29, 2,  1, 0.5),    -- Papa → Verdura, Kg
-    (30, 2,  1, 0.3),    -- Cebolla → Verdura, Kg
-    (31, 8,  5, 1),      -- Ajo → Condimentos y Especias, Unidad
-    (32, 11, 5, 0.5),    -- Pan de hamburguesa → Harinas y Panificados, Unidad
-    (33, 5,  1, 1),      -- Fideos secos → Cereales, Kg
-    (34, 2,  2, 1),      -- Albahaca → Verdura, Gr
-    (35, 2,  1, 0.3),    -- Pimiento rojo → Verdura, Kg
-    (36, 8,  2, 1),      -- Orégano → Condimentos y Especias, Gr
-    (37, 3,  1, 0.3),    -- Jamón cocido → Carne, Kg
-
-    -- Ingredientes preparados (tipo_aplica = 1)
-    (38, 2,  3, 0.5),    -- Salsa de tomate casera → Verdura, Lt
-    (39, 11, 6, 0.3),    -- Masa de pizza → Harinas y Panificados, Porción
-    (40, 11, 6, 0.2),    -- Masa de empanada → Harinas y Panificados, Porción
-    (41, 4,  3, 0.3);    -- Salsa bechamel → Lácteos, Lt
+    -- Bebidas
+    (12, 13, 5, 5),
+    (13, 13, 5, 3),
+    (14, 12, 5, 2),
+    (15, 12, 5, 2),
+    (16, 13, 5, 3),
+    (17, 12, 5, 1),
+    -- Ingredientes simples
+    (18, 11, 1, 2),
+    (19, 4,  1, 1),
+    (20, 2,  1, 0.5),
+    (21, 3,  1, 1),
+    (22, 9,  3, 0.5),
+    (23, 4,  3, 0.3),
+    (24, 8,  1, 2),
+    (25, 8,  2, 1),
+    (26, 2,  1, 0.5),
+    (27, 7,  5, 0.3),
+    (28, 3,  1, 1),
+    (29, 2,  1, 0.5),
+    (30, 2,  1, 0.3),
+    (31, 8,  5, 1),
+    (32, 11, 5, 0.5),
+    (33, 5,  1, 1),
+    (34, 2,  2, 1),
+    (35, 2,  1, 0.3),
+    (36, 8,  2, 1),
+    (37, 3,  1, 0.3),
+    -- Ingredientes preparados
+    (38, 2,  3, 0.5),
+    (39, 11, 6, 0.3),
+    (40, 11, 6, 0.2),
+    (41, 4,  3, 0.3);
 
 -- ============================================================
--- INGREDIENTES (subtipo de Insumo — tabla marcadora)
+-- INGREDIENTES
 -- ============================================================
--- Solo los que participan en recetas (plato_ingrediente) o composiciones (ingrediente_preparado)
--- Las bebidas (12-17) NO van acá porque no son ingredientes
 
 INSERT INTO ingrediente (id_insumo) VALUES
     (18), (19), (20), (21), (22), (23), (24), (25),
@@ -279,157 +306,55 @@ INSERT INTO ingrediente (id_insumo) VALUES
     (34), (35), (36), (37),
     (38), (39), (40), (41);
 
--- ============================================================
--- INGREDIENTES PREPARADOS (subtipo de Ingrediente)
--- ============================================================
-
 INSERT INTO ingrediente_preparado (id_ingrediente) VALUES
     (38), (39), (40), (41);
 
 -- Composición de ingredientes preparados
--- Salsa de tomate casera (38) = Rinde aprox 1.3 kg
 INSERT INTO ingrediente_ingrediente_preparado (ingrediente_id, ingrediente_preparado_id, cantidad) VALUES
-    (20, 38, 1.00), -- Tomate (1kg)
-    (30, 38, 0.20), -- Cebolla (200g)
-    (31, 38, 0.05), -- Ajo (50g)
-    (22, 38, 0.05), -- Aceite (50g)
-    (24, 38, 0.02), -- Sal (20g)
-    (34, 38, 0.02); -- Albahaca (20g)
-
--- Masa de pizza (39) = Rinde aprox 1.1 kg
-INSERT INTO ingrediente_ingrediente_preparado (ingrediente_id, ingrediente_preparado_id, cantidad) VALUES
-    (18, 39, 1.00), -- Harina (1kg)
-    (24, 39, 0.02), -- Sal (20g)
-    (22, 39, 0.05); -- Aceite (50g)
-
--- Masa de empanada (40) = Rinde aprox 1.1 kg
-INSERT INTO ingrediente_ingrediente_preparado (ingrediente_id, ingrediente_preparado_id, cantidad) VALUES
-    (18, 40, 1.00), -- Harina (1kg)
-    (24, 40, 0.02), -- Sal (20g)
-    (22, 40, 0.10); -- Aceite/Grasa (100g)
-
--- Salsa bechamel (41) = Rinde aprox 1.1 kg
-INSERT INTO ingrediente_ingrediente_preparado (ingrediente_id, ingrediente_preparado_id, cantidad) VALUES
-    (18, 41, 0.10), -- Harina (100g)
-    (23, 41, 1.00), -- Leche/Crema (1L/1kg)
-    (24, 41, 0.01), -- Sal (10g)
-    (25, 41, 0.01); -- Pimienta/Nuez Moscada (10g)
+    (20, 38, 1.00), (30, 38, 0.20), (31, 38, 0.05), (22, 38, 0.05), (24, 38, 0.02), (34, 38, 0.02),
+    (18, 39, 1.00), (24, 39, 0.02), (22, 39, 0.05),
+    (18, 40, 1.00), (24, 40, 0.02), (22, 40, 0.10),
+    (18, 41, 0.10), (23, 41, 1.00), (24, 41, 0.01), (25, 41, 0.01);
 
 -- ============================================================
 -- RESTRICCIONES DE PLATOS
 -- ============================================================
 
 INSERT INTO restriccion_plato (restriccion_id, plato_id) VALUES
-    (2, 1),   -- Pizza Muzza → Vegetariano
-    (2, 9),   -- Papas fritas → Vegetariano
-    (3, 9),   -- Papas fritas → Sin TACC
-    (1, 10),  -- Ensalada Mixta → Vegano
-    (2, 10),  -- Ensalada Mixta → Vegetariano
-    (3, 6);   -- Bife de Chorizo → Sin TACC
+    (2, 1), (2, 9), (3, 9), (1, 10), (2, 10), (3, 6);
 
 -- ============================================================
 -- RECETAS: PLATO <-> INGREDIENTE
 -- ============================================================
 
--- Pizza Muzzarella (1)
 INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
-    (1, 39, FALSE, 0.35), -- Masa de pizza (350g)
-    (1, 38, FALSE, 0.15), -- Salsa (150g)
-    (1, 19, FALSE, 0.25), -- Queso muzzarella (250g)
-    (1, 36, TRUE, 0.02);  -- Aceitunas/Orégano (20g)
-
--- Pizza Napolitana (2)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
-    (2, 39, FALSE, 0.35),
-    (2, 38, FALSE, 0.15),
-    (2, 19, FALSE, 0.25),
-    (2, 31, FALSE, 0.01), -- Ajo (10g)
-    (2, 20, FALSE, 0.20); -- Tomate en rodajas (200g)
-
--- Milanesa Napolitana (3)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
-    (3, 21, FALSE, 0.25), -- Carne/Pollo (250g)
-    (3, 27, FALSE, 0.05), -- Huevo (50g)
-    (3, 18, FALSE, 0.10), -- Pan rallado (100g)
-    (3, 37, FALSE, 0.05), -- Jamón (50g)
-    (3, 19, FALSE, 0.10), -- Queso (100g)
-    (3, 38, FALSE, 0.10); -- Salsa (100g)
-
--- Hamburguesa Clásica (4)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
-    (4, 28, FALSE, 0.20), -- Medallón de carne (200g)
-    (4, 32, FALSE, 0.10), -- Pan de hamburguesa (100g)
-    (4, 26, FALSE, 0.05), -- Lechuga (50g)
-    (4, 20, FALSE, 0.05), -- Tomate (50g)
-    (4, 30, TRUE, 0.05);  -- Cebolla (50g)
-
--- Ensalada César (5)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
-    (5, 26, FALSE, 0.20), -- Lechuga (200g)
-    (5, 21, FALSE, 0.15), -- Pollo (150g)
-    (5, 27, FALSE, 0.05), -- Huevo (50g)
-    (5, 22, FALSE, 0.03), -- Aderezo/Aceite (30g)
-    (5, 24, FALSE, 0.01), -- Sal (10g)
-    (5, 25, TRUE, 0.02);  -- Croutons/Pimienta (20g)
-
--- Bife de Chorizo (6)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
-    (6, 28, FALSE, 0.40), -- Bife (400g)
-    (6, 24, FALSE, 0.01), -- Sal (10g)
-    (6, 25, FALSE, 0.01), -- Pimienta (10g)
-    (6, 22, TRUE, 0.02);  -- Aceite (20g)
-
--- Spaghetti Bolognesa (7)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
-    (7, 33, FALSE, 0.20), -- Pasta (200g)
-    (7, 38, FALSE, 0.15), -- Salsa de tomate (150g)
-    (7, 28, FALSE, 0.15), -- Carne picada (150g)
-    (7, 30, FALSE, 0.05), -- Cebolla (50g)
-    (7, 31, FALSE, 0.01); -- Ajo (10g)
-
--- Empanadas de Carne (8) - Calculado para 1 porción (ej. 3 unidades)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
-    (8, 40, FALSE, 0.10), -- Masa (100g)
-    (8, 28, FALSE, 0.15), -- Carne (150g)
-    (8, 30, FALSE, 0.08), -- Cebolla (80g)
-    (8, 27, FALSE, 0.05), -- Huevo duro (50g)
-    (8, 35, TRUE, 0.03);  -- Morrón (30g)
-
--- Papas Fritas (9)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
-    (9, 29, FALSE, 0.30), -- Papas (300g)
-    (9, 22, FALSE, 0.05), -- Aceite para freír (50g consumidos)
-    (9, 24, FALSE, 0.01); -- Sal (10g)
-
--- Ensalada Mixta (10)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
-    (10, 26, FALSE, 0.15), -- Lechuga (150g)
-    (10, 20, FALSE, 0.10), -- Tomate (100g)
-    (10, 30, TRUE, 0.05),  -- Cebolla (50g)
-    (10, 27, FALSE, 0.05), -- Huevo (50g)
-    (10, 22, FALSE, 0.02), -- Aceite (20g)
-    (10, 24, FALSE, 0.01); -- Sal (10g)
-
--- Wok de Pollo (11)
-INSERT INTO plato_ingrediente (plato_id, ingrediente_id, opcional, cantidad) VALUES
-    (11, 21, FALSE, 0.20), -- Pollo (200g)
-    (11, 35, FALSE, 0.05), -- Morrón (50g)
-    (11, 30, FALSE, 0.05), -- Cebolla (50g)
-    (11, 22, FALSE, 0.02), -- Aceite (20g)
-    (11, 24, FALSE, 0.01), -- Sal (10g)
-    (11, 25, TRUE, 0.01);  -- Pimienta/Especias (10g)
+    (1, 39, FALSE, 0.35), (1, 38, FALSE, 0.15), (1, 19, FALSE, 0.25), (1, 36, TRUE,  0.02),
+    (2, 39, FALSE, 0.35), (2, 38, FALSE, 0.15), (2, 19, FALSE, 0.25), (2, 31, FALSE, 0.01), (2, 20, FALSE, 0.20),
+    (3, 21, FALSE, 0.25), (3, 27, FALSE, 0.05), (3, 18, FALSE, 0.10), (3, 37, FALSE, 0.05), (3, 19, FALSE, 0.10), (3, 38, FALSE, 0.10),
+    (4, 28, FALSE, 0.20), (4, 32, FALSE, 0.10), (4, 26, FALSE, 0.05), (4, 20, FALSE, 0.05), (4, 30, TRUE,  0.05),
+    (5, 26, FALSE, 0.20), (5, 21, FALSE, 0.15), (5, 27, FALSE, 0.05), (5, 22, FALSE, 0.03), (5, 24, FALSE, 0.01), (5, 25, TRUE, 0.02),
+    (6, 28, FALSE, 0.40), (6, 24, FALSE, 0.01), (6, 25, FALSE, 0.01), (6, 22, TRUE,  0.02),
+    (7, 33, FALSE, 0.20), (7, 38, FALSE, 0.15), (7, 28, FALSE, 0.15), (7, 30, FALSE, 0.05), (7, 31, FALSE, 0.01),
+    (8, 40, FALSE, 0.10), (8, 28, FALSE, 0.15), (8, 30, FALSE, 0.08), (8, 27, FALSE, 0.05), (8, 35, TRUE,  0.03),
+    (9, 29, FALSE, 0.30), (9, 22, FALSE, 0.05), (9, 24, FALSE, 0.01),
+    (10, 26, FALSE, 0.15), (10, 20, FALSE, 0.10), (10, 30, TRUE, 0.05), (10, 27, FALSE, 0.05), (10, 22, FALSE, 0.02), (10, 24, FALSE, 0.01),
+    (11, 21, FALSE, 0.20), (11, 35, FALSE, 0.05), (11, 30, FALSE, 0.05), (11, 22, FALSE, 0.02), (11, 24, FALSE, 0.01), (11, 25, TRUE, 0.01);
 
 -- ============================================================
--- BODEGAS Y LOTES
+-- BODEGAS
+-- CAMBIO: campo eliminado agregado
 -- ============================================================
 
-INSERT INTO bodega (id, restaurante_id, tipo_bodega_id, nombre) VALUES
-    (1, 1, 1, 'Almacén principal'),
-    (2, 1, 2, 'Heladera cocina'),
-    (3, 1, 3, 'Freezer');
+INSERT INTO bodega (id, restaurante_id, tipo_bodega_id, nombre, eliminado) VALUES
+    (1, 1, 1, 'Almacén principal',  FALSE),
+    (2, 1, 2, 'Heladera cocina',    FALSE),
+    (3, 1, 3, 'Freezer',            FALSE);
+
+-- ============================================================
+-- LOTES
+-- ============================================================
 
 INSERT INTO lote (id, insumo_id, bodega_id, nombre, cantidad, fecha_adquisicion, fecha_vencimiento) VALUES
-    -- Almacén (bodega 1): secos, aceites, bebidas
     (1,  18, 1, 'Harina 000 - Lote Mar/26',          10,   '2026-03-01', '2026-06-15'),
     (2,  22, 1, 'Aceite oliva - Lote Feb/26',          5,   '2026-02-01', '2026-08-01'),
     (3,  24, 1, 'Sal fina - Lote Ene/26',              3,   '2026-01-10', '2026-12-01'),
@@ -443,8 +368,6 @@ INSERT INTO lote (id, insumo_id, bodega_id, nombre, cantidad, fecha_adquisicion,
     (11, 15, 1, 'Malbec Reserva - Lote Mar/26',        6,   '2026-03-01', '2027-01-15'),
     (12, 16, 1, 'Sprite 500ml - Pack May/26',           18,  '2026-05-01', NULL),
     (13, 17, 1, 'Fernet 750ml - Lote Abr/26',          4,   '2026-04-15', '2027-06-01'),
-
-    -- Heladera cocina (bodega 2): frescos, lácteos, preparados
     (14, 19, 2, 'Mozzarella - Lote Abr/26',            3,   '2026-04-15', '2026-07-01'),
     (15, 19, 2, 'Mozzarella - Lote May/26',            2,   '2026-05-20', '2026-07-20'),
     (16, 20, 2, 'Tomate perita - Lote May/26',         4,   '2026-05-15', '2026-06-03'),
@@ -462,8 +385,6 @@ INSERT INTO lote (id, insumo_id, bodega_id, nombre, cantidad, fecha_adquisicion,
     (28, 39, 2, 'Masa pizza - Prep May/26',            8,   '2026-05-26', '2026-06-04'),
     (29, 40, 2, 'Masa empanada - Prep May/26',         15,  '2026-05-26', '2026-06-06'),
     (30, 41, 2, 'Bechamel - Prep May/26',              2,   '2026-05-25', '2026-06-07'),
-
-    -- Freezer (bodega 3): carnes congeladas
     (31, 21, 3, 'Pechuga - Lote May/26 (congelada)',   1.5, '2026-05-22', '2026-06-10'),
     (32, 28, 3, 'Bife angosto - Lote May/26',          5,   '2026-05-24', '2026-06-25');
 
@@ -496,13 +417,10 @@ INSERT INTO comanda (id, mesa_id, pago_id, restaurante_id, estado_comanda_id, ca
     (3, 1, 1,   1, 3, 2, NOW() - INTERVAL '3 hours', NOW() - INTERVAL '2 hours');
 
 INSERT INTO articulo_comanda (comanda_id, articulo_id, cantidad, entregado, observaciones_ingrediente, observaciones_generales) VALUES
-    -- Comanda 1 (mesa 3, en preparación): algunos entregados, con observaciones
     (1, 1,  1, FALSE, 'Sin orégano',          NULL),
-    (1, 12, 2, TRUE,  NULL,                    NULL),                         -- Coca-Cola ya entregada
+    (1, 12, 2, TRUE,  NULL,                    NULL),
     (1, 6,  1, FALSE, NULL,                    'Cocción a punto'),
-    (1, 9,  1, TRUE,  NULL,                    NULL),                         -- Papas ya entregadas
-
-    -- Comanda 2 (mesa 4, nueva): nada entregado
+    (1, 9,  1, TRUE,  NULL,                    NULL),
     (2, 8,  2, FALSE, NULL,                    NULL),
     (2, 3,  1, FALSE, 'Sin jamón',             'Que no toque la ensalada'),
     (2, 4,  2, FALSE, 'Sin cebolla',           NULL),
@@ -510,8 +428,6 @@ INSERT INTO articulo_comanda (comanda_id, articulo_id, cantidad, entregado, obse
     (2, 14, 2, FALSE, NULL,                    NULL),
     (2, 15, 1, FALSE, NULL,                    NULL),
     (2, 13, 2, FALSE, NULL,                    NULL),
-
-    -- Comanda 3 (cerrada): todo entregado
     (3, 2,  1, TRUE,  NULL,                    NULL),
     (3, 11, 1, TRUE,  'Sin pimienta',          NULL),
     (3, 16, 2, TRUE,  NULL,                    NULL);
@@ -527,26 +443,27 @@ INSERT INTO llamado (id, mozo_id, gerente_id, categoria_llamado_id, descripcion,
 
 -- ============================================================
 -- FILA VIRTUAL
+-- CAMBIO: campo habilitada agregado
 -- ============================================================
 
-INSERT INTO fila_virtual (id, restaurante_id) VALUES (1, 1);
+INSERT INTO fila_virtual (id, restaurante_id, habilitada) VALUES (1, 1, TRUE);
 
 INSERT INTO turno_fila (id, fila_virtual_id, numero) VALUES
     (1, 1, 1), (2, 1, 2), (3, 1, 3);
 
 -- ============================================================
--- PROVEEDORES Y PEDIDOS
+-- PROVEEDORES
+-- CAMBIO: campo eliminado agregado
 -- ============================================================
 
-INSERT INTO proveedor (id, restaurante_id, nombre, numero_telefono_wsp) VALUES
-    (1, 1, 'Verdulería Don José',    '1122334455'),
-    (2, 1, 'Carnicería El Gaucho',    '1133445566'),
-    (3, 1, 'Distribuidora Central',   '1144556677'),
-    (4, 1, 'Lácteos del Campo',       '1155667788'),
-    (5, 1, 'Panadería San Martín',    '1166778899');
+INSERT INTO proveedor (id, restaurante_id, nombre, numero_telefono_wsp, eliminado) VALUES
+    (1, 1, 'Verdulería Don José',    '1122334455', FALSE),
+    (2, 1, 'Carnicería El Gaucho',    '1133445566', FALSE),
+    (3, 1, 'Distribuidora Central',   '1144556677', FALSE),
+    (4, 1, 'Lácteos del Campo',       '1155667788', FALSE),
+    (5, 1, 'Panadería San Martín',    '1166778899', FALSE);
 
--- N:M CategoriaInsumo <-> Proveedor (reemplaza a categoria_proveedor)
--- categoria_insumo: 2=Verdura, 3=Carne, 4=Lácteos, 9=Aceites, 11=Harinas, 12=Con alcohol, 13=Sin alcohol
+-- N:M CategoriaInsumo <-> Proveedor
 INSERT INTO categoria_insumo_proveedor (categoria_insumo_id, proveedor_id) VALUES
     (1, 1),   -- Fruta → Verdulería Don José
     (2, 1),   -- Verdura → Verdulería Don José
@@ -556,17 +473,100 @@ INSERT INTO categoria_insumo_proveedor (categoria_insumo_id, proveedor_id) VALUE
     (12, 3),  -- Con alcohol → Distribuidora Central
     (13, 3),  -- Sin alcohol → Distribuidora Central
     (4, 4),   -- Lácteos → Lácteos del Campo
+    (7, 4),   -- Huevos → Lácteos del Campo
     (11, 5);  -- Harinas y Panificados → Panadería San Martín
 
+-- ============================================================
+-- PEDIDOS A PROVEEDORES
+-- ============================================================
+-- Pedidos 1-3: igual que antes (Pendiente, Enviado, Recibido ya existentes)
+-- Pedidos 4-8: históricos (Recibido) — uno por proveedor — para seed de precios
+-- ============================================================
+
 INSERT INTO pedido (id, proveedor_id, estado_pedido_id, fecha) VALUES
-    (1, 1, 1, CURRENT_DATE),
-    (2, 2, 2, CURRENT_DATE - 1),
-    (3, 3, 3, CURRENT_DATE - 3);
+    -- Pedidos operativos actuales
+    (1, 1, 1, CURRENT_DATE),           -- Verdulería → Pendiente
+    (2, 2, 2, CURRENT_DATE - 1),       -- Carnicería → Enviado
+    (3, 3, 3, CURRENT_DATE - 3),       -- Distribuidora → Recibido
+
+    -- Pedidos históricos (todos Recibido) — sirven como base de precios
+    (4, 1, 3, CURRENT_DATE - 14),      -- Verdulería Don José
+    (5, 2, 3, CURRENT_DATE - 10),      -- Carnicería El Gaucho
+    (6, 3, 3, CURRENT_DATE - 12),      -- Distribuidora Central
+    (7, 4, 3, CURRENT_DATE - 7),       -- Lácteos del Campo
+    (8, 5, 3, CURRENT_DATE - 9);       -- Panadería San Martín
+
+-- ============================================================
+-- PEDIDO_INSUMO
+-- ============================================================
+-- Pedidos 1-3: igual que antes
+-- Pedidos 4-8: cubre todos los insumos relevantes de cada proveedor
 
 INSERT INTO pedido_insumo (pedido_id, insumo_id, precio_compra, cantidad) VALUES
-    (1, 20, 800,  5),    (1, 26, 600,  2),    (1, 30, 500,  3),
-    (2, 21, 2500, 5),    (2, 28, 4500, 3),
-    (3, 12, 500,  24),   (3, 13, 350,  20),   (3, 16, 400,  18);
+    -- Pedido 1 (Verdulería, Pendiente — sin precios de historial aún)
+    (1, 20, 800,  5),    -- Tomate perita
+    (1, 26, 600,  2),    -- Lechuga
+    (1, 30, 500,  3),    -- Cebolla
+
+    -- Pedido 2 (Carnicería, Enviado)
+    (2, 21, 2500, 5),    -- Pechuga de pollo
+    (2, 28, 4500, 3),    -- Carne vacuna (bife)
+
+    -- Pedido 3 (Distribuidora, Recibido)
+    (3, 12, 500,  24),   -- Coca-Cola
+    (3, 13, 350,  20),   -- Agua mineral
+    (3, 16, 400,  18),   -- Sprite
+
+    -- ─────────────────────────────────────────────────────────
+    -- Pedido 4 (Verdulería Don José — historial de precios)
+    -- Cubre: Verdura (2) y Fruta (1)
+    -- ─────────────────────────────────────────────────────────
+    (4, 20, 750,  4),    -- Tomate perita → $750/kg
+    (4, 26, 580,  2),    -- Lechuga → $580/kg
+    (4, 29, 450,  5),    -- Papa → $450/kg
+    (4, 30, 480,  3),    -- Cebolla → $480/kg
+    (4, 34, 900,  0.5),  -- Albahaca → $900/kg
+    (4, 35, 1100, 2),    -- Pimiento rojo → $1100/kg
+
+    -- ─────────────────────────────────────────────────────────
+    -- Pedido 5 (Carnicería El Gaucho — historial de precios)
+    -- Cubre: Carne (3)
+    -- ─────────────────────────────────────────────────────────
+    (5, 21, 2400, 4),    -- Pechuga de pollo → $2400/kg
+    (5, 28, 4300, 5),    -- Carne vacuna (bife) → $4300/kg
+    (5, 37, 1800, 2),    -- Jamón cocido → $1800/kg
+
+    -- ─────────────────────────────────────────────────────────
+    -- Pedido 6 (Distribuidora Central — historial de precios)
+    -- Cubre: Cereales (5), Aceites (9), Con alcohol (12), Sin alcohol (13)
+    -- ─────────────────────────────────────────────────────────
+    (6, 22, 3200, 3),    -- Aceite de oliva → $3200/lt
+    (6, 24, 280,  5),    -- Sal → $280/kg
+    (6, 25, 1500, 0.5),  -- Pimienta → $1500/kg (o por gr, precio referencial)
+    (6, 33, 950,  4),    -- Fideos secos → $950/kg
+    (6, 36, 2200, 0.3),  -- Orégano → $2200/kg
+    (6, 12, 480,  24),   -- Coca-Cola → $480/u
+    (6, 13, 330,  20),   -- Agua mineral → $330/u
+    (6, 14, 1400, 12),   -- Cerveza IPA → $1400/u
+    (6, 15, 1100, 6),    -- Vino Malbec → $1100/u
+    (6, 16, 380,  18),   -- Sprite → $380/u
+    (6, 17, 1600, 4),    -- Fernet → $1600/u
+
+    -- ─────────────────────────────────────────────────────────
+    -- Pedido 7 (Lácteos del Campo — historial de precios)
+    -- Cubre: Lácteos (4), Huevos (7)
+    -- ─────────────────────────────────────────────────────────
+    (7, 19, 4200, 3),    -- Mozzarella → $4200/kg
+    (7, 23, 1600, 2),    -- Crema de leche → $1600/lt
+    (7, 27, 200,  30),   -- Huevos → $200/u
+
+    -- ─────────────────────────────────────────────────────────
+    -- Pedido 8 (Panadería San Martín — historial de precios)
+    -- Cubre: Harinas y Panificados (11)
+    -- ─────────────────────────────────────────────────────────
+    (8, 18, 650,  10),   -- Harina 000 → $650/kg
+    (8, 31, 120,  10),   -- Ajo → $120/u
+    (8, 32, 350,  20);   -- Pan de hamburguesa → $350/u
 
 -- ============================================================
 -- NOTIFICACIONES
@@ -582,28 +582,28 @@ INSERT INTO notificacion (id, restaurante_id, fecha, descripcion, resuelta) VALU
 -- RESET DE SECUENCIAS
 -- ============================================================
 
-SELECT setval('ubicacion_id_seq', (SELECT MAX(id) FROM ubicacion));
-SELECT setval('restaurante_id_seq', (SELECT MAX(id) FROM restaurante));
-SELECT setval('carta_id_seq', (SELECT MAX(id) FROM carta));
-SELECT setval('turno_laboral_id_seq', (SELECT MAX(id) FROM turno_laboral));
-SELECT setval('empleado_id_seq', (SELECT MAX(id) FROM empleado));
-SELECT setval('dimension_mesa_id_seq', (SELECT MAX(id) FROM dimension_mesa));
-SELECT setval('grilla_id_seq', (SELECT MAX(id) FROM grilla));
-SELECT setval('mesa_id_seq', (SELECT MAX(id) FROM mesa));
-SELECT setval('reserva_id_seq', (SELECT MAX(id) FROM reserva));
-SELECT setval('llamado_id_seq', (SELECT MAX(id) FROM llamado));
-SELECT setval('fila_virtual_id_seq', (SELECT MAX(id) FROM fila_virtual));
-SELECT setval('turno_fila_id_seq', (SELECT MAX(id) FROM turno_fila));
-SELECT setval('articulo_id_seq', (SELECT MAX(id) FROM articulo));
-SELECT setval('categoria_insumo_id_seq', (SELECT MAX(id) FROM categoria_insumo));
-SELECT setval('lote_id_seq', (SELECT MAX(id) FROM lote));
-SELECT setval('comanda_id_seq', (SELECT MAX(id) FROM comanda));
-SELECT setval('cierre_id_seq', (SELECT MAX(id) FROM cierre));
-SELECT setval('pago_id_seq', (SELECT MAX(id) FROM pago));
-SELECT setval('pedido_id_seq', (SELECT MAX(id) FROM pedido));
-SELECT setval('proveedor_id_seq', (SELECT MAX(id) FROM proveedor));
-SELECT setval('notificacion_id_seq', (SELECT MAX(id) FROM notificacion));
-SELECT setval('bodega_id_seq', (SELECT MAX(id) FROM bodega));
-SELECT setval('articulo_comanda_id_seq', (SELECT MAX(id) FROM articulo_comanda));
+SELECT setval('ubicacion_id_seq',         (SELECT MAX(id) FROM ubicacion));
+SELECT setval('restaurante_id_seq',       (SELECT MAX(id) FROM restaurante));
+SELECT setval('carta_id_seq',             (SELECT MAX(id) FROM carta));
+SELECT setval('turno_laboral_id_seq',     (SELECT MAX(id) FROM turno_laboral));
+SELECT setval('empleado_id_seq',          (SELECT MAX(id) FROM empleado));
+SELECT setval('dimension_mesa_id_seq',    (SELECT MAX(id) FROM dimension_mesa));
+SELECT setval('grilla_id_seq',            (SELECT MAX(id) FROM grilla));
+SELECT setval('mesa_id_seq',              (SELECT MAX(id) FROM mesa));
+SELECT setval('reserva_id_seq',           (SELECT MAX(id) FROM reserva));
+SELECT setval('llamado_id_seq',           (SELECT MAX(id) FROM llamado));
+SELECT setval('fila_virtual_id_seq',      (SELECT MAX(id) FROM fila_virtual));
+SELECT setval('turno_fila_id_seq',        (SELECT MAX(id) FROM turno_fila));
+SELECT setval('articulo_id_seq',          (SELECT MAX(id) FROM articulo));
+SELECT setval('categoria_insumo_id_seq',  (SELECT MAX(id) FROM categoria_insumo));
+SELECT setval('lote_id_seq',              (SELECT MAX(id) FROM lote));
+SELECT setval('comanda_id_seq',           (SELECT MAX(id) FROM comanda));
+SELECT setval('cierre_id_seq',            (SELECT MAX(id) FROM cierre));
+SELECT setval('pago_id_seq',              (SELECT MAX(id) FROM pago));
+SELECT setval('pedido_id_seq',            (SELECT MAX(id) FROM pedido));
+SELECT setval('proveedor_id_seq',         (SELECT MAX(id) FROM proveedor));
+SELECT setval('notificacion_id_seq',      (SELECT MAX(id) FROM notificacion));
+SELECT setval('bodega_id_seq',            (SELECT MAX(id) FROM bodega));
+SELECT setval('articulo_comanda_id_seq',  (SELECT MAX(id) FROM articulo_comanda));
 
 COMMIT;

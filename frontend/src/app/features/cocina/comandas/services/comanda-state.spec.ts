@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ComandaState } from './comanda-state';
 import { ComandaService } from './comanda-service';
-import { Comanda } from '../../../../core/models/comanda/comanda';
+import { Comanda } from '../../../../core/models/domain/comanda';
 import { of } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 

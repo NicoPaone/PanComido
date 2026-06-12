@@ -1,12 +1,16 @@
 import { Routes } from '@angular/router';
 import { roleGuard } from './core/guards/role.guard';
 
-const DEFAULT_ROUTE = 'staff/gerente';
-
+import { DEFAULT_ROUTE } from './app.constants';
 export const routes: Routes = [
-
+   {
+       path: 'login',
+      loadComponent: () =>
+         import('./features/auth/page/login/login').then(m => m.Login)
+   },
    {
       path: 'staff',
+      canActivate: [roleGuard],
       loadComponent: () =>
          import('./layouts/staff-layout/staff-layout').then(m => m.StaffLayout),
 
@@ -14,6 +18,8 @@ export const routes: Routes = [
       children: [
          {
             path: 'gerente',
+            canActivate: [roleGuard],
+            data: { roles: ['Gerente'] },
             loadChildren: () =>
                import('./features/gerente/gerente.routes').then(m => m.GERENTE_ROUTES)
          },

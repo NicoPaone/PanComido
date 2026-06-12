@@ -1,14 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.BodegaCasosDeUso;
 using PanComido.Dominio.Entidades;
 using PanComido.Presentacion.Mappers;
-using PanComido.Presentacion.SesionMock;
+using PanComido.Presentacion.Sesion;
 
 namespace PanComido.Presentacion.Controllers
 {
     [Route("bodega")]
     [ApiController]
+   [Authorize(Roles = "Gerente")]
     public class BodegaController : ControllerBase
     {
         private readonly ListarBodegasConInsumosCasoDeUso _listarBodegasConInsumosCasoDeUso;

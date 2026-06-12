@@ -12,7 +12,15 @@
     </button>
 
     <div class="mozo-wrapper">
-      <app-llamar-al-mozo [configuracion]="configuracion()" #llamarMozoRef />
+      <app-llamar-al-mozo 
+        [configuracion]="configuracion()" 
+        [mesaId]="mesaId()"
+        [enviando]="enviando()"
+        [enviado]="enviado()"
+        [error]="error()"
+        (llamadoMozo)="llamadoMozo.emit($event)"
+        (modalCerrado)="modalCerrado.emit()"
+      />
     </div>
 
   </div>

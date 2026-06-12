@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api-service';
-import { MesaOcuparResponse } from '../../../core/models/mesa-ocupar-response';
-import { ComandaClienteResponse } from '../../../core/models/comanda-cliente-response';
-import { ConfirmarPedidoRequest } from '../../../core/models/confirmar-pedido-request';
+import { MesaOcuparResponse } from '../../../core/models/dtos/responses/mesa-ocupar.response';
+import { ComandaClienteResponse } from '../../../core/models/dtos/responses/comanda-cliente.response';
+import { ConfirmarPedidoRequest } from '../../../core/models/dtos/requests/confirmar-pedido.request';
 
 @Injectable({ providedIn: 'root' })
 export class ComandaService {

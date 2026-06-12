@@ -1,5 +1,5 @@
 @if (layoutMode() === 'grid') {
-  <div class="row row-cols-1 row-cols-lg-2 g-4">
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
     @for (plato of platos(); track plato.id) {
       <div class="col mb-4">
         <app-card-plato 
@@ -19,19 +19,21 @@
     }
   </div>
 } @else {
-  <div class="d-flex flex-column gap-3">
+  <div class="row row-cols-1 row-cols-xxl-2 g-3">
     @for (plato of platos(); track plato.id) {
-      <app-card-plato 
-        [plato]="plato" 
-        [layoutMode]="'list'"
-        [isExploding]="plato.id === explodingId()"
-        (toggleVisible)="onToggleVisible($event)"
-        (editPlato)="onEditPlato($event)"
-        (deletePlato)="onDeletePlato($event)"
-        (toggleRecomendado)="onToggleRecomendado($event)">
-      </app-card-plato>
+      <div class="col">
+        <app-card-plato 
+          [plato]="plato" 
+          [layoutMode]="'list'"
+          [isExploding]="plato.id === explodingId()"
+          (toggleVisible)="onToggleVisible($event)"
+          (editPlato)="onEditPlato($event)"
+          (deletePlato)="onDeletePlato($event)"
+          (toggleRecomendado)="onToggleRecomendado($event)">
+        </app-card-plato>
+      </div>
     } @empty {
-      <div class="text-center py-4 text-muted">
+      <div class="col-12 text-center py-4 text-muted">
         No hay platos disponibles en este momento.
       </div>
     }

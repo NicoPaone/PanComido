@@ -1,5 +1,6 @@
-import { inject, Injectable, signal } from '@angular/core';
-import { Bodega } from '../../../../../core/models/bodega/bodega';
+import { DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Bodega } from '../../../../../core/models/domain/bodega';
 import { BodegaService } from './bodega-service';
 
 @Injectable({
@@ -8,23 +9,30 @@ import { BodegaService } from './bodega-service';
 export class BodegaState {
 
   private api = inject(BodegaService);
+  private destroyRef = inject(DestroyRef);
 
-  private _bodegas = signal<Bodega[]>([]);
+  readonly #bodegas = signal<Bodega[]>([]);
+  readonly #bodegasConInsumosCargadas = signal<boolean>(false);
 
-  bodegas = this._bodegas.asReadonly();
+  bodegas = this.#bodegas.asReadonly();
+  bodegasConInsumosCargadas = this.#bodegasConInsumosCargadas.asReadonly();
 
   cargarBodegas(): void {
-    this.api.obtenerBodegas().subscribe({
-      next: (data) => this._bodegas.set(data),
+    this.api.obtenerBodegas().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (data) => this.#bodegas.set(data),
 
-      error: (err) => console.error('Error al cargar bodegas', err)
+      error: (err) => console.error('Error al cargar bodegas:', err)
     });
   }
   cargarBodegasConInsumos(): void {
-    this.api.obtenerBodegasConInsumos().subscribe({
-      next: (data) => this._bodegas.set(data),    
+    if (this.#bodegasConInsumosCargadas()) return;
+
+    this.api.obtenerBodegasConInsumos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (data) => {
+        this.#bodegas.set(data);
+        this.#bodegasConInsumosCargadas.set(true);
+      },
     });
   }
 
 }
-

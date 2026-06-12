@@ -11,5 +11,9 @@ namespace PanComido.Dominio.Interfaces.Repositorios
     {
         Task<List<Proveedor>> ObtenerProveedoresAsync(int restauranteId);
         Task<Proveedor?> ObtenerProveedorPorIdAsync(int id);
+        Task<Proveedor> CrearProveedorAsync(Proveedor proveedor);
+        Task<Proveedor> ModificarProveedorAsync(Proveedor proveedor);
+        Task EliminarProveedorAsync(int id);
+        Task<bool> ExisteProveedorConNombreAsync(int restauranteId, string nombre);
     }
 }

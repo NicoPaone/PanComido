@@ -1,10 +1,11 @@
-import { Component, effect, inject, input, output } from '@angular/core';
-import { Plato } from '../../../../../core/models/plato';
+import { Component, effect, inject, input, output , ChangeDetectionStrategy} from '@angular/core';
+import { Plato } from '../../../../../core/models/domain/plato';
 import { Boton } from "../../../../../shared/ui/botones/boton/boton";
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-form-plato-editar',
   imports: [Boton, ReactiveFormsModule, CommonModule],
   templateUrl: './form-plato-editar.html',

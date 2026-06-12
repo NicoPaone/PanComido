@@ -1,13 +1,15 @@
 <div class="historial-page p-4">
-  <app-page-toolbar>
-    <app-boton
-      acciones
-      label="← Volver a proveedores"
-      variante="outline"
-      tamanio="md"
-      (clicked)="volver()">
-    </app-boton>
-  </app-page-toolbar>
+  <div class="historial-toolbar-shell">
+    <app-page-toolbar>
+      <app-boton
+        acciones
+        label="← Volver a proveedores"
+        variante="outline"
+        tamanio="md"
+        (clicked)="volver()">
+      </app-boton>
+    </app-page-toolbar>
+  </div>
 
   <div class="historial-layout mt-4">
     @if (proveedorSeleccionado(); as proveedor) {
@@ -17,10 +19,49 @@
             <p class="detail-kicker mb-1">Historial de pedidos</p>
             <h1 class="detail-title mb-1">{{ proveedor.nombre }}</h1>
             <p class="detail-text mb-0">{{ proveedor.contacto }} · {{ proveedor.telefono }}</p>
+            <div class="provider-meta-strip">
+              @if (proveedor.email) {
+                <span class="provider-meta-item">
+                  <span class="material-symbols-outlined">mail</span>
+                  <strong>{{ proveedor.email }}</strong>
+                </span>
+              }
+              @if (proveedor.direccion) {
+                <span class="provider-meta-item">
+                  <span class="material-symbols-outlined">location_on</span>
+                  <strong>{{ proveedor.direccion }}</strong>
+                </span>
+              }
+              @if (proveedor.categorias?.length) {
+                <span class="provider-meta-item">
+                  <span class="material-symbols-outlined">category</span>
+                  <strong>{{ proveedor.categorias?.join(', ') }}</strong>
+                </span>
+              }
+            </div>
           </div>
           <span class="status-pill" [class.inactivo]="!proveedor.activo">
             {{ proveedor.activo ? 'Activo' : 'Inactivo' }}
           </span>
+        </div>
+
+        <div class="provider-summary-grid">
+          <article class="provider-summary-item">
+            <span>Pedidos</span>
+            <strong>{{ historialProveedor().length }}</strong>
+          </article>
+          <article class="provider-summary-item warning">
+            <span>Pendientes</span>
+            <strong>{{ pedidosPendientes() }}</strong>
+          </article>
+          <article class="provider-summary-item">
+            <span>Ítems pedidos</span>
+            <strong>{{ totalItemsHistorial() }}</strong>
+          </article>
+          <article class="provider-summary-item amount">
+            <span>Total histórico</span>
+            <strong>{{ totalHistorial() | arsCurrency }}</strong>
+          </article>
         </div>
       </div>
     }
@@ -71,33 +112,42 @@
         <div class="history-list">
           @for (pedido of historialProveedor(); track pedido.id) {
             <article class="history-card" (click)="abrirDetallePedido(pedido)">
-              <div class="history-card-header">
-                <div>
-                  <strong>{{ pedido.concepto }}</strong>
-                  <div class="history-date">{{ pedido.fecha | date:'dd/MM/yyyy' }}</div>
+              <div class="history-card-main">
+                <div class="history-card-content">
+                  <div class="history-card-header">
+                    <div>
+                      <div class="history-title-row">
+                        <strong>{{ pedido.concepto }}</strong>
+                        <span class="estado-pill" [class]="getEstadoClase(pedido.estado)">
+                          {{ pedido.estado }}
+                        </span>
+                      </div>
+                      <div class="history-date">{{ pedido.fecha | date:'dd/MM/yyyy' }}</div>
+                    </div>
+                  </div>
+
+                  <div class="history-meta">
+                    <span class="history-amount">{{ pedido.monto | arsCurrency }}</span>
+                    <span class="history-items">{{ pedido.items.length }} ítems</span>
+                    @if (pedido.observacion) {
+                      <span>{{ pedido.observacion }}</span>
+                    }
+                  </div>
                 </div>
-                <span class="estado-pill" [class]="getEstadoClase(pedido.estado)">
-                  {{ pedido.estado }}
-                </span>
-              </div>
-              <div class="history-meta">
-                <span>${{ pedido.monto | number:'1.0-0' }}</span>
-                <span>{{ pedido.observacion }}</span>
-                <span class="history-items">{{ pedido.items.length }} ítems</span>
-              </div>
-              @if (pedido.estado === 'Pendiente') {
+
                 <div class="history-actions">
-                  <app-boton variante="success" tamanio="sm" (clicked)="confirmarPedido($event, pedido)">
-                    <span class="fw-bold text-dark">Confirmar pedido</span>
-                  </app-boton>
+                  <span class="history-detail-hint">Ver detalle</span>
+                  @if (pedido.estado === 'Pendiente') {
+                    <app-boton variante="success" tamanio="sm" (clicked)="confirmarPedido($event, pedido)">
+                      <span class="fw-bold text-dark">Confirmar</span>
+                    </app-boton>
+                  } @else if (pedido.estado === 'Enviado') {
+                    <app-boton variante="secondary" tamanio="sm" (clicked)="previsualizarRecepcion($event, pedido)">
+                      <span class="fw-bold">Recibir</span>
+                    </app-boton>
+                  }
                 </div>
-              } @else if (pedido.estado === 'Enviado') {
-                <div class="history-actions">
-                  <app-boton variante="secondary" tamanio="sm" (clicked)="previsualizarRecepcion($event, pedido)">
-                    <span class="fw-bold">Recibir pedido</span>
-                  </app-boton>
-                </div>
-              }
+              </div>
             </article>
           }
         </div>
@@ -132,13 +182,14 @@
       <div class="pedido-modal-summary-row">
         <span>{{ pedido.items.length }} ítems</span>
         <span class="summary-dot">•</span>
-        <strong class="summary-amount">Monto: ${{ pedido.monto | number:'1.0-0' }}</strong>
+        <strong class="summary-amount">Monto: {{ pedido.monto | arsCurrency }}</strong>
       </div>
+      <app-price-note text="El monto se calcula como cantidad x precio de compra unitario de cada insumo." />
 
       <div class="pedido-modal-grid">
         <article class="pedido-modal-info">
           <span class="info-label">Monto</span>
-          <strong>${{ pedido.monto | number:'1.0-0' }}</strong>
+          <strong>{{ pedido.monto | arsCurrency }}</strong>
         </article>
         <article class="pedido-modal-info">
           <span class="info-label">Ítems</span>
@@ -158,7 +209,7 @@
               <strong>{{ item.nombre }}</strong>
               <div class="history-date">
                 @if (item.precioUnitario) {
-                  Precio: ${{ item.precioUnitario | number:'1.0-0' }} c/u
+                  Precio: {{ item.precioUnitario | arsCurrency }} c/u
                 }
               </div>
             </div>
@@ -240,7 +291,7 @@
                 </label>
 
                 <label>
-                  <span>Precio c/u ($)</span>
+                  <span>Precio c/u</span>
                   <input
                     type="number"
                     class="form-control"

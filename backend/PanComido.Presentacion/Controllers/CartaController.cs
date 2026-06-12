@@ -1,14 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.CartaCasosDeUso;
 using PanComido.Presentacion.DTOs.Carta;
 using PanComido.Presentacion.Mappers;
-using PanComido.Presentacion.SesionMock;
-using System.Threading.Tasks;
+using PanComido.Presentacion.Sesion;
 
 namespace PanComido.Presentacion.Controllers
 {
     [Route("carta")]
     [ApiController]
+    [Authorize]
+
     public class CartaController : ControllerBase
     {
         private readonly ObtenerArticulosParaCrearCartaCasoDeUso _obtenerArticulosCasoDeUso;
@@ -22,6 +25,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("obtener-articulos")]
+        [AllowAnonymous]
+
         public async Task<IActionResult> ObtenerArticulosParaCarta()
         {
             // Ejecutamos el caso de uso que trae la lista y hace la matemática
@@ -32,6 +37,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPatch("articulos/{id}")]
+        [Authorize(Roles = "Gerente")]
+
         public async Task<IActionResult> ModificarArticulo(int id, [FromBody] ModificarArticuloRequestDto request)
         {
             // 3. Usamos el método de tu compañero para obtener el ID limpio

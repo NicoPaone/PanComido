@@ -18,16 +18,25 @@ namespace PanComido.Presentacion
                     break;
                 case UnauthorizedAccessException:
                     httpContext.Response.StatusCode = 401;
-                    await httpContext.Response.WriteAsJsonAsync(new { error = "No cuenta con los permisos necesarios." });
+                    await httpContext.Response.WriteAsJsonAsync(new { error = exception.Message });
                     break;
                 case InvalidOperationException:
                     httpContext.Response.StatusCode = 409;
                     await httpContext.Response.WriteAsJsonAsync(new { error = exception.Message });
                     break;
+                // default:
+                //     httpContext.Response.StatusCode = 500;
+                //     await httpContext.Response.WriteAsJsonAsync(new { error = "Error interno del servidor." });
+                //     break;
                 default:
-                    httpContext.Response.StatusCode = 500;
-                    await httpContext.Response.WriteAsJsonAsync(new { error = "Error interno del servidor." });
-                    break;
+    httpContext.Response.StatusCode = 500;
+    await httpContext.Response.WriteAsJsonAsync(
+        new
+        {
+            error = exception.Message,
+            detalle = exception.ToString()
+        });
+    break;
             }
             return await ValueTask.FromResult(true);
         }

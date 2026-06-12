@@ -116,7 +116,8 @@ CREATE TABLE turno_laboral (
     id                      SERIAL PRIMARY KEY,
     restaurante_id          INTEGER NOT NULL REFERENCES restaurante(id),
     horario_laboral_inicio  TIME NOT NULL,
-    horario_laboral_fin     TIME NOT NULL
+    horario_laboral_fin     TIME NOT NULL,
+    es_nocturno             BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE grilla (
@@ -126,23 +127,29 @@ CREATE TABLE grilla (
     cant_filas      INTEGER NOT NULL
 );
 
+-- CAMBIO: agregado campo habilitada
 CREATE TABLE fila_virtual (
     id              SERIAL PRIMARY KEY,
-    restaurante_id  INTEGER NOT NULL REFERENCES restaurante(id)
+    restaurante_id  INTEGER NOT NULL REFERENCES restaurante(id),
+    habilitada      BOOLEAN NOT NULL DEFAULT TRUE
 );
 
+-- CAMBIO: agregado campo eliminado (eliminación lógica)
 CREATE TABLE bodega (
     id              SERIAL PRIMARY KEY,
     restaurante_id  INTEGER NOT NULL REFERENCES restaurante(id),
     tipo_bodega_id  INTEGER NOT NULL REFERENCES tipo_bodega(id),
-    nombre          TEXT NOT NULL
+    nombre          TEXT NOT NULL,
+    eliminado       BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+-- CAMBIO: agregado campo eliminado (eliminación lógica)
 CREATE TABLE proveedor (
     id                      SERIAL PRIMARY KEY,
     restaurante_id          INTEGER NOT NULL REFERENCES restaurante(id),
     nombre                  TEXT NOT NULL,
-    numero_telefono_wsp     TEXT
+    numero_telefono_wsp     TEXT,
+    eliminado               BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 -- Relación N:M CategoriaInsumo <-> Proveedor
@@ -170,13 +177,15 @@ CREATE TABLE sugerencia_plato_ia (
 -- 3. EMPLEADOS Y ROLES
 -- ============================================================
 
+-- CAMBIO: agregado campo eliminado (eliminación lógica)
 CREATE TABLE empleado (
     id              SERIAL PRIMARY KEY,
     restaurante_id  INTEGER NOT NULL REFERENCES restaurante(id),
     nombre          TEXT NOT NULL,
     email           TEXT NOT NULL,
     contrasena      TEXT NOT NULL,
-    estado          TEXT NOT NULL DEFAULT 'activo'
+    estado          TEXT NOT NULL DEFAULT 'activo',
+    eliminado       BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE gerente (
@@ -263,6 +272,7 @@ CREATE TABLE turno_fila (
 -- 7. ARTÍCULOS (supertipo) Y TODA LA JERARQUÍA
 -- ============================================================
 
+-- CAMBIO: agregado campo eliminado (eliminación lógica)
 CREATE TABLE articulo (
     id                      SERIAL PRIMARY KEY,
     carta_id                INTEGER REFERENCES carta(id),
@@ -272,7 +282,8 @@ CREATE TABLE articulo (
     precio_venta_final      DECIMAL,
     precio_ganancia         DECIMAL,
     precio_promocional      DECIMAL,
-    url_imagen              TEXT
+    url_imagen              TEXT,
+    eliminado               BOOLEAN NOT NULL DEFAULT FALSE
     -- cantidad_actual es campo calculado en la app
 );
 

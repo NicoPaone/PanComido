@@ -1,4 +1,4 @@
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, input, output , ChangeDetectionStrategy} from '@angular/core';
 import {
   faSnowflake,
   faFlask,
@@ -10,7 +10,7 @@ import {
   faSpinner,
   IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
-import { Llamado } from '../../../../core/models/llamados/llamado';
+import { Llamado } from '../../../../core/models/domain/llamado';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgClass } from '@angular/common';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
@@ -25,6 +25,7 @@ const ICONOS_CATEGORIA: Record<number, IconDefinition> = {
 };
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-llamado-card',
   imports: [NgClass, FontAwesomeModule],
   templateUrl: './llamado-card.html',

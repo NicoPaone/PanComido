@@ -1,11 +1,12 @@
 import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ModificarCartaApiService } from './modificar-carta.api';
-import { Plato } from '../../../../core/models/plato';
+import { PlatoApiService } from '../../services/plato.api';
+import { Plato } from '../../../../core/models/domain/plato';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ModificarCartaStateService {
-  private api = inject(ModificarCartaApiService);
+  private api = inject(PlatoApiService);
   private destroyRef = inject(DestroyRef);
 
   // 1. Estado PRIVADO
@@ -16,6 +17,9 @@ export class ModificarCartaStateService {
   private _platoAEliminar = signal<Plato | null>(null);
   private _explodingPlatoId = signal<number | null>(null);
   private _loading = signal<boolean>(false);
+  private _selectedTipoBebida = signal<string | null>(null);
+  private _selectedTipoComida = signal<string | null>(null);
+  private _sortOrder = signal<'default' | 'ventas-desc' | 'ventas-asc'>('default');
 
   // 2. Estado PÚBLICO
   searchTerm = this._searchTerm.asReadonly();
@@ -25,8 +29,46 @@ export class ModificarCartaStateService {
   platoAEliminar = this._platoAEliminar.asReadonly();
   explodingPlatoId = this._explodingPlatoId.asReadonly();
   loading = this._loading.asReadonly();
+  selectedTipoBebida = this._selectedTipoBebida.asReadonly();
+  selectedTipoComida = this._selectedTipoComida.asReadonly();
+  sortOrder = this._sortOrder.asReadonly();
 
   // 3. Variables Derivadas (Computed)
+  tiposBebidaDisponibles = computed(() => {
+    const bebidas = this._platos().filter(plato => {
+      return (plato.categoria?.toLowerCase() || '').includes('bebida') || 
+             (plato.tipo?.toLowerCase() || '').includes('bebida') || 
+             !!plato.bebida;
+    });
+    const tiposMap = new Map<string, number>();
+    bebidas.forEach(b => {
+      let tipoFinal = 'Otros';
+      const tipo = b.tipo?.trim();
+      if (tipo && tipo.toLowerCase() !== 'bebida' && tipo.toLowerCase() !== 'bebidas') {
+        tipoFinal = tipo;
+      } else {
+        const nombreLower = b.nombre.toLowerCase();
+        if (nombreLower.includes('cerveza')) tipoFinal = 'Cerveza';
+        else if (nombreLower.includes('vino')) tipoFinal = 'Vino';
+        else if (nombreLower.includes('agua')) tipoFinal = 'Agua';
+        else if (nombreLower.includes('jugo') || nombreLower.includes('exprimido')) tipoFinal = 'Jugo';
+        else if (nombreLower.includes('coca-cola') || nombreLower.includes('sprite') || nombreLower.includes('fanta') || nombreLower.includes('pepsi') || nombreLower.includes('gaseosa')) tipoFinal = 'Gaseosa';
+      }
+      tiposMap.set(tipoFinal, (tiposMap.get(tipoFinal) || 0) + 1);
+    });
+    return Array.from(tiposMap.entries())
+      .map(([tipo, count]) => ({ tipo, count }))
+      .sort((a, b) => a.tipo.localeCompare(b.tipo));
+  });
+
+  totalBebidasCount = computed(() => {
+    return this._platos().filter(plato => {
+      return (plato.categoria?.toLowerCase() || '').includes('bebida') || 
+             (plato.tipo?.toLowerCase() || '').includes('bebida') || 
+             !!plato.bebida;
+    }).length;
+  });
+
   categoriasDisponibles = computed(() => {
     const cats = new Set(this._platos().map(p => p.categoria).filter(c => !!c));
     return Array.from(cats).sort() as string[];
@@ -62,8 +104,109 @@ export class ModificarCartaStateService {
   });
 
   platosNormales = computed(() => {
-    const normal = this.filteredPlatos().filter(plato => !(plato.recomendado && plato.visible));
+    return this.filteredPlatos().filter(plato => !(plato.recomendado && plato.visible));
+  });
+
+  tiposComidaDisponibles = computed(() => {
+    const comidas = this._platos().filter(plato => {
+      const isBebida = (plato.categoria?.toLowerCase() || '').includes('bebida') || 
+                       (plato.tipo?.toLowerCase() || '').includes('bebida') || 
+                       !!plato.bebida;
+      return !isBebida;
+    });
+    
+    const tiposMap = new Map<string, number>();
+    comidas.forEach(c => {
+      let tipoFinal = c.categoria?.trim() || c.tipo?.trim() || 'Otros';
+      if (tipoFinal.toLowerCase() === 'plato principal') tipoFinal = 'Principal';
+      tiposMap.set(tipoFinal, (tiposMap.get(tipoFinal) || 0) + 1);
+    });
+    
+    return Array.from(tiposMap.entries())
+      .map(([tipo, count]) => ({ tipo, count }))
+      .sort((a, b) => a.tipo.localeCompare(b.tipo));
+  });
+
+  totalComidasCount = computed(() => {
+    return this._platos().filter(plato => {
+      const isBebida = (plato.categoria?.toLowerCase() || '').includes('bebida') || 
+                       (plato.tipo?.toLowerCase() || '').includes('bebida') || 
+                       !!plato.bebida;
+      return !isBebida;
+    }).length;
+  });
+
+  platosComidas = computed(() => {
+    const selectedTipo = this._selectedTipoComida();
+    const normal = this.filteredPlatos().filter(plato => {
+      const isBebida = (plato.categoria?.toLowerCase() || '').includes('bebida') || 
+                       (plato.tipo?.toLowerCase() || '').includes('bebida') || 
+                       !!plato.bebida;
+      if (isBebida || (plato.recomendado && plato.visible)) return false;
+      
+      if (selectedTipo) {
+        let tipoFinal = plato.categoria?.trim() || plato.tipo?.trim() || 'Otros';
+        if (tipoFinal.toLowerCase() === 'plato principal') tipoFinal = 'Principal';
+        return tipoFinal === selectedTipo;
+      }
+      return true;
+    });
     return [...normal].sort((a, b) => {
+      const currentSort = this._sortOrder();
+      
+      if (currentSort === 'ventas-desc') {
+        return (b.ventas ?? 0) - (a.ventas ?? 0);
+      } else if (currentSort === 'ventas-asc') {
+        return (a.ventas ?? 0) - (b.ventas ?? 0);
+      }
+      
+      const aVisible = a.visible ?? true;
+      const bVisible = b.visible ?? true;
+      if (aVisible !== bVisible) {
+        return aVisible ? -1 : 1;
+      }
+      if (!aVisible) {
+        const aRec = !!a.recomendado;
+        const bRec = !!b.recomendado;
+        if (aRec && !bRec) return 1;
+        if (!aRec && bRec) return -1;
+      }
+      return 0;
+    });
+  });
+
+  platosBebidas = computed(() => {
+    const selectedTipo = this._selectedTipoBebida();
+    const normal = this.filteredPlatos().filter(plato => {
+      const isBebida = (plato.categoria?.toLowerCase() || '').includes('bebida') || 
+                       (plato.tipo?.toLowerCase() || '').includes('bebida') || 
+                       !!plato.bebida;
+      if (!isBebida || (plato.recomendado && plato.visible)) return false;
+      
+      if (selectedTipo) {
+        let tipoPlato = plato.tipo?.trim();
+        if (!tipoPlato || tipoPlato.toLowerCase() === 'bebida' || tipoPlato.toLowerCase() === 'bebidas') {
+          const nombreLower = plato.nombre.toLowerCase();
+          if (nombreLower.includes('cerveza')) tipoPlato = 'Cerveza';
+          else if (nombreLower.includes('vino')) tipoPlato = 'Vino';
+          else if (nombreLower.includes('agua')) tipoPlato = 'Agua';
+          else if (nombreLower.includes('jugo') || nombreLower.includes('exprimido')) tipoPlato = 'Jugo';
+          else if (nombreLower.includes('coca-cola') || nombreLower.includes('sprite') || nombreLower.includes('fanta') || nombreLower.includes('pepsi') || nombreLower.includes('gaseosa')) tipoPlato = 'Gaseosa';
+          else tipoPlato = 'Otros';
+        }
+        return tipoPlato === selectedTipo || plato.categoria === selectedTipo;
+      }
+      return true;
+    });
+    return [...normal].sort((a, b) => {
+      const currentSort = this._sortOrder();
+      
+      if (currentSort === 'ventas-desc') {
+        return (b.ventas ?? 0) - (a.ventas ?? 0);
+      } else if (currentSort === 'ventas-asc') {
+        return (a.ventas ?? 0) - (b.ventas ?? 0);
+      }
+      
       const aVisible = a.visible ?? true;
       const bVisible = b.visible ?? true;
       if (aVisible !== bVisible) {
@@ -80,6 +223,18 @@ export class ModificarCartaStateService {
   });
 
   // 4. Métodos de Negocio (UseCases)
+  setTipoBebida(tipo: string | null): void {
+    this._selectedTipoBebida.set(tipo);
+  }
+
+  setTipoComida(tipo: string | null): void {
+    this._selectedTipoComida.set(tipo);
+  }
+
+  setSortOrder(order: 'default' | 'ventas-desc' | 'ventas-asc'): void {
+    this._sortOrder.set(order);
+  }
+
   cargarPlatos(): void {
     this._loading.set(true);
     this.api.getPlatos()
@@ -140,6 +295,16 @@ export class ModificarCartaStateService {
 
   setPlatoAEditar(plato: Plato | null): void {
     this._platoAEditar.set(plato);
+
+    if (!plato) return;
+
+    this.api.getPlatoById(plato.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: detalle => {
+          this._platoAEditar.set({ ...plato, ...detalle });
+        }
+      });
   }
 
   setPlatoAEliminar(plato: Plato | null): void {
@@ -150,10 +315,33 @@ export class ModificarCartaStateService {
     const target = this._platoAEditar();
     if (!target) return;
 
-    this.api.updatePlato(target.id, updatedFields)
+    const updatedPlato = { ...target, ...updatedFields };
+    const tipoPlatoId = updatedPlato.tipoPlatoId ?? target.tipoPlatoId;
+    const categoriaPlatoId = updatedPlato.categoriaPlatoId ?? target.categoriaPlatoId;
+
+    if (!tipoPlatoId || !categoriaPlatoId) return;
+
+    const request = {
+      nombre: updatedPlato.nombre,
+      descripcion: updatedPlato.descripcion ?? '',
+      precioVentaFinal: updatedPlato.precioVenta,
+      tiempoPreparacionBase: updatedPlato.tiempoPreparacion ?? updatedPlato.tiempo ?? 1,
+      tipoPlatoId,
+      categoriaPlatoId,
+      urlImagen: this.normalizarUrlImagen(updatedPlato.imagen),
+      esVisibleEnCarta: updatedPlato.visible,
+      restriccionesIds: updatedPlato.restriccionesIds ?? [],
+      ingredientes: (updatedPlato.receta ?? []).map(ingrediente => ({
+        insumoId: Number(ingrediente.id),
+        cantidad: ingrediente.cantidad,
+        opcional: false
+      }))
+    };
+
+    this.api.modificarPlato(target.id, request)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(updated => {
-        this._platos.update(platos => platos.map(p => p.id === target.id ? { ...p, ...updated } : p));
+        this._platos.update(platos => platos.map(p => p.id === target.id ? { ...p, ...updated, ...updatedPlato } : p));
         this._platoAEditar.set(null);
       });
   }
@@ -197,5 +385,11 @@ export class ModificarCartaStateService {
           );
         }
       });
+  }
+
+  private normalizarUrlImagen(url: string | undefined): string {
+    if (!url) return '';
+
+    return url.startsWith(environment.apiUrl) ? url.replace(environment.apiUrl, '') : url;
   }
 }

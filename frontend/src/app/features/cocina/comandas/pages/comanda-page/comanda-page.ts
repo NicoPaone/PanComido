@@ -1,12 +1,14 @@
-import { Component, effect, inject, untracked } from '@angular/core';
+import { Component, effect, inject, untracked , ChangeDetectionStrategy} from '@angular/core';
 import { ComandaState } from '../../services/comanda-state';
 import { ComandaCard } from "../../components/comanda-card/comanda-card";
 import { ComandoVoz, ComandoVozService } from '../../services/comando-voz/comando-voz.service';
 import { BotonVoz } from '../../../../../shared/ui/botones/boton-voz/boton-voz';
 import { of } from 'rxjs';
 import { ComandaHubService } from '../../../../../core/services/hubs/comanda/comanda-hub-service';
+import { AuthService } from '../../../../../core/services/auth.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-comanda-page',
   imports: [ComandaCard, BotonVoz],
   templateUrl: './comanda-page.html',
@@ -18,9 +20,9 @@ export class ComandaPage {
   vozService = inject(ComandoVozService);
 
   hub = inject(ComandaHubService);
+  auth = inject(AuthService);
 
-  //VENIR DE SESION o authstate??
-  restauranteId = 1;
+  restauranteId = this.auth.restauranteId;
 
   constructor() {
     effect(() => {
@@ -47,7 +49,7 @@ export class ComandaPage {
   }
 
   ngOnDestroy() {
-    this.hub.detener();
+    this.hub.desconectarEscucha();
   }
 
   procesarAccion(evento: { comandaId: number; estadoId: number }): void {

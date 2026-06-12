@@ -85,3 +85,17 @@
     opacity: 1;
   }
 }
+
+/* Radius system: main containers 8px, inner containers 10px, buttons 11px */
+.modal-card {
+  border-radius: 8px;
+}
+
+.modal-icon {
+  border-radius: 10px;
+}
+
+::ng-deep .cancel-btn .btn,
+::ng-deep .delete-btn .btn {
+  border-radius: 11px;
+}

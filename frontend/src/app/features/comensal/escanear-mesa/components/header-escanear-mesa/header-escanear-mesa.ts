@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output , ChangeDetectionStrategy} from '@angular/core';
 
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-header-escanear-mesa',
   templateUrl: './header-escanear-mesa.html',
   styleUrls: ['./header-escanear-mesa.css']

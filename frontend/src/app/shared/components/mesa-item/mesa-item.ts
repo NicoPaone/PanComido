@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { Mesa } from '../../../core/models/mesa.model';
+import { Mesa } from '../../../core/models/domain/mesa';
 
 @Component({
   selector: 'app-mesa-item',

@@ -1,16 +1,17 @@
-import { Component, EventEmitter, input, Input, output, Output, signal } from '@angular/core';
+import { Component, EventEmitter, input, Input, output, Output, signal , ChangeDetectionStrategy} from '@angular/core';
 
-import { ItemPedido } from '../../../../../core/models/item-pedido';
+import { ItemPedido } from '../../../../../core/models/domain/item-pedido';
 import { BotonComensal } from '../../../../../shared/ui/botones/boton-comensal/boton-comensal';
-import { configuracionRestauranteMock } from '../../../../../core/interceptors/handlers/configuracion-restaurante.mock';
-import { CartaItem } from '../../../../../core/models/carta-item';
-
+import { configuracionRestauranteMock } from '../../../../../infra/mocks/configuracion-restaurante.mock-data';
+import { CartaItem } from '../../../../../core/models/domain/carta-item';
+import { Boton } from '../../../../../shared/ui/botones/boton/boton';
 
 
  @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-card-plato-comensal',
   standalone: true,
-  imports: [BotonComensal],
+  imports: [BotonComensal, Boton],
   templateUrl: './card-plato-comensal.html',
   styleUrls: ['./card-plato-comensal.css'],
 })
@@ -20,6 +21,7 @@ export class CardPlatoComensalComponent {
   agregarPedido = output<ItemPedido>();
 
   configuracion = configuracionRestauranteMock;
+
   cantidad = signal(1);
 
   incrementar(): void {

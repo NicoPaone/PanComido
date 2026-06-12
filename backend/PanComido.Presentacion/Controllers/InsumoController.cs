@@ -1,26 +1,39 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Presentacion.DTOs.Insumos;
 using PanComido.Presentacion.Mappers;
-using PanComido.Presentacion.SesionMock;
+using PanComido.Presentacion.Sesion;
 
 namespace PanComido.Presentacion.Controllers
 {
     [Route("insumo")]
     [ApiController]
-    public class InsumoController : ControllerBase
+   [Authorize(Roles = "Gerente")]
+
+   public class InsumoController : ControllerBase
     {
         private readonly ListarInsumoCasoDeUso _listarInsumoCasoDeUso;
         private readonly CrearInsumoCasoDeUso _crearInsumoCasoDeUso;
         private readonly InsumoMapper _mapper;
+        private readonly ILoteRepositorio _loteRepositorio;
+        private readonly LoteMapper _loteMapper;
 
-        public InsumoController(ListarInsumoCasoDeUso listarInsumoCasoDeUso, CrearInsumoCasoDeUso crearInsumoCasoDeUso, InsumoMapper mapper)
+        public InsumoController(
+            ListarInsumoCasoDeUso listarInsumoCasoDeUso,
+            CrearInsumoCasoDeUso crearInsumoCasoDeUso,
+            InsumoMapper mapper,
+            ILoteRepositorio loteRepositorio,
+            LoteMapper loteMapper)
         {
             _listarInsumoCasoDeUso = listarInsumoCasoDeUso;
             _crearInsumoCasoDeUso = crearInsumoCasoDeUso;
             _mapper = mapper;
+            _loteRepositorio = loteRepositorio;
+            _loteMapper = loteMapper;
         }
 
         [HttpGet]
@@ -32,6 +45,14 @@ namespace PanComido.Presentacion.Controllers
 
             var dtos = _mapper.aListaDto(insumos);
             return Ok(dtos);
+        }
+
+        [HttpGet("lotes")]
+        public async Task<IActionResult> ObtenerLotes()
+        {
+            var restauranteId = HttpContext.ObtenerRestauranteId();
+            var lotes = await _loteRepositorio.ObtenerLotesPorRestauranteAsync(restauranteId);
+            return Ok(_loteMapper.aListaDto(lotes));
         }
 
         [HttpPost]

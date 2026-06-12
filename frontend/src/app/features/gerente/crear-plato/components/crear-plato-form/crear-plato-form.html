@@ -1,0 +1,140 @@
+<div class="form-card" [formGroup]="platoForm">
+  <!-- Nombre -->
+  <div class="mb-3">
+    <label class="form-label font-bold">Nombre <strong class="field-required">*</strong></label>
+    <input type="text" class="form-control custom-input"
+      [class.is-invalid]="platoForm.get('nombre')?.touched && platoForm.get('nombre')?.invalid"
+      placeholder="Ej. Suprema Maryland" formControlName="nombre">
+    @if (platoForm.get('nombre')?.touched && platoForm.get('nombre')?.hasError('required')) {
+    <span class="error-text">El nombre es requerido.</span>
+    }
+    @if (platoForm.get('nombre')?.touched && platoForm.get('nombre')?.hasError('minlength')) {
+    <span class="error-text">Debe tener al menos 3 caracteres.</span>
+    }
+  </div>
+
+  <!-- Costo & Venta side-by-side -->
+  <div class="row g-3 mb-3">
+    <div class="col-6">
+      <label class="form-label font-bold">Costo <strong class="field-required">*</strong></label>
+      <div class="input-group">
+        <span class="input-group-text">$</span>
+        <input type="number" class="form-control custom-input border-start-0"
+          [class.is-invalid]="platoForm.get('costo')?.touched && platoForm.get('costo')?.invalid"
+          formControlName="costo">
+      </div>
+      @if (costoSugerido() > 0) {
+      <span class="text-success small-hint">Autocalculado</span>
+      }
+      @if (platoForm.get('costo')?.touched && platoForm.get('costo')?.hasError('min')) {
+      <span class="error-text">Debe ser mayor a 0.</span>
+      }
+    </div>
+    <div class="col-6">
+      <label class="form-label font-bold">Venta <strong class="field-required">*</strong></label>
+      <div class="input-group">
+        <span class="input-group-text">$</span>
+        <input type="number" class="form-control custom-input border-start-0"
+          [class.is-invalid]="platoForm.get('precioVenta')?.touched && platoForm.get('precioVenta')?.invalid"
+          formControlName="precioVenta">
+      </div>
+      @if (platoForm.get('precioVenta')?.touched && platoForm.get('precioVenta')?.hasError('min')) {
+      <span class="error-text">Debe ser mayor a 0.</span>
+      }
+    </div>
+  </div>
+
+  @if (precioEsMenorQueCosto()) {
+  <div class="alert alert-warning py-2 px-3 small mb-3">
+    <strong>Advertencia comercial:</strong> El precio de venta es menor o igual al costo de preparación del plato.
+  </div>
+  }
+
+  <!-- Tiempo de preparación -->
+  <div class="mb-3">
+    <label class="form-label font-bold">Tiempo de preparación <strong class="field-required">*</strong></label>
+    <div class="input-group prep-time-group">
+      <span class="input-group-text">
+        <span class="material-symbols-outlined text-muted">schedule</span>
+      </span>
+      <input type="number" class="form-control custom-input border-start-0"
+        [class.is-invalid]="platoForm.get('tiempoPreparacion')?.touched && platoForm.get('tiempoPreparacion')?.invalid"
+        formControlName="tiempoPreparacion">
+      <span class="input-group-text bg-white border-start-0 text-muted">minutos</span>
+    </div>
+    @if (tiempoPreparacionLegible()) {
+    <span class="time-readable-hint">{{ tiempoPreparacionLegible() }}</span>
+    }
+    @if (platoForm.get('tiempoPreparacion')?.touched && platoForm.get('tiempoPreparacion')?.hasError('min')) {
+    <span class="error-text">Debe ser al menos 1 minuto.</span>
+    }
+  </div>
+
+  <!-- Tipo y categoría -->
+  <div class="row g-3 mb-3">
+    <div class="col-6">
+      <label class="form-label font-bold">Tipo de plato <strong class="field-required">*</strong></label>
+      <div class="select-wrapper">
+        <select class="form-select custom-input"
+          [class.is-invalid]="platoForm.get('tipoPlatoId')?.touched && platoForm.get('tipoPlatoId')?.invalid"
+          formControlName="tipoPlatoId">
+          <option [ngValue]="null" disabled>Seleccione tipo...</option>
+          @for (tipo of tiposPlato(); track tipo.id) {
+            <option [ngValue]="tipo.id">{{ tipo.descripcion }}</option>
+          }
+        </select>
+      </div>
+      @if (platoForm.get('tipoPlatoId')?.touched && platoForm.get('tipoPlatoId')?.hasError('required')) {
+      <span class="error-text">Debe seleccionar un tipo de plato.</span>
+      }
+    </div>
+
+    <div class="col-6">
+      <label class="form-label font-bold">Categoría <strong class="field-required">*</strong></label>
+      <div class="select-wrapper">
+        <select class="form-select custom-input"
+          [class.is-invalid]="platoForm.get('categoriaPlatoId')?.touched && platoForm.get('categoriaPlatoId')?.invalid"
+          formControlName="categoriaPlatoId">
+          <option [ngValue]="null" disabled>Seleccione categoría...</option>
+          @for (categoria of categoriasPlato(); track categoria.id) {
+            <option [ngValue]="categoria.id">{{ categoria.descripcion }}</option>
+          }
+        </select>
+      </div>
+      @if (platoForm.get('categoriaPlatoId')?.touched && platoForm.get('categoriaPlatoId')?.hasError('required')) {
+      <span class="error-text">Debe seleccionar una categoría.</span>
+      }
+    </div>
+  </div>
+
+  <!-- Descripción -->
+  <div class="mb-4">
+    <label class="form-label font-bold">Descripción <strong class="field-required">*</strong></label>
+    <textarea class="form-control custom-input custom-textarea"
+      [class.is-invalid]="platoForm.get('descripcion')?.touched && platoForm.get('descripcion')?.invalid" rows="3"
+      formControlName="descripcion">
+    </textarea>
+    @if (platoForm.get('descripcion')?.touched && platoForm.get('descripcion')?.hasError('minlength')) {
+    <span class="error-text">La descripción debe tener al menos 8 caracteres.</span>
+    }
+  </div>
+
+  <!-- Diet Tags -->
+  <div class="d-flex flex-wrap gap-2 justify-content-start mb-4">
+    <button type="button" class="diet-tag-btn" [class.active]="vegano()" (click)="onToggleTag('vegano')">
+      VEGANO
+    </button>
+    <button type="button" class="diet-tag-btn" [class.active]="vegetariano()" (click)="onToggleTag('vegetariano')">
+      VEGETARIANO
+    </button>
+    <button type="button" class="diet-tag-btn" [class.active]="celiaco()" (click)="onToggleTag('celiaco')">
+      CELÍACO
+    </button>
+  </div>
+
+  <!-- Botones de acción -->
+  <div class="d-flex justify-content-end gap-3">
+    <app-boton label="GUARDAR" variante="success" tamanio="md" (clicked)="onGuardar()">
+    </app-boton>
+  </div>
+</div>

@@ -1,13 +1,7 @@
 ﻿using Moq;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
-using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
-using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DOM = PanComido.Dominio.Entidades;
 
 namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
 {
@@ -23,46 +17,35 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
         }
 
         [Fact]
-        public async Task EjecutarAsync_CuandoElProveedorNoExiste_DevuelveNull()
+        public async Task EjecutarAsync_CuandoElProveedorNoExiste_LanzaKeyNotFoundException()
         {
             _proveedorRepoMock
                 .Setup(r => r.ObtenerProveedorPorIdAsync(999))
-                .ReturnsAsync((global::PanComido.Dominio.Entidades.Proveedor?)null);
-
-            var pedidoRepoMock = new Mock<IPedidoRepositorio>();
+                .ReturnsAsync((DOM.Proveedor?)null);
 
             var casoDeUso = new ObtenerHistorialPedidosCasoDeUso(
                 _proveedorRepoMock.Object,
-                pedidoRepoMock.Object);
+                _pedidoRepoMock.Object);
 
-            var resultado = await casoDeUso.EjecutarAsync(999);
-
-            Assert.Null(resultado);
+            await Assert.ThrowsAsync<KeyNotFoundException>(() => casoDeUso.EjecutarAsync(999));
         }
 
         [Fact]
         public async Task EjecutarAsync_CuandoProveedorExistePeroNoTienePedidos_DevuelveListaVacia()
         {
-            var proveedor = new global::PanComido.Dominio.Entidades.Proveedor
-            {
-                Id = 4,
-                Nombre = "Lácteos del Campo"
-            };
-
             _proveedorRepoMock
                 .Setup(r => r.ObtenerProveedorPorIdAsync(4))
-                .ReturnsAsync(proveedor);
+                .ReturnsAsync(new DOM.Proveedor { Id = 4, Nombre = "Lácteos del Campo" });
 
             _pedidoRepoMock
                 .Setup(r => r.ObtenerPedidosPorProveedorAsync(4))
-                .ReturnsAsync(new List<Pedido>());
+                .ReturnsAsync(new List<DOM.Pedido>());
 
             var casoDeUso = new ObtenerHistorialPedidosCasoDeUso(
                 _proveedorRepoMock.Object,
                 _pedidoRepoMock.Object);
 
             var resultado = await casoDeUso.EjecutarAsync(4);
-
             Assert.NotNull(resultado);
             Assert.Empty(resultado);
         }
@@ -70,32 +53,23 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
         [Fact]
         public async Task EjecutarAsync_CuandoProveedorExisteYTienePedidos_DevuelveListaDePedidos()
         {
-            var proveedor = new global::PanComido.Dominio.Entidades.Proveedor
-            {
-                Id = 2,
-                Nombre = "Carnicería El Gaucho"
-            };
-
             _proveedorRepoMock
                 .Setup(r => r.ObtenerProveedorPorIdAsync(2))
-                .ReturnsAsync(proveedor);
-
-            var pedidos = new List<Pedido>
-            {
-                new() { Id = 10, Fecha = new DateOnly(2026, 5, 27), Estado = "Recibido" },
-                new() { Id = 11, Fecha = new DateOnly(2026, 5, 10), Estado = "Pendiente" }
-            };
+                .ReturnsAsync(new DOM.Proveedor { Id = 2, Nombre = "Carnicería El Gaucho" });
 
             _pedidoRepoMock
                 .Setup(r => r.ObtenerPedidosPorProveedorAsync(2))
-                .ReturnsAsync(pedidos);
+                .ReturnsAsync(new List<DOM.Pedido>
+                {
+                    new DOM.Pedido { Id = 10, Fecha = new DateOnly(2026, 5, 27), Estado = "Recibido" },
+                    new DOM.Pedido { Id = 11, Fecha = new DateOnly(2026, 5, 10), Estado = "Pendiente" }
+                });
 
             var casoDeUso = new ObtenerHistorialPedidosCasoDeUso(
                 _proveedorRepoMock.Object,
                 _pedidoRepoMock.Object);
 
             var resultado = await casoDeUso.EjecutarAsync(2);
-
             Assert.NotNull(resultado);
             Assert.Equal(2, resultado.Count);
             Assert.Equal(10, resultado[0].Id);

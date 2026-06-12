@@ -1,22 +1,39 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Dropdown } from './dropdown';
 
-import { Stock } from './stock';
-
-describe('ModificarCarta', () => {
-  let component: ModificarCarta;
-  let fixture: ComponentFixture<ModificarCarta>;
+describe('Dropdown', () => {
+  let component: Dropdown;
+  let fixture: ComponentFixture<Dropdown>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ModificarCarta],
+      imports: [Dropdown],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ModificarCarta);
+    fixture = TestBed.createComponent(Dropdown);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should start closed', () => {
+    expect(component.estadoAbierto()).toBe(false);
+  });
+
+  it('should toggle open/closed', () => {
+    component.toggle();
+    expect(component.estadoAbierto()).toBe(true);
+    component.toggle();
+    expect(component.estadoAbierto()).toBe(false);
+  });
+
+  it('should close when cerrar is called', () => {
+    component.toggle();
+    expect(component.estadoAbierto()).toBe(true);
+    component.cerrar();
+    expect(component.estadoAbierto()).toBe(false);
   });
 });

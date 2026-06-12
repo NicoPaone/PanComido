@@ -1,0 +1,190 @@
+<div class="panel-overlay" (click)="onClose()">
+  <div class="side-panel shadow-lg bg-white" (click)="$event.stopPropagation()">
+    
+    <!-- HEADER HERO IMAGE -->
+    <div class="panel-hero" [style.backgroundImage]="imagen() ? 'url(' + imagen() + ')' : 'none'">
+      <div class="hero-overlay d-flex flex-column justify-content-between p-3">
+        <div class="d-flex justify-content-between align-items-start">
+          <!-- Visibility Toggle Floating Badge -->
+          <div class="visibility-badge">
+            <app-toggle 
+              [active]="visible()" 
+              label="Visible" 
+              (toggled)="onToggleVisible()">
+            </app-toggle>
+          </div>
+          <!-- Close Button -->
+          <button class="btn-close-panel" (click)="onClose()">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        
+        @if (!imagen()) {
+          <div class="hero-placeholder text-center">
+            <span class="material-symbols-outlined text-muted fs-1 mb-2">add_a_photo</span>
+            <p class="text-muted fw-bold mb-0">Sin imagen principal</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- PANEL BODY -->
+    <div class="panel-body p-4 d-flex flex-column flex-grow-1 overflow-auto">
+      
+      <!-- FORM: BASIC INFO -->
+      <div class="mb-4">
+        <label class="form-label soft-label">Nombre del Plato</label>
+        <input 
+          type="text" 
+          class="form-control soft-input fs-5 fw-bold" 
+          placeholder="Ej: Hamburguesa Completa"
+          [ngModel]="nombre()" 
+          (ngModelChange)="nombre.set($event)">
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label soft-label">URL de Imagen</label>
+        <div class="input-group soft-input-group">
+          <span class="input-group-text"><span class="material-symbols-outlined fs-5">link</span></span>
+          <input 
+            type="text" 
+            class="form-control soft-input" 
+            placeholder="https://..."
+            [ngModel]="imagen()" 
+            (ngModelChange)="imagen.set($event)">
+        </div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <!-- COST -->
+        <div class="col-6">
+          <label class="form-label soft-label">Costo Total</label>
+          <div class="cost-readonly-box">
+            {{ costo() | arsCurrency }}
+          </div>
+          <app-price-note text="Suma de insumos de la receta x cantidad usada." [compact]="true" />
+        </div>
+        
+        <!-- PRICE -->
+        <div class="col-6">
+          <label class="form-label soft-label">Precio Venta</label>
+          <div class="input-group soft-input-group">
+            <span class="input-group-text fw-bold">$</span>
+            <input 
+              type="number" 
+              class="form-control soft-input fw-bold text-dark" 
+              placeholder="0.00"
+              [ngModel]="precioVenta()" 
+              (ngModelChange)="precioVenta.set($event === null || $event === '' ? null : +$event)">
+          </div>
+          
+          <!-- MARGIN INDICATOR -->
+          @if (precioVenta() && costo()) {
+            @if (precioEsMenorQueCosto()) {
+              <small class="text-danger fw-bold d-flex align-items-center gap-1 mt-1" style="font-size: 0.75rem;">
+                <span class="material-symbols-outlined" style="font-size: 1rem;">warning</span>
+                Pérdida
+              </small>
+            } @else {
+              <small class="text-success fw-bold d-flex align-items-center gap-1 mt-1" style="font-size: 0.75rem;">
+                <span class="material-symbols-outlined" style="font-size: 1rem;">trending_up</span>
+                Buen margen
+              </small>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- RECIPE EDITOR -->
+      <div class="mt-2 flex-grow-1 d-flex flex-column">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="fw-bold fs-5 mb-0 text-dark d-flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-secondary">blender</span>
+            Receta
+          </h4>
+        </div>
+
+        <div class="position-relative mb-4 spotlight-search">
+          <app-buscador
+            [placeholder]="'Buscar ingrediente para añadir...'"
+            [valor]="busqueda()"
+            (busquedaCambiada)="onSearchChanged($event)">
+          </app-buscador>
+
+          @if (sugerencias().length > 0) {
+            <div class="sugerencias-dropdown shadow-sm border rounded-3 position-absolute w-100 bg-white">
+              @for (sug of sugerencias(); track sug.id) {
+                <div class="sugerencia-item p-3 d-flex align-items-center gap-2" (click)="agregarIngrediente(sug)">
+                  <span class="material-symbols-outlined text-primary" style="font-size: 1.1rem;">add_circle</span>
+                  <span class="fw-semibold">{{ sug.nombre }}</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- INGREDIENT PILLS LIST -->
+        <div class="ingredients-list d-flex flex-column gap-2 flex-grow-1 overflow-auto pe-2">
+          @for (ing of receta(); track ing.id) {
+            <div class="ingredient-pill d-flex align-items-center justify-content-between p-2 rounded-3 border">
+              
+              <div class="ingredient-main d-flex align-items-center gap-2 min-w-0">
+                <div class="icon-circle bg-light text-secondary flex-shrink-0">
+                  <span class="material-symbols-outlined fs-6">kitchen</span>
+                </div>
+                <span class="fw-semibold text-dark text-truncate">{{ ing.nombre }}</span>
+              </div>
+
+              <div class="ingredient-controls d-flex align-items-center gap-2 flex-shrink-0">
+                <div class="qty-control d-flex align-items-center bg-light rounded-pill px-1">
+                  <input 
+                    type="number" 
+                    class="qty-input bg-transparent border-0 text-center fw-bold" 
+                    min="0.01" step="0.01"
+                    [(ngModel)]="ing.cantidad"
+                    (ngModelChange)="onCantidadCambiada(ing)">
+                </div>
+                
+                <span class="unit-pill bg-light fw-semibold rounded-pill" title="La unidad depende del insumo">
+                  {{ ing.unidadMedida || 's/u' }}
+                </span>
+
+                <button class="btn-delete-pill border-0 bg-transparent text-danger p-1 d-flex align-items-center justify-content-center" (click)="eliminarIngrediente(ing.id)">
+                  <span class="material-symbols-outlined fs-5">close</span>
+                </button>
+              </div>
+
+            </div>
+          }
+          @if (receta().length === 0) {
+            <div class="empty-recipe text-center p-4 bg-light rounded-3 mt-2 border border-dashed">
+              <span class="material-symbols-outlined text-muted fs-1 mb-2">restaurant</span>
+              <p class="text-muted fw-semibold mb-0">Esta receta no tiene ingredientes.</p>
+              <p class="text-muted small mb-0">Añade algunos arriba para calcular el costo.</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL FOOTER -->
+    <div class="panel-footer p-3 border-top bg-light d-flex justify-content-end gap-3">
+      <app-boton 
+        label="Cancelar" 
+        variante="outline" 
+        tamanio="md" 
+        (clicked)="onClose()"
+        class="cancel-btn">
+      </app-boton>
+      <app-boton 
+        label="Guardar Cambios" 
+        variante="success" 
+        tamanio="md" 
+        (clicked)="onSave()"
+        class="save-btn shadow-sm"
+        [disabled]="!nombre().trim() || precioVenta() === null || precioVenta()! <= 0 || costo() === null || costo()! <= 0">
+      </app-boton>
+    </div>
+
+  </div>
+</div>

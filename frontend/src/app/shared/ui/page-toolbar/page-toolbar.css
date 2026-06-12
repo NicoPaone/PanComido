@@ -3,11 +3,11 @@
 .page-toolbar {
    display: flex;
    align-items: center;
-   justify-content: space-between;
-   gap: 1rem;
+   justify-content: flex-start;
+   gap: 1.5rem;
    padding: 1rem;
-   background-color: var(--gray-50);
-   border-bottom: 1px solid var(--gray-200);
+   background-color: transparent;
+   border-bottom: none;
 }
 
 .toolbar-search {

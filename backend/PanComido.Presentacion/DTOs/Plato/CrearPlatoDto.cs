@@ -43,6 +43,9 @@ namespace PanComido.Presentacion.DTOs.Plato
         public decimal Cantidad { get; set; }
 
         public bool Opcional { get; set; }
+
+        // Nombre del insumo para respuestas (útil en la UI del comensal)
+        public string Nombre { get; set; }
     }
 
 }

@@ -1,12 +1,11 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, inject, input, output , ChangeDetectionStrategy} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Insumo } from '../../../../../core/models/insumos/insumo';
-import { Bodega } from '../../../../../core/models/bodega/bodega';
-import { CrearInsumoRequest } from '../../../../../core/models/insumos/crear-insumo-request';
+import { Insumo, CrearInsumo } from '../../../../../core/models/domain/insumo';
+import { Bodega } from '../../../../../core/models/domain/bodega';
 
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { CategoriaInsumo } from '../../../../../core/models/insumos/categorias/categoria-insumo';
-import { UnidadMedida } from '../../../../../core/models/unidad-medida';
+import { CategoriaInsumo } from '../../../../../core/models/domain/categoria-insumo';
+import { UnidadMedida } from '../../../../../core/models/domain/unidad-medida';
 
 export const stockMinimoValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const stockMinimo = control.get('stockMinimo')?.value;
@@ -19,10 +18,11 @@ export const stockMinimoValidator: ValidatorFn = (control: AbstractControl): Val
 };
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-producto-form',
   imports: [ReactiveFormsModule],
   templateUrl: './producto-form.html',
-  styleUrl: './producto-form.css',
+  styleUrls: ['./producto-form.css'],
 })
 export class ProductoForm {
   private fb = inject(FormBuilder);
@@ -31,7 +31,7 @@ export class ProductoForm {
   bodegas = input<Bodega[]>([]);
   categorias = input<CategoriaInsumo[]>([]);
   unidadesMedida = input<UnidadMedida[]>([]);
-  guardar = output<CrearInsumoRequest>();
+  guardar = output<CrearInsumo>();
   cancelado = output<void>();
 
   form!: FormGroup;
@@ -60,14 +60,12 @@ export class ProductoForm {
       fechaVencimiento: ['', Validators.required], 
       tipo: ['Ingrediente'] 
     }, { validators: stockMinimoValidator });
-
-    console.log(this.form);
   }
-onSubmit(): void {
+ onSubmit(): void {
     if (this.form.valid) {
       const formValue = this.form.value;
       
-      const payload: CrearInsumoRequest = {
+      const payload: CrearInsumo = {
         nombre: formValue.nombre,
         descripcion: formValue.descripcion || '',
         precioVentaFinal: Number(formValue.precioVentaFinal) || 0,
@@ -79,7 +77,6 @@ onSubmit(): void {
         fechaVencimiento: formValue.fechaVencimiento 
         // input type="date" deberia devolver YYYY-MM-DD
       };
-      console.log("el payloadd: ",payload);
       this.guardar.emit(payload);
       this.form.reset({
         stockMinimo: 0,
