@@ -5,10 +5,13 @@ import { TurnoLaboral } from '../../../../../core/models/domain/turno-laboral';
 import { DatosLocalForm } from "../../components/datos-local-form/datos-local-form";
 import { MetodosPagoList } from "../../components/metodos-pago-list/metodos-pago-list";
 import { TurnosLaboralesList } from "../../components/turnos-laborales-list/turnos-laborales-list";
+import { ComensalPreviewComponent } from "../../components/comensal-preview/comensal-preview";
+import { Boton } from "../../../../../shared/ui/botones/boton/boton";
+import { PageToolbar } from "../../../../../shared/ui/page-toolbar/page-toolbar";
 
 @Component({
   selector: 'app-configuracion-page',
-  imports: [DatosLocalForm, MetodosPagoList, TurnosLaboralesList],
+  imports: [DatosLocalForm, MetodosPagoList, TurnosLaboralesList, ComensalPreviewComponent, Boton, PageToolbar],
   templateUrl: './configuracion-page.html',
   styleUrl: './configuracion-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -16,19 +19,19 @@ import { TurnosLaboralesList } from "../../components/turnos-laborales-list/turn
 export class ConfiguracionPage {
   readonly state = inject(ConfiguracionState);
   readonly datosLocal = this.state.datosLocal;
-  readonly metodosPago =this.state.metodosPago;
-  readonly familiasTipograficas  = this.state.familiasTipograficas;
+  readonly metodosPago = this.state.metodosPago;
+  readonly familiasTipograficas = this.state.familiasTipograficas;
   readonly turnos = this.state.turnos;
   readonly loading = this.state.loading;
   readonly guardando = this.state.guardando;
   readonly error = this.state.error;
   readonly exito = this.state.exito;
 
-  constructor(){
+  constructor() {
     this.state.cargarDatos();
   }
 
-  onDatosLocalChange(cambios: Partial<DatosLocalEditables>): void{
+  onDatosLocalChange(cambios: Partial<DatosLocalEditables>): void {
     this.state.limpiarFeedback();
     this.state.actualizarDatosLocal(cambios);
   }
@@ -37,9 +40,9 @@ export class ConfiguracionPage {
     this.state.toggleMetodoPago(id);
   }
 
-  onTurnoChange(event: {id: number; cambios:Partial<TurnoLaboral>}):void{
+  onTurnoChange(event: { id: number; cambios: Partial<TurnoLaboral> }): void {
     this.state.limpiarFeedback();
-    this.state.actualizarTurno(event.id,event.cambios);
+    this.state.actualizarTurno(event.id, event.cambios);
   }
 
 }
