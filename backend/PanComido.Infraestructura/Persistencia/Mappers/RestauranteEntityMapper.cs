@@ -14,29 +14,32 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 Imagen = efRestaurante.Imagen,
                 ColorPrincipal = efRestaurante.ColorPrincipal,
                 ColorSecundario = efRestaurante.ColorSecundario,
-                TextoPrincipal = efRestaurante.TextoPrincipal,
-                TextoSecundario = efRestaurante.TextoSecundario,
                 DireccionId = efRestaurante.DireccionId,
+                FamiliaTipograficaId = efRestaurante.FamiliaTipograficaId,
                 Ubicacion = new DOM.Ubicacion
                 {
                     Id = efRestaurante.Direccion.Id,
                     Direccion = efRestaurante.Direccion.Direccion,
                     Ciudad = efRestaurante.Direccion.Ciudad,
                     CodigoPostal = efRestaurante.Direccion.CodigoPostal
+                },
+                FamiliaTipografica = efRestaurante.FamiliaTipografica == null ? null : new DOM.FamiliaTipografica
+                {
+                    Id = efRestaurante.FamiliaTipografica.Id,
+                    Categoria = efRestaurante.FamiliaTipografica.Categoria,
+                    TipografiaTitulo = efRestaurante.FamiliaTipografica.TipografiaTitulo,
+                    TipografiaCuerpo = efRestaurante.FamiliaTipografica.TipografiaCuerpo
                 }
             };
         }
 
         public void paraActualizarEntidad(EF.Restaurante efRestoDatosExistentes, DOM.Restaurante restauranteDatosNuevos)
         {
-
             efRestoDatosExistentes.Nombre = restauranteDatosNuevos.Nombre;
             efRestoDatosExistentes.Imagen = restauranteDatosNuevos.Imagen;
             efRestoDatosExistentes.ColorPrincipal = restauranteDatosNuevos.ColorPrincipal;
             efRestoDatosExistentes.ColorSecundario = restauranteDatosNuevos.ColorSecundario;
-            efRestoDatosExistentes.TextoPrincipal = restauranteDatosNuevos.TextoPrincipal;
-            efRestoDatosExistentes.TextoSecundario = restauranteDatosNuevos.TextoSecundario;
-
+            efRestoDatosExistentes.FamiliaTipograficaId = restauranteDatosNuevos.FamiliaTipograficaId;
         }
     }
 }
