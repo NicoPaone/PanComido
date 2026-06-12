@@ -25,6 +25,18 @@ public partial class Cierre
     [Column("sobrante")]
     public decimal Sobrante { get; set; }
 
+    [Column("total_efectivo")]
+    public decimal TotalEfectivo { get; set; }
+
+    [Column("total_tarjeta")]
+    public decimal TotalTarjeta { get; set; }
+
+    [Column("total_transferencia")]
+    public decimal TotalTransferencia { get; set; }
+
+    [Column("total_mercado_pago")]
+    public decimal TotalMercadoPago { get; set; }
+
     [InverseProperty("Cierre")]
     public virtual ICollection<Pago> Pagos { get; set; } = new List<Pago>();
 
