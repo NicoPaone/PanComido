@@ -129,6 +129,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
         public async Task<List<Articulo>> ObtenerTodosLosArticulosParaCartaAsync()
         {
+            // TODO: hacerlo para traertelo de 1 restaurante
           var efArticulos = await _ctx.Articulos
                 .AsNoTracking()
                 .Include(a => a.ConfiguracionArticulos)

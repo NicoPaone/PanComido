@@ -49,7 +49,32 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                .Where(m => m != null)
                .ToList();
         }
+        public async Task<List<MesaConPosiciones>> ObtenerOcupadasAsync(int restauranteId)
+        {
+            List<EF.Mesa> mesasEF = await BaseQuery(restauranteId)
+                .AsNoTracking()
+                .Include(m => m.DimensionMesa)
+                .Where(m => m.EstadoMesaId == (int)DOM.Enums.EstadoMesa.Ocupada)
+                .ToListAsync();
 
+            return mesasEF
+                .Select(m => _mapper.paraDominioCompleto(m)!)
+                .Where(m => m != null)
+                .ToList();
+        }
+        public async Task<List<MesaConPosiciones>> ObtenerDisponiblesAsync(int restauranteId)
+        {
+            List<EF.Mesa> mesasEF = await BaseQuery(restauranteId)
+                .AsNoTracking()
+                .Include(m => m.DimensionMesa)
+                .Where(m => m.EstadoMesaId == (int)DOM.Enums.EstadoMesa.Disponible)
+                .ToListAsync();
+
+            return mesasEF
+                .Select(m => _mapper.paraDominioCompleto(m)!)
+                .Where(m => m != null)
+                .ToList();
+        }
         public async Task ActualizarEstadoAsync(int mesaId, DOM.Enums.EstadoMesa nuevoEstado)
         {
             var mesaEF = await _ctx.Mesas.FirstOrDefaultAsync(m => m.Id == mesaId);

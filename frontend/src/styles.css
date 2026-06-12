@@ -1,5 +1,6 @@
  /* La NUNIIITO */
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap');
+@import 'flatpickr/dist/flatpickr.css';
 
 /* VColores predeterminados de PanComido */
 :root {
@@ -122,3 +123,86 @@ a {
   font-family: var(--font-family);
 }
 @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+.flatpickr-calendar.pancomido-calendar,
+.flatpickr-calendar {
+  border: 1px solid rgba(15, 23, 42, 0.09);
+  border-radius: 8px;
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.14);
+  font-family: var(--font-family);
+  overflow: hidden;
+}
+
+.flatpickr-months {
+  padding: 0.45rem 0.45rem 0;
+}
+
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+  top: 0.35rem;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 11px;
+  color: #475569;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover,
+.flatpickr-months .flatpickr-next-month:hover {
+  background: rgba(22, 145, 172, 0.09);
+  color: #0f766e;
+}
+
+.flatpickr-current-month {
+  color: #0f172a;
+  font-weight: 900;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months,
+.flatpickr-current-month input.cur-year {
+  color: #0f172a;
+  font-weight: 900;
+}
+
+.flatpickr-weekdays {
+  padding-top: 0.5rem;
+}
+
+span.flatpickr-weekday {
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.flatpickr-day {
+  border-radius: 10px;
+  color: #334155;
+  font-weight: 800;
+}
+
+.flatpickr-day:hover,
+.flatpickr-day:focus {
+  border-color: transparent;
+  background: rgba(22, 145, 172, 0.09);
+  color: #0f766e;
+}
+
+.flatpickr-day.today {
+  border-color: rgba(22, 145, 172, 0.42);
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange,
+.flatpickr-day.selected:hover {
+  border-color: #1691ac;
+  background: #1691ac;
+  color: #ffffff;
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+  color: #cbd5e1;
+}

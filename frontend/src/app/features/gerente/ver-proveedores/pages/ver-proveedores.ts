@@ -67,29 +67,12 @@ export class VerProveedoresComponent implements OnInit {
 
   proveedorEditando = signal<Proveedor | null>(null);
   proveedorAEliminar = signal<Proveedor | null>(null);
-  categoriasEdicion = signal<string[]>([]);
+  categoriaIdsEdicion = signal<number[]>([]);
 
   proveedorForm = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(3)]],
-    contacto: ['', [Validators.required, Validators.minLength(3)]],
     telefono: ['', [Validators.pattern(/^\+?[0-9\s-]{7,15}$/)]],
-    email: ['', [Validators.email]],
-    direccion: [''],
-    activo: [true],
-    customCategory: ['']
   });
-
-  readonly categoriasBase = [
-    'Carnes',
-    'Lácteos',
-    'Verduras',
-    'Bebidas',
-    'Panificados',
-    'Limpieza',
-    'Condimentos',
-    'Aceites y Grasas',
-    'Huevos'
-  ];
 
   faCheck = faCheck;
   faXmark = faXmark;
@@ -111,43 +94,32 @@ export class VerProveedoresComponent implements OnInit {
 
   abrirEditarProveedor(proveedor: Proveedor): void {
     this.proveedorEditando.set(proveedor);
-    this.categoriasEdicion.set([...(proveedor.categorias ?? [])]);
+    this.categoriaIdsEdicion.set(this.idsDesdeCategorias(proveedor.categorias ?? []));
     this.proveedorForm.reset({
       nombre: proveedor.nombre,
-      contacto: proveedor.contacto,
       telefono: proveedor.telefono,
-      email: proveedor.email,
-      direccion: proveedor.direccion,
-      activo: proveedor.activo,
-      customCategory: ''
     });
   }
 
   cerrarEditarProveedor(): void {
     this.proveedorEditando.set(null);
-    this.categoriasEdicion.set([]);
-    this.proveedorForm.reset({ activo: true });
+    this.categoriaIdsEdicion.set([]);
+    this.proveedorForm.reset();
   }
 
   guardarEdicionProveedor(): void {
     const proveedor = this.proveedorEditando();
-    if (!proveedor || this.proveedorForm.invalid || this.categoriasEdicion().length === 0) {
+    if (!proveedor || this.proveedorForm.invalid || this.categoriaIdsEdicion().length === 0) {
       this.proveedorForm.markAllAsTouched();
       return;
     }
 
     const formVal = this.proveedorForm.value;
-    this.state.actualizarProveedorLocal({
-      ...proveedor,
+    this.state.actualizarProveedor(proveedor.id, {
       nombre: formVal.nombre!.trim(),
-      contacto: formVal.contacto!.trim(),
-      telefono: formVal.telefono?.trim() ?? '',
-      email: formVal.email?.trim() ?? '',
-      direccion: formVal.direccion?.trim() ?? '',
-      activo: formVal.activo ?? true,
-      categorias: this.categoriasEdicion()
-    });
-    this.cerrarEditarProveedor();
+      numeroTelefonoWsp: formVal.telefono?.trim() ?? '',
+      categoriaIds: this.categoriaIdsEdicion()
+    }, () => this.cerrarEditarProveedor());
   }
 
   abrirEliminarProveedor(proveedor: Proveedor): void {
@@ -161,33 +133,34 @@ export class VerProveedoresComponent implements OnInit {
   confirmarEliminarProveedor(): void {
     const proveedor = this.proveedorAEliminar();
     if (!proveedor) return;
-    this.state.eliminarProveedorLocal(proveedor.id);
-    this.cerrarEliminarProveedor();
+    this.state.eliminarProveedor(proveedor.id, () => this.cerrarEliminarProveedor());
   }
 
-  categoriasDisponiblesEdicion(): string[] {
-    return Array.from(new Set([...this.categoriasBase, ...this.categoriasEdicion()])).sort();
+  categoriasDisponiblesEdicion(): CategoriaInsumo[] {
+    return this.state.categoriasInsumo();
   }
 
-  toggleCategoriaEdicion(categoria: string): void {
-    this.categoriasEdicion.update(categorias =>
-      categorias.includes(categoria)
-        ? categorias.filter(item => item !== categoria)
-        : [...categorias, categoria]
+  categoriaSeleccionadaEdicion(categoriaId: number): boolean {
+    return this.categoriaIdsEdicion().includes(categoriaId);
+  }
+
+  toggleCategoriaEdicion(categoria: CategoriaInsumo): void {
+    this.categoriaIdsEdicion.update(categorias =>
+      categorias.includes(categoria.id)
+        ? categorias.filter(item => item !== categoria.id)
+        : [...categorias, categoria.id]
     );
   }
 
-  agregarCategoriaEdicion(): void {
-    const control = this.proveedorForm.get('customCategory');
-    const categoria = control?.value?.trim();
-    if (!categoria || this.categoriasEdicion().includes(categoria)) return;
-
-    this.categoriasEdicion.update(categorias => [...categorias, categoria]);
-    control?.reset();
+  removerCategoriaEdicion(categoriaId: number): void {
+    this.categoriaIdsEdicion.update(categorias => categorias.filter(item => item !== categoriaId));
   }
 
-  removerCategoriaEdicion(categoria: string): void {
-    this.categoriasEdicion.update(categorias => categorias.filter(item => item !== categoria));
+  private idsDesdeCategorias(categorias: string[]): number[] {
+    const nombres = new Set(categorias.map(categoria => categoria.toLowerCase().trim()));
+    return this.state.categoriasInsumo()
+      .filter(categoria => nombres.has(categoria.descripcion.toLowerCase().trim()))
+      .map(categoria => categoria.id);
   }
 
   irARealizarPedidoSugeridoGeneral(): void {

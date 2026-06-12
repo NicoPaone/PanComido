@@ -115,9 +115,6 @@ export class ModalEditarPlatoComponent {
     }
   }
 
-  onUnidadCambiada() {
-  }
-
   onSave() {
     if (!this.nombre().trim() || this.precioVenta() === null || this.precioVenta()! <= 0 || this.costo() === null || this.costo()! <= 0) {
       return;

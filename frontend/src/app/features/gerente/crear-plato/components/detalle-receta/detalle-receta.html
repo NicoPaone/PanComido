@@ -31,45 +31,72 @@
     }
   </div>
 
-  <div class="table-responsive">
-    <table class="table align-middle ingredient-table">
-      <thead>
-        <tr>
-          <th>Ingredientes</th>
-          <th style="width: 85px;">Cantidad</th>
-          <th style="width: 80px;">U. Medida</th>
-          <th style="width: 50px;" class="text-center">Accion</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (ing of ingredientesSeleccionados(); track ing.id) {
-          <tr>
-            <td>
-              <div class="d-flex align-items-center gap-2">
-                <input type="checkbox" checked class="form-check-input ingredient-checkbox">
-                <span class="ingredient-name">{{ ing.nombre }}</span>
-              </div>
-            </td>
-            <td>
-              <input 
-                type="number" 
-                class="form-control form-control-sm text-center qty-input" 
-                min="0.01"
-                step="0.01"
-                [(ngModel)]="ing.cantidad" 
-                (ngModelChange)="onCantidadCambiada(ing)">
-            </td>
-            <td>
-              <span class="badge-unidad">{{ ing.unidadMedida }}</span>
-            </td>
-            <td class="text-center">
-              <button class="btn-delete" (click)="eliminarIngrediente(ing.id)">
-                <span class="material-symbols-outlined fs-5">delete</span>
-              </button>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+  <div class="recipe-list">
+    <div class="recipe-list-head" aria-hidden="true">
+      <span>Ingrediente</span>
+      <span>Unidad</span>
+      <span>Acción</span>
+    </div>
+
+    @for (ing of ingredientesSeleccionados(); track ing.id) {
+      <article class="ingredient-row">
+        <div class="ingredient-cell">
+          <input type="checkbox" checked class="form-check-input ingredient-checkbox">
+          <span class="ingredient-name">{{ ing.nombre }}</span>
+        </div>
+
+        <div class="quantity-cell">
+          <div class="quantity-input-row">
+            <input 
+              type="number" 
+              class="form-control form-control-sm text-center qty-input" 
+              min="0.01"
+              [step]="cantidadPaso(ing)"
+              [(ngModel)]="ing.cantidad" 
+              (ngModelChange)="onCantidadCambiada(ing)">
+
+            <button
+              type="button"
+              class="quantity-clear-icon"
+              title="Limpiar cantidad"
+              aria-label="Limpiar cantidad"
+              (click)="limpiarCantidad(ing)">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+
+          @if (presetsCantidad(ing).length > 0) {
+            <div class="quantity-presets" aria-label="Accesos rápidos de cantidad">
+              @for (preset of presetsCantidad(ing); track preset.label) {
+                <button
+                  type="button"
+                  class="quantity-preset"
+                  (click)="sumarCantidadPreset(ing, preset)">
+                  {{ preset.label }}
+                </button>
+              }
+            </div>
+          }
+
+          @if (equivalenciaCantidad(ing); as equivalencia) {
+            <strong class="quantity-equivalence">{{ equivalencia }}</strong>
+          }
+        </div>
+
+        <span class="badge-unidad">{{ ing.unidadMedida }}</span>
+
+        <button class="btn-delete" (click)="eliminarIngrediente(ing.id)" title="Quitar ingrediente">
+          <span class="material-symbols-outlined fs-5">delete</span>
+        </button>
+      </article>
+    }
+
+    @if (ingredientesSeleccionados().length === 0) {
+      <div class="empty-recipe-state">
+        <span class="material-symbols-outlined">restaurant</span>
+        <strong>Sin ingredientes todavía</strong>
+        <p>Buscá un ingrediente o preparación para empezar la receta.</p>
+      </div>
+    }
   </div>
 </div>

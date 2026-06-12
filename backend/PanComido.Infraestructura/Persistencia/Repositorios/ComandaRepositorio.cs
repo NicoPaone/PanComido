@@ -75,6 +75,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                .Where(c => c.RestauranteId == restauranteId)
                .Where(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada
                            && c.EstadoComandaId != (int)EstadoComanda.Abierta)
+               .Where(c => c.ArticuloComanda.Any(ac => ac.Articulo.Plato != null))
                .ToListAsync();
             return efList.Select(C => _mapper.ParaDominio(C)).ToList();
         }

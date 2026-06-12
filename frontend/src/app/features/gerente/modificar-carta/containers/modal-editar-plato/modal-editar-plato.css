@@ -227,19 +227,21 @@
   appearance: textfield;
 }
 
-.unit-select {
+.unit-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: 32px;
-  width: 78px;
-  flex: 0 0 78px;
-  cursor: pointer;
-  outline: none;
+  min-width: 68px;
+  flex: 0 0 68px;
   color: #475569;
-  padding-left: 10px;
-  padding-right: 24px;
+  font-size: 0.82rem;
+  text-transform: lowercase;
+  user-select: none;
 }
 
-.unit-select:focus {
-  box-shadow: none;
+.unit-pill:empty::before {
+  content: "s/u";
 }
 
 .btn-delete-pill {

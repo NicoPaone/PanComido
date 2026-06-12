@@ -1,5 +1,6 @@
 ﻿using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Interfaces.Servicios;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,10 +10,13 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
     public class ObtenerArticulosParaCrearCartaCasoDeUso
     {
         private readonly IArticuloRepositorio _articuloRepositorio;
+        private readonly ITiempoDePreparacionPlatoServicio _tiempoDePreparacionPlatoServicio;
 
-        public ObtenerArticulosParaCrearCartaCasoDeUso(IArticuloRepositorio articuloRepositorio)
+        public ObtenerArticulosParaCrearCartaCasoDeUso(IArticuloRepositorio articuloRepositorio,
+                                                        ITiempoDePreparacionPlatoServicio tiempoDePreparacionPlatoServicio)
         {
             _articuloRepositorio = articuloRepositorio;
+            _tiempoDePreparacionPlatoServicio = tiempoDePreparacionPlatoServicio;
         }
 
         public async Task<List<Articulo>> EjecutarAsync()
@@ -24,6 +28,10 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
             foreach (var art in articulosDb)
             {
                 art.CostoCalculado = CalcularCostoDinamico(art);
+                if (art is Plato plato)
+                {
+                    plato.TiempoPreparacionEstimado = _tiempoDePreparacionPlatoServicio.CalcularTiempoPreparacionDinamico(plato);
+                }
             }
 
             // 3. Devolvemos las entidades de Dominio (Presentación se encargará de los DTOs)
