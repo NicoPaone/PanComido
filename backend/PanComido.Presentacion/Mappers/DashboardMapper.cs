@@ -1,4 +1,5 @@
 using PanComido.Dominio.Entidades;
+using PanComido.Presentacion.DTOs.Dashboard;
 using PanComido.Presentacion.DTOS.Dashboard;
 using System;
 using System.Collections.Generic;
@@ -46,6 +47,37 @@ namespace PanComido.Presentacion.Mappers
             }
 
             return listaDto;
+        }
+
+        public RendimientoComercialResponseDto aRendimientoComercialDto(ResumenRendimientoComercial resumenDom)
+        {
+            var dto = new RendimientoComercialResponseDto();
+
+            int pos = 1;
+            foreach (var item in resumenDom.MasVendidos)
+            {
+                dto.MasVendidos.Add(new PlatoRendimientoDto
+                {
+                    Posicion = pos++,
+                    Nombre = item.Nombre,
+                    Facturacion = $"$ {item.FacturacionTotal:N0}",
+                    Unidades = $"{item.UnidadesVendidas} u."
+                });
+            }
+
+            pos = 1;
+            foreach (var item in resumenDom.MenosVendidos)
+            {
+                dto.MenosVendidos.Add(new PlatoRendimientoDto
+                {
+                    Posicion = pos++,
+                    Nombre = item.Nombre,
+                    Facturacion = $"$ {item.FacturacionTotal:N0}",
+                    Unidades = $"{item.UnidadesVendidas} u."
+                });
+            }
+
+            return dto;
         }
     }
 }

@@ -6,7 +6,6 @@
         public string Imagen { get; set; }
         public string ColorPrincipal { get; set; }
         public string ColorSecundario { get; set; }
-        public string TextoPrincipal { get; set; }
-        public string TextoSecundario { get; set; }
+        public int? FamiliaTipograficaId { get; set; }
     }
 }

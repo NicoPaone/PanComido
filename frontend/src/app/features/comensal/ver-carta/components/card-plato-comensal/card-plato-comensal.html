@@ -16,6 +16,11 @@
         <h5 class="dish-title">{{ plato().nombre }}</h5>
       </div>
 
+      <p class="mb-1 text-muted small">
+
+        ⏱ {{ plato().tiempoPreparacionBase }} min
+        </p>
+
       <div class="dish-meta">
         <span class="dish-price">$ {{ plato().precioVentaFinal }}</span>
       </div>
@@ -29,13 +34,18 @@
         </div>
 
         <div class="add-btn-wrapper">
-          <app-boton-comensal 
-            class="w-100" 
-            [backgroundColor]="'#FDE047'" 
-            [textColor]="'#212529'" 
-            (clicked)="agregar()">
-            <span class="fw-bold">+ Agregar</span>
-          </app-boton-comensal>
+         
+          <app-boton class="w-100" variante="success" (clicked)="agregar()">
+
+          <span class="material-symbols-outlined">
+            add
+          </span>
+
+          <span>
+            Agregar
+          </span>
+
+        </app-boton>
         </div>
         
       </div>

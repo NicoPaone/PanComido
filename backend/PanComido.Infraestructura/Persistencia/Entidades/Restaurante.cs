@@ -16,6 +16,9 @@ public partial class Restaurante
     [Column("direccion_id")]
     public int DireccionId { get; set; }
 
+    [Column("familia_tipografica_id")]
+    public int? FamiliaTipograficaId { get; set; }
+
     [Column("nombre")]
     public string Nombre { get; set; } = null!;
 
@@ -27,12 +30,6 @@ public partial class Restaurante
 
     [Column("color_secundario")]
     public string? ColorSecundario { get; set; }
-
-    [Column("texto_principal")]
-    public string? TextoPrincipal { get; set; }
-
-    [Column("texto_secundario")]
-    public string? TextoSecundario { get; set; }
 
     [InverseProperty("Restaurante")]
     public virtual ICollection<Articulo> Articulos { get; set; } = new List<Articulo>();
@@ -56,6 +53,10 @@ public partial class Restaurante
     [InverseProperty("Restaurante")]
     public virtual ICollection<Empleado> Empleados { get; set; } = new List<Empleado>();
 
+    [ForeignKey("FamiliaTipograficaId")]
+    [InverseProperty("Restaurantes")]
+    public virtual FamiliaTipografica? FamiliaTipografica { get; set; }
+
     [InverseProperty("Restaurante")]
     public virtual ICollection<FilaVirtual> FilaVirtuals { get; set; } = new List<FilaVirtual>();
 
@@ -67,6 +68,12 @@ public partial class Restaurante
 
     [InverseProperty("Restaurante")]
     public virtual ICollection<Notificacion> Notificacions { get; set; } = new List<Notificacion>();
+
+    [InverseProperty("Restaurante")]
+    public virtual ICollection<PorcentajeCategoriaBebidum> PorcentajeCategoriaBebida { get; set; } = new List<PorcentajeCategoriaBebidum>();
+
+    [InverseProperty("Restaurante")]
+    public virtual ICollection<PorcentajeCategoriaPlato> PorcentajeCategoriaPlatos { get; set; } = new List<PorcentajeCategoriaPlato>();
 
     [InverseProperty("Restaurante")]
     public virtual ICollection<Proveedor> Proveedors { get; set; } = new List<Proveedor>();

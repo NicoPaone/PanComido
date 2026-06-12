@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { ConfiguracionPage } from './configuracion/pages/configuracion-page/configuracion-page';
 
 export const GERENTE_ROUTES: Routes = [
   {
@@ -10,6 +11,10 @@ export const GERENTE_ROUTES: Routes = [
     loadComponent: () => import('./stock-mercaderia/page/insumo/insumo-page').then(m => m.InsumoPage)
 
 
+  },
+  {
+    path: 'configuracion',
+    loadComponent: () => import('./configuracion/pages/configuracion-page/configuracion-page').then(m=> m.ConfiguracionPage)
   },
   {
     path: 'mapa-de-mesas',

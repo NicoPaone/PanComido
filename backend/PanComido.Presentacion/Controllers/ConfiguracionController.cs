@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso;
 using PanComido.Dominio.Entidades;
+using PanComido.Presentacion.DTOs.FamiliaTipografica;
 using PanComido.Presentacion.DTOs.FilaVirtual;
 using PanComido.Presentacion.DTOs.MetodoDePago;
 using PanComido.Presentacion.DTOs.Restaurante;
@@ -24,10 +25,12 @@ namespace PanComido.Presentacion.Controllers
         private readonly ActualizarTurnosLaboralesCasoDeUso _actualizarTurnosLaboralesCasoDeUso;
         private readonly ObtenerFilaVirtualCasoDeUso _obtenerFilaVirtualCasoDeUso;
         private readonly ActualizarFilaVirtualCasoDeUSo _actualizarFilaVirtualCasoDeUso;
+        private readonly ListarFamiliasTipograficasCasoDeUso _listarFamiliasTipograficasCasoDeUso;
         private readonly MetodoDePagoMapper _metodoDePagoMapper;
         private readonly RestauranteMapper _restauranteMapper;
         private readonly TurnoLaboralMapper _turnoLaboralMapper;
         private readonly FilaVirtualMapper _filaVirtualMapper;
+        private readonly FamiliaTipograficaMapper _familiaTipograficaMapper;
 
         public ConfiguracionController(
             ObtenerMetodosDePagoCasoDeUso obtenerMetodosDePagoCasoDeUso,
@@ -38,10 +41,12 @@ namespace PanComido.Presentacion.Controllers
             ActualizarTurnosLaboralesCasoDeUso actualizarTurnosLaboralesCasoDeUso,
             ObtenerFilaVirtualCasoDeUso obtenerFilaVirtualCasoDeUso,
             ActualizarFilaVirtualCasoDeUSo actualizarFilaVirtualCasoDeUSo,
+            ListarFamiliasTipograficasCasoDeUso listarFamiliasTipograficasCasoDeUso,
             MetodoDePagoMapper metodoDePagoMapper,
             RestauranteMapper restauranteMapper,
             TurnoLaboralMapper turnoLaboralMapper,
-            FilaVirtualMapper filaVirtualMapper)
+            FilaVirtualMapper filaVirtualMapper,
+            FamiliaTipograficaMapper familiaTipograficaMapper)
         {
             _obtenerMetodosDePagoCasoDeUso = obtenerMetodosDePagoCasoDeUso;
             _actualizarMetodosDePagoCasoDeUso = actualizarMetodosDePagoCasoDeUso;
@@ -51,10 +56,22 @@ namespace PanComido.Presentacion.Controllers
             _actualizarTurnosLaboralesCasoDeUso = actualizarTurnosLaboralesCasoDeUso;
             _obtenerFilaVirtualCasoDeUso = obtenerFilaVirtualCasoDeUso;
             _actualizarFilaVirtualCasoDeUso = actualizarFilaVirtualCasoDeUSo;
+            _listarFamiliasTipograficasCasoDeUso = listarFamiliasTipograficasCasoDeUso;
             _metodoDePagoMapper = metodoDePagoMapper;
             _restauranteMapper = restauranteMapper;
             _turnoLaboralMapper = turnoLaboralMapper;
             _filaVirtualMapper = filaVirtualMapper;
+            _familiaTipograficaMapper = familiaTipograficaMapper;
+        }
+
+        [HttpGet("familias-tipograficas")]
+        public async Task<ActionResult<List<FamiliaTipograficaResponseDto>>> ObtenerFamiliasTipograficas()
+        {
+
+            var familiasTipograficas = await _listarFamiliasTipograficasCasoDeUso.EjecutarAsync();
+
+            var dto = _familiaTipograficaMapper.aListaDto(familiasTipograficas);
+            return Ok(dto);
         }
 
         [HttpGet("datos-local")]

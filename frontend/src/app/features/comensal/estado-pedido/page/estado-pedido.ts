@@ -6,12 +6,13 @@ import { configuracionRestauranteMock } from '../../../../infra/mocks/configurac
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
 import { LlamarAlMozo } from '../../components/llamar-al-mozo/llamar-al-mozo';
 import { ComensalState } from '../../services/comensal-state';
+import { Boton } from '../../../../shared/ui/botones/boton/boton';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-estado-pedido',
   standalone: true,
-  imports: [DecimalPipe, BotonComensal, LlamarAlMozo],
+  imports: [DecimalPipe, Boton, BotonComensal, LlamarAlMozo],
   templateUrl: './estado-pedido.html',
   styleUrls: ['./estado-pedido.css']
 })

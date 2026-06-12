@@ -57,4 +57,34 @@ export class PedidoState {
   limpiarPedidos() {
     this.pedidosSignal.set([]);
   }
+
+  incrementarCantidad(index: number): void {
+  this.pedidosSignal.update(pedidos => {
+    const nuevosPedidos = [...pedidos];
+
+    nuevosPedidos[index] = {
+      ...nuevosPedidos[index],
+      cantidad: nuevosPedidos[index].cantidad + 1
+    };
+
+    return nuevosPedidos;
+  });
+}
+
+decrementarCantidad(index: number): void {
+  this.pedidosSignal.update(pedidos => {
+    const nuevosPedidos = [...pedidos];
+
+    if (nuevosPedidos[index].cantidad > 1) {
+      nuevosPedidos[index] = {
+        ...nuevosPedidos[index],
+        cantidad: nuevosPedidos[index].cantidad - 1
+      };
+    } else {
+      nuevosPedidos.splice(index, 1);
+    }
+
+    return nuevosPedidos;
+  });
+}
 }

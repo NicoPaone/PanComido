@@ -22,8 +22,6 @@ namespace PanComido.Dominio.Entidades
 
         // valores para la carta:
         public string Categoria { get; set; }
-
-
         public string TipoPlato { get; set; }
 
     }

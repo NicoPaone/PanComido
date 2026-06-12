@@ -146,6 +146,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     .ThenInclude(i => i.CategoriaInsumo)
                 .Include(a => a.Insumo)
                     .ThenInclude(i => i.PedidoInsumos) // <-- CAMBIO ACÁ
+                .Include(a => a.Plato)
+                    .ThenInclude(p => p.Restriccions) // <-- AGREGO ACÁ
                 .Where(a => a.Plato != null || (a.Insumo != null && a.Insumo.CategoriaInsumo.TipoAplica == 2))
                 .ToListAsync();
 
