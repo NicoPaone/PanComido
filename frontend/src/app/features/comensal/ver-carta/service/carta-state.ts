@@ -19,20 +19,20 @@ export class CartaState {
   tiposSeleccionados = signal<string[]>([]);
   ordenarPor = signal('');
   categoriasSeleccionadas = signal<string[]>([]);
-restriccionesSeleccionadas = signal<string[]>([]);
+  restriccionesSeleccionadas = signal<string[]>([]);
 
 
-  
 
-toggleCategoria(categoria: string): void {
-  this.categoriasSeleccionadas.update(actual => {
-    if (actual.includes(categoria)) {
-      return actual.filter(c => c !== categoria);
-    }
 
-    return [...actual, categoria];
-  });
-}
+  toggleCategoria(categoria: string): void {
+    this.categoriasSeleccionadas.update(actual => {
+      if (actual.includes(categoria)) {
+        return actual.filter(c => c !== categoria);
+      }
+
+      return [...actual, categoria];
+    });
+  }
 
   // Computed: platos
   platos = computed(() =>
@@ -49,26 +49,27 @@ toggleCategoria(categoria: string): void {
     let resultado = this._items();
     const categorias = this.categoriasSeleccionadas();
 
-// if (categorias.length > 0) {
-//   resultado = resultado.filter(item =>
-//     item.tipoArticulo === 'Plato' &&
-//     categorias.includes(item.categoria)
-//   );
-// }
 
-const restricciones = this.restriccionesSeleccionadas();
+    const restricciones = this.restriccionesSeleccionadas();
 
-if (restricciones.length > 0) {
+    if (restricciones.length > 0) {
+      resultado = resultado.filter(item =>
+        item.restricciones?.some(r =>
+          restricciones.includes(r)
+        )
+      );
+    }
+
+    // if (categorias.length > 0) {
+    //   resultado = resultado.filter(item =>
+    //     categorias.includes(item.categoria)
+    //   );
+    // }
+    if (categorias.length > 0) {
   resultado = resultado.filter(item =>
-    item.restricciones?.some(r =>
-      restricciones.includes(r)
-    )
-  );
-}
-
-if (categorias.length > 0) {
-  resultado = resultado.filter(item =>
-    categorias.includes(item.categoria)
+    categorias.includes(item.tipoPlato ?? '') ||
+    categorias.includes(item.categoriaPlato ?? '') ||
+    categorias.includes(item.categoriaBebida ?? '')
   );
 }
 
@@ -102,24 +103,43 @@ if (categorias.length > 0) {
           a.nombre.localeCompare(b.nombre)
         );
         break;
+     case 'tiempo':
+  resultado = [...resultado].sort(
+    (a, b) =>
+      (a.tiempoPreparacionEstimado ?? 9999) -
+      (b.tiempoPreparacionEstimado ?? 9999)
+  );
+  break;
+
     }
 
     return resultado;
   });
 
+  // cargarCarta(): void {
+  //   this._cargando.set(true);
+  //   this.api.obtenerCarta().subscribe({
+  //     next: (data) => {
+  //        console.log('Primer item:', data[0]);
+  // console.log('Restricciones primer item:', data[0]?.restricciones);
+
+  //       this._items.set(data);
+  //       this._cargando.set(false);
+  //     },
+  //     error: () => this._cargando.set(false)
+  //   });
+
+  // }
   cargarCarta(): void {
     this._cargando.set(true);
+
     this.api.obtenerCarta().subscribe({
       next: (data) => {
-         console.log('Primer item:', data[0]);
-  console.log('Restricciones primer item:', data[0]?.restricciones);
-
         this._items.set(data);
         this._cargando.set(false);
       },
       error: () => this._cargando.set(false)
     });
-    
   }
 
   setBusqueda(valor: string): void {
@@ -140,38 +160,33 @@ if (categorias.length > 0) {
   }
 
   toggleRestriccion(restriccion: string): void {
-  this.restriccionesSeleccionadas.update(actual => {
-    if (actual.includes(restriccion)) {
-      return actual.filter(r => r !== restriccion);
-    }
-    return [...actual, restriccion];
-  });
-}
+    this.restriccionesSeleccionadas.update(actual => {
+      if (actual.includes(restriccion)) {
+        return actual.filter(r => r !== restriccion);
+      }
+      return [...actual, restriccion];
+    });
+  }
 
-  // limpiarFiltros(): void {
-  //   this.busqueda.set('');
-  //   this.tiposSeleccionados.set([]);
-  //   this.ordenarPor.set('');
-  // }
 
   limpiarFiltros(): void {
-  this.busqueda.set('');
-  this.tiposSeleccionados.set([]);
-  this.categoriasSeleccionadas.set([]);
-  this.ordenarPor.set('');
-  this.restriccionesSeleccionadas.set([]);
-}
+    this.busqueda.set('');
+    this.tiposSeleccionados.set([]);
+    this.categoriasSeleccionadas.set([]);
+    this.ordenarPor.set('');
+    this.restriccionesSeleccionadas.set([]);
+  }
 
   // tieneFiltrosActivos = computed(() =>
   //   this.tiposSeleccionados().length > 0
   // );
-tieneFiltrosActivos = computed(() =>
-  this.tiposSeleccionados().length > 0 ||
-  this.categoriasSeleccionadas().length > 0 ||
-  this.restriccionesSeleccionadas().length > 0 ||
-  this.busqueda().trim() !== '' ||
-  this.ordenarPor() !== ''
-);
+  tieneFiltrosActivos = computed(() =>
+    this.tiposSeleccionados().length > 0 ||
+    this.categoriasSeleccionadas().length > 0 ||
+    this.restriccionesSeleccionadas().length > 0 ||
+    this.busqueda().trim() !== '' ||
+    this.ordenarPor() !== ''
+  );
 
   cantidadFiltrosActivos = computed(() =>
     this.tiposSeleccionados().length +
@@ -179,6 +194,6 @@ tieneFiltrosActivos = computed(() =>
     this.restriccionesSeleccionadas().length
   );
 
-  
+
 }
 

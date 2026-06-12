@@ -3,7 +3,7 @@ using PanComido.Presentacion.DTOs.Articulos;
 
 namespace PanComido.Presentacion.Mappers
 {
-    public class CartaMapper
+    public class CartaComensalMapper
     {
         public ArticuloCartaDto ParaDto(Articulo articuloDominio)
         {
@@ -21,10 +21,14 @@ namespace PanComido.Presentacion.Mappers
                 dto.EsPlato = true;
                 dto.EsDestacado = plato.Destacado;
                 dto.TiempoPreparacionBase = plato.TiempoPreparacionBase;
+                dto.TiempoPreparacionEstimado = plato.TiempoPreparacionEstimado;
 
                 dto.CategoriaPlato = plato.Categoria;
                 dto.TipoPlato = plato.TipoPlato;
-                dto.Restricciones = plato.Restricciones?.Select(r => r.Descripcion).ToList() ?? new List<string>();
+
+                dto.Restricciones =
+                    plato.Restricciones?.Select(r => r.Descripcion).ToList()
+                    ?? new List<string>();
             }
             else if (articuloDominio is Insumo bebida)
             {

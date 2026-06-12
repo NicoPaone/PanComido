@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.PagoCasoDeUso;
 using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.Mappers;
@@ -8,6 +9,7 @@ namespace PanComido.Presentacion.Controllers
 {
     [Route("pago")]
     [ApiController]
+    [Authorize]
     public class PagoController : ControllerBase
     {
         private readonly SolicitarPagoEfectivoCasoDeUso _solicitarPagoEfectivoCasoDeUso;
@@ -24,21 +26,24 @@ namespace PanComido.Presentacion.Controllers
             _pagoMapper = pagoMapper;
         }
 
-        [HttpPost("solicitar-efectivo/{comandaId}")]
-        public async Task<IActionResult> SolicitarPagoEfectivo(int comandaId)
+        [HttpPost("solicitar-efectivo/{comandaId}/comensal/{restauranteId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SolicitarPagoEfectivoComensal(int comandaId, int restauranteId)
         {
-            var restauranteId = HttpContext.ObtenerRestauranteId();
+            // El restauranteId viene de la URL. El framework y el Global Handler se encargan de los errores.
             var resultado = await _solicitarPagoEfectivoCasoDeUso.EjecutarAsync(comandaId, restauranteId);
             return Ok(resultado);
         }
 
-        [HttpPost("confirmar-pago-efectivo/{comandaId}")]
-        public async Task<IActionResult> ConfirmarPagoEfectivo(int comandaId)
+        [HttpPost("solicitar-efectivo/{comandaId}/mozo")]
+        [Authorize(Roles = "Mozo, Gerente")]
+        public async Task<IActionResult> SolicitarPagoEfectivoMozo(int comandaId)
         {
+            // Extraemos el restauranteId de forma segura del token
             var restauranteId = HttpContext.ObtenerRestauranteId();
-            var pagoConfirmado = await _confirmarPagoEfectivoCasoDeUso.EjecutarAsync(comandaId, restauranteId);
-            var dto = _pagoMapper.aDto(pagoConfirmado);
-            return Ok(dto);
+
+            var resultado = await _solicitarPagoEfectivoCasoDeUso.EjecutarAsync(comandaId, restauranteId);
+            return Ok(resultado);
         }
     }
 }

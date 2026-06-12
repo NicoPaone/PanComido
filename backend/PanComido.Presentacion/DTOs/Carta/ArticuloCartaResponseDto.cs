@@ -14,5 +14,6 @@ namespace PanComido.Presentacion.DTOs.Carta
         public int? TiempoPreparacionBase { get; set; }
 
         public List<string> Restricciones { get; set; } = new();
+        public int? TiempoPreparacionEstimado { get; set; }
     }
 }

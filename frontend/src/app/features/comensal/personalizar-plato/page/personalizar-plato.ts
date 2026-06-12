@@ -43,7 +43,9 @@ export class PersonalizarPlato implements OnInit {
     this.plato = state?.plato ?? null;
     this.itemIndex = state?.index ?? -1;
 
-    const platoId = state?.plato?.plato?.articuloId;
+  
+    const platoId = state?.plato?.plato?.id;
+    
     if (!platoId) return;
 
     this.platoService.getPlatoDetalle(platoId).subscribe(data => {
@@ -56,6 +58,7 @@ export class PersonalizarPlato implements OnInit {
         .map(i => i.nombre);
 
       console.log('Ingredientes opcionales filtrados:', opcionales);
+      console.log('Opcionales:', opcionales);
 
       this.ingredientesExtra = [...opcionales];
       this.ingredientesRemover = [...opcionales];

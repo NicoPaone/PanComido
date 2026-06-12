@@ -38,11 +38,7 @@
         } -->
         @if (seccionPlatosAbierta()) {
   <div class="subcategorias-list">
-<label class="checkbox-item">
-            <input type="checkbox" [checked]="cartaState.tiposSeleccionados().includes('Plato')"
-              (change)="cartaState.toggleTipoPlato('Plato')">
-            <span class="checkbox-label">Todos los platos</span>
-          </label>
+
     <label class="checkbox-item">
       <input
         type="checkbox"
@@ -94,11 +90,7 @@
 
         @if (seccionBebidasAbierta()) {
         <div class="subcategorias-list">
-          <label class="checkbox-item">
-            <input type="checkbox" [checked]="cartaState.tiposSeleccionados().includes('Bebida')"
-              (change)="cartaState.toggleTipoPlato('Bebida')">
-            <span class="checkbox-label">Todas las bebidas</span>
-          </label>
+          
           <label class="checkbox-item">
   <input
     type="checkbox"
