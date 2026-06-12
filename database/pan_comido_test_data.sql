@@ -167,55 +167,55 @@ INSERT INTO reserva (id, mesa_id, cant_comensales, nombre_titular, fecha, horari
 -- CAMBIO: todos con eliminado = FALSE por defecto
 -- ============================================================
 
-INSERT INTO articulo (id, carta_id, restaurante_id, nombre, descripcion, precio_venta_final, precio_ganancia, precio_promocional, eliminado) VALUES
+INSERT INTO articulo (id, carta_id, restaurante_id, nombre, descripcion, precio_venta_final, precio_ganancia, precio_promocional, url_imagen, eliminado) VALUES
     -- === PLATOS (vendibles, en carta) ===
-    (1,  1, 1, 'Pizza Muzzarella',         'Pizza clásica con mozzarella y salsa de tomate',           4500,  2800, NULL,   FALSE),
-    (2,  1, 1, 'Pizza Napolitana',          'Pizza con tomate, mozzarella y ajo',                       5000,  3200, NULL,   FALSE),
-    (3,  1, 1, 'Milanesa Napolitana',       'Milanesa de pollo con jamón, queso y salsa',               6500,  4000, NULL,   FALSE),
-    (4,  1, 1, 'Hamburguesa Clásica',       'Carne vacuna, lechuga, tomate, cebolla',                   5500,  3500, NULL,   FALSE),
-    (5,  1, 1, 'Ensalada César',            'Lechuga, pollo grillado, croutons, parmesano',             4000,  2500, 3500,   FALSE),
-    (6,  1, 1, 'Bife de Chorizo',           'Bife de chorizo a la parrilla con guarnición',             8500,  5500, NULL,   FALSE),
-    (7,  1, 1, 'Spaghetti Bolognesa',       'Pasta con salsa bolognesa casera',                         5000,  3000, NULL,   FALSE),
-    (8,  1, 1, 'Empanadas de Carne (x3)',   'Empanadas de carne cortada a cuchillo',                    3000,  1800, NULL,   FALSE),
-    (9,  1, 1, 'Papas Fritas',              'Porción de papas fritas',                                  2500,  1500, NULL,   FALSE),
-    (10, 1, 1, 'Ensalada Mixta',            'Lechuga, tomate, cebolla, huevo',                          2000,  1200, NULL,   FALSE),
-    (11, 1, 1, 'Wok de Pollo y Verduras',   'Pollo salteado con pimiento, cebolla y salsa de soja',     5500,  3300, 4800,   FALSE),
+    (1,  1, 1, 'Pizza Muzzarella',         'Pizza clásica con mozzarella y salsa de tomate',           4500,  2800, NULL, '/imagenes/PizzaMuzzarela.jpg',   FALSE),
+    (2,  1, 1, 'Pizza Napolitana',          'Pizza con tomate, mozzarella y ajo',                       5000,  3200, NULL, '/imagenes/PiazzaNapolitana.jpg', FALSE),
+    (3,  1, 1, 'Milanesa Napolitana',       'Milanesa de pollo con jamón, queso y salsa',               6500,  4000, NULL, '/imagenes/MilanesaNapolitana.jpg', FALSE),
+    (4,  1, 1, 'Hamburguesa Clásica',       'Carne vacuna, lechuga, tomate, cebolla',                   5500,  3500, NULL, '/imagenes/hamburguesa-clasica.jpg', FALSE),
+    (5,  1, 1, 'Ensalada César',            'Lechuga, pollo grillado, croutons, parmesano',             4000,  2500, 3500, '/imagenes/EnsaladaCesar.jpg',   FALSE),
+    (6,  1, 1, 'Bife de Chorizo',           'Bife de chorizo a la parrilla con guarnición',             8500,  5500, NULL, '/imagenes/BifeDeCorizo.jpg',    FALSE),
+    (7,  1, 1, 'Spaghetti Bolognesa',       'Pasta con salsa bolognesa casera',                         5000,  3000, NULL, '/imagenes/Espagueti.jpg',       FALSE),
+    (8,  1, 1, 'Empanadas de Carne (x3)',   'Empanadas de carne cortada a cuchillo',                    3000,  1800, NULL, '/imagenes/EmpanadaCarne.jpg',   FALSE),
+    (9,  1, 1, 'Papas Fritas',              'Porción de papas fritas',                                  2500,  1500, NULL, '/imagenes/PapaFrita.jpg',       FALSE),
+    (10, 1, 1, 'Ensalada Mixta',            'Lechuga, tomate, cebolla, huevo',                          2000,  1200, NULL, '/imagenes/EnsaladaMixta.jpg',   FALSE),
+    (11, 1, 1, 'Wok de Pollo y Verduras',   'Pollo salteado con pimiento, cebolla y salsa de soja',     5500,  3300, 4800, '/imagenes/WokDePolloYVerduras.jpg', FALSE),
 
     -- === BEBIDAS (vendibles, en carta) ===
-    (12, 1, 1, 'Coca-Cola 500ml',           'Gaseosa línea Coca-Cola',         1500, 900,  NULL, FALSE),
-    (13, 1, 1, 'Agua Mineral 500ml',        'Agua mineral sin gas',            1000, 600,  NULL, FALSE),
-    (14, 1, 1, 'Cerveza Artesanal IPA',     'Pinta de cerveza artesanal IPA',  2500, 1500, NULL, FALSE),
-    (15, 1, 1, 'Vino Malbec (copa)',        'Copa de Malbec Reserva',          2000, 1200, NULL, FALSE),
-    (16, 1, 1, 'Sprite 500ml',              'Gaseosa Sprite',                  1500, 900,  NULL, FALSE),
-    (17, 1, 1, 'Fernet con Coca',           'Fernet Branca con Coca-Cola',     2500, 1500, NULL, FALSE),
+    (12, 1, 1, 'Coca-Cola 500ml',           'Gaseosa línea Coca-Cola',         1500, 900,  NULL, '/imagenes/CocaCola.jpg', FALSE),
+    (13, 1, 1, 'Agua Mineral 500ml',        'Agua mineral sin gas',            1000, 600,  NULL, '/imagenes/AguaMineral.jpg', FALSE),
+    (14, 1, 1, 'Cerveza Artesanal IPA',     'Pinta de cerveza artesanal IPA',  2500, 1500, NULL, '/imagenes/CervezaIpa.jpg', FALSE),
+    (15, 1, 1, 'Vino Malbec (copa)',        'Copa de Malbec Reserva',          2000, 1200, NULL, '/imagenes/CopaMalbec.jpg', FALSE),
+    (16, 1, 1, 'Sprite 500ml',              'Gaseosa Sprite',                  1500, 900,  NULL, '/imagenes/Sprite.jpg', FALSE),
+    (17, 1, 1, 'Fernet con Coca',           'Fernet Branca con Coca-Cola',     2500, 1500, NULL, '/imagenes/FernetConCola.jpg', FALSE),
 
     -- === INGREDIENTES SIMPLES (no vendibles, sin carta) ===
-    (18, NULL, 1, 'Harina 000',             NULL, NULL, NULL, NULL, FALSE),
-    (19, NULL, 1, 'Mozzarella',             NULL, NULL, NULL, NULL, FALSE),
-    (20, NULL, 1, 'Tomate perita',          NULL, NULL, NULL, NULL, FALSE),
-    (21, NULL, 1, 'Pechuga de pollo',       NULL, NULL, NULL, NULL, FALSE),
-    (22, NULL, 1, 'Aceite de oliva',        NULL, NULL, NULL, NULL, FALSE),
-    (23, NULL, 1, 'Crema de leche',         NULL, NULL, NULL, NULL, FALSE),
-    (24, NULL, 1, 'Sal',                    NULL, NULL, NULL, NULL, FALSE),
-    (25, NULL, 1, 'Pimienta',              NULL, NULL, NULL, NULL, FALSE),
-    (26, NULL, 1, 'Lechuga',               NULL, NULL, NULL, NULL, FALSE),
-    (27, NULL, 1, 'Huevos',                NULL, NULL, NULL, NULL, FALSE),
-    (28, NULL, 1, 'Carne vacuna (bife)',    NULL, NULL, NULL, NULL, FALSE),
-    (29, NULL, 1, 'Papa',                  NULL, NULL, NULL, NULL, FALSE),
-    (30, NULL, 1, 'Cebolla',              NULL, NULL, NULL, NULL, FALSE),
-    (31, NULL, 1, 'Ajo',                  NULL, NULL, NULL, NULL, FALSE),
-    (32, NULL, 1, 'Pan de hamburguesa',    NULL, NULL, NULL, NULL, FALSE),
-    (33, NULL, 1, 'Fideos secos',          NULL, NULL, NULL, NULL, FALSE),
-    (34, NULL, 1, 'Albahaca',             NULL, NULL, NULL, NULL, FALSE),
-    (35, NULL, 1, 'Pimiento rojo',        NULL, NULL, NULL, NULL, FALSE),
-    (36, NULL, 1, 'Orégano',              NULL, NULL, NULL, NULL, FALSE),
-    (37, NULL, 1, 'Jamón cocido',          NULL, NULL, NULL, NULL, FALSE),
+    (18, NULL, 1, 'Harina 000',             NULL, NULL, NULL, NULL, NULL, FALSE),
+    (19, NULL, 1, 'Mozzarella',             NULL, NULL, NULL, NULL, NULL, FALSE),
+    (20, NULL, 1, 'Tomate perita',          NULL, NULL, NULL, NULL, NULL, FALSE),
+    (21, NULL, 1, 'Pechuga de pollo',       NULL, NULL, NULL, NULL, NULL, FALSE),
+    (22, NULL, 1, 'Aceite de oliva',        NULL, NULL, NULL, NULL, NULL, FALSE),
+    (23, NULL, 1, 'Crema de leche',         NULL, NULL, NULL, NULL, NULL, FALSE),
+    (24, NULL, 1, 'Sal',                    NULL, NULL, NULL, NULL, NULL, FALSE),
+    (25, NULL, 1, 'Pimienta',              NULL, NULL, NULL, NULL, NULL, FALSE),
+    (26, NULL, 1, 'Lechuga',               NULL, NULL, NULL, NULL, NULL, FALSE),
+    (27, NULL, 1, 'Huevos',                NULL, NULL, NULL, NULL, NULL, FALSE),
+    (28, NULL, 1, 'Carne vacuna (bife)',    NULL, NULL, NULL, NULL, NULL, FALSE),
+    (29, NULL, 1, 'Papa',                  NULL, NULL, NULL, NULL, NULL, FALSE),
+    (30, NULL, 1, 'Cebolla',              NULL, NULL, NULL, NULL, NULL, FALSE),
+    (31, NULL, 1, 'Ajo',                  NULL, NULL, NULL, NULL, NULL, FALSE),
+    (32, NULL, 1, 'Pan de hamburguesa',    NULL, NULL, NULL, NULL, NULL, FALSE),
+    (33, NULL, 1, 'Fideos secos',          NULL, NULL, NULL, NULL, NULL, FALSE),
+    (34, NULL, 1, 'Albahaca',             NULL, NULL, NULL, NULL, NULL, FALSE),
+    (35, NULL, 1, 'Pimiento rojo',        NULL, NULL, NULL, NULL, NULL, FALSE),
+    (36, NULL, 1, 'Orégano',              NULL, NULL, NULL, NULL, NULL, FALSE),
+    (37, NULL, 1, 'Jamón cocido',          NULL, NULL, NULL, NULL, NULL, FALSE),
 
     -- === INGREDIENTES PREPARADOS (no vendibles, sin carta) ===
-    (38, NULL, 1, 'Salsa de tomate casera', NULL, NULL, NULL, NULL, FALSE),
-    (39, NULL, 1, 'Masa de pizza',          NULL, NULL, NULL, NULL, FALSE),
-    (40, NULL, 1, 'Masa de empanada',       NULL, NULL, NULL, NULL, FALSE),
-    (41, NULL, 1, 'Salsa bechamel',         NULL, NULL, NULL, NULL, FALSE);
+    (38, NULL, 1, 'Salsa de tomate casera', NULL, NULL, NULL, NULL, NULL, FALSE),
+    (39, NULL, 1, 'Masa de pizza',          NULL, NULL, NULL, NULL, NULL, FALSE),
+    (40, NULL, 1, 'Masa de empanada',       NULL, NULL, NULL, NULL, NULL, FALSE),
+    (41, NULL, 1, 'Salsa bechamel',         NULL, NULL, NULL, NULL, NULL, FALSE);
 
 -- ============================================================
 -- CONFIGURACIÓN DE ARTÍCULOS
@@ -414,7 +414,26 @@ INSERT INTO pago (id, cierre_id, metodo_pago_id, total) VALUES
 INSERT INTO comanda (id, mesa_id, pago_id, restaurante_id, estado_comanda_id, cant_comensales, hora_inicio, hora_fin) VALUES
     (1, 3, NULL, 1, 2, 3, NOW() - INTERVAL '25 minutes', NULL),
     (2, 4, NULL, 1, 1, 5, NOW() - INTERVAL '5 minutes', NULL),
-    (3, 1, 1,   1, 3, 2, NOW() - INTERVAL '3 hours', NOW() - INTERVAL '2 hours');
+    (3, 1, 1,   1, 3, 2, NOW() - INTERVAL '3 hours', NOW() - INTERVAL '2 hours'),
+    -- Hoy
+    (4, 2, 1, 1, 4, 2, NOW() - INTERVAL '4 hours', NOW() - INTERVAL '3 hours'),
+    (5, 5, 1, 1, 4, 4, NOW() - INTERVAL '6 hours', NOW() - INTERVAL '4.5 hours'),
+    -- Ayer
+    (6, 6, 1, 1, 4, 3, CURRENT_DATE - INTERVAL '1 day' + TIME '13:00', CURRENT_DATE - INTERVAL '1 day' + TIME '14:30'),
+    (7, 7, 1, 1, 4, 2, CURRENT_DATE - INTERVAL '1 day' + TIME '20:00', CURRENT_DATE - INTERVAL '1 day' + TIME '21:30'),
+    (8, 8, 1, 1, 4, 4, CURRENT_DATE - INTERVAL '1 day' + TIME '21:00', CURRENT_DATE - INTERVAL '1 day' + TIME '22:30'),
+    -- Hace 2 dias
+    (9, 1, 1, 1, 4, 2, CURRENT_DATE - INTERVAL '2 days' + TIME '13:00', CURRENT_DATE - INTERVAL '2 days' + TIME '14:30'),
+    -- Hace 3 dias
+    (10, 2, 1, 1, 4, 4, CURRENT_DATE - INTERVAL '3 days' + TIME '20:00', CURRENT_DATE - INTERVAL '3 days' + TIME '22:00'),
+    (11, 3, 1, 1, 4, 3, CURRENT_DATE - INTERVAL '3 days' + TIME '21:00', CURRENT_DATE - INTERVAL '3 days' + TIME '22:30'),
+    -- Hace 4 dias
+    (12, 4, 1, 1, 4, 2, CURRENT_DATE - INTERVAL '4 days' + TIME '13:30', CURRENT_DATE - INTERVAL '4 days' + TIME '14:45'),
+    -- Hace 5 dias
+    (13, 5, 1, 1, 4, 5, CURRENT_DATE - INTERVAL '5 days' + TIME '21:00', CURRENT_DATE - INTERVAL '5 days' + TIME '23:00'),
+    (14, 6, 1, 1, 4, 2, CURRENT_DATE - INTERVAL '5 days' + TIME '21:30', CURRENT_DATE - INTERVAL '5 days' + TIME '22:45'),
+    -- Hace 6 dias
+    (15, 7, 1, 1, 4, 3, CURRENT_DATE - INTERVAL '6 days' + TIME '13:00', CURRENT_DATE - INTERVAL '6 days' + TIME '14:30');
 
 INSERT INTO articulo_comanda (comanda_id, articulo_id, cantidad, entregado, observaciones_ingrediente, observaciones_generales) VALUES
     (1, 1,  1, FALSE, 'Sin orégano',          NULL),
@@ -430,7 +449,51 @@ INSERT INTO articulo_comanda (comanda_id, articulo_id, cantidad, entregado, obse
     (2, 13, 2, FALSE, NULL,                    NULL),
     (3, 2,  1, TRUE,  NULL,                    NULL),
     (3, 11, 1, TRUE,  'Sin pimienta',          NULL),
-    (3, 16, 2, TRUE,  NULL,                    NULL);
+    (3, 16, 2, TRUE,  NULL,                    NULL),
+    -- C4 (Hoy)
+    (4, 1,  2, TRUE,  NULL, NULL), 
+    (4, 12, 2, TRUE,  NULL, NULL), 
+    -- C5 (Hoy)
+    (5, 3,  2, TRUE,  NULL, NULL), 
+    (5, 4,  2, TRUE,  NULL, NULL), 
+    (5, 14, 4, TRUE,  NULL, NULL), 
+    -- C6 (Ayer)
+    (6, 6,  2, TRUE,  NULL, NULL), 
+    (6, 7,  1, TRUE,  NULL, NULL), 
+    (6, 15, 3, TRUE,  NULL, NULL), 
+    -- C7 (Ayer)
+    (7, 11, 2, TRUE,  NULL, NULL), 
+    (7, 13, 2, TRUE,  NULL, NULL), 
+    -- C8 (Ayer)
+    (8, 1,  2, TRUE,  NULL, NULL), 
+    (8, 2,  1, TRUE,  NULL, NULL), 
+    (8, 14, 4, TRUE,  NULL, NULL), 
+    -- C9 (Hace 2 dias)
+    (9, 4,  2, TRUE,  NULL, NULL), 
+    (9, 9,  1, TRUE,  NULL, NULL), 
+    (9, 12, 2, TRUE,  NULL, NULL), 
+    -- C10 (Hace 3 dias)
+    (10, 6, 2, TRUE,  NULL, NULL), 
+    (10, 3, 2, TRUE,  NULL, NULL), 
+    (10, 15, 4, TRUE, NULL, NULL), 
+    -- C11 (Hace 3 dias)
+    (11, 11, 3, TRUE, NULL, NULL), 
+    (11, 13, 3, TRUE, NULL, NULL), 
+    -- C12 (Hace 4 dias)
+    (12, 8,  2, TRUE, NULL, NULL), 
+    (12, 1,  1, TRUE, NULL, NULL), 
+    (12, 14, 2, TRUE, NULL, NULL), 
+    -- C13 (Hace 5 dias)
+    (13, 3,  3, TRUE, NULL, NULL), 
+    (13, 4,  2, TRUE, NULL, NULL), 
+    (13, 12, 5, TRUE, NULL, NULL), 
+    -- C14 (Hace 5 dias)
+    (14, 7,  2, TRUE, NULL, NULL), 
+    (14, 15, 2, TRUE, NULL, NULL), 
+    -- C15 (Hace 6 dias)
+    (15, 6,  2, TRUE, NULL, NULL), 
+    (15, 10, 1, TRUE, NULL, NULL), 
+    (15, 14, 3, TRUE, NULL, NULL);
 
 -- ============================================================
 -- LLAMADOS
