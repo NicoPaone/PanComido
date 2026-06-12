@@ -7,13 +7,10 @@ import { CartaItem } from '../../../../core/models/domain/carta-item';
   providedIn: 'root',
 })
 export class CartaService {
-
-
   private api = inject(ApiService)
   private endpoint = 'carta'
-  obtenerCarta():Observable<CartaItem[]>{
+
+  obtenerCarta(): Observable<CartaItem[]> {
     return this.api.get<CartaItem[]>(`${this.endpoint}/obtener-articulos`);
   }
-
-  
 }
