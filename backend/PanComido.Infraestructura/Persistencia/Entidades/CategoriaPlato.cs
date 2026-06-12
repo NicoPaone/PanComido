@@ -19,4 +19,7 @@ public partial class CategoriaPlato
 
     [InverseProperty("CategoriaPlato")]
     public virtual ICollection<Plato> Platos { get; set; } = new List<Plato>();
+
+    [InverseProperty("CategoriaPlato")]
+    public virtual ICollection<PorcentajeCategoriaPlato> PorcentajeCategoriaPlatos { get; set; } = new List<PorcentajeCategoriaPlato>();
 }

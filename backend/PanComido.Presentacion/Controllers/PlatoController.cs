@@ -45,10 +45,26 @@ namespace PanComido.Presentacion.Controllers
 
         }
 
+        
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> ObtenerPlatoPorId(int id)
         {
-            int restauranteId = HttpContext.ObtenerRestauranteId();
+            // Si viene autenticado, obtener del context; si no, del query param o valor por defecto
+            int restauranteId = 1; // valor por defecto
+            try
+            {
+                restauranteId = HttpContext.ObtenerRestauranteId();
+            }
+            catch
+            {
+                // Si no hay token válido, intentar obtener del query param
+                if (int.TryParse(HttpContext.Request.Query["restauranteId"], out int queryRestauranteId))
+                {
+                    restauranteId = queryRestauranteId;
+                }
+            }
+
             var platoDominio = await _obtenerPlatoPorIdCasoDeUso.EjecutarAsync(id, restauranteId);
             
             if (platoDominio == null)

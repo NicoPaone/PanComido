@@ -1,0 +1,115 @@
+<div class="card shadow-sm border-0 rounded-3 mb-4">
+  <div class="card-body p-4">
+
+    <div class="d-flex gap-3 align-items-end flex-nowrap">
+      <div class="logo-uploader" (click)="fileInput.click()">
+        @if (previewUrl(); as url) {
+          <img [src]="url" alt="Logo preview" class="img-fluid w-100 h-100" style="object-fit: contain;" />
+          <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1"
+            style="padding: .1rem .35rem; border-radius: 50%; font-size: .75rem; line-height: 1;"
+            (click)="removerImagen(); $event.stopPropagation()">×</button>
+        } @else {
+          <div class="overlay-text">
+            <i class="bi bi-image text-white"></i>
+            <span class="label">Subir imagen</span>
+            <span class="hint">PNG o JPG, máx. 2MB</span>
+          </div>
+        }
+      </div>
+      <input #fileInput type="file" accept="image/png, image/jpeg, image/webp" class="d-none" (change)="onFileSelected($event)" />
+
+      <div style="width: 120px;">
+        <label class="form-label-custom">Color principal</label>
+        <div class="color-swatch-wrap">
+          <input type="color" class="custom-color-input"
+            [value]="datosLocal().colorPrincipal ?? '#000000'"
+            (input)="emitir('colorPrincipal', $any($event.target).value)" />
+        </div>
+      </div>
+      <div style="width: 120px;">
+        <label class="form-label-custom">Color secundario</label>
+        <div class="color-swatch-wrap">
+          <input type="color" class="custom-color-input"
+            [value]="datosLocal().colorSecundario ?? '#000000'"
+            (input)="emitir('colorSecundario', $any($event.target).value)" />
+        </div>
+      </div>
+    </div>
+
+    <hr class="section-divider" />
+
+    <div class="row g-3">
+      <div class="col-12 col-md-7">
+
+        <input type="checkbox" id="font-dd-hack" />
+
+        <label class="form-label-custom" for="font-dd-hack">Familia tipográfica</label>
+
+        <div class="dd-wrapper">
+          <label for="font-dd-hack" class="dd-header">
+            @if (datosLocal().familiaTipograficaId; as fid) {
+              @for (f of familiasTipograficas(); track f.id) {
+                @if (f.id === fid) {
+                  <div>
+                    <div class="sel-title" [style.font-family]="f.tipografiaTitulo + ', sans-serif'">{{ f.tipografiaTitulo }}</div>
+                    <div class="sel-body" [style.font-family]="f.tipografiaCuerpo + ', sans-serif'">{{ f.tipografiaCuerpo }}</div>
+                  </div>
+                }
+              }
+            } @else {
+              <span style="color: #9ca3af; font-size: 0.95rem;">Seleccionar estilo</span>
+            }
+            <i class="bi bi-chevron-down dd-arrow"></i>
+          </label>
+
+          <div class="dd-menu">
+            @for (f of familiasTipograficas(); track f.id) {
+              @if ($first || f.categoria !== familiasTipograficas()[$index - 1].categoria) {
+                <div class="dd-group-header">{{ f.categoria }}</div>
+              }
+
+              <label for="font-dd-hack" class="dd-option"
+                [class.active]="datosLocal().familiaTipograficaId === f.id"
+                [attr.data-id]="f.id"
+                (click)="onCambiarFuente(f.id)">
+                <div class="opt-row">
+                  <div>
+                    <div class="opt-label">TÍTULOS</div>
+                    <div class="opt-title">{{ f.tipografiaTitulo }}</div>
+                  </div>
+                  @if (datosLocal().familiaTipograficaId === f.id) {
+                    <i class="bi bi-check-circle-fill opt-check"></i>
+                  }
+                </div>
+                <div class="opt-label" style="margin-top: 6px;">CUERPO</div>
+                <div class="opt-body">{{ f.tipografiaCuerpo }}</div>
+              </label>
+            }
+          </div>
+        </div>
+
+        <label for="font-dd-hack" class="dd-backdrop"></label>
+
+      </div>
+
+      <div class="col-12 col-md-5"></div>
+    </div>
+
+    <hr class="section-divider" />
+
+    <div class="row g-3">
+      <div class="col-12 col-md-6">
+        <label class="form-label-custom">Nombre del local</label>
+        <input type="text" class="form-control custom-text-input"
+          [value]="datosLocal().nombre"
+          (input)="emitir('nombre', $any($event.target).value)" />
+      </div>
+      <div class="col-12 col-md-6">
+        <label class="form-label-custom">Dirección</label>
+        <input type="text" class="form-control custom-text-input"
+          [value]="datosLocal().direccion" readonly />
+      </div>
+    </div>
+
+  </div>
+</div>

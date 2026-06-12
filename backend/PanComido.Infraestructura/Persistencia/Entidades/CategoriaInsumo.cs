@@ -23,6 +23,9 @@ public partial class CategoriaInsumo
     [InverseProperty("CategoriaInsumo")]
     public virtual ICollection<Insumo> Insumos { get; set; } = new List<Insumo>();
 
+    [InverseProperty("CategoriaInsumo")]
+    public virtual ICollection<PorcentajeCategoriaBebidum> PorcentajeCategoriaBebida { get; set; } = new List<PorcentajeCategoriaBebidum>();
+
     [ForeignKey("CategoriaInsumoId")]
     [InverseProperty("CategoriaInsumos")]
     public virtual ICollection<Proveedor> Proveedors { get; set; } = new List<Proveedor>();

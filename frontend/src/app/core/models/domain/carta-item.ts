@@ -6,4 +6,9 @@ export interface CartaItem {
   costo: number;
   visibleEnCarta: boolean;
   tipoArticulo: 'Plato' | 'Bebida';
+  categoria: string;
+
+  tiempoPreparacionBase?: number;
+
+  restricciones: string[];
 }

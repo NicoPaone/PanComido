@@ -87,4 +87,18 @@ describe('VerCartaComponent', () => {
     component.irAPedido();
     expect(routerMock.navigate).toHaveBeenCalledWith(['/comensal/pedido']);
   });
+
+  it('debería alternar el estado del menú ordenar', () => {
+  expect(component.menuOrdenarAbierto()).toBe(false);
+
+  component.toggleMenuOrdenar();
+
+  expect(component.menuOrdenarAbierto()).toBe(true);
+
+  component.toggleMenuOrdenar();
+
+  expect(component.menuOrdenarAbierto()).toBe(false);
+});
+
+
 });
