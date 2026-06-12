@@ -1,0 +1,29 @@
+.config-section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+.custom-switch .form-check-input {
+  width: 3em;
+  height: 1.5em;
+  cursor: pointer;
+}
+.custom-switch .form-check-input:checked {
+  background-color: var(--status-success);
+  border-color: var(--status-success);
+}
+.custom-switch .form-check-input:focus {
+  box-shadow: none;
+}
+.custom-number-input {
+  border: 1px solid var(--primary-orange);
+  border-radius: 4px;
+  text-align: center;
+  font-weight: 600;
+  width: 70px;
+}
+.custom-number-input:focus {
+  border-color: var(--primary-orange);
+  box-shadow: 0 0 0 0.2rem rgba(240, 143, 26, 0.25);
+}
