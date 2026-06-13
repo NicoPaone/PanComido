@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso;
+using PanComido.Dominio.Constantes;
 using PanComido.Dominio.Entidades;
 using PanComido.Presentacion.DTOs.FamiliaTipografica;
 using PanComido.Presentacion.DTOs.FilaVirtual;
@@ -86,12 +87,24 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPut("actualizar-datos")]
-        public async Task<ActionResult> ActualizarDatosLocal([FromBody] RestauranteRequestDto restauranteRequestDto)
-        {
-            var restauranteId = HttpContext.ObtenerRestauranteId();
-            Restaurante restauranteDatos = _restauranteMapper.aDominio(restauranteRequestDto);
+      public async Task<ActionResult> ActualizarDatosLocal([FromForm] 
+      RestauranteRequestDto restauranteRequestDto,
+           IFormFile? imagen)
+      {
+         var restauranteId = HttpContext.ObtenerRestauranteId();
+         Restaurante restauranteDatos = _restauranteMapper.aDominio(restauranteRequestDto);
 
-            var restauranteActualizado = await _actualizarDatosDelLocalCasoDeUso.EjecutarAsync(restauranteId, restauranteDatos);
+         Stream? stream = imagen?.OpenReadStream();
+         string? nombreArchivo = imagen?.FileName;
+         
+         var restauranteActualizado = await _actualizarDatosDelLocalCasoDeUso
+            .EjecutarAsync(restauranteId, 
+                           restauranteDatos,
+                           RutasCloudinary.SistemaLogos,
+                           stream,
+                           nombreArchivo
+                           );
+
             var dto = _restauranteMapper.aDto(restauranteActualizado);
             return Ok(dto);
         }
