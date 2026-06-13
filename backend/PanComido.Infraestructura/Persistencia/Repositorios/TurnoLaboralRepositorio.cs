@@ -2,11 +2,7 @@
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Infraestructura.Persistencia.Mappers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using EF = PanComido.Infraestructura.Persistencia.Entidades;
 
 namespace PanComido.Infraestructura.Persistencia.Repositorios
 {
@@ -30,8 +26,22 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             foreach (var turno in turnos)
             {
                 var efTurno = efTurnos.FirstOrDefault(t => t.Id == turno.Id);
-                if (efTurno != null)
+                if (efTurno == null)
+                {
+                    efTurno = new EF.TurnoLaboral
+                    {
+                        RestauranteId = restauranteId,
+                        HorarioLaboralInicio = turno.HorarioInicio,
+                        HorarioLaboralFin = turno.HorarioFin,
+                        EsNocturno = turno.EsNocturno
+                    };
+                    await _ctx.TurnoLaborals.AddAsync(efTurno);
+                    efTurnos.Add(efTurno);
+                }
+                else
+                {
                     _turnoLaboralMapper.paraActualizarEntidad(efTurno, turno);
+                }
             }
 
             await _ctx.SaveChangesAsync();
