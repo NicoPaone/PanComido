@@ -27,8 +27,7 @@ namespace PanComido.Presentacion.Mappers
 
                 // Inyectamos la categoria para el filtrado en frontend
                 Categoria = articulo is Plato p ? (p.Categoria ?? "Sin categoria") : (articulo is Insumo i ? (i.Categoria ?? "Sin categoria") : "Sin categoria"),
-                TiempoPreparacionBase = articulo is Plato plato ? plato.TiempoPreparacionBase : default,
-
+                TiempoPreparacionBase = esPlato ? plato.TiempoPreparacionBase : default,
                 Restricciones = articulo is Plato platoConRestricciones ? platoConRestricciones.Restricciones.Select(r => r.Descripcion).ToList(): new List<string>()
             };
         }

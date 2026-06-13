@@ -33,9 +33,9 @@ namespace PanComido.Presentacion.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<LlamadoResponseDto>> CrearLlamado([FromBody] LlamarMozoRequestDto request)
         {
-            // TODO: no agarrar datos del http context para un endpoint publico.
-            var mozoId = HttpContext.ObtenerEmpleadoId();
-            var llamadoGuardado = await _llamarMozoCasoDeUSo.EjecutarAsync(mozoId, 
+           
+            var llamadoGuardado = await _llamarMozoCasoDeUSo.EjecutarAsync(
+               request.restauranteId, 
                 request.MesaId, request.CategoriaLlamadoId, request.Descripcion);
 
             var dto = _llamadoMapper.aDto(llamadoGuardado);
