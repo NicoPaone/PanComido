@@ -43,11 +43,12 @@
 
     <!-- BOTONES -->
     <div class="d-flex flex-column gap-2">
-      <app-boton variante="warning"
-         (clicked)="irAPersonalizar(item, $index)">
+      @if (item.plato.esPlato) {
+      <app-boton variante="warning" (clicked)="irAPersonalizar(item, $index)">
         <span class="material-symbols-outlined">edit</span>
         <span style="margin-left: 8px;">Personalizar</span>
       </app-boton>
+      }
 
       <!-- <app-boton variante="danger" (clicked)="eliminarUno($index)">
         <span class="material-symbols-outlined">remove</span>

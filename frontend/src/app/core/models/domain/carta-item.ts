@@ -1,5 +1,5 @@
 export interface CartaItem {
- // articuloId: number;
+ articuloId: number;
  id: number;
   nombre: string;
   urlImagen: string | null;
@@ -15,6 +15,7 @@ export interface CartaItem {
 
   restricciones: string[];
 
+  esPlato: boolean;
 
   tipoPlato?: string;
   categoriaPlato?: string;
