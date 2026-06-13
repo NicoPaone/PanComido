@@ -33,12 +33,12 @@ INSERT INTO turno_laboral (id, restaurante_id, horario_laboral_inicio, horario_l
 -- ============================================================
 
 INSERT INTO empleado (id, restaurante_id, nombre, email, contrasena, estado, eliminado) VALUES
-    (1, 1, 'Carlos López',    'carlos@pancomido.com',  '$2b$10$hash_simulado_gerente',  'activo',   FALSE),
-    (2, 1, 'Cocina',          'cocina@pancomido.com',  '$2b$10$hash_simulado_cocina1',  'activo',   FALSE),
-    (3, 1, 'Ana Rodríguez',   'ana@pancomido.com',     '$2b$10$hash_simulado_mozo1',    'activo',   FALSE),
-    (4, 1, 'Pedro Martínez',  'pedro@pancomido.com',   '$2b$10$hash_simulado_mozo2',    'activo',   FALSE),
-    (5, 1, 'Laura Fernández', 'laura@pancomido.com',   '$2b$10$hash_simulado_mozo3',    'activo',   FALSE),
-    (6, 1, 'Diego Sánchez',   'diego@pancomido.com',   '$2b$10$hash_simulado_inactivo', 'inactivo', TRUE);
+    (1, 1, 'Carlos López',    'carlos@pancomido.com',  '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',  'activo',   FALSE),
+    (2, 1, 'Cocina',          'cocina@pancomido.com',  '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',  'activo',   FALSE),
+    (3, 1, 'Ana Rodríguez',   'ana@pancomido.com',     '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',    'activo',   FALSE),
+    (4, 1, 'Pedro Martínez',  'pedro@pancomido.com',   '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',    'activo',   FALSE),
+    (5, 1, 'Laura Fernández', 'laura@pancomido.com',   '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',    'activo',   FALSE),
+    (6, 1, 'Diego Sánchez',   'diego@pancomido.com',   '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42', 'inactivo', TRUE);
 
 SELECT setval('empleado_id_seq', (SELECT MAX(id) FROM empleado));
 
@@ -266,38 +266,49 @@ INSERT INTO bodega (id, restaurante_id, tipo_bodega_id, nombre, eliminado) VALUE
 -- ============================================================
 
 INSERT INTO lote (id, insumo_id, bodega_id, nombre, cantidad, fecha_adquisicion, fecha_vencimiento) VALUES
-    (1,  18, 1, 'Harina 000 - Lote Mar/26',         10,   '2026-03-01', '2026-06-15'),
-    (2,  22, 1, 'Aceite oliva - Lote Feb/26',         5,   '2026-02-01', '2026-08-01'),
-    (3,  24, 1, 'Sal fina - Lote Ene/26',             3,   '2026-01-10', '2026-12-01'),
-    (4,  25, 1, 'Pimienta negra - Lote Ene/26',       0.5, '2026-01-10', '2026-12-01'),
-    (5,  32, 1, 'Pan burger - Lote May/26',            20,  '2026-05-25', '2026-07-20'),
-    (6,  33, 1, 'Fideos spaghetti - Lote Ene/26',     3,   '2026-01-15', '2026-05-25'),
-    (7,  36, 1, 'Orégano seco - Lote Mar/26',         0.3, '2026-03-01', '2026-08-15'),
-    (8,  12, 1, 'Coca-Cola 500ml - Pack May/26',      24,  '2026-05-01', NULL),
-    (9,  13, 1, 'Agua mineral 500ml - Pack May/26',   20,  '2026-05-01', NULL),
-    (10, 14, 1, 'Cerveza IPA - Lote Abr/26',          12,  '2026-04-10', '2027-03-01'),
-    (11, 15, 1, 'Malbec Reserva - Lote Mar/26',       6,   '2026-03-01', '2027-01-15'),
-    (12, 16, 1, 'Sprite 500ml - Pack May/26',          18,  '2026-05-01', NULL),
-    (13, 17, 1, 'Fernet 750ml - Lote Abr/26',         4,   '2026-04-15', '2027-06-01'),
-    (14, 19, 2, 'Mozzarella - Lote Abr/26',           3,   '2026-04-15', '2026-07-01'),
-    (15, 19, 2, 'Mozzarella - Lote May/26',           2,   '2026-05-20', '2026-07-20'),
-    (16, 20, 2, 'Tomate perita - Lote May/26',        4,   '2026-05-15', '2026-06-03'),
-    (17, 21, 2, 'Pechuga - Lote May/26 (fresca)',     1.5, '2026-05-22', '2026-06-10'),
-    (18, 23, 2, 'Crema - Lote May/26',                2,   '2026-05-18', '2026-06-20'),
-    (19, 26, 2, 'Lechuga - Lote May/26',              1,   '2026-05-25', '2026-06-01'),
-    (20, 27, 2, 'Huevos - Lote May/26',               12,  '2026-05-20', '2026-05-27'),
-    (21, 29, 2, 'Papa - Lote May/26',                 8,   '2026-05-15', '2026-07-15'),
-    (22, 30, 2, 'Cebolla - Lote May/26',              4,   '2026-05-10', '2026-06-08'),
-    (23, 31, 2, 'Ajo - Lote Abr/26',                  1,   '2026-04-01', '2026-09-01'),
-    (24, 34, 2, 'Albahaca fresca - Lote May/26',      0.2, '2026-05-26', '2026-06-30'),
-    (25, 35, 2, 'Pimiento rojo - Lote May/26',        2,   '2026-05-20', '2026-07-10'),
-    (26, 37, 2, 'Jamón cocido - Lote May/26',         2,   '2026-05-22', '2026-06-12'),
-    (27, 38, 2, 'Salsa tomate - Prep May/26',         3,   '2026-05-25', '2026-06-05'),
-    (28, 39, 2, 'Masa pizza - Prep May/26',           8,   '2026-05-26', '2026-06-04'),
-    (29, 40, 2, 'Masa empanada - Prep May/26',        15,  '2026-05-26', '2026-06-06'),
-    (30, 41, 2, 'Bechamel - Prep May/26',             2,   '2026-05-25', '2026-06-07'),
-    (31, 21, 3, 'Pechuga - Lote May/26 (congelada)',  1.5, '2026-05-22', '2026-06-10'),
-    (32, 28, 3, 'Bife angosto - Lote May/26',         5,   '2026-05-24', '2026-06-25');
+    -- Lotes vigentes a largo plazo (vencen en varios meses)
+    (1,  18, 1, 'Harina 000',          10,   CURRENT_DATE - 30, CURRENT_DATE + 90),
+    (2,  22, 1, 'Aceite oliva',        5,    CURRENT_DATE - 30, CURRENT_DATE + 120),
+    (3,  24, 1, 'Sal fina',            3,    CURRENT_DATE - 60, CURRENT_DATE + 180),
+    (4,  25, 1, 'Pimienta negra',      0.5,  CURRENT_DATE - 60, CURRENT_DATE + 180),
+    (5,  32, 1, 'Pan burger',          20,   CURRENT_DATE - 5,  CURRENT_DATE + 15),
+
+    -- Lote VENCIDO INTENCIONALMENTE (para probar validaciones y mermas)
+    (6,  33, 1, 'Fideos spaghetti (Vencido)', 3, CURRENT_DATE - 60, CURRENT_DATE - 5),
+
+    (7,  36, 1, 'Orégano seco',        0.3,  CURRENT_DATE - 30, CURRENT_DATE + 90),
+    (8,  12, 1, 'Coca-Cola 500ml',     24,   CURRENT_DATE - 10, NULL),
+    (9,  13, 1, 'Agua mineral 500ml',  20,   CURRENT_DATE - 10, NULL),
+    (10, 14, 1, 'Cerveza IPA',         12,   CURRENT_DATE - 15, CURRENT_DATE + 180),
+    (11, 15, 1, 'Malbec Reserva',      6,    CURRENT_DATE - 30, CURRENT_DATE + 300),
+    (12, 16, 1, 'Sprite 500ml',        18,   CURRENT_DATE - 10, NULL),
+    (13, 17, 1, 'Fernet 750ml',        4,    CURRENT_DATE - 20, CURRENT_DATE + 365),
+    (14, 19, 2, 'Mozzarella',          3,    CURRENT_DATE - 15, CURRENT_DATE + 20),
+    (15, 19, 2, 'Mozzarella',          2,    CURRENT_DATE - 5,  CURRENT_DATE + 30),
+    (16, 20, 2, 'Tomate perita',       4,    CURRENT_DATE - 5,  CURRENT_DATE + 10),
+    (17, 21, 2, 'Pechuga (fresca)',    1.5,  CURRENT_DATE - 2,  CURRENT_DATE + 5),
+    (18, 23, 2, 'Crema',               2,    CURRENT_DATE - 5,  CURRENT_DATE + 15),
+    (19, 26, 2, 'Lechuga',             1,    CURRENT_DATE - 2,  CURRENT_DATE + 4),
+
+    -- Lote VENCE HOY (para alertas de uso rápido)
+    (20, 27, 2, 'Huevos (Vence Hoy)',  12,   CURRENT_DATE - 10, CURRENT_DATE),
+
+    (21, 29, 2, 'Papa',                8,    CURRENT_DATE - 10, CURRENT_DATE + 30),
+    (22, 30, 2, 'Cebolla',             4,    CURRENT_DATE - 5,  CURRENT_DATE + 15),
+    (23, 31, 2, 'Ajo',                 1,    CURRENT_DATE - 30, CURRENT_DATE + 60),
+    (24, 34, 2, 'Albahaca fresca',     0.2,  CURRENT_DATE - 1,  CURRENT_DATE + 5),
+    (25, 35, 2, 'Pimiento rojo',       2,    CURRENT_DATE - 5,  CURRENT_DATE + 10),
+    (26, 37, 2, 'Jamón cocido',        2,    CURRENT_DATE - 3,  CURRENT_DATE + 10),
+
+    -- INGREDIENTES PREPARADOS (Siempre vigentes para las pruebas)
+    (27, 38, 2, 'Salsa tomate prep',   3,    CURRENT_DATE - 1,  CURRENT_DATE + 5),
+    (28, 39, 2, 'Masa pizza prep',     8,    CURRENT_DATE - 1,  CURRENT_DATE + 3),
+    (29, 40, 2, 'Masa empanada prep',  15,   CURRENT_DATE - 1,  CURRENT_DATE + 4),
+    (30, 41, 2, 'Bechamel prep',       2,    CURRENT_DATE - 1,  CURRENT_DATE + 4),
+
+    (31, 21, 3, 'Pechuga (congelada)', 1.5,  CURRENT_DATE - 10, CURRENT_DATE + 90),
+    (32, 28, 3, 'Bife angosto',        5,    CURRENT_DATE - 5,  CURRENT_DATE + 15);
+
 
 -- ============================================================
 -- MÉTODOS DE PAGO HABILITADOS

@@ -45,5 +45,15 @@ namespace PanComido.Presentacion.Controllers
             var resultado = await _solicitarPagoEfectivoCasoDeUso.EjecutarAsync(comandaId, restauranteId);
             return Ok(resultado);
         }
+
+        [HttpPost("confirmar-pago-efectivo/{comandaId}")]
+        [Authorize(Roles = "Mozo, Gerente")]
+        public async Task<IActionResult> ConfirmarPagoEfectivo(int comandaId)
+        {
+            var restauranteId = HttpContext.ObtenerRestauranteId();
+            var pagoConfirmado = await _confirmarPagoEfectivoCasoDeUso.EjecutarAsync(comandaId, restauranteId);
+            var dto = _pagoMapper.aDto(pagoConfirmado);
+            return Ok(dto);
+        }
     }
 }

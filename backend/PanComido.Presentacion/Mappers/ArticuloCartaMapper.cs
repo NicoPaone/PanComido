@@ -24,11 +24,17 @@ namespace PanComido.Presentacion.Mappers
 
                 TipoArticulo = esPlato ? "Plato" : "Bebida",
                 Costo = articulo.CostoCalculado,
-
-                // Inyectamos la categoria para el filtrado en frontend
-                Categoria = articulo is Plato p ? (p.Categoria ?? "Sin categoria") : (articulo is Insumo i ? (i.Categoria ?? "Sin categoria") : "Sin categoria"),
+                Categoria = esPlato
+                    ? (plato.Categoria ?? "Sin categoria")
+                    : (esInsumo
+                        ? (insumo.Categoria ?? "Sin categoria")
+                        : "Sin categoria"),
                 TiempoPreparacionBase = esPlato ? plato.TiempoPreparacionBase : default,
-                Restricciones = articulo is Plato platoConRestricciones ? platoConRestricciones.Restricciones.Select(r => r.Descripcion).ToList(): new List<string>()
+                TiempoPreparacionEstimado = esPlato ? plato.TiempoPreparacionEstimado : default,
+
+                Restricciones = esPlato 
+                    ? plato.Restricciones.Select(r => r.Descripcion).ToList() 
+                    : new List<string>()
             };
         }
 
