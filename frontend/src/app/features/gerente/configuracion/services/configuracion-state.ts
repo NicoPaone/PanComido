@@ -19,6 +19,7 @@ export class ConfiguracionState {
   readonly #metodosPago = signal<MetodoPago[]>([]);
   readonly #turnos = signal<TurnoLaboral[]>([]);
   readonly #familiasTipograficas = signal<FamiliaTipografica[]>([]);
+  readonly #archivoLogoPendiente = signal<File | null> (null);
  
   readonly #loading = signal(false);
   readonly #guardando = signal(false);
@@ -84,10 +85,13 @@ export class ConfiguracionState {
       lista.map((t) => (t.id === id ? {...t,...cambios}: t))
     );
   }
+   setArchivoLogo(file: File | null): void {
+        this.#archivoLogoPendiente.set(file);
+      }
 
   guardarTodo(): void{
     const datosLocal = this.#datosLocal();
-
+    const archivo = this.#archivoLogoPendiente();
     const metodosPago = this.#metodosPago();
     const turnos = this.#turnos();
     if(!datosLocal){
@@ -97,9 +101,10 @@ export class ConfiguracionState {
     this.#guardando.set(true);
     this.#error.set(null);
     this.#exito.set(null);
+    console.log("Archivo de img: ",archivo)
 
     forkJoin({
-      datosLocal: this.api.actualizarDatosLocal(datosLocal),
+      datosLocal: this.api.actualizarDatosLocal(datosLocal,archivo),
       metodosPago: this.api.actualizarMetodosPago(metodosPago),
       turnos: this.api.actualizarTurnos(turnos)
 

@@ -23,9 +23,10 @@ export class ConfiguracionService {
     return this.api.get<DatosLocal>(`${this.endpoint}/datos-local`);
   }
 
-  actualizarDatosLocal(data: DatosLocal): Observable<DatosLocal>{
+  actualizarDatosLocal(datos: DatosLocal, archivo: File | null): Observable<DatosLocal>{
+    const formData = datosAFormData(datos, archivo);
     return this.api.put<DatosLocal>(`${this.endpoint}/actualizar-datos`,
-      this.#aRequestDatosLocal(data)
+      formData
     );
   }
   obtenerMetodosPago():Observable<MetodoPago[]>{
@@ -82,3 +83,21 @@ export class ConfiguracionService {
   }
 
 }
+function datosAFormData(datos: DatosLocal, archivo: File | null) {
+  const formData = new FormData();
+  formData.append('Nombre', datos.nombre);
+  formData.append('ColorPrincipal', datos.colorPrincipal || '#000000');
+  if (datos.colorSecundario)
+    formData.append('ColorSecundario', datos.colorSecundario);
+  if (datos.familiaTipograficaId)
+    formData.append('FamiliaTipograficaId', datos.familiaTipograficaId.toString());
+
+  if (datos.imagen) {
+    formData.append('imagen', datos.imagen);
+  }
+  if (archivo) {
+    formData.append('imagen', archivo);
+  }
+  return formData;
+}
+

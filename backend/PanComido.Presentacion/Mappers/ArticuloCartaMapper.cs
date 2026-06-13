@@ -7,6 +7,12 @@ namespace PanComido.Presentacion.Mappers
     {
         public ArticuloCartaResponseDto aDto(Articulo articulo)
         {
+            Plato plato = articulo as Plato;
+            Insumo insumo = articulo as Insumo;
+
+            bool esPlato = plato != null;
+            bool esInsumo = insumo != null;
+
             return new ArticuloCartaResponseDto
             {
                 ArticuloId = articulo.Id,
@@ -14,18 +20,21 @@ namespace PanComido.Presentacion.Mappers
                 UrlImagen = articulo.UrlImagen,
 
                 PrecioVentaFinal = articulo.PrecioVentaFinal ?? 0,
-
                 VisibleEnCarta = articulo.EsVisibleEnCarta,
 
-                TipoArticulo = articulo is Plato ? "Plato" : "Bebida",
-
+                TipoArticulo = esPlato ? "Plato" : "Bebida",
                 Costo = articulo.CostoCalculado,
+                Categoria = esPlato
+                    ? (plato.Categoria ?? "Sin categoria")
+                    : (esInsumo
+                        ? (insumo.Categoria ?? "Sin categoria")
+                        : "Sin categoria"),
+                TiempoPreparacionBase = esPlato ? plato.TiempoPreparacionBase : default,
+                TiempoPreparacionEstimado = esPlato ? plato.TiempoPreparacionEstimado : default,
 
-                // Inyectamos la categoria para el filtrado en frontend
-                Categoria = articulo is Plato p ? (p.Categoria ?? "Sin categoria") : (articulo is Insumo i ? (i.Categoria ?? "Sin categoria") : "Sin categoria"),
-                TiempoPreparacionBase = articulo is Plato plato ? plato.TiempoPreparacionBase : default,
-
-                Restricciones = articulo is Plato platoConRestricciones ? platoConRestricciones.Restricciones.Select(r => r.Descripcion).ToList(): new List<string>()
+                Restricciones = esPlato 
+                    ? plato.Restricciones.Select(r => r.Descripcion).ToList() 
+                    : new List<string>()
             };
         }
 

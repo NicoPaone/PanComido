@@ -13,6 +13,7 @@ export interface LlamadoMozo {
   mesaId: number;
   categoriaLlamadoId: number;
   descripcion: string;
+  restauranteId?: number;
 }
 
 export type TipoLlamado = 'admin' | 'cocina' | 'mesa';

@@ -10,13 +10,13 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
     public class ObtenerArticulosParaCrearCartaCasoDeUso
     {
         private readonly IArticuloRepositorio _articuloRepositorio;
-        private readonly ICantidadDeMesasServicio _cantidadDeMesasServicio;
+        private readonly ITiempoDePreparacionPlatoServicio _tiempoDePreparacionPlatoServicio;
 
         public ObtenerArticulosParaCrearCartaCasoDeUso(IArticuloRepositorio articuloRepositorio,
-                                                        ICantidadDeMesasServicio cantidadDeMesasServicio)
+                                                        ITiempoDePreparacionPlatoServicio tiempoDePreparacionPlatoServicio)
         {
             _articuloRepositorio = articuloRepositorio;
-            _cantidadDeMesasServicio = cantidadDeMesasServicio;
+            _tiempoDePreparacionPlatoServicio = tiempoDePreparacionPlatoServicio;
         }
 
         public async Task<List<Articulo>> EjecutarAsync()
@@ -30,7 +30,7 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
                 art.CostoCalculado = CalcularCostoDinamico(art);
                 if (art is Plato plato)
                 {
-                    plato.TiempoPreparacionBase = CalcularTiempoPreparacionDinamico(plato);
+                    plato.TiempoPreparacionEstimado = _tiempoDePreparacionPlatoServicio.CalcularTiempoPreparacionDinamico(plato);
                 }
             }
 
@@ -65,35 +65,6 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
             }
 
             return 0;
-        }
-
-        private int CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(int restauranteId)
-        {
-            int cantidadMesas = _cantidadDeMesasServicio.ObtenerCantidadDeMesasTotal(restauranteId);
-            int mesasOcupadas = _cantidadDeMesasServicio.ObtenerCantidadDeMesasOcupadas(restauranteId);
-
-            if (mesasOcupadas == 0)
-            {
-                return 0;
-            } else if (mesasOcupadas <= cantidadMesas * 0.30)
-            {
-                return 5;
-            } else if (mesasOcupadas <= cantidadMesas * 0.50)
-            {
-                return 10;
-            } else if (mesasOcupadas <= cantidadMesas * 0.70)
-            {
-                return 15;
-            }
-            else
-            {
-                return 20;
-            }
-        }
-
-        private int CalcularTiempoPreparacionDinamico(Plato plato)
-        {
-            return plato.TiempoPreparacionBase + CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(plato.RestauranteId);
         }
     }
 }

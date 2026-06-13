@@ -50,8 +50,10 @@
   <div class="row g-4 align-items-start mb-5">
 
     <div class="col-lg-7">
-      <app-datos-local-form [datosLocal]="datos" [familiasTipograficas]="familiasTipograficas()"
-        (datosLocalChange)="onDatosLocalChange($event)" />
+      <app-datos-local-form [datosLocal]="datos" 
+      [familiasTipograficas]="familiasTipograficas()"
+      (datosLocalChange)="onDatosLocalChange($event)" 
+      (archivoCambiar)="state.setArchivoLogo($event)"  />
     </div>
 
     <div class="col-lg-5 d-flex justify-content-center">
