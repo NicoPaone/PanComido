@@ -2,7 +2,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using PanComido.Dominio.CasosDeUso.ArticuloCasosDeUso;
 using PanComido.Dominio.CasosDeUso.AutenticacionCasosDeUso;
@@ -269,6 +268,7 @@ builder.Services.Configure<GeminiConfiguracion>(builder.Configuration.GetSection
 builder.Services.AddScoped<GeminiResponseMapper>();
 builder.Services.AddScoped<SugerenciaIAEntityMapper>();
 builder.Services.AddScoped<ISugerenciaIARepositorio, SugerenciaIARepositorio>();
+builder.Services.AddScoped<IImagenServicio,CloudinaryImagenServicio>();
 
 builder.Services.AddHttpClient();
 
