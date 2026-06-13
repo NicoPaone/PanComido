@@ -24,7 +24,6 @@ namespace PanComido.Presentacion.Mappers
 
                 TipoArticulo = esPlato ? "Plato" : "Bebida",
                 Costo = articulo.CostoCalculado,
-
                 Categoria = esPlato
                     ? (plato.Categoria ?? "Sin categoria")
                     : (esInsumo
