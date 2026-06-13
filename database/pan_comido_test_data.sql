@@ -410,7 +410,7 @@ INSERT INTO pago (id, cierre_id, metodo_pago_id, total) VALUES
 -- ============================================================
 -- COMANDAS
 -- ============================================================
-
+    -- actualizacion 13/06: se agregaron más comandas para poder mostrar datos reales al dashboard
 INSERT INTO comanda (id, mesa_id, pago_id, restaurante_id, estado_comanda_id, cant_comensales, hora_inicio, hora_fin) VALUES
     (1, 3, NULL, 1, 2, 3, NOW() - INTERVAL '25 minutes', NULL),
     (2, 4, NULL, 1, 1, 5, NOW() - INTERVAL '5 minutes', NULL),

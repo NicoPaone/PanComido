@@ -61,10 +61,7 @@ export const GERENTE_ROUTES: Routes = [
     path: 'avisos',
     loadComponent: () => import('./avisos/pages/avisos').then(m => m.AvisosPage)
   },
-  {
-    path: 'aviso-vencimientos',
-    loadComponent: () => import('./aviso-vencimientos/pages/aviso-vencimientos').then(m => m.VencimientosPage)
-  },
+
   {
     path: 'plato-dia',
     loadComponent: () => import('./plato-dia/pages/plato-dia').then(m => m.PlatoDiaComponent)

@@ -90,7 +90,7 @@ export class AvisosPage implements OnInit {
   }
 
   abrirVencimientos(avisoId: string) {
-    this.router.navigate(['/staff/gerente/aviso-vencimientos'], { queryParams: { avisoId } });
+    this.router.navigate(['/staff/gerente/stock-mercaderia'], { queryParams: { avisoId } });
   }
 
   abrirPedidoStock(aviso: Aviso) {

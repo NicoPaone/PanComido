@@ -235,7 +235,7 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
       carta: ['/staff', 'gerente', 'modificar-carta'],
       proveedores: ['/staff', 'gerente', 'ver-proveedores'],
       pedido: ['/staff', 'gerente', 'realizar-pedido-sugerido'],
-      vencimientos: ['/staff', 'gerente', 'aviso-vencimientos']
+      vencimientos: ['/staff', 'gerente', 'stock-mercaderia']
     };
 
     this.router.navigate(routes[destino]);
