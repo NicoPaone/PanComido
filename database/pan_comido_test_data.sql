@@ -33,12 +33,12 @@ INSERT INTO turno_laboral (id, restaurante_id, horario_laboral_inicio, horario_l
 -- ============================================================
 
 INSERT INTO empleado (id, restaurante_id, nombre, email, contrasena, estado, eliminado) VALUES
-    (1, 1, 'Carlos López',    'carlos@pancomido.com',  '$2b$10$hash_simulado_gerente',  'activo',   FALSE),
-    (2, 1, 'Cocina',          'cocina@pancomido.com',  '$2b$10$hash_simulado_cocina1',  'activo',   FALSE),
-    (3, 1, 'Ana Rodríguez',   'ana@pancomido.com',     '$2b$10$hash_simulado_mozo1',    'activo',   FALSE),
-    (4, 1, 'Pedro Martínez',  'pedro@pancomido.com',   '$2b$10$hash_simulado_mozo2',    'activo',   FALSE),
-    (5, 1, 'Laura Fernández', 'laura@pancomido.com',   '$2b$10$hash_simulado_mozo3',    'activo',   FALSE),
-    (6, 1, 'Diego Sánchez',   'diego@pancomido.com',   '$2b$10$hash_simulado_inactivo', 'inactivo', TRUE);
+    (1, 1, 'Carlos López',    'carlos@pancomido.com',  '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',  'activo',   FALSE),
+    (2, 1, 'Cocina',          'cocina@pancomido.com',  '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',  'activo',   FALSE),
+    (3, 1, 'Ana Rodríguez',   'ana@pancomido.com',     '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',    'activo',   FALSE),
+    (4, 1, 'Pedro Martínez',  'pedro@pancomido.com',   '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',    'activo',   FALSE),
+    (5, 1, 'Laura Fernández', 'laura@pancomido.com',   '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',    'activo',   FALSE),
+    (6, 1, 'Diego Sánchez',   'diego@pancomido.com',   '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42', 'inactivo', TRUE);
 
 SELECT setval('empleado_id_seq', (SELECT MAX(id) FROM empleado));
 
