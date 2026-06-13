@@ -82,31 +82,6 @@ const MOCK_KPIS: DashboardKpi[] = [
   { id: 'merma', label: 'Insumos por vencer', value: '18', detail: 'Mejoro: 3 menos que el periodo anterior', trend: -3.2, tone: 'warning' }
 ];
 
-const MOCK_PLATOS_VENDIDOS: DashboardRankingItem[] = [
-  { nombre: 'Pizza Muzzarella', valor: 286, detalle: '$ 1.287.000' },
-  { nombre: 'Milanesa Napolitana', valor: 241, detalle: '$ 1.205.000' },
-  { nombre: 'Pizza Napolitana', valor: 198, detalle: '$ 990.000' },
-  { nombre: 'Hamburguesa Clásica', valor: 176, detalle: '$ 968.000' },
-  { nombre: 'Papas Fritas', valor: 142, detalle: '$ 355.000' },
-  { nombre: 'Bife de Chorizo', valor: 121, detalle: '$ 1.028.500' },
-  { nombre: 'Spaghetti Bolognesa', valor: 108, detalle: '$ 540.000' },
-  { nombre: 'Empanadas de Carne (x3)', valor: 96, detalle: '$ 288.000' },
-  { nombre: 'Ensalada César', valor: 88, detalle: '$ 352.000' },
-  { nombre: 'Wok de Pollo y Verduras', valor: 73, detalle: '$ 401.500' }
-];
-
-const MOCK_PLATOS_MENOS_VENDIDOS: DashboardRankingItem[] = [
-  { nombre: 'Ensalada Mixta', valor: 12, detalle: '$ 24.000' },
-  { nombre: 'Wok de Pollo y Verduras', valor: 18, detalle: '$ 99.000' },
-  { nombre: 'Empanadas de Carne (x3)', valor: 21, detalle: '$ 63.000' },
-  { nombre: 'Ensalada César', valor: 24, detalle: '$ 96.000' },
-  { nombre: 'Spaghetti Bolognesa', valor: 29, detalle: '$ 145.000' },
-  { nombre: 'Bife de Chorizo', valor: 33, detalle: '$ 280.500' },
-  { nombre: 'Papas Fritas', valor: 37, detalle: '$ 92.500' },
-  { nombre: 'Hamburguesa Clásica', valor: 42, detalle: '$ 231.000' },
-  { nombre: 'Pizza Napolitana', valor: 46, detalle: '$ 230.000' },
-  { nombre: 'Pizza Muzzarella', valor: 51, detalle: '$ 229.500' }
-];
 
 const MOCK_VENTAS_MENSUALES: DashboardVentaMensual[] = [
   { mes: 'Ene', ventas: 820000 },
@@ -168,13 +143,6 @@ const MOCK_VENTAS_DIAS_MES: DashboardVentaDia[] = [
   ventas
 }));
 
-const MOCK_INSUMOS_VENCEN: DashboardInsumoVencimiento[] = [
-  { nombre: 'Crema de leche', fecha: '2026-06-09', cantidad: '3 Lt', criticidad: 'alta', relativo: 'vence mañana' },
-  { nombre: 'Mozzarella', fecha: '2026-06-10', cantidad: '4.75 Kg', criticidad: 'alta', relativo: 'vence en 2 dias' },
-  { nombre: 'Tomate perita', fecha: '2026-06-12', cantidad: '6 Kg', criticidad: 'media', relativo: 'vence en 4 dias' },
-  { nombre: 'Huevos', fecha: '2026-06-14', cantidad: '36 Un', criticidad: 'media', relativo: 'vence en 6 dias' },
-  { nombre: 'Lechuga', fecha: '2026-06-16', cantidad: '2 Kg', criticidad: 'baja', relativo: 'vence en 8 dias' }
-];
 
 const MOCK_FACTURACION_CENTRO: DashboardFacturacionCentro[] = [
   { centro: 'Salon principal', total: 1480000, porcentaje: 52, color: '#02596c' },
@@ -320,8 +288,7 @@ export class DashboardStateService {
 
 
   insumosPorVencer = computed<DashboardInsumoVencimiento[]>(() => {
-    const horizonte = this.horizonteDias();
-    return this._insumosBackend().filter(insumo => this.diasHasta(insumo.fecha) <= horizonte);
+    return this._insumosBackend().filter(insumo => this.diasHasta(insumo.fecha) <= 5);
   });
 
   vencimientosResumen = computed(() => {
@@ -374,7 +341,7 @@ export class DashboardStateService {
       {
         ...MOCK_ATENCION[0],
         titulo: `${criticos} insumos criticos`,
-        detalle: criticos > 0 ? `Vencen dentro de ${this.horizonteDias()} dias` : 'Sin urgencias para este periodo'
+        detalle: criticos > 0 ? `Vencen dentro de 5 dias` : 'Sin urgencias para este periodo'
       },
       {
         ...MOCK_ATENCION[1],
@@ -606,7 +573,7 @@ export class DashboardStateService {
   }
 
   private diasHasta(fecha: string): number {
-    const base = new Date(2026, 5, 8);
+    const base = new Date();
     const target = new Date(`${fecha}T00:00:00`);
     return Math.max(1, Math.round((target.getTime() - base.getTime()) / 86400000));
   }

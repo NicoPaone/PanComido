@@ -21,6 +21,9 @@ export class PlatoDiaComponent implements OnInit {
   readonly platoSeleccionadoParaPrecio = signal<Plato | null>(null);
   readonly precioEspecialInput = signal<number>(0);
 
+  // Estado del bloqueo de vista
+  readonly vistaBloqueada = signal<boolean>(true);
+
   // Estado del Tutorial
   readonly pasoTutorial = signal<number | null>(null);
 

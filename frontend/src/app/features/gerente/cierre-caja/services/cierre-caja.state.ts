@@ -59,6 +59,14 @@ const PASOS_CIERRE: PasoCierreCaja[] = [
   { id: 'confirmacion', label: 'Confirmacion', detalle: 'Listo para cerrar', icono: 'task_alt' }
 ];
 
+const MOCK_MEDIOS_PAGO: MedioPagoCaja[] = [
+  { id: 'efectivo', nombre: 'Efectivo', icono: 'payments', esperado: 45000, operaciones: 12, detalle: 'Cobrado vía Efectivo', tono: 'cash' },
+  { id: 'tarjeta-debito', nombre: 'Tarjeta Débito', icono: 'credit_card', esperado: 120500, operaciones: 25, detalle: 'Cobrado vía Tarjeta Débito', tono: 'card' },
+  { id: 'tarjeta-credito', nombre: 'Tarjeta Crédito', icono: 'credit_card', esperado: 85000, operaciones: 15, detalle: 'Cobrado vía Tarjeta Crédito', tono: 'card' },
+  { id: 'transferencia', nombre: 'Transferencia', icono: 'sync_alt', esperado: 32000, operaciones: 8, detalle: 'Cobrado vía Transferencia', tono: 'transfer' },
+  { id: 'mercado-pago', nombre: 'Mercado Pago', icono: 'account_balance_wallet', esperado: 68000, operaciones: 18, detalle: 'Cobrado vía Mercado Pago', tono: 'wallet' }
+];
+
 @Injectable({ providedIn: 'root' })
 export class CierreCajaStateService {
   private api = inject(ApiService);
@@ -75,9 +83,9 @@ export class CierreCajaStateService {
   private readonly platosMenosVendidosSignal = signal<RankingCajaItem[]>([]);
   private readonly insumosMasUsadosSignal = signal<RankingCajaItem[]>([]);
   private readonly historialCierresSignal = signal<HistorialCierreItem[]>([]);
-  private readonly mediosPagoSignal = signal<MedioPagoCaja[]>([]);
+  private readonly mediosPagoSignal = signal<MedioPagoCaja[]>(MOCK_MEDIOS_PAGO);
 
-  readonly fechaTurno = '10/06/2026';
+  readonly fechaTurno = new Date().toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
   readonly gerente = 'Carlos Lopez';
   readonly turnos = TURNOS;
   readonly pasosCierre = PASOS_CIERRE;
@@ -205,6 +213,9 @@ export class CierreCajaStateService {
       },
       error: () => {
         this.loadingSignal.set(false);
+        // Fallback a los mocks si el backend no está implementado
+        this.mediosPagoSignal.set(MOCK_MEDIOS_PAGO);
+        this.efectivoContadoSignal.set(this.efectivoEsperado());
       }
     });
   }

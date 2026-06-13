@@ -37,7 +37,7 @@ namespace PanComido.Presentacion.Mappers
                 {
                     Nombre = insumo.Nombre,
                     LoteNombre = loteCausante != null ? $"Lote: {loteCausante.Nombre}" : "Lote: General",
-                    Fecha = insumo.Vencimiento.HasValue ? insumo.Vencimiento.Value.ToString("dd/MM") : string.Empty,
+                    Fecha = insumo.Vencimiento.HasValue ? insumo.Vencimiento.Value.ToString("yyyy-MM-dd") : string.Empty,
                     Cantidad = $"{insumo.StockActual} {insumo.UnidadMedida} disponibles",
                     Criticidad = insumo.CriticidadVencimiento.HasValue ? insumo.CriticidadVencimiento.Value.ToString().ToUpper() : "BAJA",
                     Relativo = textoRelativo

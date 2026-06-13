@@ -1,474 +1,490 @@
-<main class="plato-dia-page" [class.tutorial-active]="pasoTutorial() !== null">
-  <!-- Header -->
-  <header class="page-header">
-    <div>
-      <span class="eyebrow">Gerencia</span>
-      <h1>Plato del día</h1>
-      <p class="subtitle">Promocioná platos utilizando los ingredientes próximos a vencer para optimizar stock.</p>
-    </div>
-
-    <div class="header-actions">
-      <div class="wip-notice-banner">
-        <span class="material-symbols-outlined" aria-hidden="true">construction</span>
-        <div>
-          <strong>Próximamente</strong>
-          <span>Disculpá las molestias, PanCo está trabajando en esta vista 👨‍🍳</span>
-        </div>
+<div class="plato-dia-wrapper" style="position: relative; min-height: 100%;">
+  <main class="plato-dia-page" [class.tutorial-active]="pasoTutorial() !== null" [class.view-locked]="vistaBloqueada()">
+    <!-- Header -->
+    <header class="page-header">
+      <div>
+        <span class="eyebrow">Gerencia</span>
+        <h1>Plato del día</h1>
+        <p class="subtitle">Promocioná platos utilizando los ingredientes próximos a vencer para optimizar stock.</p>
       </div>
-      <button type="button" class="ghost-action help-tour-btn" (click)="iniciarTutorial()" title="¿Cómo funciona esta página?">
-        <span class="material-symbols-outlined" aria-hidden="true">help</span>
-        ¿Cómo funciona?
-      </button>
-      <button type="button" class="ghost-action" (click)="logout()">
-        <span class="material-symbols-outlined" aria-hidden="true">logout</span>
-        Cerrar sesión
-      </button>
-      <div class="status-pill">
-        <span class="material-symbols-outlined" aria-hidden="true">verified_user</span>
-        <span>Gerente: {{ authService.obtenerPerfilUsuario().name }}</span>
-      </div>
-    </div>
-  </header>
 
-  <!-- Notificación de Éxito -->
-  @if (state.mensajeExito()) {
-    <div class="toast-notification success" role="alert">
-      <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
-      <span>{{ state.mensajeExito() }}</span>
-    </div>
-  }
-
-  <!-- Cargando -->
-  @if (state.loading() && state.platos().length === 0) {
-    <div class="loading-state">
-      <div class="spinner"></div>
-      <p>Cargando información de inventario y platos...</p>
-    </div>
-  } @else {
-    <div class="panels-grid">
-      
-      <!-- COLUMNA IZQUIERDA: Ingredientes por vencer -->
-      <section class="panel-card ingredients-panel" [class.tutorial-focused]="pasoTutorial() === 0">
-        <div class="panel-header">
-          <span class="material-symbols-outlined icon-alert" aria-hidden="true">inventory_2</span>
+      <div class="header-actions">
+        <div class="wip-notice-banner">
+          <span class="material-symbols-outlined" aria-hidden="true">construction</span>
           <div>
-            <h2>Ingredientes por vencer</h2>
-            <p>Insumos con fecha de expiración crítica en almacén o heladeras.</p>
+            <strong>Próximamente</strong>
+            <span>Disculpá las molestias, PanCo está trabajando en esta vista 👨‍🍳</span>
           </div>
         </div>
+        <button type="button" class="ghost-action help-tour-btn" (click)="iniciarTutorial()" title="¿Cómo funciona esta página?">
+          <span class="material-symbols-outlined" aria-hidden="true">help</span>
+          ¿Cómo funciona?
+        </button>
+        <button type="button" class="ghost-action" (click)="logout()">
+          <span class="material-symbols-outlined" aria-hidden="true">logout</span>
+          Cerrar sesión
+        </button>
+        <div class="status-pill">
+          <span class="material-symbols-outlined" aria-hidden="true">verified_user</span>
+          <span>Gerente: {{ authService.obtenerPerfilUsuario().name }}</span>
+        </div>
+      </div>
+    </header>
 
-        <div class="ingredients-list">
-          @if (state.insumosVencidos().length === 0) {
-            <div class="empty-state">
-              <span class="material-symbols-outlined" aria-hidden="true">done_all</span>
-              <p>No hay ingredientes próximos a vencer en el inventario.</p>
+    <!-- Notificación de Éxito -->
+    @if (state.mensajeExito()) {
+      <div class="toast-notification success" role="alert">
+        <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+        <span>{{ state.mensajeExito() }}</span>
+      </div>
+    }
+
+    <!-- Cargando -->
+    @if (state.loading() && state.platos().length === 0) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando información de inventario y platos...</p>
+      </div>
+    } @else {
+      <div class="panels-grid">
+        
+        <!-- COLUMNA IZQUIERDA: Ingredientes por vencer -->
+        <section class="panel-card ingredients-panel" [class.tutorial-focused]="pasoTutorial() === 0">
+          <div class="panel-header">
+            <span class="material-symbols-outlined icon-alert" aria-hidden="true">inventory_2</span>
+            <div>
+              <h2>Ingredientes por vencer</h2>
+              <p>Insumos con fecha de expiración crítica en almacén o heladeras.</p>
             </div>
-          } @else {
-            @for (insumo of state.insumosVencidos(); track insumo.id) {
-              <article class="ingredient-card" [class]="insumo.estadoUrgencia">
-                <div class="card-left">
-                  <div class="urgency-badge" [class]="insumo.estadoUrgencia">
-                    <span class="material-symbols-outlined" aria-hidden="true">
-                      {{ insumo.estadoUrgencia === 'vencido' || insumo.estadoUrgencia === 'hoy' ? 'warning' : 'info' }}
-                    </span>
-                    <span>{{ insumo.mensajeUrgencia }}</span>
+          </div>
+
+          <div class="ingredients-list">
+            @if (state.insumosVencidos().length === 0) {
+              <div class="empty-state">
+                <span class="material-symbols-outlined" aria-hidden="true">done_all</span>
+                <p>No hay ingredientes próximos a vencer en el inventario.</p>
+              </div>
+            } @else {
+              @for (insumo of state.insumosVencidos(); track insumo.id) {
+                <article class="ingredient-card" [class]="insumo.estadoUrgencia">
+                  <div class="card-left">
+                    <div class="urgency-badge" [class]="insumo.estadoUrgencia">
+                      <span class="material-symbols-outlined" aria-hidden="true">
+                        {{ insumo.estadoUrgencia === 'vencido' || insumo.estadoUrgencia === 'hoy' ? 'warning' : 'info' }}
+                      </span>
+                      <span>{{ insumo.mensajeUrgencia }}</span>
+                    </div>
+                    <h3>{{ insumo.nombre }}</h3>
+                    <small class="stock-label">Stock disponible: <strong>{{ insumo.stockActual }} {{ insumo.unidadMedida }}</strong></small>
                   </div>
-                  <h3>{{ insumo.nombre }}</h3>
-                  <small class="stock-label">Stock disponible: <strong>{{ insumo.stockActual }} {{ insumo.unidadMedida }}</strong></small>
-                </div>
-                <div class="card-right">
-                  <span class="expiry-date">{{ insumo.vencimiento }}</span>
-                </div>
-              </article>
+                  <div class="card-right">
+                    <span class="expiry-date">{{ insumo.vencimiento }}</span>
+                  </div>
+                </article>
+              }
             }
-          }
-        </div>
-      </section>
-
-      <!-- COLUMNA DERECHA: Platos sugeridos -->
-      <section class="panel-card dishes-panel" [class.tutorial-parent-focused]="pasoTutorial() === 1 || pasoTutorial() === 2 || pasoTutorial() === 3">
-        <div class="panel-header">
-          <span class="material-symbols-outlined icon-suggest" aria-hidden="true">auto_awesome</span>
-          <div>
-            <h2>Platos sugeridos</h2>
-            <p>Platos de la carta recomendados porque utilizan los ingredientes por vencer (priorizados por score de impacto).</p>
           </div>
-        </div>
+        </section>
 
-        <!-- Barra de Búsqueda y Filtros -->
-        <div class="dishes-filter-bar" [class.tutorial-focused]="pasoTutorial() === 1">
-          <div class="search-input-wrapper">
-            <span class="material-symbols-outlined search-icon">search</span>
-            <input 
-              type="text" 
-              placeholder="Buscar platos sugeridos por nombre..." 
-              [ngModel]="busquedaNombre()" 
-              (ngModelChange)="busquedaNombre.set($event)">
+        <!-- COLUMNA DERECHA: Platos sugeridos -->
+        <section class="panel-card dishes-panel" [class.tutorial-parent-focused]="pasoTutorial() === 1 || pasoTutorial() === 2 || pasoTutorial() === 3">
+          <div class="panel-header">
+            <span class="material-symbols-outlined icon-suggest" aria-hidden="true">auto_awesome</span>
+            <div>
+              <h2>Platos sugeridos</h2>
+              <p>Platos de la carta recomendados porque utilizan los ingredientes por vencer (priorizados por score de impacto).</p>
+            </div>
           </div>
 
-          <div class="filters-pills-row">
-            <button 
-              type="button" 
-              class="pill-btn" 
-              [class.active]="urgenciaFiltro() === 'todas'" 
-              (click)="urgenciaFiltro.set('todas')">
-              Todos los insumos
-            </button>
-            <button 
-              type="button" 
-              class="pill-btn filter-urgent" 
-              [class.active]="urgenciaFiltro() === 'criticas'" 
-              (click)="urgenciaFiltro.set('criticas')">
-              <span class="material-symbols-outlined font-sm">warning</span>
-              Vencen Hoy / Vencidos
-            </button>
+          <!-- Barra de Búsqueda y Filtros -->
+          <div class="dishes-filter-bar" [class.tutorial-focused]="pasoTutorial() === 1">
+            <div class="search-input-wrapper">
+              <span class="material-symbols-outlined search-icon">search</span>
+              <input 
+                type="text" 
+                placeholder="Buscar platos sugeridos por nombre..." 
+                [ngModel]="busquedaNombre()" 
+                (ngModelChange)="busquedaNombre.set($event)">
+            </div>
 
-            <span class="filter-divider">|</span>
-
-            <button 
-              type="button" 
-              class="pill-btn" 
-              [class.active]="categoriaSeleccionada() === null" 
-              (click)="categoriaSeleccionada.set(null)">
-              Todas las categorías
-            </button>
-            @for (cat of categoriasDisponibles(); track cat) {
+            <div class="filters-pills-row">
               <button 
                 type="button" 
                 class="pill-btn" 
-                [class.active]="categoriaSeleccionada() === cat" 
-                (click)="categoriaSeleccionada.set(cat)">
-                {{ cat }}
+                [class.active]="urgenciaFiltro() === 'todas'" 
+                (click)="urgenciaFiltro.set('todas')">
+                Todos los insumos
               </button>
-            }
-          </div>
-        </div>
-
-        <!-- Barra de Acciones Masivas -->
-        @if (platosSugeridosFiltrados().length > 0) {
-          <div class="bulk-actions-bar" [class.tutorial-focused]="pasoTutorial() === 2">
-            <div class="bulk-info">
-              <span class="material-symbols-outlined">auto_fix_high</span>
-              <span><strong>{{ platosSugeridosFiltrados().length }}</strong> sugerencias encontradas</span>
-            </div>
-            <div class="bulk-controls">
-              <label class="bulk-discount-label">
-                Descuento rápido:
-                <div class="bulk-input-wrapper">
-                  <input 
-                    type="number" 
-                    min="1" 
-                    max="90" 
-                    [ngModel]="descuentoLoteInput()" 
-                    (ngModelChange)="descuentoLoteInput.set($event)">
-                  <span class="pct-symbol">%</span>
-                </div>
-              </label>
-              
               <button 
                 type="button" 
-                class="bulk-apply-btn" 
-                (click)="aplicarDescuentoLote()"
-                title="Aplica descuento a los platos filtrados">
-                Aplicar en Lote
+                class="pill-btn filter-urgent" 
+                [class.active]="urgenciaFiltro() === 'criticas'" 
+                (click)="urgenciaFiltro.set('criticas')">
+                <span class="material-symbols-outlined font-sm">warning</span>
+                Vencen Hoy / Vencidos
               </button>
 
-              @if (totalFiltradosEnCarrito() > 0) {
+              <span class="filter-divider">|</span>
+
+              <button 
+                type="button" 
+                class="pill-btn" 
+                [class.active]="categoriaSeleccionada() === null" 
+                (click)="categoriaSeleccionada.set(null)">
+                Todas las categorías
+              </button>
+              @for (cat of categoriasDisponibles(); track cat) {
                 <button 
                   type="button" 
-                  class="bulk-clear-btn" 
-                  (click)="limpiarDescuentoLote()"
-                  title="Quita la selección en lote">
-                  Limpiar Lote
+                  class="pill-btn" 
+                  [class.active]="categoriaSeleccionada() === cat" 
+                  (click)="categoriaSeleccionada.set(cat)">
+                  {{ cat }}
                 </button>
               }
             </div>
           </div>
-        }
 
-        <div class="dishes-list">
-          @if (platosSugeridosFiltrados().length === 0) {
-            <div class="empty-state">
-              <span class="material-symbols-outlined" aria-hidden="true">restaurant</span>
-              <p>No se encontraron platos con los filtros seleccionados.</p>
-            </div>
-          } @else {
-            @for (plato of platosSugeridosFiltrados(); track plato.id; let idx = $index) {
-              <article class="dish-card" 
-                [class.promoted]="plato.precioPromocional"
-                [class.in-cart]="obtenerPromoEnCarrito(plato.id)"
-                [class.tutorial-focused]="pasoTutorial() === 3 && idx === 0">
-                <div class="dish-visual">
-                  @if (plato.imagen) {
-                    <img [src]="plato.imagen" [alt]="plato.nombre" onerror="this.src='/img/placeholder-dish.png'">
-                  } @else {
-                    <div class="dish-placeholder-icon">
-                      <span class="material-symbols-outlined">restaurant</span>
-                    </div>
-                  }
-                  
-                  @if (plato.precioPromocional) {
-                    <span class="promo-pill confirmed">Plato del Día</span>
-                  } @else if (obtenerPromoEnCarrito(plato.id)) {
-                    <span class="promo-pill draft">En Selección</span>
-                  }
-                </div>
-
-                <div class="dish-info">
-                  <div class="dish-header-row">
-                    <h3>{{ plato.nombre }}</h3>
-                    <div class="dish-price">
-                      @if (plato.precioPromocional) {
-                        <span class="original-price line-through">{{ plato.precioVenta | arsCurrency }}</span>
-                        <strong class="promo-price text-success">{{ plato.precioPromocional | arsCurrency }}</strong>
-                      } @else if (obtenerPromoEnCarrito(plato.id); as promo) {
-                        <span class="original-price line-through">{{ plato.precioVenta | arsCurrency }}</span>
-                        <strong class="promo-price text-info">{{ promo.precioPromocional | arsCurrency }}</strong>
-                      } @else {
-                        <strong>{{ plato.precioVenta | arsCurrency }}</strong>
-                      }
-                    </div>
-                  </div>
-
-                  <p class="description">{{ plato.descripcion }}</p>
-
-                  <div class="used-ingredients">
-                    <span>Aprovecha:</span>
-                    <div class="ingredients-badges">
-                      @for (ing of plato.ingredientesExpiring; track ing.id) {
-                        <span class="badge" [class]="ing.estadoUrgencia">
-                          {{ ing.nombre }}
-                          @if (ing.stockActual !== undefined) {
-                            <span class="stock-badge-val">({{ ing.stockActual }} {{ ing.unidadMedida }})</span>
-                          }
-                        </span>
-                      }
-                    </div>
-                  </div>
-
-                  <div class="dish-footer-actions">
-                    @if (plato.precioPromocional) {
-                      <button type="button" class="action-btn remove-btn" (click)="quitarPromocion(plato.id)">
-                        <span class="material-symbols-outlined" aria-hidden="true">delete_forever</span>
-                        Quitar Promoción
-                      </button>
-                    } @else if (obtenerPromoEnCarrito(plato.id)) {
-                      <div class="in-cart-actions">
-                        <button type="button" class="action-btn edit-btn" (click)="abrirPrecioEspecial(plato)">
-                          <span class="material-symbols-outlined" aria-hidden="true">edit</span>
-                          Editar Precio
-                        </button>
-                        <button type="button" class="action-btn clear-item-btn" (click)="deseleccionarPlato(plato.id)">
-                          <span class="material-symbols-outlined" aria-hidden="true">close</span>
-                          Quitar
-                        </button>
-                      </div>
-                    } @else {
-                      <button type="button" class="action-btn select-btn" (click)="abrirPrecioEspecial(plato)">
-                        <span class="material-symbols-outlined" aria-hidden="true">task_alt</span>
-                        Seleccionar
-                      </button>
-                    }
-                  </div>
-                </div>
-              </article>
-            }
-          }
-        </div>
-      </section>
-
-    </div>
-
-    <!-- PANEL DE PROMOCIONES SELECCIONADAS -->
-    @if (state.promocionesSeleccionadas().length > 0 || pasoTutorial() === 4) {
-      <section class="promotions-summary-card animate-slide-up" [class.tutorial-focused]="pasoTutorial() === 4">
-        <div class="summary-header">
-          <span class="material-symbols-outlined text-success">shopping_cart</span>
-          <div>
-            <h3>Promociones a Confirmar</h3>
-            <p>Revisá los precios especiales configurados antes de guardarlos en el menú.</p>
-          </div>
-        </div>
-
-        <div class="summary-list">
-          @if (state.promocionesSeleccionadas().length === 0) {
-            <!-- Item de demostración para el tutorial -->
-            <div class="summary-item demo-tutorial-item">
-              <div class="item-left">
-                <strong>[Plato de Ejemplo]</strong>
-                <span class="prices">
-                  Carta: <span class="line-through">$5.000</span> &rarr;
-                  Promo: <span class="text-success fw-bold">$4.000</span>
-                </span>
+          <!-- Barra de Acciones Masivas -->
+          @if (platosSugeridosFiltrados().length > 0) {
+            <div class="bulk-actions-bar" [class.tutorial-focused]="pasoTutorial() === 2">
+              <div class="bulk-info">
+                <span class="material-symbols-outlined">auto_fix_high</span>
+                <span><strong>{{ platosSugeridosFiltrados().length }}</strong> sugerencias encontradas</span>
               </div>
-            </div>
-          } @else {
-            @for (promo of state.promocionesSeleccionadas(); track promo.platoId) {
-            <div class="summary-item">
-              <div class="item-left">
-                <strong>{{ promo.nombre }}</strong>
-                <span class="prices">
-                  Carta: <span class="line-through">{{ promo.precioOriginal | arsCurrency }}</span> &rarr;
-                  Promo: <span class="text-success fw-bold">{{ promo.precioPromocional | arsCurrency }}</span>
-                </span>
-              </div>
-              <button type="button" class="icon-remove-btn" (click)="deseleccionarPlato(promo.platoId)" title="Quitar selección">
-                <span class="material-symbols-outlined">close</span>
-              </button>
-            </div>
-          }
-        }
-        </div>
-
-        <div class="summary-actions">
-          <button type="button" class="primary-action" [disabled]="state.loading() && pasoTutorial() === null" (click)="confirmarPlatosDia()">
-            @if (state.loading()) {
-              <div class="spinner-small"></div>
-              <span>Guardando cambios...</span>
-            } @else {
-              <span class="material-symbols-outlined" aria-hidden="true">campaign</span>
-              <span>CONFIRMAR PLATO/S DEL DÍA</span>
-            }
-          </button>
-        </div>
-      </section>
-    }
-  }
-
-  <!-- MODAL DE PRECIO ESPECIAL -->
-  @if (platoSeleccionadoParaPrecio(); as plato) {
-    <div class="modal-overlay" (click)="cancelarPrecioEspecial()">
-      <div class="modal-card" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <span class="material-symbols-outlined text-warning" aria-hidden="true">local_offer</span>
-          <h3>Establecer Precio Especial</h3>
-        </div>
-
-        <div class="modal-body">
-          <p>Definí el precio promocional para <strong>{{ plato.nombre }}</strong>.</p>
-          
-          <div class="price-reference-grid">
-            <div class="price-ref-card original">
-              <span class="ref-label">Precio en Carta</span>
-              <strong class="ref-val">{{ plato.precioVenta | arsCurrency }}</strong>
-            </div>
-            @if (plato.costo > 0) {
-              <div class="price-ref-card cost">
-                <span class="ref-label">Costo de Elaboración</span>
-                <strong class="ref-val">{{ plato.costo | arsCurrency }}</strong>
-              </div>
-            }
-          </div>
-
-          <label class="price-input-label">
-            Precio Especial (Promoción)
-            <div class="input-wrapper">
-              <span class="currency-symbol">$</span>
-              <input 
-                type="number" 
-                inputmode="numeric" 
-                min="1" 
-                [ngModel]="precioEspecialInput()"
-                (ngModelChange)="precioEspecialInput.set($event)"
-                placeholder="Ej: 3500">
-            </div>
-            
-            @if (precioEspecialInput() >= plato.precioVenta) {
-              <span class="input-warning">
-                <span class="material-symbols-outlined font-sm">warning</span>
-                El precio promocional debería ser menor al precio original.
-              </span>
-            }
-            @if (plato.costo > 0 && precioEspecialInput() > 0 && precioEspecialInput() < plato.costo) {
-              <span class="input-danger-alert">
-                <span class="material-symbols-outlined font-sm">error</span>
-                ¡Atención! El precio está por debajo del costo unitario del plato (Pérdida).
-              </span>
-            }
-          </label>
-
-          <!-- Calculador de Margen de Ganancia -->
-          @if (precioEspecialInput() > 0) {
-            <div class="margin-calculator-panel" [class.negative]="plato.costo > 0 && precioEspecialInput() < plato.costo">
-              <div class="margin-header">
-                <span class="material-symbols-outlined">query_stats</span>
-                <span>Margen de Ganancia Estimado</span>
-              </div>
-              <div class="margin-values">
-                <div class="margin-stat">
-                  <span class="stat-label">Beneficio neto:</span>
-                  <strong class="stat-val">
-                    {{ (precioEspecialInput() - plato.costo) | arsCurrency }}
-                  </strong>
-                </div>
-                @if (precioEspecialInput() > 0) {
-                  <div class="margin-stat">
-                    <span class="stat-label">Rentabilidad:</span>
-                    <strong class="stat-val">
-                      {{ (precioEspecialInput() > 0 && plato.costo > 0 ? (((precioEspecialInput() - plato.costo) / precioEspecialInput()) * 100) : 0) | number:'1.0-0' }}%
-                    </strong>
+              <div class="bulk-controls">
+                <label class="bulk-discount-label">
+                  Descuento rápido:
+                  <div class="bulk-input-wrapper">
+                    <input 
+                      type="number" 
+                      min="1" 
+                      max="90" 
+                      [ngModel]="descuentoLoteInput()" 
+                      (ngModelChange)="descuentoLoteInput.set($event)">
+                    <span class="pct-symbol">%</span>
                   </div>
+                </label>
+                
+                <button 
+                  type="button" 
+                  class="bulk-apply-btn" 
+                  (click)="aplicarDescuentoLote()"
+                  title="Aplica descuento a los platos filtrados">
+                  Aplicar en Lote
+                </button>
+
+                @if (totalFiltradosEnCarrito() > 0) {
+                  <button 
+                    type="button" 
+                    class="bulk-clear-btn" 
+                    (click)="limpiarDescuentoLote()"
+                    title="Quita la selección en lote">
+                    Limpiar Lote
+                  </button>
                 }
               </div>
             </div>
           }
+
+          <div class="dishes-list">
+            @if (platosSugeridosFiltrados().length === 0) {
+              <div class="empty-state">
+                <span class="material-symbols-outlined" aria-hidden="true">restaurant</span>
+                <p>No se encontraron platos con los filtros seleccionados.</p>
+              </div>
+            } @else {
+              @for (plato of platosSugeridosFiltrados(); track plato.id; let idx = $index) {
+                <article class="dish-card" 
+                  [class.promoted]="plato.precioPromocional"
+                  [class.in-cart]="obtenerPromoEnCarrito(plato.id)"
+                  [class.tutorial-focused]="pasoTutorial() === 3 && idx === 0">
+                  <div class="dish-visual">
+                    @if (plato.imagen) {
+                      <img [src]="plato.imagen" [alt]="plato.nombre" onerror="this.src='/img/placeholder-dish.png'">
+                    } @else {
+                      <div class="dish-placeholder-icon">
+                        <span class="material-symbols-outlined">restaurant</span>
+                      </div>
+                    }
+                    
+                    @if (plato.precioPromocional) {
+                      <span class="promo-pill confirmed">Plato del Día</span>
+                    } @else if (obtenerPromoEnCarrito(plato.id)) {
+                      <span class="promo-pill draft">En Selección</span>
+                    }
+                  </div>
+
+                  <div class="dish-info">
+                    <div class="dish-header-row">
+                      <h3>{{ plato.nombre }}</h3>
+                      <div class="dish-price">
+                        @if (plato.precioPromocional) {
+                          <span class="original-price line-through">{{ plato.precioVenta | arsCurrency }}</span>
+                          <strong class="promo-price text-success">{{ plato.precioPromocional | arsCurrency }}</strong>
+                        } @else if (obtenerPromoEnCarrito(plato.id); as promo) {
+                          <span class="original-price line-through">{{ plato.precioVenta | arsCurrency }}</span>
+                          <strong class="promo-price text-info">{{ promo.precioPromocional | arsCurrency }}</strong>
+                        } @else {
+                          <strong>{{ plato.precioVenta | arsCurrency }}</strong>
+                        }
+                      </div>
+                    </div>
+
+                    <p class="description">{{ plato.descripcion }}</p>
+
+                    <div class="used-ingredients">
+                      <span>Aprovecha:</span>
+                      <div class="ingredients-badges">
+                        @for (ing of plato.ingredientesExpiring; track ing.id) {
+                          <span class="badge" [class]="ing.estadoUrgencia">
+                            {{ ing.nombre }}
+                            @if (ing.stockActual !== undefined) {
+                              <span class="stock-badge-val">({{ ing.stockActual }} {{ ing.unidadMedida }})</span>
+                            }
+                          </span>
+                        }
+                      </div>
+                    </div>
+
+                    <div class="dish-footer-actions">
+                      @if (plato.precioPromocional) {
+                        <button type="button" class="action-btn remove-btn" (click)="quitarPromocion(plato.id)">
+                          <span class="material-symbols-outlined" aria-hidden="true">delete_forever</span>
+                          Quitar Promoción
+                        </button>
+                      } @else if (obtenerPromoEnCarrito(plato.id)) {
+                        <div class="in-cart-actions">
+                          <button type="button" class="action-btn edit-btn" (click)="abrirPrecioEspecial(plato)">
+                            <span class="material-symbols-outlined" aria-hidden="true">edit</span>
+                            Editar Precio
+                          </button>
+                          <button type="button" class="action-btn clear-item-btn" (click)="deseleccionarPlato(plato.id)">
+                            <span class="material-symbols-outlined" aria-hidden="true">close</span>
+                            Quitar
+                          </button>
+                        </div>
+                      } @else {
+                        <button type="button" class="action-btn select-btn" (click)="abrirPrecioEspecial(plato)">
+                          <span class="material-symbols-outlined" aria-hidden="true">task_alt</span>
+                          Seleccionar
+                        </button>
+                      }
+                    </div>
+                  </div>
+                </article>
+              }
+            }
+          </div>
+        </section>
+
+      </div>
+
+      <!-- PANEL DE PROMOCIONES SELECCIONADAS -->
+      @if (state.promocionesSeleccionadas().length > 0 || pasoTutorial() === 4) {
+        <section class="promotions-summary-card animate-slide-up" [class.tutorial-focused]="pasoTutorial() === 4">
+          <div class="summary-header">
+            <span class="material-symbols-outlined text-success">shopping_cart</span>
+            <div>
+              <h3>Promociones a Confirmar</h3>
+              <p>Revisá los precios especiales configurados antes de guardarlos en el menú.</p>
+            </div>
+          </div>
+
+          <div class="summary-list">
+            @if (state.promocionesSeleccionadas().length === 0) {
+              <!-- Item de demostración para el tutorial -->
+              <div class="summary-item demo-tutorial-item">
+                <div class="item-left">
+                  <strong>[Plato de Ejemplo]</strong>
+                  <span class="prices">
+                    Carta: <span class="line-through">$5.000</span> &rarr;
+                    Promo: <span class="text-success fw-bold">$4.000</span>
+                  </span>
+                </div>
+              </div>
+            } @else {
+              @for (promo of state.promocionesSeleccionadas(); track promo.platoId) {
+              <div class="summary-item">
+                <div class="item-left">
+                  <strong>{{ promo.nombre }}</strong>
+                  <span class="prices">
+                    Carta: <span class="line-through">{{ promo.precioOriginal | arsCurrency }}</span> &rarr;
+                    Promo: <span class="text-success fw-bold">{{ promo.precioPromocional | arsCurrency }}</span>
+                  </span>
+                </div>
+                <button type="button" class="icon-remove-btn" (click)="deseleccionarPlato(promo.platoId)" title="Quitar selección">
+                  <span class="material-symbols-outlined">close</span>
+                </button>
+              </div>
+            }
+          }
+          </div>
+
+          <div class="summary-actions">
+            <button type="button" class="primary-action" [disabled]="state.loading() && pasoTutorial() === null" (click)="confirmarPlatosDia()">
+              @if (state.loading()) {
+                <div class="spinner-small"></div>
+                <span>Guardando cambios...</span>
+              } @else {
+                <span class="material-symbols-outlined" aria-hidden="true">campaign</span>
+                <span>CONFIRMAR PLATO/S DEL DÍA</span>
+              }
+            </button>
+          </div>
+        </section>
+      }
+    }
+
+    <!-- MODAL DE PRECIO ESPECIAL -->
+    @if (platoSeleccionadoParaPrecio(); as plato) {
+      <div class="modal-overlay" (click)="cancelarPrecioEspecial()">
+        <div class="modal-card" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <span class="material-symbols-outlined text-warning" aria-hidden="true">local_offer</span>
+            <h3>Establecer Precio Especial</h3>
+          </div>
+
+          <div class="modal-body">
+            <p>Definí el precio promocional para <strong>{{ plato.nombre }}</strong>.</p>
+            
+            <div class="price-reference-grid">
+              <div class="price-ref-card original">
+                <span class="ref-label">Precio en Carta</span>
+                <strong class="ref-val">{{ plato.precioVenta | arsCurrency }}</strong>
+              </div>
+              @if (plato.costo > 0) {
+                <div class="price-ref-card cost">
+                  <span class="ref-label">Costo de Elaboración</span>
+                  <strong class="ref-val">{{ plato.costo | arsCurrency }}</strong>
+                </div>
+              }
+            </div>
+
+            <label class="price-input-label">
+              Precio Especial (Promoción)
+              <div class="input-wrapper">
+                <span class="currency-symbol">$</span>
+                <input 
+                  type="number" 
+                  inputmode="numeric" 
+                  min="1" 
+                  [ngModel]="precioEspecialInput()"
+                  (ngModelChange)="precioEspecialInput.set($event)"
+                  placeholder="Ej: 3500">
+              </div>
+              
+              @if (precioEspecialInput() >= plato.precioVenta) {
+                <span class="input-warning">
+                  <span class="material-symbols-outlined font-sm">warning</span>
+                  El precio promocional debería ser menor al precio original.
+                </span>
+              }
+              @if (plato.costo > 0 && precioEspecialInput() > 0 && precioEspecialInput() < plato.costo) {
+                <span class="input-danger-alert">
+                  <span class="material-symbols-outlined font-sm">error</span>
+                  ¡Atención! El precio está por debajo del costo unitario del plato (Pérdida).
+                </span>
+              }
+            </label>
+
+            <!-- Calculador de Margen de Ganancia -->
+            @if (precioEspecialInput() > 0) {
+              <div class="margin-calculator-panel" [class.negative]="plato.costo > 0 && precioEspecialInput() < plato.costo">
+                <div class="margin-header">
+                  <span class="material-symbols-outlined">query_stats</span>
+                  <span>Margen de Ganancia Estimado</span>
+                </div>
+                <div class="margin-values">
+                  <div class="margin-stat">
+                    <span class="stat-label">Beneficio neto:</span>
+                    <strong class="stat-val">
+                      {{ (precioEspecialInput() - plato.costo) | arsCurrency }}
+                    </strong>
+                  </div>
+                  @if (precioEspecialInput() > 0) {
+                    <div class="margin-stat">
+                      <span class="stat-label">Rentabilidad:</span>
+                      <strong class="stat-val">
+                        {{ (precioEspecialInput() > 0 && plato.costo > 0 ? (((precioEspecialInput() - plato.costo) / precioEspecialInput()) * 100) : 0) | number:'1.0-0' }}%
+                      </strong>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" (click)="cancelarPrecioEspecial()">Cancelar</button>
+            <button type="button" class="btn-confirm" [disabled]="precioEspecialInput() <= 0" (click)="confirmarPrecioEspecial()">
+              Confirmar Selección
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </main>
+
+  <!-- TOUR INTERACTIVO TUTORIAL -->
+  @if (pasoTutorial() !== null) {
+    <div class="tutorial-backdrop" (click)="cerrarTutorial()"></div>
+
+    <div class="tutorial-dialog-card" [class]="'step-' + pasoTutorial()">
+      <div class="tour-header">
+        <div class="tour-title-group">
+          <span class="material-symbols-outlined tour-icon">explore</span>
+          <h4>{{ pasosTutorial[pasoTutorial()!].titulo }}</h4>
+        </div>
+        <button type="button" class="tour-close-btn" (click)="cerrarTutorial()" title="Cerrar guía">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="tour-body">
+        <p>{{ pasosTutorial[pasoTutorial()!].descripcion }}</p>
+      </div>
+
+      <div class="tour-footer">
+        <div class="tour-progress">
+          @for (s of pasosTutorial; track $index) {
+            <span class="progress-dot" [class.active]="$index === pasoTutorial()"></span>
+          }
         </div>
 
-        <div class="modal-actions">
-          <button type="button" class="btn-cancel" (click)="cancelarPrecioEspecial()">Cancelar</button>
-          <button type="button" class="btn-confirm" [disabled]="precioEspecialInput() <= 0" (click)="confirmarPrecioEspecial()">
-            Confirmar Selección
-          </button>
+        <div class="tour-actions">
+          <button type="button" class="btn-tour-skip" (click)="cerrarTutorial()">Saltar guía</button>
+          
+          <div class="tour-nav-btns">
+            @if (pasoTutorial()! > 0) {
+              <button type="button" class="btn-tour-nav" (click)="anteriorPaso()">
+                <span class="material-symbols-outlined">chevron_left</span>
+                Atrás
+              </button>
+            }
+            <button type="button" class="btn-tour-nav primary" (click)="siguientePaso()">
+              {{ pasoTutorial() === pasosTutorial.length - 1 ? 'Finalizar' : 'Siguiente' }}
+              @if (pasoTutorial()! < pasosTutorial.length - 1) {
+                <span class="material-symbols-outlined">chevron_right</span>
+              }
+            </button>
+          </div>
         </div>
       </div>
     </div>
   }
-</main>
 
-<!-- TOUR INTERACTIVO TUTORIAL -->
-@if (pasoTutorial() !== null) {
-  <div class="tutorial-backdrop" (click)="cerrarTutorial()"></div>
-
-  <div class="tutorial-dialog-card" [class]="'step-' + pasoTutorial()">
-    <div class="tour-header">
-      <div class="tour-title-group">
-        <span class="material-symbols-outlined tour-icon">explore</span>
-        <h4>{{ pasosTutorial[pasoTutorial()!].titulo }}</h4>
+  <!-- OVERLAY EN PROGRESO -->
+  @if (vistaBloqueada()) {
+    <div class="wip-full-overlay">
+      <div class="wip-content">
+        <h2>En Progreso</h2>
+        <p>PanCo está trabajando en esta vista 👷‍♂️🛠️</p>
       </div>
-      <button type="button" class="tour-close-btn" (click)="cerrarTutorial()" title="Cerrar guía">
-        <span class="material-symbols-outlined">close</span>
+      <button type="button" class="unlock-btn" (click)="vistaBloqueada.set(false)">
+        <span class="material-symbols-outlined">lock_open</span>
+        Ver avance
       </button>
     </div>
-
-    <div class="tour-body">
-      <p>{{ pasosTutorial[pasoTutorial()!].descripcion }}</p>
-    </div>
-
-    <div class="tour-footer">
-      <div class="tour-progress">
-        @for (s of pasosTutorial; track $index) {
-          <span class="progress-dot" [class.active]="$index === pasoTutorial()"></span>
-        }
-      </div>
-
-      <div class="tour-actions">
-        <button type="button" class="btn-tour-skip" (click)="cerrarTutorial()">Saltar guía</button>
-        
-        <div class="tour-nav-btns">
-          @if (pasoTutorial()! > 0) {
-            <button type="button" class="btn-tour-nav" (click)="anteriorPaso()">
-              <span class="material-symbols-outlined">chevron_left</span>
-              Atrás
-            </button>
-          }
-          <button type="button" class="btn-tour-nav primary" (click)="siguientePaso()">
-            {{ pasoTutorial() === pasosTutorial.length - 1 ? 'Finalizar' : 'Siguiente' }}
-            @if (pasoTutorial()! < pasosTutorial.length - 1) {
-              <span class="material-symbols-outlined">chevron_right</span>
-            }
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-}
+  }
+</div>

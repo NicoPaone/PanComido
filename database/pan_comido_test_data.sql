@@ -27,8 +27,8 @@ BEGIN;
 INSERT INTO ubicacion (id, direccion, ciudad, codigo_postal) VALUES
     (1, 'Av. Corrientes 1234', 'CABA', '1043');
 
-INSERT INTO restaurante (id, direccion_id, nombre, imagen, color_principal, color_secundario, texto_principal, texto_secundario) VALUES
-    (1, 1, 'Pan Comido', '/img/logo-pan-comido.png', '#FBAC28', '#C5172E', 'Fredoka One', 'Nunito');
+INSERT INTO restaurante (id, direccion_id, familia_tipografica_id, nombre, imagen, color_principal, color_secundario) VALUES
+    (1, 1, 1, 'Pan Comido', '/img/logo-pan-comido.png', '#FBAC28', '#C5172E');
 
 INSERT INTO carta (id, restaurante_id) VALUES
     (1, 1);
@@ -372,12 +372,12 @@ INSERT INTO lote (id, insumo_id, bodega_id, nombre, cantidad, fecha_adquisicion,
     (11, 15, 1, 'Malbec Reserva',      6,    CURRENT_DATE - 30, CURRENT_DATE + 300),
     (12, 16, 1, 'Sprite 500ml',        18,   CURRENT_DATE - 10, NULL),
     (13, 17, 1, 'Fernet 750ml',        4,    CURRENT_DATE - 20, CURRENT_DATE + 365),
-    (14, 19, 2, 'Mozzarella',          3,    CURRENT_DATE - 15, CURRENT_DATE + 20),
-    (15, 19, 2, 'Mozzarella',          2,    CURRENT_DATE - 5,  CURRENT_DATE + 30),
-    (16, 20, 2, 'Tomate perita',       4,    CURRENT_DATE - 5,  CURRENT_DATE + 10),
-    (17, 21, 2, 'Pechuga (fresca)',    1.5,  CURRENT_DATE - 2,  CURRENT_DATE + 5),
-    (18, 23, 2, 'Crema',               2,    CURRENT_DATE - 5,  CURRENT_DATE + 15),
-    (19, 26, 2, 'Lechuga',             1,    CURRENT_DATE - 2,  CURRENT_DATE + 4),
+    (14, 19, 2, 'Mozzarella',          3,    CURRENT_DATE - 15, CURRENT_DATE + 2),
+    (15, 19, 2, 'Mozzarella',          2,    CURRENT_DATE - 5,  CURRENT_DATE + 6),
+    (16, 20, 2, 'Tomate perita',       4,    CURRENT_DATE - 5,  CURRENT_DATE + 4),
+    (17, 21, 2, 'Pechuga (fresca)',    1.5,  CURRENT_DATE - 2,  CURRENT_DATE + 1),
+    (18, 23, 2, 'Crema',               2,    CURRENT_DATE - 5,  CURRENT_DATE + 2),
+    (19, 26, 2, 'Lechuga',             1,    CURRENT_DATE - 2,  CURRENT_DATE + 3),
 
     -- Lote VENCE HOY (para alertas de uso rápido)
     (20, 27, 2, 'Huevos (Vence Hoy)',  12,   CURRENT_DATE - 10, CURRENT_DATE),
