@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, computed, inject, signal, viewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import flatpickr from 'flatpickr';
 import { Instance } from 'flatpickr/dist/types/instance';
 import { CustomLocale } from 'flatpickr/dist/types/locale';
 import { ArsCurrencyPipe } from '../../../../shared/pipes/ars-currency.pipe';
-import { DashboardDestino, DashboardPeriodo, DashboardStateService, DashboardVentaDia } from '../services/dashboard.state';
+import { DashboardStateService } from '../services/dashboard.state';
+import { DashboardDestino, DashboardPeriodo, DashboardVentaDia } from '../../../../core/models/domain/dashboard';
 
 const SPANISH_LOCALE: CustomLocale = {
   weekdays: {
@@ -31,7 +32,7 @@ const SPANISH_LOCALE: CustomLocale = {
   styleUrls: ['./dashboard.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardPage implements AfterViewInit, OnDestroy {
+export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
   readonly state = inject(DashboardStateService);
   private readonly router = inject(Router);
   private readonly fechaDesdeInput = viewChild<ElementRef<HTMLInputElement>>('fechaDesdeInput');
@@ -44,26 +45,18 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
   readonly calendarOffset = computed(() => {
     const dias = this.state.ventasCalendarioMes();
     if (dias.length === 0) return [];
-    
+
     const primeraFechaStr = dias[0].fecha;
     const partes = primeraFechaStr.split('/');
     if (partes.length !== 3) return [];
     const [dia, mes, anio] = partes.map(Number);
     const fecha = new Date(anio, mes - 1, dia);
-    
+
     const dayOfWeek = fecha.getDay();
     const offset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-    
+
     return Array.from({ length: offset });
   });
-
-  readonly periodos: { label: string; value: DashboardPeriodo }[] = [
-    { label: '1 día', value: '1d' },
-    { label: '3 días', value: '3d' },
-    { label: '1 semana', value: '7d' },
-    { label: '1 mes', value: '30d' },
-    { label: '1 año', value: '365d' }
-  ];
 
   readonly mayorVenta = computed(() => {
     return Math.max(...this.state.platosMasVendidos().map(item => item.valor));
@@ -84,6 +77,20 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
     if (dias.length === 0) return 0;
     return Math.round(dias.reduce((total, dia) => total + dia.ventas, 0) / dias.length);
   });
+
+
+  readonly periodos: { label: string; value: DashboardPeriodo }[] = [
+    { label: '1 día', value: '1d' },
+    { label: '3 días', value: '3d' },
+    { label: '1 semana', value: '7d' },
+    { label: '1 mes', value: '30d' },
+    { label: '1 año', value: '365d' }
+  ];
+
+  ngOnInit(): void {
+    // Cargar los datos iniciales
+    this.state.cargarDatos();
+  }
 
   ngAfterViewInit(): void {
     const baseOptions = {
@@ -124,7 +131,6 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
 
   setPeriodo(periodo: DashboardPeriodo): void {
     this.state.setPeriodo(periodo);
-    this.diaSeleccionado.set(null);
     if (periodo !== 'custom') {
       this.calendarioDesde?.clear(false);
       this.calendarioHasta?.clear(false);
@@ -153,8 +159,11 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
   }
 
   porcentajeRanking(valor: number): number {
-    return Math.max(8, Math.round((valor / this.mayorVenta()) * 100));
+    const max = Math.max(...this.state.platosMasVendidos().map(item => item.valor));
+    if (max === 0) return 0;
+    return Math.max(8, Math.round((valor / max) * 100));
   }
+
 
   porcentajeVentaMensual(valor: number): number {
     return Math.max(10, Math.round((valor / this.mayorVentaMensual()) * 100));
@@ -221,12 +230,17 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
   }
 
   irA(destino: DashboardDestino): void {
+    if (destino === 'stock') {
+      this.router.navigate(['/staff', 'gerente', 'stock-mercaderia'], { fragment: 'lotes' });
+      return;
+    }
+
     const routes: Record<DashboardDestino, string[]> = {
-      stock: ['/staff', 'gerente', 'stock-mercaderia'],
+      stock: ['/staff', 'gerente', 'stock-mercaderia'], // Handled above
       carta: ['/staff', 'gerente', 'modificar-carta'],
       proveedores: ['/staff', 'gerente', 'ver-proveedores'],
       pedido: ['/staff', 'gerente', 'realizar-pedido-sugerido'],
-      vencimientos: ['/staff', 'gerente', 'aviso-vencimientos']
+      vencimientos: ['/staff', 'gerente', 'aviso-vencimientos'] // Will be removed, but kept here just in case type checks complain
     };
 
     this.router.navigate(routes[destino]);

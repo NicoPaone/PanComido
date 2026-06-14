@@ -150,10 +150,7 @@ h1 {
   line-height: 1;
 }
 
-.executive-summary {
-  display: grid;
-  grid-template-columns: minmax(300px, 0.82fr) minmax(0, 1.55fr);
-  gap: 1rem;
+.attention-section {
   margin-bottom: 1.25rem;
 }
 
@@ -338,14 +335,10 @@ h1 {
 
 .insight-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(340px, 0.65fr);
+  grid-template-columns: 1fr;
   gap: 1rem;
   align-items: stretch;
   margin-bottom: 1.25rem;
-}
-
-.insight-grid.month-mode {
-  grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.55fr);
 }
 
 .operations-grid {
