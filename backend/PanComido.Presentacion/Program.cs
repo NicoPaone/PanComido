@@ -137,6 +137,7 @@ builder.Services.AddScoped<RestauranteEntityMapper>();
 builder.Services.AddScoped<TurnoLaboralEntityMapper>();
 builder.Services.AddScoped<FilaVirtualEntityMapper>();
 builder.Services.AddScoped<FamiliaTipograficaEntityMapper>();
+builder.Services.AddScoped<PorcentajesCategoriaEntityMapper>();
 
 
 
@@ -163,6 +164,7 @@ builder.Services.AddScoped<TurnoLaboralMapper>();
 builder.Services.AddScoped<FilaVirtualMapper>();
 builder.Services.AddScoped<DashboardMapper>();
 builder.Services.AddScoped<FamiliaTipograficaMapper>();
+builder.Services.AddScoped<PorcentajesGananciaMapper>();
 
 builder.Services.AddScoped<ArticuloMapper>();
 builder.Services.AddScoped<PagoMapper>();
@@ -188,6 +190,7 @@ builder.Services.AddScoped<IRestauranteRepositorio, RestauranteRepositorio>();
 builder.Services.AddScoped<ITurnoLaboralRepositorio, TurnoLaboralRepositorio>();
 builder.Services.AddScoped<IFilaVirtualRepositorio, FilaVirtualRepositorio>();
 builder.Services.AddScoped<IFamiliaTipograficaRepositorio, FamiliaTipograficaRepositorio>();
+builder.Services.AddScoped<IPorcentajesCategoriaRepositorio, PorcentajesGananciaRepositorio>();
 
 
 
@@ -248,6 +251,8 @@ builder.Services.AddScoped<ActualizarTurnosLaboralesCasoDeUso>();
 builder.Services.AddScoped<ObtenerFilaVirtualCasoDeUso>();
 builder.Services.AddScoped<ActualizarFilaVirtualCasoDeUSo>();
 builder.Services.AddScoped<ListarFamiliasTipograficasCasoDeUso>();
+builder.Services.AddScoped<ObtenerPorcentajesCasoDeUso>();
+builder.Services.AddScoped<ActualizarPorcentajesCasoDeUso>();
 
 
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();

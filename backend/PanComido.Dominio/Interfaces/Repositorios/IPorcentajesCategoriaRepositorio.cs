@@ -10,6 +10,6 @@ namespace PanComido.Dominio.Interfaces.Repositorios
     public interface IPorcentajesCategoriaRepositorio
     {
         Task<PorcentajesGanancia> ObtenerPorcentajesGananciaAsync(int restauranteId);
-        Task<List<PorcentajesCategoria>> ActualizarPorcentajesGananciaAsync(int restauranteId, List<PorcentajesCategoria> platos, List<PorcentajesCategoria> bebidas);
+        Task<PorcentajesGanancia> ActualizarPorcentajesGananciaAsync(int restauranteId, List<PorcentajesCategoria> platos, List<PorcentajesCategoria> bebidas);
     }
 }

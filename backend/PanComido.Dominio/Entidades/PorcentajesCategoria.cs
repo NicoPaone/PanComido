@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace PanComido.Dominio.Entidades
 {
-    internal class Porcentajeategoia
+    public class PorcentajesCategoria
     {
+        public int Id { get; set; }
+        public string Descripcion { get; set; }
+        public decimal Porcentaje { get; set; }
     }
 }

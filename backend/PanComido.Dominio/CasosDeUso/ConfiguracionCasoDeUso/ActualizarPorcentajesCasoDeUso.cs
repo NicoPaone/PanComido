@@ -17,7 +17,7 @@ namespace PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso
             _porcentajesCategoriaRepositorio = porcentajesCategoriaRepositorio;
         }
 
-        public async Task<List<PorcentajesGanancia>> EjecutarAsync(int restauranteId, List<PorcentajesCategoria> platos, List<PorcentajesCategoria> bebidas)
+        public async Task<PorcentajesGanancia> EjecutarAsync(int restauranteId, List<PorcentajesCategoria> platos, List<PorcentajesCategoria> bebidas)
         {
             return await _porcentajesCategoriaRepositorio.ActualizarPorcentajesGananciaAsync(restauranteId, platos, bebidas);
         }
