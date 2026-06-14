@@ -335,7 +335,7 @@ h1 {
 
 .insight-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
   align-items: stretch;
   margin-bottom: 1.25rem;
@@ -773,8 +773,10 @@ h1 {
   width: 100%;
   gap: 0.7rem;
   min-height: 300px;
-  padding: 1rem;
+  padding: 1rem 1rem 1.5rem 1rem;
   align-items: end;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .month-column {
@@ -1533,7 +1535,6 @@ h1 {
 @media (max-width: 1180px) {
   .kpi-grid,
   .dashboard-grid,
-  .insight-grid,
   .operations-grid,
   .commercial-reading,
   .executive-summary {
@@ -1632,7 +1633,6 @@ h1 {
 
   .kpi-grid,
   .dashboard-grid,
-  .insight-grid,
   .operations-grid,
   .commercial-reading,
   .executive-summary {

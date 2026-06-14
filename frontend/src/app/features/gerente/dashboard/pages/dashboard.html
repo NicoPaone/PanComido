@@ -192,7 +192,7 @@
         <div
           class="monthly-chart"
           aria-label="Ventas mensuales"
-          [style.grid-template-columns]="'repeat(' + state.ventasMensuales().length + ', minmax(0, 1fr))'">
+          [style.grid-template-columns]="'repeat(' + state.ventasMensuales().length + ', minmax(60px, 1fr))'">
           @for (item of state.ventasMensuales(); track item.mes) {
             <div class="month-column">
               <div class="bar-track">
