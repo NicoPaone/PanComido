@@ -163,9 +163,9 @@ builder.Services.AddScoped<TurnoLaboralMapper>();
 builder.Services.AddScoped<FilaVirtualMapper>();
 builder.Services.AddScoped<DashboardMapper>();
 builder.Services.AddScoped<FamiliaTipograficaMapper>();
-
 builder.Services.AddScoped<ArticuloMapper>();
 builder.Services.AddScoped<PagoMapper>();
+builder.Services.AddScoped<DatosBienvenidaMesaMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -238,7 +238,7 @@ builder.Services.AddScoped<ModificarProveedorCasoDeUso>();
 builder.Services.AddScoped<EliminarProveedorCasoDeuso>();
 builder.Services.AddScoped<ObtenerProveedorCasoDeUso>();
 builder.Services.AddScoped<ObtenerVencimientosYCriticidadDashboardCasoDeUso>();
-builder.Services.AddScoped<PanComido.Dominio.CasosDeUso.Dashboard.ObtenerRendimientoComercialCasoDeUso>();
+builder.Services.AddScoped<ObtenerRendimientoComercialCasoDeUso>();
 builder.Services.AddScoped<ObtenerMetodosDePagoCasoDeUso>();
 builder.Services.AddScoped<ActualizarMetodosDePagoCasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosDelLocalCasoDeUso>();
@@ -248,8 +248,7 @@ builder.Services.AddScoped<ActualizarTurnosLaboralesCasoDeUso>();
 builder.Services.AddScoped<ObtenerFilaVirtualCasoDeUso>();
 builder.Services.AddScoped<ActualizarFilaVirtualCasoDeUSo>();
 builder.Services.AddScoped<ListarFamiliasTipograficasCasoDeUso>();
-
-
+builder.Services.AddScoped<ObtenerDatosMesaBienvenidaCasoDeUso>();
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
 
 // Servicios
@@ -260,7 +259,6 @@ builder.Services.AddScoped<IGestionStockServicio, GestionStockServicio>();
 builder.Services.AddScoped<IVencimientosProximosInsumosServicio, VencimientosProximosInsumosServicio>();
 builder.Services.AddScoped<ITiempoDePreparacionPlatoServicio, TiempoDePreparacionPlatoServicio>();
 
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 //Servicios externos
 builder.Services.AddScoped<IComandaNotificador, ComandaNotificadorSignalR>();
@@ -269,6 +267,9 @@ builder.Services.Configure<GeminiConfiguracion>(builder.Configuration.GetSection
 builder.Services.AddScoped<GeminiResponseMapper>();
 builder.Services.AddScoped<SugerenciaIAEntityMapper>();
 builder.Services.AddScoped<ISugerenciaIARepositorio, SugerenciaIARepositorio>();
+
+// Excepcion Handler
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddHttpClient();
 
