@@ -6,6 +6,7 @@ using PanComido.Dominio.Entidades;
 using PanComido.Presentacion.DTOs.FamiliaTipografica;
 using PanComido.Presentacion.DTOs.FilaVirtual;
 using PanComido.Presentacion.DTOs.MetodoDePago;
+using PanComido.Presentacion.DTOs.PorcetajesGanancia;
 using PanComido.Presentacion.DTOs.Restaurante;
 using PanComido.Presentacion.DTOs.TurnoLaboral;
 using PanComido.Presentacion.Mappers;
@@ -25,11 +26,14 @@ namespace PanComido.Presentacion.Controllers
         private readonly ObtenerTurnosLaboralesCasoDeUso _obtenerTurnosLaboralesCasoDeUso;
         private readonly ActualizarTurnosLaboralesCasoDeUso _actualizarTurnosLaboralesCasoDeUso;
         private readonly ObtenerFilaVirtualCasoDeUso _obtenerFilaVirtualCasoDeUso;
+        private readonly ObtenerPorcentajesCasoDeUso _obtenerPorcentajesCasoDeUso;
+        private readonly ActualizarPorcentajesCasoDeUso _actualizarPorcentajesCasoDeUso;
         private readonly ActualizarFilaVirtualCasoDeUSo _actualizarFilaVirtualCasoDeUso;
         private readonly ListarFamiliasTipograficasCasoDeUso _listarFamiliasTipograficasCasoDeUso;
         private readonly MetodoDePagoMapper _metodoDePagoMapper;
         private readonly RestauranteMapper _restauranteMapper;
         private readonly TurnoLaboralMapper _turnoLaboralMapper;
+        private readonly PorcentajesGananciaMapper _porcentajesGananciaMapper;
         private readonly FilaVirtualMapper _filaVirtualMapper;
         private readonly FamiliaTipograficaMapper _familiaTipograficaMapper;
 
@@ -42,10 +46,13 @@ namespace PanComido.Presentacion.Controllers
             ActualizarTurnosLaboralesCasoDeUso actualizarTurnosLaboralesCasoDeUso,
             ObtenerFilaVirtualCasoDeUso obtenerFilaVirtualCasoDeUso,
             ActualizarFilaVirtualCasoDeUSo actualizarFilaVirtualCasoDeUSo,
+            ObtenerPorcentajesCasoDeUso obtenerPorcentajesCasoDeUso,
+            ActualizarPorcentajesCasoDeUso actualizarPorcentajesCasoDeUSo,
             ListarFamiliasTipograficasCasoDeUso listarFamiliasTipograficasCasoDeUso,
             MetodoDePagoMapper metodoDePagoMapper,
             RestauranteMapper restauranteMapper,
             TurnoLaboralMapper turnoLaboralMapper,
+            PorcentajesGananciaMapper porcentajesGananciaMapper,
             FilaVirtualMapper filaVirtualMapper,
             FamiliaTipograficaMapper familiaTipograficaMapper)
         {
@@ -55,12 +62,15 @@ namespace PanComido.Presentacion.Controllers
             _actualizarDatosDelLocalCasoDeUso = actualizarDatosDelLocalCasoDeUso;
             _obtenerTurnosLaboralesCasoDeUso = obtenerTurnosLaboralesCasoDeUso;
             _actualizarTurnosLaboralesCasoDeUso = actualizarTurnosLaboralesCasoDeUso;
+            _obtenerPorcentajesCasoDeUso = obtenerPorcentajesCasoDeUso;
+            _actualizarPorcentajesCasoDeUso = actualizarPorcentajesCasoDeUSo;
             _obtenerFilaVirtualCasoDeUso = obtenerFilaVirtualCasoDeUso;
             _actualizarFilaVirtualCasoDeUso = actualizarFilaVirtualCasoDeUSo;
             _listarFamiliasTipograficasCasoDeUso = listarFamiliasTipograficasCasoDeUso;
             _metodoDePagoMapper = metodoDePagoMapper;
             _restauranteMapper = restauranteMapper;
             _turnoLaboralMapper = turnoLaboralMapper;
+            _porcentajesGananciaMapper = porcentajesGananciaMapper;
             _filaVirtualMapper = filaVirtualMapper;
             _familiaTipograficaMapper = familiaTipograficaMapper;
         }
@@ -149,6 +159,28 @@ namespace PanComido.Presentacion.Controllers
             List<TurnoLaboral> turnosLaborales = _turnoLaboralMapper.aListaDominio(turnosLaboralesRequest);
 
             await _actualizarTurnosLaboralesCasoDeUso.EjecutarAsync(restauranteId, turnosLaborales);
+
+            return Ok();
+        }
+
+        [HttpGet("obtener-porcentajes")]
+        public async Task<ActionResult<PorcentajesGananciaResponseDto>> ObtenerPorcentajesGanancia()
+        {
+            var restauranteId = HttpContext.ObtenerRestauranteId();
+
+            var porcentajesGanancia = await _obtenerPorcentajesCasoDeUso.EjecutarAsync(restauranteId);
+
+            var dtos = _porcentajesGananciaMapper.aDto(porcentajesGanancia);
+            return Ok(dtos);
+        }
+
+        [HttpPut("actualizar-porcentajes")]
+        public async Task<ActionResult> ActualizarPorcentajesGanancia([FromBody] PorcentajesGananciaRequestDto porcentajesGananciaRequest)
+        {
+            var restauranteId = HttpContext.ObtenerRestauranteId();
+            PorcentajesGanancia porcentajesGanancia = _porcentajesGananciaMapper.aDominio(porcentajesGananciaRequest);
+
+            await _actualizarPorcentajesCasoDeUso.EjecutarAsync(restauranteId, porcentajesGanancia.Platos, porcentajesGanancia.Bebidas);
 
             return Ok();
         }

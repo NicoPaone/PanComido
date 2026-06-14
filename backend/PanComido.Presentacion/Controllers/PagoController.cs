@@ -35,16 +35,16 @@ namespace PanComido.Presentacion.Controllers
             return Ok(resultado);
         }
 
-        [HttpPost("solicitar-efectivo/{comandaId}/mozo")]
-        [Authorize(Roles = "Mozo, Gerente")]
-        public async Task<IActionResult> SolicitarPagoEfectivoMozo(int comandaId)
-        {
-            // Extraemos el restauranteId de forma segura del token
-            var restauranteId = HttpContext.ObtenerRestauranteId();
+        //[HttpPost("solicitar-efectivo/{comandaId}/mozo")]
+        //[Authorize(Roles = "Mozo, Gerente")]
+        //public async Task<IActionResult> SolicitarPagoEfectivoMozo(int comandaId)
+        //{
+        //    // Extraemos el restauranteId de forma segura del token
+        //    var restauranteId = HttpContext.ObtenerRestauranteId();
 
-            var resultado = await _solicitarPagoEfectivoCasoDeUso.EjecutarAsync(comandaId, restauranteId);
-            return Ok(resultado);
-        }
+        //    var resultado = await _solicitarPagoEfectivoCasoDeUso.EjecutarAsync(comandaId, restauranteId);
+        //    return Ok(resultado);
+        //}
 
         [HttpPost("confirmar-pago-efectivo/{comandaId}")]
         [Authorize(Roles = "Mozo, Gerente")]

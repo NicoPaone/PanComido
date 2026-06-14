@@ -11,3 +11,4 @@ export class PagoService {
     return this.api.post<Llamado>(`pago/solicitar-efectivo/${comandaId}/comensal/${restauranteId}`, {});
   }
 }
+  
