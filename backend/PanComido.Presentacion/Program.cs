@@ -248,7 +248,7 @@ builder.Services.AddScoped<ActualizarDatosDelLocalCasoDeUso>();
 builder.Services.AddScoped<ObtenerTurnosLaboralesCasoDeUso>();
 builder.Services.AddScoped<ActualizarTurnosLaboralesCasoDeUso>();
 builder.Services.AddScoped<ObtenerFilaVirtualCasoDeUso>();
-builder.Services.AddScoped<ActualizarFilaVirtualCasoDeUSo>();
+builder.Services.AddScoped<ActualizarFilaVirtualCasoDeUso>();
 builder.Services.AddScoped<ListarFamiliasTipograficasCasoDeUso>();
 builder.Services.AddScoped<ObtenerPorcentajesCasoDeUso>();
 builder.Services.AddScoped<ActualizarPorcentajesCasoDeUso>();
