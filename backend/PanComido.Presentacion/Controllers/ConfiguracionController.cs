@@ -28,7 +28,7 @@ namespace PanComido.Presentacion.Controllers
         private readonly ObtenerFilaVirtualCasoDeUso _obtenerFilaVirtualCasoDeUso;
         private readonly ObtenerPorcentajesCasoDeUso _obtenerPorcentajesCasoDeUso;
         private readonly ActualizarPorcentajesCasoDeUso _actualizarPorcentajesCasoDeUso;
-        private readonly ActualizarFilaVirtualCasoDeUSo _actualizarFilaVirtualCasoDeUso;
+        private readonly ActualizarFilaVirtualCasoDeUso _actualizarFilaVirtualCasoDeUso;
         private readonly ListarFamiliasTipograficasCasoDeUso _listarFamiliasTipograficasCasoDeUso;
         private readonly MetodoDePagoMapper _metodoDePagoMapper;
         private readonly RestauranteMapper _restauranteMapper;
@@ -45,7 +45,7 @@ namespace PanComido.Presentacion.Controllers
             ObtenerTurnosLaboralesCasoDeUso obtenerTurnosLaboralesCasoDeUso,
             ActualizarTurnosLaboralesCasoDeUso actualizarTurnosLaboralesCasoDeUso,
             ObtenerFilaVirtualCasoDeUso obtenerFilaVirtualCasoDeUso,
-            ActualizarFilaVirtualCasoDeUSo actualizarFilaVirtualCasoDeUSo,
+            ActualizarFilaVirtualCasoDeUso actualizarFilaVirtualCasoDeUSo,
             ObtenerPorcentajesCasoDeUso obtenerPorcentajesCasoDeUso,
             ActualizarPorcentajesCasoDeUso actualizarPorcentajesCasoDeUSo,
             ListarFamiliasTipograficasCasoDeUso listarFamiliasTipograficasCasoDeUso,
