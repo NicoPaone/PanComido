@@ -35,4 +35,28 @@ export class DashboardApiService {
       })
     );
   }
+
+  getResumenOperativo(desde: string, hasta: string): Observable<DashboardResumenOperativoResponse> {
+    const params = new HttpParams()
+      .set('desde', desde)
+      .set('hasta', hasta);
+
+    return this.api.get<DashboardResumenOperativoResponse>('gerente/dashboard/resumen', params);
+  }
+}
+
+export interface VentaAgrupadaDto {
+  etiqueta: string;
+  total: string;
+}
+
+export interface DashboardResumenOperativoResponse {
+  totalVentas: string;
+  totalPedidos: number;
+  ticketPromedio: string;
+  promedioDiarioPedidos: number;
+  variacionVentas: string;
+  variacionPedidos: string;
+  variacionTicket: string;
+  grafico: VentaAgrupadaDto[];
 }

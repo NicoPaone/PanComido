@@ -49,6 +49,10 @@ export const GERENTE_ROUTES: Routes = [
     loadComponent: () => import('./realizar-pedido-sugerido/pages/realizar-pedido-sugerido').then(m => m.RealizarPedidoSugeridoComponent)
   },
   {
+    path: 'caja',
+    loadComponent: () => import('./cierre-caja/pages/cierre-caja').then(m => m.CierreCajaComponent)
+  },
+  {
     path: 'avisos',
     loadComponent: () => import('./avisos/pages/avisos').then(m => m.AvisosPage)
   }

@@ -1,0 +1,541 @@
+<div class="cierre-caja-page p-4">
+  <p style="font-size: 15px; color: rgb(164, 164, 164);" > [Version 2 - desarrollo]</p>
+  <div class="cierre-layout">  
+    <!-- PANEL IZQUIERDO: Control de arqueo y estado de caja -->
+    <app-glass-card class="caja-panel">
+      <div class="panel-header mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        
+        <div>
+          <h1 class="page-title mb-1">Cierre de Caja</h1>
+          <p class="page-subtitle mb-0">Confirma la recaudación al finalizar el turno</p>
+        </div>
+        <div class="shift-selector-wrapper d-flex gap-2">
+          <button 
+            type="button" 
+            class="btn-shift-pill" 
+            [class.active]="state.turnoIdSeleccionado() === 1" 
+            (click)="state.cambiarTurnoId(1)">
+            Turno Mañana
+          </button>
+          <button 
+            type="button" 
+            class="btn-shift-pill" 
+            [class.active]="state.turnoIdSeleccionado() === 3" 
+            (click)="state.cambiarTurnoId(3)">
+            Turno Tarde
+          </button>
+          <button 
+            type="button" 
+            class="btn-shift-pill" 
+            [class.active]="state.turnoIdSeleccionado() === 2" 
+            (click)="state.cambiarTurnoId(2)">
+            Turno Noche
+          </button>
+        </div>
+      </div>
+
+      @if (state.loading()) {
+        <div class="loading-state">
+          <span class="spinner"></span>
+          <p>Cargando información del turno...</p>
+        </div>
+      } @else if (state.datosTurno(); as turno) {
+        <div class="turno-info-strip mb-4">
+          <div class="info-item">
+            <span class="material-symbols-outlined">calendar_today</span>
+            <div>
+              <strong>Fecha del Turno</strong>
+              <span>{{ turno.fecha | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+          <div class="info-item">
+            <span class="material-symbols-outlined">schedule</span>
+            <div>
+              <strong>Turno Activo</strong>
+              <span>{{ turno.nombreTurno }}</span>
+            </div>
+          </div>
+          @if (turno.horario) {
+            <div class="info-item">
+              <span class="material-symbols-outlined">access_time</span>
+              <div>
+                <strong>Franja Horaria</strong>
+                <span>{{ turno.horario }}</span>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Desglose por Medio de Pago -->
+        <h2 class="section-title mb-3">Resumen de Medios de Pago</h2>
+        <div class="desglose-list mb-4">
+          @for (pago of turno.desglosePagos; track pago.metodoPagoId) {
+            <div class="pago-card">
+              <div class="pago-left">
+                <strong>{{ pago.nombre }}</strong>
+                <span>{{ pago.operaciones }} operaciones</span>
+              </div>
+              <div class="pago-right">
+                <span class="pago-esperado">{{ pago.esperado | arsCurrency }}</span>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Formulario de Arqueo Físico (Efectivo) -->
+        <h2 class="section-title mb-3">Arqueo de Efectivo</h2>
+        <div class="arqueo-section p-4 mb-4">
+          <div class="arqueo-grid">
+            <div class="arqueo-field">
+              <label class="form-label" for="efectivo-contado">Efectivo Contado Físico</label>
+              <div class="input-wrapper">
+                <span class="currency-symbol">$</span>
+                <input 
+                  id="efectivo-contado"
+                  type="number" 
+                  class="form-control custom-input" 
+                  placeholder="0.00"
+                  [ngModel]="state.efectivoContado()"
+                  (ngModelChange)="onEfectivoContadoChange($event)">
+              </div>
+            </div>
+
+            <div class="arqueo-field">
+              <label class="form-label">Efectivo Esperado en Sistema</label>
+              <div class="value-read-only">
+                {{ state.efectivoEsperado() | arsCurrency }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Comparativa y Diferencia -->
+          <div class="diferencia-box mt-3" [class]="state.diferencia() === 0 ? 'cuadrada' : (state.diferencia() > 0 ? 'sobrante' : 'faltante')">
+            <div class="diferencia-header">
+              <span>Diferencia</span>
+              <strong class="diferencia-valor">
+                {{ state.diferencia() > 0 ? '+' : '' }}{{ state.diferencia() | arsCurrency }}
+              </strong>
+            </div>
+            <div class="diferencia-status">
+              @if (state.diferencia() === 0) {
+                <span class="status-indicator">La caja está totalmente cuadrada.</span>
+              } @else if (state.diferencia() > 0) {
+                <span class="status-indicator">Existe un sobrante de efectivo de {{ state.diferencia() | arsCurrency }}.</span>
+              } @else {
+                <span class="status-indicator">Existe un faltante de efectivo de {{ (-state.diferencia()) | arsCurrency }}.</span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Observaciones Obligatorias si hay descuadre -->
+        <div class="form-group mb-4">
+          <label class="form-label" for="observaciones">
+            Observaciones 
+            @if (state.diferencia() !== 0) {
+              <strong class="text-danger">* (Obligatorio por descuadre)</strong>
+            } @else {
+              <span class="text-muted">(Opcional)</span>
+            }
+          </label>
+          <textarea 
+            id="observaciones"
+            rows="3" 
+            class="form-control custom-textarea" 
+            placeholder="Ingrese los motivos de la diferencia o notas del turno..."
+            [ngModel]="state.observacion()"
+            (ngModelChange)="onObservacionChange($event)"></textarea>
+        </div>
+
+        <!-- Acciones del Cierre -->
+        <div class="action-footer">
+          <app-boton 
+            label="Confirmar y Cerrar Turno" 
+            variante="primary" 
+            tamanio="lg"
+            [disabled]="state.loading() || (state.diferencia() !== 0 && !state.observacion().trim())"
+            (clicked)="abrirConfirmacion()">
+          </app-boton>
+        </div>
+
+        @if (state.cierreConfirmado()) {
+          <div class="cierre-exitoso-note mt-3 p-3 text-center">
+            <span class="material-symbols-outlined success-icon mb-2">check_circle</span>
+            <p class="mb-2 fw-semibold">¡El Cierre de Caja se confirmó con éxito!</p>
+            <app-boton
+              label="Descargar Reporte PDF"
+              variante="secondary"
+              tamanio="sm"
+              (clicked)="imprimirReporte()">
+            </app-boton>
+          </div>
+        }
+      } @else {
+        <div class="empty-state">
+          <p>No se encontraron datos del turno actual.</p>
+        </div>
+      }
+    </app-glass-card>
+
+    <!-- PANEL DERECHO: Resumen de rendimiento (KPIs) y tabla de historial -->
+    <div class="resumen-kpis-layout">
+      
+      <!-- KPIs del Turno -->
+      @if (state.datosTurno(); as turno) {
+        <app-glass-card class="kpis-panel">
+          <h2 class="section-title mb-4">Rendimiento y Métricas del Turno</h2>
+
+          <div class="kpis-grid">
+            <!-- Cantidad de Comensales -->
+            <div class="kpi-card">
+              <span class="material-symbols-outlined kpi-icon text-teal">groups</span>
+              <div class="kpi-data">
+                <strong>Comensales Asistidos</strong>
+                <span class="kpi-value">{{ turno.rendimientoTurno.cantidadComensales || 0 }}</span>
+              </div>
+            </div>
+
+            <!-- Tiempo Promedio Comandas -->
+            <div class="kpi-card">
+              <span class="material-symbols-outlined kpi-icon text-orange">avg_time</span>
+              <div class="kpi-data">
+                <strong>Tiempo Promedio</strong>
+                <span class="kpi-value">{{ turno.rendimientoTurno.tiempoPromedioComandas || 0 }} min</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ventas de Platos -->
+          <div class="kpi-details-section mt-4">
+            <div class="kpi-column">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h3 class="subsection-title mb-0">Platos Más Vendidos</h3>
+                <button 
+                  type="button" 
+                  class="btn-link-action d-flex align-items-center"
+                  (click)="abrirModalPlatos('mas')">
+                  <span>Ver más</span>
+                </button>
+              </div>
+              <div class="mini-list">
+                @for (plato of (turno.rendimientoTurno.platosMasVendidos | slice:0:2); track plato.nombre) {
+                  <div class="mini-item">
+                    <span class="item-name">{{ plato.nombre }}</span>
+                    <strong class="item-qty">{{ plato.cantidad }} u.</strong>
+                  </div>
+                } @empty {
+                  <p class="no-data">Sin ventas registradas</p>
+                }
+              </div>
+            </div>
+
+            <div class="kpi-column">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h3 class="subsection-title mb-0">Platos Menos Vendidos</h3>
+                <button 
+                  type="button" 
+                  class="btn-link-action d-flex align-items-center"
+                  (click)="abrirModalPlatos('menos')">
+                  <span>Ver más</span>
+                </button>
+              </div>
+              <div class="mini-list">
+                @for (plato of (turno.rendimientoTurno.platosMenosVendidos | slice:0:2); track plato.nombre) {
+                  <div class="mini-item">
+                    <span class="item-name">{{ plato.nombre }}</span>
+                    <strong class="item-qty">{{ plato.cantidad }} u.</strong>
+                  </div>
+                } @empty {
+                  <p class="no-data">Sin ventas registradas</p>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Insumos Más Usados -->
+          <div class="kpi-details-section mt-4">
+            <div class="kpi-column full-width">
+              <h3 class="subsection-title">Insumos Más Usados</h3>
+              <div class="mini-grid">
+                @for (insumo of turno.rendimientoTurno.insumosMasUsados; track insumo.nombre) {
+                  <div class="mini-item">
+                    <span class="item-name">{{ insumo.nombre }}</span>
+                    <strong class="item-qty text-orange">{{ insumo.cantidad }} {{ insumo.unidad }}</strong>
+                  </div>
+                } @empty {
+                  <p class="no-data">Sin insumos registrados</p>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Encuestas de Clientes -->
+          @if (turno.rendimientoTurno.resumenEncuestas; as encuestas) {
+            <div class="encuestas-section mt-4 p-3">
+              <div class="encuestas-header mb-3 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-1">
+                  <span class="material-symbols-outlined">rate_review</span>
+                  <strong>Resumen de Encuestas de Comensales</strong>
+                </div>
+                <button 
+                  type="button" 
+                  class="btn-link-action" 
+                  (click)="abrirEncuestasDetalle()">
+                  Ver más
+                </button>
+              </div>
+              <div class="encuestas-stats mb-3">
+                <div class="stat-pill">
+                  <span>Satisfacción</span>
+                  <strong>★ {{ encuestas.calificacionPromedio }}/5</strong>
+                </div>
+                <div class="stat-pill">
+                  <span>Encuestas Completadas</span>
+                  <strong>{{ encuestas.totalEncuestas }}</strong>
+                </div>
+              </div>
+              @if (encuestas.comentarioDestacado) {
+                <div class="comentario-destacado p-3">
+                  <span class="quote-icon">“</span>
+                  <p>{{ encuestas.comentarioDestacado }}</p>
+                </div>
+              }
+            </div>
+          }
+        </app-glass-card>
+      }
+
+      <!-- Historial de Cierres -->
+      <app-glass-card class="historial-panel">
+        <h2 class="section-title mb-3">Historial de Cierres de Caja</h2>
+        <div class="historial-wrapper">
+          <table class="table-custom">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Turno</th>
+                <th>Total</th>
+                <th>Diferencia</th>
+                <th>Estado</th>
+                <th class="text-end">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (cierre of state.historial(); track cierre.id) {
+                <tr class="table-row-clickable" (click)="abrirDetalleCierre(cierre)">
+                  <td>{{ cierre.fecha | date:'dd/MM/yyyy' }}</td>
+                  <td>{{ cierre.turno }}</td>
+                  <td>{{ cierre.total | arsCurrency }}</td>
+                  <td [class]="cierre.diferencia === 0 ? 'text-success' : (cierre.diferencia > 0 ? 'text-info' : 'text-danger')">
+                    {{ cierre.diferencia > 0 ? '+' : '' }}{{ cierre.diferencia | arsCurrency }}
+                  </td>
+                  <td>
+                    <span class="estado-pill" [class]="getEstadoClase(cierre.estado)">
+                      {{ cierre.estado }}
+                    </span>
+                  </td>
+                  <td class="text-end" (click)="$event.stopPropagation()">
+                    <button 
+                      class="btn-icon-soft" 
+                      title="Imprimir Reporte PDF"
+                      (click)="imprimirReporte(cierre.id)">
+                      <span class="material-symbols-outlined">picture_as_pdf</span>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" class="text-center py-4 text-muted">No se registran cierres históricos.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </app-glass-card>
+    </div>
+
+  </div>
+
+  <!-- MODAL 1: DOBLE CONFIRMACIÓN DEL CIERRE DE CAJA -->
+  @if (state.mostrarConfirmacion()) {
+    <div class="cierre-modal-overlay" (click)="cerrarConfirmacion()">
+      <div class="cierre-modal-card" (click)="$event.stopPropagation()">
+        <div class="cierre-modal-header mb-3">
+          <h3 class="cierre-modal-title">¿Confirmar Cierre de Caja?</h3>
+          <button class="cierre-modal-close" (click)="cerrarConfirmacion()">×</button>
+        </div>
+        <div class="cierre-modal-body mb-4">
+          <p>Estás a punto de registrar y consolidar el cierre para el <strong>{{ state.datosTurno()?.nombreTurno }}</strong>.</p>
+          <div class="summary-details-box p-3 mb-3">
+            <div class="summary-row">
+              <span>Efectivo Físico Contado:</span>
+              <strong>{{ state.efectivoContado() | arsCurrency }}</strong>
+            </div>
+            <div class="summary-row">
+              <span>Efectivo Esperado:</span>
+              <strong>{{ state.efectivoEsperado() | arsCurrency }}</strong>
+            </div>
+            <div class="summary-row border-top pt-2 mt-2">
+              <span>Diferencia resultante:</span>
+              <strong [class]="state.diferencia() === 0 ? 'text-success' : (state.diferencia() > 0 ? 'text-info' : 'text-danger')">
+                {{ state.diferencia() > 0 ? '+' : '' }}{{ state.diferencia() | arsCurrency }}
+              </strong>
+            </div>
+          </div>
+          @if (state.diferencia() !== 0) {
+            <p class="text-warning-custom fs-7"><span class="material-symbols-outlined fs-6 align-middle me-1">warning</span> Al existir diferencia, se registrará la observación obligatoria que ingresaste.</p>
+          }
+          <p class="text-danger fw-bold fs-7">¡Esta acción no se puede deshacer!</p>
+        </div>
+        <div class="cierre-modal-footer d-flex gap-2 justify-content-end">
+          <app-boton label="Cancelar" variante="outline" (clicked)="cerrarConfirmacion()"></app-boton>
+          <app-boton label="Confirmar Cierre" variante="danger" (clicked)="confirmarCierre()"></app-boton>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL 2: DETALLE DE CIERRE HISTÓRICO -->
+  @if (state.cierreDetalle(); as detalle) {
+    <div class="cierre-modal-overlay" (click)="cerrarDetalleCierre()">
+      <div class="cierre-modal-card" (click)="$event.stopPropagation()">
+        <div class="cierre-modal-header mb-3">
+          <h3 class="cierre-modal-title">Detalle Cierre de Caja #{{ detalle.id }}</h3>
+          <button class="cierre-modal-close" (click)="cerrarDetalleCierre()">×</button>
+        </div>
+        <div class="cierre-modal-body mb-4">
+          <div class="summary-details-box p-3 mb-3">
+            <div class="summary-row">
+              <span>Fecha del Cierre:</span>
+              <strong>{{ detalle.fecha | date:'dd/MM/yyyy' }}</strong>
+            </div>
+            <div class="summary-row">
+              <span>Turno Cerrado:</span>
+              <strong>{{ detalle.turno }}</strong>
+            </div>
+            <div class="summary-row">
+              <span>Total Recaudado:</span>
+              <strong>{{ detalle.total | arsCurrency }}</strong>
+            </div>
+            <div class="summary-row border-top pt-2 mt-2">
+              <span>Diferencia:</span>
+              <strong [class]="detalle.diferencia === 0 ? 'text-success' : (detalle.diferencia > 0 ? 'text-info' : 'text-danger')">
+                {{ detalle.diferencia > 0 ? '+' : '' }}{{ detalle.diferencia | arsCurrency }}
+              </strong>
+            </div>
+            <div class="summary-row">
+              <span>Estado de Arqueo:</span>
+              <span class="estado-pill" [class]="getEstadoClase(detalle.estado)">{{ detalle.estado }}</span>
+            </div>
+          </div>
+          
+          <div class="observacion-box">
+            <span class="fs-7 fw-bold text-muted d-block mb-1">Notas y Observaciones del Cierre:</span>
+            <div class="p-3 bg-light rounded text-muted fs-7 font-monospace">
+              {{ detalle.diferencia !== 0 ? 'Faltaron o sobraron fondos al contar el efectivo físico en caja chica según arqueo.' : 'El arqueo finalizó de forma correcta y sin diferencias encontradas.' }}
+            </div>
+          </div>
+        </div>
+        <div class="cierre-modal-footer d-flex gap-2 justify-content-between align-items-center">
+          <app-boton 
+            label="Descargar PDF" 
+            variante="secondary" 
+            tamanio="sm"
+            (clicked)="imprimirReporte(detalle.id)">
+            <span class="material-symbols-outlined fs-6 align-middle me-1">picture_as_pdf</span>
+          </app-boton>
+          <app-boton label="Cerrar Ventana" variante="outline" (clicked)="cerrarDetalleCierre()"></app-boton>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL 3: LISTADO COMPLETO DE PLATOS MAS O MENOS VENDIDOS -->
+  @if (state.modalPlatosTipo(); as tipo) {
+    <div class="cierre-modal-overlay" (click)="cerrarModalPlatos()">
+      <div class="cierre-modal-card" (click)="$event.stopPropagation()">
+        <div class="cierre-modal-header mb-3">
+          <h3 class="cierre-modal-title">
+            {{ tipo === 'mas' ? 'Platos Más Vendidos' : 'Platos Menos Vendidos' }}
+          </h3>
+          <button class="cierre-modal-close" (click)="cerrarModalPlatos()">×</button>
+        </div>
+        <div class="cierre-modal-body mb-4 modal-scrollable-list">
+          <p class="text-muted fs-7 mb-3">Listado completo del rendimiento de platos registrados durante este turno.</p>
+          <div class="detailed-plates-list">
+            @if (tipo === 'mas') {
+              @for (plato of state.datosTurno()?.rendimientoTurno?.platosMasVendidos; track plato.nombre) {
+                <div class="detailed-plate-item p-3 mb-2 d-flex justify-content-between align-items-center">
+                  <div class="plate-info">
+                    <strong class="text-dark d-block">{{ plato.nombre }}</strong>
+                    <span class="text-muted fs-7">Total Facturado: {{ plato.total | arsCurrency }}</span>
+                  </div>
+                  <span class="badge-qty">{{ plato.cantidad }} unidades</span>
+                </div>
+              }
+            } @else {
+              @for (plato of state.datosTurno()?.rendimientoTurno?.platosMenosVendidos; track plato.nombre) {
+                <div class="detailed-plate-item p-3 mb-2 d-flex justify-content-between align-items-center">
+                  <div class="plate-info">
+                    <strong class="text-dark d-block">{{ plato.nombre }}</strong>
+                    <span class="text-muted fs-7">Total Facturado: {{ plato.total | arsCurrency }}</span>
+                  </div>
+                  <span class="badge-qty bg-secondary-light">{{ plato.cantidad }} unidades</span>
+                </div>
+              }
+            }
+          </div>
+        </div>
+        <div class="cierre-modal-footer d-flex justify-content-end">
+          <app-boton label="Cerrar" variante="outline" (clicked)="cerrarModalPlatos()"></app-boton>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL 4: DETALLE COMPLETO DE ENCUESTAS -->
+  @if (state.mostrarEncuestasDetalle()) {
+    <div class="cierre-modal-overlay" (click)="cerrarEncuestasDetalle()">
+      <div class="cierre-modal-card" (click)="$event.stopPropagation()">
+        <div class="cierre-modal-header mb-3">
+          <h3 class="cierre-modal-title">Encuestas de Comensales</h3>
+          <button class="cierre-modal-close" (click)="cerrarEncuestasDetalle()">×</button>
+        </div>
+        <div class="cierre-modal-body mb-4 modal-scrollable-list">
+          <div class="summary-details-box p-3 mb-3 d-flex justify-content-around text-center">
+            <div>
+              <span class="fs-8 text-muted uppercase d-block">Calificación</span>
+              <strong class="fs-4 text-teal">★ {{ state.datosTurno()?.rendimientoTurno?.resumenEncuestas?.calificacionPromedio }}/5</strong>
+            </div>
+            <div class="border-start"></div>
+            <div>
+              <span class="fs-8 text-muted uppercase d-block">Total Recibidas</span>
+              <strong class="fs-4 text-dark">{{ state.datosTurno()?.rendimientoTurno?.resumenEncuestas?.totalEncuestas }}</strong>
+            </div>
+          </div>
+
+          <span class="fs-7 fw-bold text-muted d-block mb-2">Comentarios Recientes:</span>
+          <div class="detailed-comments-list">
+            <div class="comment-item p-3 mb-2 bg-light rounded border-start border-teal">
+              <span class="text-teal fw-bold fs-8 d-block mb-1">Mesa 4 • Excelente</span>
+              <p class="m-0 fs-7 italic text-muted">"{{ state.datosTurno()?.rendimientoTurno?.resumenEncuestas?.comentarioDestacado }}"</p>
+            </div>
+            <div class="comment-item p-3 mb-2 bg-light rounded border-start border-teal">
+              <span class="text-teal fw-bold fs-8 d-block mb-1">Mesa 12 • Muy Bueno</span>
+              <p class="m-0 fs-7 italic text-muted">"La comida estuvo increíble, la milanesa es enorme. Volveremos sin dudas."</p>
+            </div>
+            <div class="comment-item p-3 mb-2 bg-light rounded border-start border-teal">
+              <span class="text-teal fw-bold fs-8 d-block mb-1">Mesa 7 • Bueno</span>
+              <p class="m-0 fs-7 italic text-muted">"Muy rico todo, aunque el postre tardó un poquito más de lo esperado."</p>
+            </div>
+          </div>
+        </div>
+        <div class="cierre-modal-footer d-flex justify-content-end">
+          <app-boton label="Cerrar" variante="outline" (clicked)="cerrarEncuestasDetalle()"></app-boton>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>
+

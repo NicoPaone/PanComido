@@ -4,7 +4,7 @@ import {
   DashboardLecturaComercial, DashboardAtencionItem, DashboardAccionItem, 
   DashboardDestino, DashboardVentaMensual, DashboardVentaDia, DashboardFacturacionCentro 
 } from '../../../../core/models/domain/dashboard';
-import { DashboardApiService } from './dashboard.api';
+import { DashboardApiService, DashboardResumenOperativoResponse } from './dashboard.api';
 
 const MOCK_ACCIONES: DashboardAccionItem[] = [
   { titulo: 'Crear pedido sugerido', detalle: 'Reponer insumos criticos', destino: 'pedido', tono: 'danger', impacto: 'Evita quiebres', prioridad: 1 },
@@ -23,6 +23,7 @@ export class DashboardStateService {
   private _vencimientos = signal<DashboardInsumoVencimiento[]>([]);
   private _platosMasVendidos = signal<DashboardRankingItem[]>([]);
   private _platosMenosVendidos = signal<DashboardRankingItem[]>([]);
+  private _resumen = signal<DashboardResumenOperativoResponse | null>(null);
 
   periodo = this._periodo.asReadonly();
   fechaDesde = this._fechaDesde.asReadonly();
@@ -31,6 +32,11 @@ export class DashboardStateService {
   insumosPorVencer = this._vencimientos.asReadonly();
   platosMasVendidos = this._platosMasVendidos.asReadonly();
   platosMenosVendidos = this._platosMenosVendidos.asReadonly();
+  resumenOperativo = this._resumen.asReadonly();
+
+  variacionVentasEsNegativa = computed(() => this._resumen()?.variacionVentas.startsWith('-') ?? false);
+  variacionPedidosEsNegativa = computed(() => this._resumen()?.variacionPedidos.startsWith('-') ?? false);
+  variacionTicketEsNegativa = computed(() => this._resumen()?.variacionTicket.startsWith('-') ?? false);
 
   vencimientosResumen = computed(() => {
     const insumos = this.insumosPorVencer();
@@ -62,8 +68,18 @@ export class DashboardStateService {
   atencion = computed<DashboardAtencionItem[]>(() => {
     const criticos = this.insumosPorVencer().filter(i => i.criticidad === 'alta').length;
     const platosEnBaja = this.platosMenosVendidosPreview().length;
+    const top = this.platosMasVendidosPreview();
 
     const items: DashboardAtencionItem[] = [];
+    if (top.length > 0) {
+      items.push({
+        titulo: `${top[0].nombre} es tendencia`,
+        detalle: 'Asegura stock de sus ingredientes',
+        accion: 'Ver carta',
+        destino: 'carta',
+        tono: 'info'
+      });
+    }
     if (criticos > 0) {
       items.push({
         titulo: `${criticos} insumos criticos`,
@@ -87,26 +103,70 @@ export class DashboardStateService {
 
   acciones = signal<DashboardAccionItem[]>(MOCK_ACCIONES).asReadonly();
 
-  
-  tituloGrafico = computed(() => this._periodo() === '30d' ? 'Ventas del mes' : 'Tendencia de ventas');
-  subtituloGrafico = computed(() => this._periodo() === '30d' ? 'Mapa de calor por dia' : 'Evolucion del periodo');
+  esModoCalendario = computed(() => {
+    if (this._periodo() === '30d') return true;
+    if (this._periodo() === 'custom' && this.diasPersonalizados() > 7 && this.diasPersonalizados() <= 40) return true;
+    return false;
+  });
+
+  tituloGrafico = computed(() => this.esModoCalendario() ? 'Ventas del mes' : 'Tendencia de ventas');
+  subtituloGrafico = computed(() => this.esModoCalendario() ? 'Mapa de calor por dia' : 'Evolucion del periodo');
 
   ventasMensuales = computed<DashboardVentaMensual[]>(() => {
-    const periodo = this._periodo();
-    if (periodo === '1d') return MOCK_VENTAS_24H;
-    if (periodo === '3d') return MOCK_VENTAS_3D;
-    if (periodo === '7d') return MOCK_VENTAS_7D;
-    if (periodo === '30d') return MOCK_VENTAS_30D;
-    if (periodo === 'custom') return this.ventasPersonalizadas();
-    return MOCK_VENTAS_MENSUALES;
+    const resumen = this._resumen();
+    if (!resumen || !resumen.grafico) return [];
+    return resumen.grafico.map(g => {
+      let etiquetaFormateada = g.etiqueta;
+      const partes = g.etiqueta.split('-');
+      
+      if (partes.length === 3) {
+        // Formato yyyy-MM-dd: obtenemos el día de la semana
+        const date = new Date(parseInt(partes[0], 10), parseInt(partes[1], 10) - 1, parseInt(partes[2], 10));
+        const nombresDias = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'];
+        etiquetaFormateada = nombresDias[date.getDay()];
+      } else if (partes.length === 2) {
+        // Formato yyyy-MM: obtenemos el nombre completo del mes
+        const indexMes = parseInt(partes[1], 10) - 1;
+        const nombresMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        if (indexMes >= 0 && indexMes < 12) {
+          etiquetaFormateada = nombresMeses[indexMes];
+        }
+      }
+      
+      return {
+        mes: etiquetaFormateada,
+        ventas: this.extraerImporte(g.total)
+      };
+    });
   });
 
   ventasCalendarioMes = computed<DashboardVentaDia[]>(() => {
-    const factor = this._periodo() === '30d' ? 1 : Math.max(0.7, Math.min(1.25, this.factorPeriodo() / 4.2));
-    return MOCK_VENTAS_DIAS_MES.map(item => ({
-      ...item,
-      ventas: Math.round(item.ventas * factor)
-    }));
+    const resumen = this._resumen();
+    if (!resumen || !resumen.grafico || !this.esModoCalendario()) return [];
+
+    const { desde, hasta } = this.obtenerRangoFechas();
+    const ventasPorDia = new Map(resumen.grafico.map(g => [g.etiqueta, this.extraerImporte(g.total)]));
+    const resultado: DashboardVentaDia[] = [];
+
+    let actual = new Date(desde);
+    while (actual <= hasta) {
+      const anio = actual.getFullYear();
+      const mes = String(actual.getMonth() + 1).padStart(2, '0');
+      const dia = String(actual.getDate()).padStart(2, '0');
+      
+      const etiqueta = `${anio}-${mes}-${dia}`;
+      const fechaFormatted = `${dia}/${mes}/${anio}`;
+      
+      resultado.push({
+        dia: String(actual.getDate()),
+        fecha: fechaFormatted,
+        ventas: ventasPorDia.get(etiqueta) ?? 0
+      });
+      
+      actual.setDate(actual.getDate() + 1);
+    }
+    
+    return resultado;
   });
 
   maxVentasCalendarioMes = computed(() => {
@@ -127,6 +187,25 @@ export class DashboardStateService {
 
   totalFacturacion = computed(() => {
     return this.facturacionPorCentro().reduce((total, centro) => total + centro.total, 0);
+  });
+
+  diasDelPeriodo = computed(() => {
+    switch (this._periodo()) {
+      case '1d': return 1;
+      case '3d': return 3;
+      case '7d': return 7;
+      case '30d': return 30;
+      case '365d': return 365;
+      case 'custom': return this.diasPersonalizados();
+    }
+  });
+
+  promedioDiarioVentas = computed(() => {
+    const resumen = this._resumen();
+    if (!resumen) return 0;
+    const total = this.extraerImporte(resumen.totalVentas);
+    const dias = this.diasDelPeriodo();
+    return Math.round(total / Math.max(1, dias));
   });
 
   facturacionDonutGradient = computed(() => {
@@ -237,37 +316,50 @@ export class DashboardStateService {
       error: (err) => console.error('Error cargando vencimientos', err)
     });
 
-    // 2. Cargar Rendimiento Comercial
-    const fechaHistorica = new Date(2020, 0, 1).toISOString();
-    const fechaFutura = new Date();
-    fechaFutura.setFullYear(fechaFutura.getFullYear() + 1);
-    const fechaFuturaIso = fechaFutura.toISOString();
+    const { desde, hasta } = this.obtenerRangoFechas();
+    const desdeIso = desde.toISOString();
+    const hastaIso = hasta.toISOString();
 
-    this.api.getRendimientoComercial(fechaHistorica, fechaFuturaIso).subscribe({
+    // 2. Cargar Rendimiento Comercial con las fechas reales del filtro
+    this.api.getRendimientoComercial(desdeIso, hastaIso).subscribe({
       next: (res) => {
         this._platosMasVendidos.set(res.masVendidos);
         this._platosMenosVendidos.set(res.menosVendidos);
       },
       error: (err) => console.error('Error cargando rendimiento', err)
     });
+
+    // 3. Cargar Resumen Operativo (nuevo endpoint)
+    this.api.getResumenOperativo(desdeIso, hastaIso).subscribe({
+      next: (resumen) => {
+        this._resumen.set(resumen);
+      },
+      error: (err) => console.error('Error cargando resumen operativo', err)
+    });
   }
 
   private obtenerRangoFechas(): { desde: Date; hasta: Date } {
     const hoy = new Date();
-    let desde = new Date();
-    let hasta = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    let desde = new Date(hoy);
+    let hasta = new Date(hoy);
+    hasta.setHours(23, 59, 59, 999);
 
     switch (this._periodo()) {
-      case '1d': desde.setDate(hoy.getDate() - 1); break;
-      case '3d': desde.setDate(hoy.getDate() - 3); break;
-      case '7d': desde.setDate(hoy.getDate() - 7); break;
-      case '30d': desde.setDate(hoy.getDate() - 30); break;
-      case '365d': desde.setDate(hoy.getDate() - 365); break;
+      case '1d': break;
+      case '3d': desde.setDate(desde.getDate() - 2); break;
+      case '7d': desde.setDate(desde.getDate() - 6); break;
+      case '30d': desde.setDate(desde.getDate() - 29); break;
+      case '365d': desde.setDate(desde.getDate() - 364); break;
       case 'custom':
         const parsedDesde = this.parseFecha(this._fechaDesde());
         const parsedHasta = this.parseFecha(this._fechaHasta());
         if (parsedDesde) desde = parsedDesde;
-        if (parsedHasta) hasta = parsedHasta;
+        if (parsedHasta) {
+          hasta = new Date(parsedHasta);
+          hasta.setHours(23, 59, 59, 999);
+        }
         break;
     }
     return { desde, hasta };
@@ -314,86 +406,10 @@ export class DashboardStateService {
     return Math.max(1, Math.round(diff / 86400000) + 1);
   }
 
-  private ventasPersonalizadas(): DashboardVentaMensual[] {
-    const dias = this.diasPersonalizados();
-    if (dias <= 7) {
-      return MOCK_VENTAS_7D.slice(0, dias).map(item => ({ ...item, ventas: Math.round(item.ventas * 0.92) }));
-    }
-    if (dias <= 31) {
-      return MOCK_VENTAS_30D.map(item => ({ ...item, ventas: Math.round(item.ventas * (dias / 30)) }));
-    }
-    return MOCK_VENTAS_MENSUALES.map(item => ({ ...item, ventas: Math.round(item.ventas * Math.min(1.2, dias / 365)) }));
-  }
 }
-
-const MOCK_VENTAS_MENSUALES: DashboardVentaMensual[] = [
-  { mes: 'Ene', ventas: 12500000 },
-  { mes: 'Feb', ventas: 14200000 },
-  { mes: 'Mar', ventas: 15800000 },
-  { mes: 'Abr', ventas: 15100000 },
-  { mes: 'May', ventas: 16900000 },
-  { mes: 'Jun', ventas: 18400000 }
-];
-
-const MOCK_VENTAS_30D: DashboardVentaMensual[] = [
-  { mes: 'Sem 1', ventas: 4200000 },
-  { mes: 'Sem 2', ventas: 4500000 },
-  { mes: 'Sem 3', ventas: 4800000 },
-  { mes: 'Sem 4', ventas: 4900000 }
-];
-
-const MOCK_VENTAS_7D: DashboardVentaMensual[] = [
-  { mes: 'Lun', ventas: 450000 },
-  { mes: 'Mar', ventas: 480000 },
-  { mes: 'Mie', ventas: 520000 },
-  { mes: 'Jue', ventas: 680000 },
-  { mes: 'Vie', ventas: 950000 },
-  { mes: 'Sab', ventas: 1100000 },
-  { mes: 'Dom', ventas: 850000 }
-];
-
-const MOCK_VENTAS_3D: DashboardVentaMensual[] = [
-  { mes: 'Vie', ventas: 950000 },
-  { mes: 'Sab', ventas: 1100000 },
-  { mes: 'Dom', ventas: 850000 }
-];
-
-const MOCK_VENTAS_24H: DashboardVentaMensual[] = [
-  { mes: 'Mañana', ventas: 250000 },
-  { mes: 'Tarde', ventas: 150000 },
-  { mes: 'Noche', ventas: 450000 }
-];
 
 const MOCK_FACTURACION_CENTRO: DashboardFacturacionCentro[] = [
   { centro: 'Delivery', total: 8280000, porcentaje: 45, color: 'var(--accent-teal)' },
   { centro: 'Salon', total: 6440000, porcentaje: 35, color: 'var(--accent-orange)' },
   { centro: 'Mostrador', total: 3680000, porcentaje: 20, color: 'var(--surface-border)' }
 ];
-
-function generarCalendarioMock(): DashboardVentaDia[] {
-  const dias = [];
-  const start = new Date(2026, 5, 1);
-  const formatter = new Intl.DateTimeFormat('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
-  for (let i = 1; i <= 30; i++) {
-    const fecha = new Date(start);
-    fecha.setDate(i);
-    const dayOfWeek = fecha.getDay();
-
-    let base = 400000;
-    if (dayOfWeek === 5) base = 850000;
-    if (dayOfWeek === 6) base = 1000000;
-    if (dayOfWeek === 0) base = 750000;
-
-    const variance = 1 + (Math.random() * 0.4 - 0.2);
-
-    dias.push({
-      dia: i.toString(),
-      fecha: formatter.format(fecha),
-      ventas: Math.round(base * variance)
-    });
-  }
-  return dias;
-}
-
-const MOCK_VENTAS_DIAS_MES = generarCalendarioMock();
