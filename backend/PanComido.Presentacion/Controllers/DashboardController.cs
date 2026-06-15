@@ -52,5 +52,20 @@ namespace PanComido.Presentacion.Controllers
 
             return Ok(respuestaDto);
         }
+
+        [HttpGet("resumen")]
+        public async Task<IActionResult> ObtenerResumenOperativo(
+            [FromServices] ObtenerResumenOperativoCasoDeUso obtenerResumenOperativoCasoDeUso,
+            [FromQuery] DateTime desde, 
+            [FromQuery] DateTime hasta)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+
+            var resumen = await obtenerResumenOperativoCasoDeUso.EjecutarAsync(restauranteId, desde, hasta);
+
+            var respuestaDto = PanComido.Presentacion.Mappers.Dashboard.ResumenOperativoMapper.ParaDto(resumen);
+
+            return Ok(respuestaDto);
+        }
     }
 }
