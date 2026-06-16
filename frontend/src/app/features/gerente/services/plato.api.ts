@@ -97,8 +97,8 @@ export class PlatoApiService {
       if (plato.ingredientes && plato.ingredientes.length > 0) {
         plato.ingredientes.forEach((ingrediente, index) => {
           formData.append(`Ingredientes[${index}].InsumoId`, ingrediente.insumoId.toString());
-            formData.append(`Ingredientes[${index}].Cantidad`, ingrediente.cantidad.toString());
-            formData.append(`Ingredientes[${index}].Opcional`, ingrediente.opcional ? 'true' : 'false');
+          formData.append(`Ingredientes[${index}].Cantidad`, ingrediente.cantidad.toString());
+          formData.append(`Ingredientes[${index}].Opcional`, ingrediente.opcional ? 'true' : 'false');
           });
         }
         formData.append('imagen', archivo);

@@ -38,57 +38,130 @@
       <span>Acción</span>
     </div>
 
-    @for (ing of ingredientesSeleccionados(); track ing.id) {
-      <article class="ingredient-row">
-        <div class="ingredient-cell">
-          <input type="checkbox" checked class="form-check-input ingredient-checkbox">
-          <span class="ingredient-name">{{ ing.nombre }}</span>
-        </div>
-
-        <div class="quantity-cell">
-          <div class="quantity-input-row">
-            <input 
-              type="number" 
-              class="form-control form-control-sm text-center qty-input" 
-              min="0.01"
-              [step]="cantidadPaso(ing)"
-              [(ngModel)]="ing.cantidad" 
-              (ngModelChange)="onCantidadCambiada(ing)">
-
-            <button
-              type="button"
-              class="quantity-clear-icon"
-              title="Limpiar cantidad"
-              aria-label="Limpiar cantidad"
-              (click)="limpiarCantidad(ing)">
-              <span class="material-symbols-outlined">close</span>
-            </button>
+    @if (ingredientesBase().length > 0 || ingredientesSeleccionados().length === 0) {
+      @if (ingredientesSeleccionados().length > 0) {
+        <div class="section-title mt-2 mb-2 px-2 text-muted fw-bold" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Ingredientes Fijos (Base)</div>
+      }
+      @for (ing of ingredientesBase(); track ing.id) {
+        <article class="ingredient-row">
+          <div class="ingredient-cell">
+            <input type="checkbox" checked class="form-check-input ingredient-checkbox" disabled>
+            <span class="ingredient-name">{{ ing.nombre }}</span>
           </div>
 
-          @if (presetsCantidad(ing).length > 0) {
-            <div class="quantity-presets" aria-label="Accesos rápidos de cantidad">
-              @for (preset of presetsCantidad(ing); track preset.label) {
-                <button
-                  type="button"
-                  class="quantity-preset"
-                  (click)="sumarCantidadPreset(ing, preset)">
-                  {{ preset.label }}
-                </button>
-              }
+          <div class="quantity-cell">
+            <div class="quantity-input-row">
+              <input 
+                type="number" 
+                class="form-control form-control-sm text-center qty-input" 
+                min="0.01"
+                [step]="cantidadPaso(ing)"
+                [(ngModel)]="ing.cantidad" 
+                (ngModelChange)="onCantidadCambiada(ing)">
+
+              <button
+                type="button"
+                class="quantity-clear-icon"
+                title="Limpiar cantidad"
+                aria-label="Limpiar cantidad"
+                (click)="limpiarCantidad(ing)">
+                <span class="material-symbols-outlined">close</span>
+              </button>
             </div>
-          }
 
-          @if (equivalenciaCantidad(ing); as equivalencia) {
-            <strong class="quantity-equivalence">{{ equivalencia }}</strong>
-          }
-        </div>
+            @if (presetsCantidad(ing).length > 0) {
+              <div class="quantity-presets" aria-label="Accesos rápidos de cantidad">
+                @for (preset of presetsCantidad(ing); track preset.label) {
+                  <button
+                    type="button"
+                    class="quantity-preset"
+                    (click)="sumarCantidadPreset(ing, preset)">
+                    {{ preset.label }}
+                  </button>
+                }
+              </div>
+            }
 
-        <span class="badge-unidad">{{ ing.unidadMedida }}</span>
+            @if (equivalenciaCantidad(ing); as equivalencia) {
+              <strong class="quantity-equivalence">{{ equivalencia }}</strong>
+            }
+          </div>
 
-        <button class="btn-delete" (click)="eliminarIngrediente(ing.id)" title="Quitar ingrediente">
-          <span class="material-symbols-outlined fs-5">delete</span>
-        </button>
-      </article>
+          <span class="badge-unidad">{{ ing.unidadMedida }}</span>
+
+          <div class="actions-cell d-flex gap-2 justify-content-end">
+            <button class="btn-toggle-opcional" (click)="toggleOpcional(ing.id)" title="Hacer ingrediente opcional (removible)">
+              <span class="material-symbols-outlined fs-5">move_down</span>
+              <span class="btn-toggle-text ms-1 fw-bold" style="font-size: 0.75rem;">Hacer opcional</span>
+            </button>
+            <button class="btn-delete" (click)="eliminarIngrediente(ing.id)" title="Quitar ingrediente">
+              <span class="material-symbols-outlined fs-5">delete</span>
+            </button>
+          </div>
+        </article>
+      }
+    }
+
+    @if (ingredientesOpcionales().length > 0) {
+      <div class="section-title mt-3 mb-2 px-2 text-primary fw-bold" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Ingredientes Opcionales (El cliente puede quitarlos)</div>
+      @for (ing of ingredientesOpcionales(); track ing.id) {
+        <article class="ingredient-row opcional-row">
+          <div class="ingredient-cell">
+            <input type="checkbox" checked class="form-check-input ingredient-checkbox" style="opacity: 0.5;">
+            <span class="ingredient-name text-primary">{{ ing.nombre }}</span>
+          </div>
+
+          <div class="quantity-cell">
+            <div class="quantity-input-row">
+              <input 
+                type="number" 
+                class="form-control form-control-sm text-center qty-input" 
+                min="0.01"
+                [step]="cantidadPaso(ing)"
+                [(ngModel)]="ing.cantidad" 
+                (ngModelChange)="onCantidadCambiada(ing)">
+
+              <button
+                type="button"
+                class="quantity-clear-icon"
+                title="Limpiar cantidad"
+                aria-label="Limpiar cantidad"
+                (click)="limpiarCantidad(ing)">
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            @if (presetsCantidad(ing).length > 0) {
+              <div class="quantity-presets" aria-label="Accesos rápidos de cantidad">
+                @for (preset of presetsCantidad(ing); track preset.label) {
+                  <button
+                    type="button"
+                    class="quantity-preset"
+                    (click)="sumarCantidadPreset(ing, preset)">
+                    {{ preset.label }}
+                  </button>
+                }
+              </div>
+            }
+
+            @if (equivalenciaCantidad(ing); as equivalencia) {
+              <strong class="quantity-equivalence">{{ equivalencia }}</strong>
+            }
+          </div>
+
+          <span class="badge-unidad">{{ ing.unidadMedida }}</span>
+
+          <div class="actions-cell d-flex gap-2 justify-content-end">
+            <button class="btn-toggle-opcional active" (click)="toggleOpcional(ing.id)" title="Volver a ingrediente fijo">
+              <span class="material-symbols-outlined fs-5">move_up</span>
+              <span class="btn-toggle-text ms-1 fw-bold" style="font-size: 0.75rem;">Hacer fijo</span>
+            </button>
+            <button class="btn-delete" (click)="eliminarIngrediente(ing.id)" title="Quitar ingrediente">
+              <span class="material-symbols-outlined fs-5">delete</span>
+            </button>
+          </div>
+        </article>
+      }
     }
 
     @if (ingredientesSeleccionados().length === 0) {

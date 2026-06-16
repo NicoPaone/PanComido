@@ -260,10 +260,13 @@
   box-shadow: none;
 }
 
-.btn-delete {
+.actions-cell {
   grid-column: 3;
   grid-row: 1;
   justify-self: end;
+}
+
+.btn-delete {
   width: 32px;
   height: 32px;
   background-color: #fee2e2;
@@ -280,6 +283,42 @@
 .btn-delete:hover {
   background-color: #fca5a5;
   color: #b91c1c;
+}
+
+.btn-toggle-opcional {
+  width: auto;
+  padding: 0 10px;
+  height: 32px;
+  background-color: #f1f5f9;
+  color: #64748b;
+  border: none;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-toggle-opcional:hover {
+  background-color: #e2e8f0;
+  color: #475569;
+}
+
+.btn-toggle-opcional.active {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.btn-toggle-opcional.active:hover {
+  background-color: #bae6fd;
+  color: #0369a1;
+}
+
+.opcional-row {
+  border-style: dashed;
+  border-color: #bae6fd;
+  background-color: #f0f9ff;
 }
 
 .empty-recipe-state {
@@ -329,7 +368,7 @@
     justify-self: start;
   }
 
-  .btn-delete {
+  .actions-cell {
     grid-column: 2;
     grid-row: 1;
   }
