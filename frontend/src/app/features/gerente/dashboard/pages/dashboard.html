@@ -57,46 +57,26 @@
     </div>
   </section>
 
-  <section class="executive-summary" aria-label="Resumen ejecutivo">
-    <article class="summary-card">
-      <div>
-        <span class="summary-label">Lectura del periodo</span>
-        <p>{{ state.resumenEjecutivo() }}</p>
+  @if (state.atencion().length > 0) {
+    <section class="attention-section" aria-label="Resumen de Atencion">
+      <div class="attention-grid">
+        @for (item of state.atencion(); track item.titulo) {
+          <article class="attention-card" [class]="item.tono">
+            <div class="attention-copy">
+              <strong>{{ item.titulo }}</strong>
+              <span>{{ item.detalle }}</span>
+            </div>
+            <button type="button" class="attention-action" (click)="irA(item.destino)">
+              {{ item.accion }}
+              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+            </button>
+          </article>
+        }
       </div>
-    </article>
+    </section>
+  }
 
-    <div class="attention-grid">
-      @for (item of state.atencion(); track item.titulo) {
-        <article class="attention-card" [class]="item.tono">
-          <div class="attention-copy">
-            <strong>{{ item.titulo }}</strong>
-            <span>{{ item.detalle }}</span>
-          </div>
-          <button type="button" class="attention-action" (click)="irA(item.destino)">
-            {{ item.accion }}
-            <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-          </button>
-        </article>
-      }
-    </div>
-  </section>
-
-  <section class="kpi-grid" aria-label="Indicadores principales">
-    @for (kpi of state.kpis(); track kpi.id) {
-      <article class="kpi-card" [class]="kpi.tone">
-        <div class="kpi-meta">
-          <span>{{ kpi.label }}</span>
-          <strong [class.negative]="kpi.trend < 0">
-            {{ kpi.trend > 0 ? '+' : '' }}{{ kpi.trend }}%
-          </strong>
-        </div>
-        <p class="kpi-value">{{ kpi.value }}</p>
-        <small>{{ kpi.detail }}</small>
-      </article>
-    }
-  </section>
-
-  <section class="insight-grid" [class.month-mode]="state.periodo() === '30d'">
+    <section class="insight-grid" [class.month-mode]="state.periodo() === '30d'">
     <article class="panel-card monthly-panel">
       <div class="panel-heading">
         <div>
@@ -212,7 +192,7 @@
         <div
           class="monthly-chart"
           aria-label="Ventas mensuales"
-          [style.grid-template-columns]="'repeat(' + state.ventasMensuales().length + ', minmax(0, 1fr))'">
+          [style.grid-template-columns]="'repeat(' + state.ventasMensuales().length + ', minmax(60px, 1fr))'">
           @for (item of state.ventasMensuales(); track item.mes) {
             <div class="month-column">
               <div class="bar-track">
@@ -224,60 +204,6 @@
           }
         </div>
       }
-    </article>
-
-    <article class="panel-card billing-panel" [class.month-mode]="state.periodo() === '30d'">
-      <div class="panel-heading">
-        <div>
-          <h2>Facturacion por centro</h2>
-          <p>Distribucion por canal operativo</p>
-        </div>
-      </div>
-
-      <div class="billing-donut-layout">
-        <div
-          class="billing-donut"
-          [style.background]="state.facturacionDonutGradient()"
-          aria-label="Distribucion de facturacion por centro">
-          <div class="donut-center">
-            <span>Total</span>
-            <strong>{{ state.totalFacturacion() | arsCurrency }}</strong>
-          </div>
-        </div>
-
-        <div class="billing-legend">
-          @for (centro of state.facturacionPorCentro(); track centro.centro) {
-            <div class="legend-row">
-              <span class="legend-dot" [style.background]="centro.color"></span>
-              <div>
-                <strong>{{ centro.centro }}</strong>
-                <small>{{ centro.total | arsCurrency }}</small>
-              </div>
-              <em>{{ centro.porcentaje }}%</em>
-            </div>
-          }
-        </div>
-
-        @if (state.periodo() === '30d') {
-          <div class="channel-reading">
-            <div class="channel-reading-heading">
-              <span class="material-symbols-outlined" aria-hidden="true">insights</span>
-              <strong>Lectura del canal</strong>
-            </div>
-            <div class="channel-reading-list">
-              @for (lectura of state.lecturaCanales(); track lectura.titulo) {
-                <div class="channel-reading-item">
-                  <span></span>
-                  <div>
-                    <strong>{{ lectura.titulo }}</strong>
-                    <small>{{ lectura.detalle }}</small>
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-        }
-      </div>
     </article>
   </section>
 
@@ -344,7 +270,7 @@
       </div>
 
       <div class="compact-list">
-        @for (plato of state.platosMenosVendidos(); track plato.nombre; let index = $index) {
+        @for (plato of state.platosMenosVendidosPreview(); track plato.nombre; let index = $index) {
           <div class="compact-row">
             <div>
               <strong>{{ plato.nombre }}</strong>
@@ -401,11 +327,11 @@
           <div class="expiry-row" [class]="insumo.criticidad">
             <div class="expiry-copy">
               <strong>{{ insumo.nombre }}</strong>
-              <small>{{ insumo.relativo }} · {{ insumo.cantidad }} disponibles</small>
+              <small>{{ insumo.relativo }} · {{ insumo.cantidad }}</small>
             </div>
             <div class="expiry-meta">
-              <time>{{ insumo.fecha | date:'dd/MM' }}</time>
-              <span>{{ insumo.criticidad }}</span>
+              <time>{{ insumo.fecha }}</time>
+              <span>{{ insumo.criticidad | uppercase }}</span>
             </div>
           </div>
         }

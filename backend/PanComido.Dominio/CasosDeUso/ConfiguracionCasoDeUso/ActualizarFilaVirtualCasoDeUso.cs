@@ -8,11 +8,11 @@ using PanComido.Dominio.Entidades;
 
 namespace PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso
 {
-    public class ActualizarFilaVirtualCasoDeUSo
+    public class ActualizarFilaVirtualCasoDeUso
     {
         private readonly IFilaVirtualRepositorio _filaVirualRepositorio;
 
-        public ActualizarFilaVirtualCasoDeUSo(IFilaVirtualRepositorio filaVirtualRepositorio)
+        public ActualizarFilaVirtualCasoDeUso(IFilaVirtualRepositorio filaVirtualRepositorio)
         {
             _filaVirualRepositorio = filaVirtualRepositorio;
         }

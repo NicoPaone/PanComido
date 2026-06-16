@@ -1,4 +1,4 @@
-using MercadoPago.Config;
+Ôªøusing MercadoPago.Config;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -63,7 +63,7 @@ builder.Services.AddSwaggerGen(options =>
       Scheme = "Bearer",
       BearerFormat = "JWT",
       In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-      Description = "Peg· el token JWT ac·"
+      Description = "Peg√° el token JWT ac√°"
    });
    
    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
@@ -243,6 +243,7 @@ builder.Services.AddScoped<EliminarProveedorCasoDeuso>();
 builder.Services.AddScoped<ObtenerProveedorCasoDeUso>();
 builder.Services.AddScoped<ObtenerVencimientosYCriticidadDashboardCasoDeUso>();
 builder.Services.AddScoped<PanComido.Dominio.CasosDeUso.Dashboard.ObtenerRendimientoComercialCasoDeUso>();
+builder.Services.AddScoped<PanComido.Dominio.CasosDeUso.Dashboard.ObtenerResumenOperativoCasoDeUso>();
 builder.Services.AddScoped<ObtenerMetodosDePagoCasoDeUso>();
 builder.Services.AddScoped<ActualizarMetodosDePagoCasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosDelLocalCasoDeUso>();
@@ -250,7 +251,7 @@ builder.Services.AddScoped<ActualizarDatosDelLocalCasoDeUso>();
 builder.Services.AddScoped<ObtenerTurnosLaboralesCasoDeUso>();
 builder.Services.AddScoped<ActualizarTurnosLaboralesCasoDeUso>();
 builder.Services.AddScoped<ObtenerFilaVirtualCasoDeUso>();
-builder.Services.AddScoped<ActualizarFilaVirtualCasoDeUSo>();
+builder.Services.AddScoped<ActualizarFilaVirtualCasoDeUso>();
 builder.Services.AddScoped<ListarFamiliasTipograficasCasoDeUso>();
 builder.Services.AddScoped<ObtenerPorcentajesCasoDeUso>();
 builder.Services.AddScoped<ActualizarPorcentajesCasoDeUso>();

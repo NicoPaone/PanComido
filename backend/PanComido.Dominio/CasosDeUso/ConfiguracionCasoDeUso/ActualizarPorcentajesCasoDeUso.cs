@@ -19,6 +19,8 @@ namespace PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso
 
         public async Task<PorcentajesGanancia> EjecutarAsync(int restauranteId, List<PorcentajesCategoria> platos, List<PorcentajesCategoria> bebidas)
         {
+            if (platos.Any(p => p.Porcentaje < 0) || bebidas.Any(b => b.Porcentaje < 0))
+                throw new ArgumentException("El porcentaje no puede ser negativo.");
             return await _porcentajesCategoriaRepositorio.ActualizarPorcentajesGananciaAsync(restauranteId, platos, bebidas);
         }
     }

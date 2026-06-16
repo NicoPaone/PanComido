@@ -19,7 +19,9 @@ namespace PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso
 
         public async Task<FilaVirtual> EjecutarAsync(int restauranteId)
         {
-            return await _filaVirualRepositorio.ObtenerFilaVirtualAsync(restauranteId);
+            var resultado = await _filaVirualRepositorio.ObtenerFilaVirtualAsync(restauranteId);
+            if (resultado == null) throw new KeyNotFoundException("Fila virtual no encontrada.");
+            return resultado;
         }
     }
 }
