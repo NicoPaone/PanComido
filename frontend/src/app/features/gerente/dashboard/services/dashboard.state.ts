@@ -2,15 +2,9 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { 
   DashboardPeriodo, DashboardRankingItem, DashboardInsumoVencimiento, 
   DashboardLecturaComercial, DashboardAtencionItem, DashboardAccionItem, 
-  DashboardDestino, DashboardVentaMensual, DashboardVentaDia, DashboardFacturacionCentro 
+  DashboardDestino, DashboardVentaMensual, DashboardVentaDia 
 } from '../../../../core/models/domain/dashboard';
 import { DashboardApiService, DashboardResumenOperativoResponse } from './dashboard.api';
-
-const MOCK_ACCIONES: DashboardAccionItem[] = [
-  { titulo: 'Crear pedido sugerido', detalle: 'Reponer insumos criticos', destino: 'pedido', tono: 'danger', impacto: 'Evita quiebres', prioridad: 1 },
-  { titulo: 'Ver vencimientos', detalle: 'Priorizar consumo y descarte', destino: 'stock', tono: 'warning', impacto: 'Reduce merma', prioridad: 2 },
-  { titulo: 'Revisar carta', detalle: 'Ajustar baja demanda', destino: 'carta', tono: 'info', impacto: 'Recupera ventas', prioridad: 3 }
-];
 
 @Injectable({ providedIn: 'root' })
 export class DashboardStateService {
@@ -101,7 +95,22 @@ export class DashboardStateService {
     return items;
   });
 
-  acciones = signal<DashboardAccionItem[]>(MOCK_ACCIONES).asReadonly();
+  acciones = computed<DashboardAccionItem[]>(() => {
+    const items: DashboardAccionItem[] = [];
+    const criticos = this.insumosPorVencer().filter(i => i.criticidad === 'alta');
+    const bajos = this.platosMenosVendidosPreview();
+
+    if (criticos.length > 0) {
+      items.push({ titulo: 'Crear pedido sugerido', detalle: 'Reponer insumos criticos', destino: 'pedido', tono: 'danger', impacto: 'Evita quiebres', prioridad: 1 });
+      items.push({ titulo: 'Ver vencimientos', detalle: 'Priorizar consumo y descarte', destino: 'stock', tono: 'warning', impacto: 'Reduce merma', prioridad: 2 });
+    }
+
+    if (bajos.length > 0) {
+      items.push({ titulo: 'Revisar carta', detalle: 'Ajustar baja demanda', destino: 'carta', tono: 'info', impacto: 'Recupera ventas', prioridad: 3 });
+    }
+
+    return items;
+  });
 
   esModoCalendario = computed(() => {
     if (this._periodo() === '30d') return true;
@@ -173,20 +182,8 @@ export class DashboardStateService {
     return Math.max(...this.ventasCalendarioMes().map(item => item.ventas));
   });
 
-  facturacionPorCentro = computed<DashboardFacturacionCentro[]>(() => {
-    const factor = this.factorPeriodo();
-    return MOCK_FACTURACION_CENTRO.map(centro => ({
-      ...centro,
-      total: Math.round(centro.total * factor)
-    }));
-  });
-
   maxVentasMensuales = computed(() => {
     return Math.max(...this.ventasMensuales().map(item => item.ventas));
-  });
-
-  totalFacturacion = computed(() => {
-    return this.facturacionPorCentro().reduce((total, centro) => total + centro.total, 0);
   });
 
   diasDelPeriodo = computed(() => {
@@ -206,17 +203,6 @@ export class DashboardStateService {
     const total = this.extraerImporte(resumen.totalVentas);
     const dias = this.diasDelPeriodo();
     return Math.round(total / Math.max(1, dias));
-  });
-
-  facturacionDonutGradient = computed(() => {
-    let acumulado = 0;
-    const segmentos = this.facturacionPorCentro().map(centro => {
-      const desde = acumulado;
-      acumulado += centro.porcentaje;
-      return `${centro.color} ${desde}% ${acumulado}%`;
-    });
-
-    return `conic-gradient(${segmentos.join(', ')})`;
   });
 
   lecturaCanales = computed(() => [
@@ -407,9 +393,3 @@ export class DashboardStateService {
   }
 
 }
-
-const MOCK_FACTURACION_CENTRO: DashboardFacturacionCentro[] = [
-  { centro: 'Delivery', total: 8280000, porcentaje: 45, color: 'var(--accent-teal)' },
-  { centro: 'Salon', total: 6440000, porcentaje: 35, color: 'var(--accent-orange)' },
-  { centro: 'Mostrador', total: 3680000, porcentaje: 20, color: 'var(--surface-border)' }
-];
