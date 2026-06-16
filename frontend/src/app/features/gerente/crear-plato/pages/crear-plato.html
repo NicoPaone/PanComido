@@ -14,29 +14,33 @@
   <div class="create-layout">
     <aside class="media-panel">
       <div class="image-preview-card">
-        <button type="button" class="edit-photo-icon" (click)="onAbrirSelectorImagen()" title="Editar foto" aria-label="Editar foto">
-          <span class="material-symbols-outlined">edit</span>
-        </button>
-
-        @if (imagenSelected()) {
-        <img [src]="imagenSelected()" class="dish-image-large img-fluid shadow-sm" alt="Vista previa del plato">
-        } @else {
-        <div class="image-placeholder d-flex flex-column align-items-center justify-content-center w-100">
-          <span class="material-symbols-outlined placeholder-icon">add_photo_alternate</span>
-          <span class="placeholder-text small mt-2">Añadir foto</span>
+            <input type="file" id="dishFileInput" accept="image/*" style="display:none" (change)="onFileSelected($event)">
+            <label for="dishFileInput" class="edit-photo-icon" 
+            title="Subir foto" 
+            aria-label="Subir foto" 
+            style="cursor: pointer; margin: 0;">
+              <span class="material-symbols-outlined">edit</span>
+            </label>
+            @if (previsualizarImagen()) {
+              <img [src]="previsualizarImagen()" class="dish-image-large img-fluid shadow-sm" alt="Vista previa del plato">
+            } @else {
+              <label for="dishFileInput" class="image-placeholder d-flex flex-column
+              align-items-center justify-content-center w-100 m-0" style="cursor: pointer;">
+              <span class="material-symbols-outlined placeholder-icon">add_photo_alternate</span>
+              <span class="placeholder-text small mt-2">Añadir foto desde tu PC</span>
+            </label>
+          }
         </div>
-        }
-      </div>
-
-      <p class="photo-guidance">
-        Para que se vea bien en carta, usá una foto horizontal, luminosa y enfocada en el plato completo.
-      </p>
-
-      <div class="visibility-toggle-wrapper">
-        <app-toggle [active]="visible()" label="Visible en carta" (toggled)="onToggleVisible()">
-        </app-toggle>
-      </div>
-    </aside>
+        <p class="photo-guidance"> 
+            Para que se vea bien en carta, usá una foto horizontal, luminosa y
+            enfocada en el plato completo.
+        </p>
+        <div class="visibility-toggle-wrapper">
+          <app-toggle [active]="visible()" label="Visible en carta"
+          (toggled)="onToggleVisible()">
+          </app-toggle>
+          </div>
+        </aside>
 
     <section class="form-panel">
       <app-crear-plato-form
@@ -77,47 +81,6 @@
       carta.</p>
     <div class="modal-action-btn">
       <app-boton label="ACEPTAR" variante="success" tamanio="md" (clicked)="onCerrarExito()" class="w-100 save-btn">
-      </app-boton>
-    </div>
-  </div>
-</div>
-}
-
-@if (mostrarSelectorImagen()) {
-<div class="modal-overlay" (click)="onCerrarSelectorImagen()">
-  <div class="modal-card shadow border p-4 text-center bg-white" (click)="$event.stopPropagation()"
-    style="max-width: 520px;">
-    <h3 class="modal-title mb-2">Selecciona una imagen</h3>
-    <p class="text-muted small mb-4">Sube una foto propia o elige una de nuestra galería.</p>
-
-    <div class="d-flex flex-column gap-3 mb-4">
-      <label class="upload-box border rounded p-3 d-flex flex-column align-items-center justify-content-center"
-        for="dishFileInput"
-        style="background-color: #f8fafc; border: 2px dashed #cbd5e1 !important; cursor: pointer; transition: all 0.2s;">
-        <span class="material-symbols-outlined mb-2" style="font-size: 32px; color: #1691ac;">cloud_upload</span>
-        <span class="fw-bold" style="color: #0f172a;">Subir desde tu computadora</span>
-        <span class="small text-muted">Formatos soportados: JPG, PNG, WEBP</span>
-      </label>
-      <input type="file" id="dishFileInput" accept="image/*" style="display: none" (change)="onFileSelected($event)">
-
-      <div class="text-muted small fw-bold">O ELIGE UNA FOTO GENÉRICA</div>
-
-      <div class="row row-cols-3 g-2">
-        @for (img of imagenesDisponibles; track img.url) {
-        <div class="col">
-          <div class="image-option border rounded p-1" (click)="onSeleccionarImagen(img.url)"
-            style="cursor: pointer; background-color: #f9fafb;">
-            <img [src]="img.url" class="img-fluid rounded" style="height: 64px; width: 100%; object-fit: cover;"
-              [alt]="img.label">
-            <div class="small text-truncate mt-1" style="font-size: 0.75rem; font-weight: 600;">{{ img.label }}</div>
-          </div>
-        </div>
-        }
-      </div>
-    </div>
-
-    <div class="d-flex justify-content-end">
-      <app-boton label="Cerrar" variante="outline" tamanio="md" (clicked)="onCerrarSelectorImagen()">
       </app-boton>
     </div>
   </div>

@@ -83,6 +83,11 @@ CREATE TABLE metodo_de_pago (
     descripcion     TEXT NOT NULL UNIQUE
 );
 
+CREATE TABLE estado_pago (
+    id              SERIAL PRIMARY KEY,
+    descripcion     TEXT NOT NULL UNIQUE
+);
+
 -- Familias tipográficas predefinidas con categoría estética
 CREATE TABLE familia_tipografica (
     id                  SERIAL PRIMARY KEY,
@@ -377,27 +382,32 @@ CREATE TABLE cierre (
     total_mercado_pago      DECIMAL NOT NULL DEFAULT 0
 );
 
-CREATE TABLE pago (
-    id                  SERIAL PRIMARY KEY,
-    cierre_id           INTEGER REFERENCES cierre(id),
-    metodo_pago_id      INTEGER NOT NULL REFERENCES metodo_de_pago(id),
-    total               DECIMAL NOT NULL
-);
+-- NOTA: la tabla `pago` se crea más abajo (sección 10), DESPUÉS de `comanda`,
+-- porque ahora `pago` referencia a `comanda` (relación 1 comanda : N pagos).
 
 -- ============================================================
--- 10. COMANDAS
+-- 10. COMANDAS Y PAGOS
 -- ============================================================
 
 CREATE TABLE comanda (
     id                        SERIAL PRIMARY KEY,
     mesa_id                   INTEGER NOT NULL REFERENCES mesa(id),
-    pago_id                   INTEGER REFERENCES pago(id),
     restaurante_id            INTEGER NOT NULL REFERENCES restaurante(id),
     estado_comanda_id         INTEGER NOT NULL REFERENCES estado_comanda(id),
     cant_comensales           INTEGER NOT NULL,
     hora_inicio               TIMESTAMP NOT NULL DEFAULT NOW(),
     hora_fin                  TIMESTAMP,
     hora_ultimo_cambio_estado TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE pago (
+    id                  SERIAL PRIMARY KEY,
+    comanda_id          INTEGER NOT NULL REFERENCES comanda(id),
+    cierre_id           INTEGER REFERENCES cierre(id),
+    metodo_pago_id      INTEGER NOT NULL REFERENCES metodo_de_pago(id),
+    estado_pago_id      INTEGER NOT NULL REFERENCES estado_pago(id),
+    external_reference  TEXT,
+    total               DECIMAL NOT NULL
 );
 
 CREATE TABLE articulo_comanda (
@@ -407,7 +417,8 @@ CREATE TABLE articulo_comanda (
     cantidad                    INTEGER NOT NULL DEFAULT 1,
     entregado                   BOOLEAN NOT NULL DEFAULT FALSE,
     observaciones_ingrediente   TEXT,
-    observaciones_generales     TEXT
+    observaciones_generales     TEXT,
+    nombre_comensal             TEXT NOT NULL DEFAULT 'Anónimo' -- agregado para diferenciar quien pidio que
 );
 
 -- ============================================================

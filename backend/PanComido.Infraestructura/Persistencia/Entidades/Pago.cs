@@ -13,11 +13,20 @@ public partial class Pago
     [Column("id")]
     public int Id { get; set; }
 
+    [Column("comanda_id")]
+    public int ComandaId { get; set; }
+
     [Column("cierre_id")]
     public int? CierreId { get; set; }
 
     [Column("metodo_pago_id")]
     public int MetodoPagoId { get; set; }
+
+    [Column("estado_pago_id")]
+    public int EstadoPagoId { get; set; }
+
+    [Column("external_reference")]
+    public string? ExternalReference { get; set; }
 
     [Column("total")]
     public decimal Total { get; set; }
@@ -26,8 +35,13 @@ public partial class Pago
     [InverseProperty("Pagos")]
     public virtual Cierre? Cierre { get; set; }
 
-    [InverseProperty("Pago")]
-    public virtual ICollection<Comandum> Comanda { get; set; } = new List<Comandum>();
+    [ForeignKey("ComandaId")]
+    [InverseProperty("Pagos")]
+    public virtual Comandum Comanda { get; set; } = null!;
+
+    [ForeignKey("EstadoPagoId")]
+    [InverseProperty("Pagos")]
+    public virtual EstadoPago EstadoPago { get; set; } = null!;
 
     [ForeignKey("MetodoPagoId")]
     [InverseProperty("Pagos")]

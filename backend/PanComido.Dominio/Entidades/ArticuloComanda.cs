@@ -10,6 +10,7 @@ namespace PanComido.Dominio.Entidades
     {
         public int Id { get; set; } // El ID de la tabla articulo_comanda
         
+        public string NombreComensal { get; set; }
         public int ArticuloId { get; set; }
 
         public int Cantidad { get; set; }

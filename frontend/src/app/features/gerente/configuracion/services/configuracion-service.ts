@@ -56,7 +56,6 @@ export class ConfiguracionService {
   #aRequestDatosLocal(datos:DatosLocal): ActualizarDatosLocalRequest { 
     return {
       nombre: datos.nombre,
-      imagen: datos.imagen,
       colorPrincipal: datos.colorPrincipal,
       colorSecundario: datos.colorSecundario,
       textoPrincipal: datos.textoPrincipal,
@@ -92,9 +91,7 @@ function datosAFormData(datos: DatosLocal, archivo: File | null) {
   if (datos.familiaTipograficaId)
     formData.append('FamiliaTipograficaId', datos.familiaTipograficaId.toString());
 
-  if (datos.imagen) {
-    formData.append('imagen', datos.imagen);
-  }
+ 
   if (archivo) {
     formData.append('imagen', archivo);
   }

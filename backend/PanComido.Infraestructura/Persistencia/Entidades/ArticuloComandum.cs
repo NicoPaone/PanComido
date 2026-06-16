@@ -31,6 +31,9 @@ public partial class ArticuloComandum
     [Column("observaciones_generales")]
     public string? ObservacionesGenerales { get; set; }
 
+    [Column("nombre_comensal")]
+    public string NombreComensal { get; set; } = null!;
+
     [ForeignKey("ArticuloId")]
     [InverseProperty("ArticuloComanda")]
     public virtual Articulo Articulo { get; set; } = null!;

@@ -1,5 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
+﻿using MercadoPago.Config;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -10,7 +9,9 @@ using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso.IA;
 using PanComido.Dominio.CasosDeUso.BodegaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.CartaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
+using PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso;
 using PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso;
+using PanComido.Dominio.CasosDeUso.Dashboard;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
@@ -19,7 +20,6 @@ using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.CasosDeUso.UnidadMedidaCasosDeUso;
-using PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Repositorios.IA;
 using PanComido.Dominio.Interfaces.Servicios;
@@ -39,8 +39,8 @@ using PanComido.Presentacion.Filtros;
 using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Servicios;
-
-using PanComido.Dominio.CasosDeUso.Dashboard;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var builder = WebApplication.CreateBuilder(args);
@@ -116,6 +116,8 @@ builder.Services.AddScoped<LoginCasoDeUso>();
 builder.Services.AddScoped<IEmpleadoRepositorio, EmpleadoRepositorio>();
 builder.Services.AddScoped<IContraseniaHasher, ContraseniaHasher>();
 
+//MERCADO PAGO
+MercadoPagoConfig.AccessToken = builder.Configuration["MercadoPago:AccessToken"];
 
 // Mappers de Infraestructura (Dominio <-> EF)
 builder.Services.AddScoped<InsumoEntityMapper>();
@@ -165,9 +167,9 @@ builder.Services.AddScoped<FilaVirtualMapper>();
 builder.Services.AddScoped<DashboardMapper>();
 builder.Services.AddScoped<FamiliaTipograficaMapper>();
 builder.Services.AddScoped<PorcentajesGananciaMapper>();
-
 builder.Services.AddScoped<ArticuloMapper>();
 builder.Services.AddScoped<PagoMapper>();
+builder.Services.AddScoped<DatosBienvenidaMesaMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -241,8 +243,8 @@ builder.Services.AddScoped<ModificarProveedorCasoDeUso>();
 builder.Services.AddScoped<EliminarProveedorCasoDeuso>();
 builder.Services.AddScoped<ObtenerProveedorCasoDeUso>();
 builder.Services.AddScoped<ObtenerVencimientosYCriticidadDashboardCasoDeUso>();
-builder.Services.AddScoped<PanComido.Dominio.CasosDeUso.Dashboard.ObtenerRendimientoComercialCasoDeUso>();
-builder.Services.AddScoped<PanComido.Dominio.CasosDeUso.Dashboard.ObtenerResumenOperativoCasoDeUso>();
+builder.Services.AddScoped<ObtenerRendimientoComercialCasoDeUso>();
+builder.Services.AddScoped<ObtenerResumenOperativoCasoDeUso>();
 builder.Services.AddScoped<ObtenerMetodosDePagoCasoDeUso>();
 builder.Services.AddScoped<ActualizarMetodosDePagoCasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosDelLocalCasoDeUso>();
@@ -252,11 +254,11 @@ builder.Services.AddScoped<ActualizarTurnosLaboralesCasoDeUso>();
 builder.Services.AddScoped<ObtenerFilaVirtualCasoDeUso>();
 builder.Services.AddScoped<ActualizarFilaVirtualCasoDeUso>();
 builder.Services.AddScoped<ListarFamiliasTipograficasCasoDeUso>();
+builder.Services.AddScoped<ObtenerDatosMesaBienvenidaCasoDeUso>();
 builder.Services.AddScoped<ObtenerPorcentajesCasoDeUso>();
 builder.Services.AddScoped<ActualizarPorcentajesCasoDeUso>();
-
-
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
+builder.Services.AddScoped<ObtenerDatosInvitadoBienvenidaAComandaCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
@@ -266,7 +268,6 @@ builder.Services.AddScoped<IGestionStockServicio, GestionStockServicio>();
 builder.Services.AddScoped<IVencimientosProximosInsumosServicio, VencimientosProximosInsumosServicio>();
 builder.Services.AddScoped<ITiempoDePreparacionPlatoServicio, TiempoDePreparacionPlatoServicio>();
 
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 //Servicios externos
 builder.Services.AddScoped<IComandaNotificador, ComandaNotificadorSignalR>();
@@ -276,6 +277,9 @@ builder.Services.AddScoped<GeminiResponseMapper>();
 builder.Services.AddScoped<SugerenciaIAEntityMapper>();
 builder.Services.AddScoped<ISugerenciaIARepositorio, SugerenciaIARepositorio>();
 builder.Services.AddScoped<IImagenServicio,CloudinaryImagenServicio>();
+
+// Excepcion Handler
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddHttpClient();
 

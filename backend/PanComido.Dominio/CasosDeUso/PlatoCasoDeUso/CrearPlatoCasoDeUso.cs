@@ -1,11 +1,13 @@
-﻿using PanComido.Dominio.Entidades;
-using PanComido.Dominio.Interfaces.Repositorios;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PanComido.Dominio.Constantes;
+using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Interfaces.Servicios;
 
 namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
 {
@@ -13,13 +15,17 @@ namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
     {
         private readonly IPlatoRepositorio _platoRepositorio;
 
-        public CrearPlatoCasoDeUso(IPlatoRepositorio platoRepositorio)
+      private readonly IImagenServicio _servicioImagen;
+
+      public CrearPlatoCasoDeUso(IPlatoRepositorio platoRepositorio, IImagenServicio servicio)
         {
             _platoRepositorio = platoRepositorio;
+         _servicioImagen = servicio;
         }   
 
-        public async Task EjecutarAsync ( int restauranteID, Plato plato)
+        public async Task EjecutarAsync ( int restauranteID, Plato plato, string carpetaCloudinary, Stream stream, string nombreImagen)
         {
+
             if ( string.IsNullOrWhiteSpace(plato.Nombre) )
             {
                 throw new ArgumentException("El nombre del plato no puede estar vacío.");
@@ -33,7 +39,17 @@ namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
             {
                 throw new ArgumentException("El plato debe tener al menos un ingrediente.");
             }
-            plato.RestauranteId = restauranteID;   
+         string?  urlImagen = null;
+
+         if (stream != null && !string.IsNullOrEmpty(nombreImagen))
+         {
+            urlImagen = await _servicioImagen
+               .SubirImagenAsync(stream, nombreImagen, carpetaCloudinary);
+
+            plato.UrlImagen= urlImagen;
+
+         }
+         plato.RestauranteId = restauranteID;   
 
             await _platoRepositorio.CrearAsync(plato);
         }
