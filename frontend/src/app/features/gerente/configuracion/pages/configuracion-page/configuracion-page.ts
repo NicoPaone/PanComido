@@ -22,6 +22,8 @@ export class ConfiguracionPage {
   readonly metodosPago = this.state.metodosPago;
   readonly familiasTipograficas = this.state.familiasTipograficas;
   readonly turnos = this.state.turnos;
+  readonly filaVirtual = this.state.filaVirtual;
+  readonly porcentajes = this.state.porcentajes;
   readonly loading = this.state.loading;
   readonly guardando = this.state.guardando;
   readonly error = this.state.error;
@@ -43,6 +45,12 @@ export class ConfiguracionPage {
   onTurnoChange(event: { id: number; cambios: Partial<TurnoLaboral> }): void {
     this.state.limpiarFeedback();
     this.state.actualizarTurno(event.id, event.cambios);
+  }
+  onToggleFilaVirtual():void{
+    this.state.toggleFilaVirtual();
+  }
+  onPorcentajeItemChange(event: {tipo: 'platos'| 'bebidas'; id: number;porcentaje:number}):void{
+    this.state.actualizarPorcentajeItem(event.tipo,event.id,event.porcentaje);
   }
 
 }
