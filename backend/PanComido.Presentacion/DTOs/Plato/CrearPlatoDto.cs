@@ -44,7 +44,7 @@ namespace PanComido.Presentacion.DTOs.Plato
         public bool Opcional { get; set; }
 
         // Nombre del insumo para respuestas (útil en la UI del comensal)
-        public string Nombre { get; set; }
+        public string? Nombre { get; set; }
     }
 
 }

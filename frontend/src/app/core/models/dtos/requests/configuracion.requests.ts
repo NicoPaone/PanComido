@@ -1,6 +1,5 @@
 export interface ActualizarDatosLocalRequest {
   nombre: string;
-  imagen: string | null;
   colorPrincipal: string | null;
   colorSecundario: string | null;
   textoPrincipal: string | null;
