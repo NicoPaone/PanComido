@@ -34,7 +34,20 @@ namespace PanComido.Presentacion.Mappers
          return mesas.Select(aDto).ToList();
       }
 
-      private EstadoMesa ParsearEstado(string estadoStr)
+        // Mapper especifico para cuando se hace la accion de ocupar mesa
+
+        public MesaSinPosicionesResponseDto aMesaSinPosicionesResponseDto(MesaConPosiciones mesa)
+        {
+            return new MesaSinPosicionesResponseDto
+            {
+                Id = mesa.Id,
+                NumeroMesa = mesa.Numero,
+                CantidadPersonasMax = mesa.CantPersonasMax,
+                EstadoMesa = mesa.EstadoMesa
+            };
+        }
+
+        private EstadoMesa ParsearEstado(string estadoStr)
       {
           // Intentamos parsear. Si falla o viene vacío, lo dejamos Disponible por seguridad.
           if (Enum.TryParse<EstadoMesa>(estadoStr, true, out var estado))

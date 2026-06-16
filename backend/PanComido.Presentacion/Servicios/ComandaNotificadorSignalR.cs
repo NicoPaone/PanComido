@@ -52,5 +52,10 @@ namespace PanComido.Presentacion.Servicios
                 await _hubContext.Clients.Group($"Mozo_{mozoId}").SendAsync("LlamadoCocina", comanda);
             }
         }
+
+        public async Task NotificarComandaActualizadaAMesaAsync(Comanda comanda)
+        {
+            await _hubContext.Clients.Group($"Mesa_{comanda.MesaId}").SendAsync("ComandaActualizada", comanda);
+        }
     }
 }

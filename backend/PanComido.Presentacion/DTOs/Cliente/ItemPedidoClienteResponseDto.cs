@@ -10,5 +10,7 @@
         public decimal Subtotal { get; set; }
         public string? ObservacionesIngredientes { get; set; }
         public string? ObservacionesGenerales { get; set; }
+
+        public string NombreComensal { get; set; }
     }
 }

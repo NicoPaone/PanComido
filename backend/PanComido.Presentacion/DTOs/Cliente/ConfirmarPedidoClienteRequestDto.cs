@@ -3,5 +3,6 @@
     public class ConfirmarPedidoClienteRequestDto
     {
         public List<ItemPedidoClienteRequestDto> Items { get; set; } = new List<ItemPedidoClienteRequestDto>();
+        public string NombreComensal { get; set; }
     }
 }

@@ -62,7 +62,9 @@ namespace PanComido.Presentacion.Mappers
                 Cantidad = item.Cantidad,
                 ObservacionesIngredientes = item.ObservacionesIngredientes,
                 ObservacionesGenerales = item.ObservacionesGenerales,
-                Entregado = false
+                Entregado = false,
+
+                NombreComensal = dto.NombreComensal
             }).ToList();
         }
 
@@ -85,7 +87,9 @@ namespace PanComido.Presentacion.Mappers
                     Subtotal = (ac.Articulo.PrecioVentaFinal ?? 0m) * ac.Cantidad,
 
                     ObservacionesIngredientes = ac.ObservacionesIngredientes,
-                    ObservacionesGenerales = ac.ObservacionesGenerales
+                    ObservacionesGenerales = ac.ObservacionesGenerales,
+
+                    NombreComensal = ac.NombreComensal
                 }).ToList() ?? new List<ItemPedidoClienteResponseDto>()
             };
         }

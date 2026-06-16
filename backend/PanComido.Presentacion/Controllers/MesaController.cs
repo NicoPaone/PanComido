@@ -87,7 +87,7 @@ namespace PanComido.Presentacion.Controllers
             return StatusCode(201,
                 new OcuparMesaResponseDto
                 {
-                    Mesa = _mapper.aDto(mesaConPosiciones),
+                    Mesa = _mapper.aMesaSinPosicionesResponseDto(mesaConPosiciones),
                     IdComandaGenerada = mesaConPosiciones.idComanda.Value
                 });
         }
@@ -102,7 +102,7 @@ namespace PanComido.Presentacion.Controllers
 
             return StatusCode(201,
                 new OcuparMesaResponseDto {
-                    Mesa = _mapper.aDto(mesaConPosiciones),
+                    Mesa = _mapper.aMesaSinPosicionesResponseDto(mesaConPosiciones),
                     IdComandaGenerada = mesaConPosiciones.idComanda.Value
                 });
         }
