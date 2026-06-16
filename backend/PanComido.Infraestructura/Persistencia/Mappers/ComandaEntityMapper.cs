@@ -24,7 +24,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 Id = efComanda.Id,
                 MesaId = efComanda.MesaId,
                 RestauranteId = efComanda.RestauranteId,
-                PagoID = efComanda.PagoId,
+                //PagoID = efComanda.PagoId,
                 CantComensales = efComanda.CantComensales,
                 HoraInicio = efComanda.HoraInicio,
                 HoraFin = efComanda.HoraFin,
@@ -71,7 +71,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 HoraInicio = comandaDominio.HoraInicio,
                 HoraFin = comandaDominio.HoraFin,
                 HoraUltimoCambioEstado = comandaDominio.HoraUltimoCambioEstado ?? DateTime.Now,
-                PagoId = comandaDominio.PagoID,
+                //PagoId = comandaDominio.PagoID,
 
                 ArticuloComanda = comandaDominio.Items?.Select(item => new EF.ArticuloComandum
                 {

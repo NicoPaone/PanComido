@@ -14,6 +14,7 @@ export class DatosLocalForm {
   readonly datosLocal = input.required<DatosLocal>();
   readonly datosLocalChange = output<Partial<DatosLocalEditables>>();
   readonly familiasTipograficas = input<FamiliaTipografica[]>([]); 
+  readonly archivoCambiar = output<File | null>();
 
   previewUrl = signal<string | null>(null);
 
@@ -37,11 +38,12 @@ export class DatosLocalForm {
 
     const reader = new FileReader();
     reader.onload = () => {
-      const dataUrl = reader.result as string;
-      this.previewUrl.set(dataUrl);
-      this.datosLocalChange.emit({ imagen: dataUrl });
+      this.previewUrl.set(reader.result as string);
+
+      this.datosLocalChange.emit({imagen: reader.result as string});
     };
     reader.readAsDataURL(file);
+    this.archivoCambiar.emit(file);
 
     input.value = '';
   }
@@ -52,6 +54,7 @@ export class DatosLocalForm {
   removerImagen(): void {
     this.previewUrl.set(null);
     this.datosLocalChange.emit({ imagen: null });
+    this.archivoCambiar.emit(null)
   }
 
   emitir(campo: keyof DatosLocalEditables, valor: string): void {
