@@ -54,6 +54,9 @@ INSERT INTO tipo_bodega (descripcion) VALUES
 INSERT INTO metodo_de_pago (descripcion) VALUES
     ('Efectivo'), ('Tarjeta'), ('Transferencia'), ('Mercado Pago');
 
+INSERT INTO estado_pago (descripcion) VALUES
+    ('Pendiente'), ('Confirmado'), ('Rechazado');
+
 -- Familias tipográficas predefinidas
 -- Moderna: sans-serif limpias y minimalistas
 -- Clásica: serif elegantes con sans-serif neutras

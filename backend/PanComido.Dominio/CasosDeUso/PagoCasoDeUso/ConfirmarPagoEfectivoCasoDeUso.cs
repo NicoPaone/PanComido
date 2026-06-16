@@ -41,13 +41,15 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
             Pago pago = new Pago
             {
                 MetodoPagoId = 1,
-                Total = totalComanda
+                Total = totalComanda,
+                ComandaId = comandaId,
+                EstadoPago = EstadoPago.Confirmado
             };
 
             Pago pagoCreado = await _pagoRepositorio.CrearPagoAsync(pago);
 
             pagoCreado.ComandaId = comandaId;
-            comanda.PagoID = pagoCreado.PagoId;
+            //comanda.PagoID = pagoCreado.PagoId;
             comanda.Estado = EstadoComanda.Finalizada;
             comanda.HoraFin = DateTime.Now;
             pagoCreado.HoraFin = comanda.HoraFin;

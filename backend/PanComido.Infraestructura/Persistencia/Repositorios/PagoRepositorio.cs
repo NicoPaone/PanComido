@@ -23,7 +23,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             var efPago = new EF.Pago
             {
+                ComandaId = pago.ComandaId,
                 MetodoPagoId = pago.MetodoPagoId,
+                EstadoPagoId = (int)pago.EstadoPago,
                 Total = pago.Total,
                 CierreId = null
             };
