@@ -42,6 +42,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<EstadoMesa> EstadoMesas { get; set; }
 
+    public virtual DbSet<EstadoPago> EstadoPagos { get; set; }
+
     public virtual DbSet<EstadoPedido> EstadoPedidos { get; set; }
 
     public virtual DbSet<FamiliaTipografica> FamiliaTipograficas { get; set; }
@@ -257,8 +259,6 @@ public partial class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("comanda_mesa_id_fkey");
 
-            entity.HasOne(d => d.Pago).WithMany(p => p.Comanda).HasConstraintName("comanda_pago_id_fkey");
-
             entity.HasOne(d => d.Restaurante).WithMany(p => p.Comanda)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("comanda_restaurante_id_fkey");
@@ -313,6 +313,11 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<EstadoMesa>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("estado_mesa_pkey");
+        });
+
+        modelBuilder.Entity<EstadoPago>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("estado_pago_pkey");
         });
 
         modelBuilder.Entity<EstadoPedido>(entity =>
@@ -525,6 +530,14 @@ public partial class AppDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("pago_pkey");
 
             entity.HasOne(d => d.Cierre).WithMany(p => p.Pagos).HasConstraintName("pago_cierre_id_fkey");
+
+            entity.HasOne(d => d.Comanda).WithMany(p => p.Pagos)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("pago_comanda_id_fkey");
+
+            entity.HasOne(d => d.EstadoPago).WithMany(p => p.Pagos)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("pago_estado_pago_id_fkey");
 
             entity.HasOne(d => d.MetodoPago).WithMany(p => p.Pagos)
                 .OnDelete(DeleteBehavior.ClientSetNull)

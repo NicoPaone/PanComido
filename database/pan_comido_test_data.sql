@@ -340,19 +340,21 @@ INSERT INTO porcentaje_categoria_bebida (restaurante_id, categoria_insumo_id, po
 INSERT INTO cierre (id, restaurante_id, turno_laboral_id, diferencia, sobrante, total_efectivo, total_tarjeta, total_transferencia, total_mercado_pago) VALUES
     (1, 1, 1, -150.00, 0, 28500.00, 15200.00, 0.00, 8300.00);
 
-INSERT INTO pago (id, cierre_id, metodo_pago_id, total) VALUES
-    (1, 1, 1, 28500.00),
-    (2, 1, 2, 15200.00),
-    (3, 1, 4, 8300.00);
-
 -- ============================================================
 -- COMANDAS
 -- ============================================================
 
-INSERT INTO comanda (id, mesa_id, pago_id, restaurante_id, estado_comanda_id, cant_comensales, hora_inicio, hora_fin) VALUES
-    (1, 3, NULL, 1, 2, 3, NOW() - INTERVAL '25 minutes', NULL),
-    (2, 4, NULL, 1, 1, 5, NOW() - INTERVAL '5 minutes',  NULL),
-    (3, 1, 1,   1, 3, 2, NOW() - INTERVAL '3 hours',     NOW() - INTERVAL '2 hours');
+INSERT INTO comanda (id, mesa_id, restaurante_id, estado_comanda_id, cant_comensales, hora_inicio, hora_fin) VALUES
+    (1, 3, 1, 2, 3, NOW() - INTERVAL '25 minutes', NULL),
+    (2, 4, 1, 1, 5, NOW() - INTERVAL '5 minutes',  NULL),
+    (3, 1, 1, 3, 2, NOW() - INTERVAL '3 hours',     NOW() - INTERVAL '2 hours');
+
+-- ============================================================
+-- PAGOS (deben ir DESPUÉS de comanda: pago.comanda_id la referencia)
+-- ============================================================
+
+INSERT INTO pago (id, comanda_id, cierre_id, metodo_pago_id, estado_pago_id, external_reference, total) VALUES
+    (1, 3, 1, 1, 2, NULL, 28500.00);
 
 INSERT INTO articulo_comanda (comanda_id, articulo_id, cantidad, entregado, observaciones_ingrediente, observaciones_generales) VALUES
     (1, 1,  1, FALSE, 'Sin orégano', NULL),

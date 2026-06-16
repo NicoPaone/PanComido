@@ -145,7 +145,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             var efActualizado = _mapper.paraEntidad(comanda);
 
             efComanda.EstadoComandaId = efActualizado.EstadoComandaId;
-            efComanda.PagoId = efActualizado.PagoId;
+            //efComanda.PagoId = efActualizado.PagoId;
             efComanda.HoraFin = efActualizado.HoraFin;
             efComanda.HoraUltimoCambioEstado = DateTime.Now;
 
