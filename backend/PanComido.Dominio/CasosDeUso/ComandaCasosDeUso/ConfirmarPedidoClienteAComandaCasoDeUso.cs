@@ -42,13 +42,15 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
 
         public async Task<Comanda> EjecutarAsync(int restauranteId, int comandaId, List<ArticuloComanda> articulosSolicitados)
         {
-            // determinar si me llega comandaid o mesaid.
 
             Comanda comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
             if (comanda == null || comanda.Estado == EstadoComanda.Finalizada)
                 throw new InvalidOperationException("La comanda no existe o esta finalizada.");
 
             var stockInsumosDisponibles = await _loteRepositorio.ObtenerStockTotalDeInsumosDisponible(restauranteId, DateOnly.FromDateTime(DateTime.UtcNow));
+
+            // TODO: aca ver si tambien no validar los ingredientes opcionales que saco, sacar de la lista a los articulos que saco el comensal
+            // basicamente validar lo que el usuario pidio, no demas
 
             foreach (ArticuloComanda item in articulosSolicitados)
             {
@@ -94,9 +96,11 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
 
             await _comandaRepositorio.ActualizarAsync(comanda);
 
-            // signalR
+
             var mozosId = await _mesaRepositorio.ObtenerMozoIdsPorMesaAsync(comanda.MesaId);
+            // signalR
             await _comandaNotificador.NotificarEstadoModificadoAsync(comanda, mozosId);
+            await _comandaNotificador.NotificarComandaActualizadaAMesaAsync(comanda);
 
 
             await _gestionDeStockServicio.DescontarStockPorArticulosAsync(restauranteId, articulosSolicitados);

@@ -20,10 +20,13 @@ namespace PanComido.Presentacion.Controllers
         private readonly ModificarEstadoComandaCasoDeUso _modificarEstadoComandaCasoDeUso;
         private readonly ConfirmarPedidoClienteAComandaCasoDeUso _confirmarPedidoCasoDeUso;
         private readonly MarcarItemsEntregadosCasoDeUso _marcarItemsEntregadosCasoDeUso;
-        private readonly ComandaMapper _mapper;
         private readonly LlamarMozoComandaCasoDeUso _llamarMozoCasoDeUso;
+        private readonly ObtenerDatosInvitadoBienvenidaAComandaCasoDeUso _obtenerDatosInvitadoBienvenidaAComandaCasoDeUso;
 
         private readonly IComandaRepositorio _comandaRepositorio;
+
+        private readonly ComandaMapper _mapper;
+
 
 
         public ComandaController(
@@ -32,6 +35,7 @@ namespace PanComido.Presentacion.Controllers
             ConfirmarPedidoClienteAComandaCasoDeUso confirmarPedidoCasoDeUso,
             MarcarItemsEntregadosCasoDeUso marcarItemsEntregadosCasoDeUso,
             LlamarMozoComandaCasoDeUso llamarMozoCasoDeUso,
+            ObtenerDatosInvitadoBienvenidaAComandaCasoDeUso obtenerDatosInvitadoBienvenidaAComandaCasoDeUso,
             ComandaMapper mapper,
             IComandaRepositorio comandaRepositorio)
         {
@@ -41,8 +45,11 @@ namespace PanComido.Presentacion.Controllers
             _llamarMozoCasoDeUso = llamarMozoCasoDeUso;
             _modificarEstadoComandaCasoDeUso = modificar;
             _marcarItemsEntregadosCasoDeUso = marcarItemsEntregadosCasoDeUso;
-            _mapper = mapper;
+            _obtenerDatosInvitadoBienvenidaAComandaCasoDeUso = obtenerDatosInvitadoBienvenidaAComandaCasoDeUso;
             _comandaRepositorio = comandaRepositorio;
+
+            _mapper = mapper;
+
 
         }
 
@@ -75,6 +82,15 @@ namespace PanComido.Presentacion.Controllers
             var comanda = await _marcarItemsEntregadosCasoDeUso.EjecutarAsync(comandaId, itemsEntregados);
             var comandaDto = _mapper.ComandaResponseDto(comanda);
             return Ok(comandaDto);
+        }
+
+        [HttpGet("{comandaId}/comensal/bienvenida-invitado")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ObtenerBienvenidaInvitado(int comandaId)
+        {
+            BienvenidaDatosInvitadoComanda datosDominio = await _obtenerDatosInvitadoBienvenidaAComandaCasoDeUso.EjecutarAsync(comandaId);
+
+            return Ok(_mapper.aInvitadoBienvenidaComandaDto(datosDominio));
         }
 
         [HttpPost("{comandaId}/comensal/{restauranteId}/confirmar-pedido")]

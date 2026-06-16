@@ -417,7 +417,8 @@ CREATE TABLE articulo_comanda (
     cantidad                    INTEGER NOT NULL DEFAULT 1,
     entregado                   BOOLEAN NOT NULL DEFAULT FALSE,
     observaciones_ingrediente   TEXT,
-    observaciones_generales     TEXT
+    observaciones_generales     TEXT,
+    nombre_comensal             TEXT NOT NULL DEFAULT 'Anónimo' -- agregado para diferenciar quien pidio que
 );
 
 -- ============================================================

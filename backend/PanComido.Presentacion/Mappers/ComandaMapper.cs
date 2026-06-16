@@ -62,7 +62,9 @@ namespace PanComido.Presentacion.Mappers
                 Cantidad = item.Cantidad,
                 ObservacionesIngredientes = item.ObservacionesIngredientes,
                 ObservacionesGenerales = item.ObservacionesGenerales,
-                Entregado = false
+                Entregado = false,
+
+                NombreComensal = dto.NombreComensal
             }).ToList();
         }
 
@@ -85,7 +87,9 @@ namespace PanComido.Presentacion.Mappers
                     Subtotal = (ac.Articulo.PrecioVentaFinal ?? 0m) * ac.Cantidad,
 
                     ObservacionesIngredientes = ac.ObservacionesIngredientes,
-                    ObservacionesGenerales = ac.ObservacionesGenerales
+                    ObservacionesGenerales = ac.ObservacionesGenerales,
+
+                    NombreComensal = ac.NombreComensal
                 }).ToList() ?? new List<ItemPedidoClienteResponseDto>()
             };
         }
@@ -103,7 +107,22 @@ namespace PanComido.Presentacion.Mappers
             };
         }
 
-
-
+        public BienvenidaDatosInvitadoComandaResponseDto aInvitadoBienvenidaComandaDto(BienvenidaDatosInvitadoComanda datosDominio)
+        {
+            return new BienvenidaDatosInvitadoComandaResponseDto
+            {
+                ComandaId = datosDominio.IdComanda,
+                IdMesa = datosDominio.Mesa.Id,
+                NumeroMesa = datosDominio.Mesa.Numero,
+                CantComensales = datosDominio.CantComensales,
+                RestauranteId = datosDominio.RestauranteDatos.Id,
+                NombreRestaurante = datosDominio.RestauranteDatos.Nombre,
+                LogoUrl = datosDominio.RestauranteDatos.Imagen,
+                ColorPrincipal = datosDominio.RestauranteDatos.ColorPrincipal,
+                ColorSecundario = datosDominio.RestauranteDatos.ColorSecundario,
+                TipografiaTitulo = datosDominio.RestauranteDatos.FamiliaTipografica.TipografiaTitulo,
+                TipografiaCuerpo = datosDominio.RestauranteDatos.FamiliaTipografica.TipografiaCuerpo
+            };
+        }
     }
 }

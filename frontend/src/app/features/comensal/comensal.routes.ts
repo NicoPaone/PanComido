@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 export const COMENSAL_ROUTES: Routes = [
   {
     path: '',
-    redirectTo: 'ver-carta',
+    redirectTo: 'ver-carta', // cambiar a futuro a escanear-qr (este escaner debe servir tanto para mesa como fila virtual)
     pathMatch: 'full'
   },
 
