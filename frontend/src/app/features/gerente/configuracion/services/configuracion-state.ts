@@ -6,6 +6,8 @@ import { TurnoLaboral } from '../../../../core/models/domain/turno-laboral';
 import { forkJoin } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FamiliaTipografica } from '../../../../core/models/domain/familia-tipografica';
+import { FilaVirtual } from '../../../../core/models/domain/fila-virtual';
+import { PorcentajesGanancia } from '../../../../core/models/domain/porcentajes-ganancia';
 
 @Injectable({
   providedIn: 'root',
@@ -18,6 +20,8 @@ export class ConfiguracionState {
   readonly #datosLocal = signal<DatosLocal | null>(null);
   readonly #metodosPago = signal<MetodoPago[]>([]);
   readonly #turnos = signal<TurnoLaboral[]>([]);
+  readonly #filaVirtual = signal< FilaVirtual | null>(null);
+  readonly #porcentajes = signal<PorcentajesGanancia| null>(null);
   readonly #familiasTipograficas = signal<FamiliaTipografica[]>([]);
   readonly #archivoLogoPendiente = signal<File | null> (null);
  
@@ -30,6 +34,8 @@ export class ConfiguracionState {
   readonly datosLocal = this.#datosLocal.asReadonly();
   readonly metodosPago = this.#metodosPago.asReadonly();
   readonly turnos = this.#turnos.asReadonly();
+  readonly filaVirtual = this.#filaVirtual.asReadonly();
+  readonly porcentajes = this.#porcentajes.asReadonly();
   readonly familiasTipograficas = this.#familiasTipograficas.asReadonly();
   readonly loading = this.#loading.asReadonly();
   readonly guardando = this.#guardando.asReadonly();
@@ -45,14 +51,18 @@ export class ConfiguracionState {
       datosLocal: this.api.obtenerDatosLocal(),
       metodosPago: this.api.obtenerMetodosPago(),
       turnos: this.api.obtenerTurnos(),
-      fTipograficas: this.api.obtenerFamiliasTipograficas()
+      fTipograficas: this.api.obtenerFamiliasTipograficas(),
+      filaVirtual: this.api.obtenerFilaVirtual(),
+      porcentajes: this.api.obtenerPorcentajes(),
     })
     .pipe(takeUntilDestroyed(this.destroyRef))
     .subscribe({
-      next: ({datosLocal, metodosPago, turnos, fTipograficas}) => {
+      next: ({datosLocal, metodosPago, turnos, fTipograficas, filaVirtual,porcentajes}) => {
         this.#datosLocal.set(datosLocal);
         this.#metodosPago.set(metodosPago);
         this.#turnos.set(turnos);
+        this.#filaVirtual.set(filaVirtual);
+        this.#porcentajes.set(porcentajes);
         this.#familiasTipograficas.set(fTipograficas);  
         this.#loading.set(false);
         
@@ -85,16 +95,34 @@ export class ConfiguracionState {
       lista.map((t) => (t.id === id ? {...t,...cambios}: t))
     );
   }
-   setArchivoLogo(file: File | null): void {
-        this.#archivoLogoPendiente.set(file);
-      }
+  setArchivoLogo(file: File | null): void {
+    this.#archivoLogoPendiente.set(file);
+    }
+
+    toggleFilaVirtual():void{ 
+      this.#filaVirtual.update((actual=> 
+        actual? {...actual,habilitada:!actual.habilitada} :null)
+      )
+    }
+    actualizarPorcentajeItem(tipo:'platos' | 'bebidas',id:number,porcentaje:number): void{
+
+      this.#porcentajes.update((actual => {
+        if(!actual) return null;
+        const items = actual[tipo].map((item) => 
+          item.id === id? {...item,porcentaje}:item
+        );
+        return {...actual,[tipo]:items};
+      }))
+    }
 
   guardarTodo(): void{
     const datosLocal = this.#datosLocal();
     const archivo = this.#archivoLogoPendiente();
     const metodosPago = this.#metodosPago();
     const turnos = this.#turnos();
-    if(!datosLocal){
+    const filaVirtual =this.#filaVirtual();
+    const porcentajes = this.#porcentajes();
+    if(!datosLocal || !filaVirtual || !porcentajes){
       this.#error.set('No hay datos para guardar. Cargá la página nuevamente');
       return;
     }
@@ -106,7 +134,9 @@ export class ConfiguracionState {
     forkJoin({
       datosLocal: this.api.actualizarDatosLocal(datosLocal,archivo),
       metodosPago: this.api.actualizarMetodosPago(metodosPago),
-      turnos: this.api.actualizarTurnos(turnos)
+      turnos: this.api.actualizarTurnos(turnos),
+      filaVirtual: this.api.actualizarFilaVirtual(filaVirtual),
+      porcentajes: this.api.actualizarPorcentajes(porcentajes),
 
     }).pipe(takeUntilDestroyed(this.destroyRef))
     .subscribe({

@@ -1,144 +1,193 @@
-<div class="container-fluid py-4" style="max-width: 1200px;">
-
+<div class="container-fluid py-4" style="max-width: 1200px">
   <app-page-toolbar>
     <div buscador>
-      <h2 class="h4 mb-1 fw-bold" style="color: #1f2937;">Datos del local</h2>
-      <p class="text-muted mb-0" style="font-size: 0.88rem;">Personalizá la identidad visual de tu menú digital</p>
+      <h2 class="h4 mb-1 fw-bold" style="color: #1f2937">Datos del local</h2>
+      <p class="text-muted mb-0" style="font-size: 0.88rem">
+        Personalizá la identidad visual de tu menú digital
+      </p>
     </div>
     <div acciones>
-      <app-boton [label]="guardando() ? 'Guardando...' : 'Aplicar cambios'" variante="success" [disabled]="guardando()"
-        (clicked)="state.guardarTodo()">
+      <app-boton
+        [label]="guardando() ? 'Guardando...' : 'Aplicar cambios'"
+        variante="success"
+        [disabled]="guardando()"
+        (clicked)="state.guardarTodo()"
+      >
         @if (guardando()) {
-        <span class="spinner-border spinner-border-sm ms-2"></span>
+          <span class="spinner-border spinner-border-sm ms-2"></span>
         } @else {
-        <span class="material-symbols-outlined ms-2" style="font-size: 1.2rem; vertical-align: middle;">check</span>
+          <span
+            class="material-symbols-outlined ms-2"
+            style="font-size: 1.2rem; vertical-align: middle"
+            >check</span
+          >
         }
       </app-boton>
     </div>
   </app-page-toolbar>
 
   @if (error(); as msg) {
-  <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 py-2" role="alert"
-    style="border-radius: 8px;">
-    <i class="bi bi-exclamation-triangle"></i>
-    <span class="flex-grow-1">{{ msg }}</span>
-    <button type="button" class="btn-close" (click)="state.limpiarFeedback()"></button>
-  </div>
+    <div
+      class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 py-2"
+      role="alert"
+      style="border-radius: 8px"
+    >
+      <i class="bi bi-exclamation-triangle"></i>
+      <span class="flex-grow-1">{{ msg }}</span>
+      <button type="button" class="btn-close" (click)="state.limpiarFeedback()"></button>
+    </div>
   }
 
   @if (exito(); as msg) {
-  <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 py-2" role="alert"
-    style="border-radius: 8px;">
-    <i class="bi bi-check-circle"></i>
-    <span class="flex-grow-1">{{ msg }}</span>
-    <button type="button" class="btn-close" (click)="state.limpiarFeedback()"></button>
-  </div>
+    <div
+      class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 py-2"
+      role="alert"
+      style="border-radius: 8px"
+    >
+      <i class="bi bi-check-circle"></i>
+      <span class="flex-grow-1">{{ msg }}</span>
+      <button type="button" class="btn-close" (click)="state.limpiarFeedback()"></button>
+    </div>
   }
 
   @if (loading()) {
-  <div class="d-flex justify-content-center align-items-center" style="min-height: 300px;">
-    <div class="text-center">
-      <div class="spinner-border mb-3" style="color: var(--status-success);" role="status">
-        <span class="visually-hidden">Cargando...</span>
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 300px">
+      <div class="text-center">
+        <div class="spinner-border mb-3" style="color: var(--status-success)" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="text-muted" style="font-size: 0.9rem">Cargando configuración...</p>
       </div>
-      <p class="text-muted" style="font-size: 0.9rem;">Cargando configuración...</p>
     </div>
-  </div>
   }
 
   @if (!loading() && datosLocal(); as datos) {
-  <div class="row g-4 align-items-start mb-5">
+    <div class="row g-4 align-items-start mb-5">
+      <div class="col-lg-7">
+        <app-datos-local-form
+          [datosLocal]="datos"
+          [familiasTipograficas]="familiasTipograficas()"
+          (datosLocalChange)="onDatosLocalChange($event)"
+          (archivoCambiar)="state.setArchivoLogo($event)"
+        />
+      </div>
 
-    <div class="col-lg-7">
-      <app-datos-local-form [datosLocal]="datos" 
-      [familiasTipograficas]="familiasTipograficas()"
-      (datosLocalChange)="onDatosLocalChange($event)" 
-      (archivoCambiar)="state.setArchivoLogo($event)"  />
-    </div>
-
-    <div class="col-lg-5 d-flex justify-content-center">
-      <div class="position-sticky top-0 pt-2 w-100 d-flex justify-content-center" style="z-index: 10;">
-        <app-comensal-preview [datosLocal]="datos" [familiasTipograficas]="familiasTipograficas()" />
+      <div class="col-lg-5 d-flex justify-content-center">
+        <div
+          class="position-sticky top-0 pt-2 w-100 d-flex justify-content-center"
+          style="z-index: 10"
+        >
+          <app-comensal-preview
+            [datosLocal]="datos"
+            [familiasTipograficas]="familiasTipograficas()"
+          />
+        </div>
       </div>
     </div>
 
-  </div>
+    <div class="row g-4">
+      <div class="col-md-5">
+        <h2 class="config-section-title">Métodos de pago habilitados</h2>
+        <app-metodos-pago-list
+          [metodosPago]="metodosPago()"
+          (toggleMetodo)="onToggleMetodoPago($event)"
+        />
+      </div>
 
-  <div class="row g-4">
-
-    <div class="col-md-5">
-      <h2 class="config-section-title">Métodos de pago habilitados</h2>
-      <app-metodos-pago-list [metodosPago]="metodosPago()" (toggleMetodo)="onToggleMetodoPago($event)" />
+      <div class="col-md-7">
+        <h2 class="config-section-title">Configuración de turnos</h2>
+        <app-turnos-laborales-list [turnos]="turnos()" (turnoChange)="onTurnoChange($event)" />
+      </div>
     </div>
 
-    <div class="col-md-7">
-      <h2 class="config-section-title">Configuración de turnos</h2>
-      <app-turnos-laborales-list [turnos]="turnos()" (turnoChange)="onTurnoChange($event)" />
-    </div>
-  </div>
-
-  <div class="row mt-5">
-    <div class="col-12">
-      <h2 class="config-section-title">Porcentaje de ganancia</h2>
-      <div class="card shadow-sm border-0 rounded-3 mb-4">
-        <div class="card-body p-4">
-          <div class="row">
-            <div class="col-md-6">
-              <h6 class="fs-5 mb-4 fw-bold text-dark">Platos</h6>
-              <div class="row g-3">
-                <div class="col-6 d-flex align-items-center justify-content-between">
-                  <span>Entradas</span>
-                  <input type="text" class="form-control custom-number-input" value="80" readonly>
+    <div class="row mt-5">
+      <div class="col-12">
+        <h2 class="config-section-title">Porcentaje de ganancia</h2>
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+          <div class="card-body p-4">
+            @if (porcentajes(); as p) {
+              <div class="row">
+                <div class="col-md-6">
+                  <h6 class="fs-5 mb-4 fw-bold text-dark">Platos</h6>
+                  <div class="row g-3">
+                    @for (item of p.platos; track item.id) {
+                      <div class="col-6 d-flex align-items-center justify-content-between">
+                        <span>{{ item.descripcion }}</span>
+                        <input
+                          type="numeber"
+                          class="form-control custom-number-input"
+                          [value]="item.porcentaje"
+                          (input)="
+                            onPorcentajeItemChange({
+                              tipo: 'platos',
+                              id: item.id,
+                              porcentaje: +$any($event.target).value,
+                            })
+                          "
+                          min="0"
+                          max="200"
+                        />
+                      </div>
+                    }
+                  </div>
                 </div>
-                <div class="col-6 d-flex align-items-center justify-content-between">
-                  <span>Guarniciones</span>
-                  <input type="text" class="form-control custom-number-input" value="80" readonly>
-                </div>
-                <div class="col-6 d-flex align-items-center justify-content-between">
-                  <span>Principales</span>
-                  <input type="text" class="form-control custom-number-input" value="75" readonly>
-                </div>
-                <div class="col-6 d-flex align-items-center justify-content-between">
-                  <span>Postres</span>
-                  <input type="text" class="form-control custom-number-input" value="75" readonly>
+                <div class="col-md-6">
+                  <h6 class="fs-5 mb-4 fw-bold text-dark">Bebidas</h6>
+                  <div class="row g-3">
+                    @for (item of p.bebidas; track item.id) {
+                      <div class="col-6 d-flex align-items-center justify-content-between">
+                        <span>{{ item.descripcion }}</span>
+                        <input
+                          type="number"
+                          class="form-control custom-number-input"
+                          [value]="item.porcentaje"
+                          (input)="
+                            onPorcentajeItemChange({
+                              tipo: 'bebidas',
+                              id: item.id,
+                              porcentaje: +$any($event.target).value,
+                            })
+                          "
+                          min="0"
+                          max="200"
+                        />
+                      </div>
+                    }
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="col-md-6">
-              <h6 class="fs-5 mb-4 fw-bold text-dark">Bebidas</h6>
-              <div class="d-flex align-items-center gap-4 mt-2">
-                <div class="d-flex align-items-center gap-3">
-                  <span>Con alcohol</span>
-                  <input type="text" class="form-control custom-number-input" value="100" readonly>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                  <span>Sin alcohol</span>
-                  <input type="text" class="form-control custom-number-input" value="90" readonly>
-                </div>
-              </div>
-            </div>
+            }
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="row">
-    <div class="col-12">
-      <h2 class="config-section-title">Fila virtual</h2>
-      <div class="card shadow-sm border-0 rounded-3 mb-4">
-        <div class="card-body p-4 d-flex justify-content-between align-items-center">
-          <div>
-            <h6 class="mb-1 fw-bold fs-5 text-dark">Habilitar fila virtual</h6>
-            <span class="text-muted">Los clientes pueden anotarse desde la puerta cuando no hay mesas
-              disponibles.</span>
-          </div>
-          <div class="form-check form-switch custom-switch mb-0">
-            <input class="form-check-input" type="checkbox" role="switch" checked disabled>
-          </div>
+   <div class="row">
+  <div class="col-12">
+    <h2 class="config-section-title">Fila virtual</h2>
+    @if (filaVirtual(); as fv) {
+    <div class="card shadow-sm border-0 rounded-3 mb-4">
+      <div class="card-body p-4 d-flex justify-content-between align-items-center">
+        <div>
+          <h6 class="mb-1 fw-bold fs-5 text-dark">Habilitar fila virtual</h6>
+          <span class="text-muted"
+            >Los clientes pueden anotarse desde la puerta cuando no hay mesas disponibles.</span
+          >
+        </div>
+        <div class="form-check form-switch custom-switch mb-0">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            role="switch"
+            [checked]="fv.habilitada"
+            (change)="onToggleFilaVirtual()"
+          />
         </div>
       </div>
     </div>
+    }
   </div>
+</div>
+
   }
 </div>
