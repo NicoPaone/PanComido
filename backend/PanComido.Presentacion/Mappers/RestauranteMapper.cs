@@ -27,7 +27,6 @@ namespace PanComido.Presentacion.Mappers
             return new DOM.Restaurante
             {
                 Nombre = restauranteRequest.Nombre,
-                Imagen = restauranteRequest.Imagen,
                 ColorPrincipal = restauranteRequest.ColorPrincipal,
                 ColorSecundario = restauranteRequest.ColorSecundario,
                 FamiliaTipograficaId = restauranteRequest.FamiliaTipograficaId

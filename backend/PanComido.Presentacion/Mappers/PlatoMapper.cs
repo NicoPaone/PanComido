@@ -19,7 +19,6 @@ namespace PanComido.Presentacion.Mappers
                 TiempoPreparacionBase = platoDto.TiempoPreparacionBase,
                 TipoPlatoId = platoDto.TipoPlatoId,
                 CategoriaPlatoId = platoDto.CategoriaPlatoId,
-                UrlImagen = platoDto.UrlImagen,
 
 
                 // Mapeamos la lista de números (IDs) a una lista de objetos Restriccion

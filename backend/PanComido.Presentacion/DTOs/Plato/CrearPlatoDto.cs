@@ -22,7 +22,6 @@ namespace PanComido.Presentacion.DTOs.Plato
         [Required]
         public int CategoriaPlatoId { get; set; }
 
-        public string UrlImagen { get; set; }
 
         // El front nos manda solo los IDs de los botones que el usuario prendió (Vegano, Celíaco, etc.)
         public List<int> RestriccionesIds { get; set; } = new List<int>();
