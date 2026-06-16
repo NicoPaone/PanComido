@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
+using PanComido.Dominio.Constantes;
 using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.DTOs.Plato;
 using PanComido.Presentacion.Mappers;
@@ -85,30 +86,27 @@ namespace PanComido.Presentacion.Controllers
 
             return Ok(_mapper.aDto(datosDominio));
         }
-        [HttpPost]
-        public async Task<IActionResult> Crear([FromBody] CrearPlatoDto request)
-        {
-            // Angular manda el JSON. Si le faltó un campo obligatorio, esto ataja el error
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+      [HttpPost]
+      public async Task<IActionResult> Crear([FromForm] CrearPlatoDto request, IFormFile? imagen)
+      {
+         if (!ModelState.IsValid)
+         {
+            return BadRequest(ModelState);
+         }
+         try
+         {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+            var platoDominio = _platoMapper.aDominio(request);
 
-            // Cero Try-Catch en nuevos endpoints según reglas, pero este es el viejo, lo dejo intacto
-            try
-            {
-                // 1. Obtenemos el ID del restaurante del token/contexto de forma segura
-                int restauranteId = HttpContext.ObtenerRestauranteId();
 
-                // 2. Usamos el Mapper para traducir la caja de Angular (DTO) a nuestra Entidad de Dominio
-                var platoDominio = _platoMapper.aDominio(request);
-
-                // 3. Llamamos al Caso de Uso para aplicar las reglas de negocio y guardar
-                await _crearPlatoCasoDeUso.EjecutarAsync(restauranteId, platoDominio);
-
-                // 4. Devolvemos código HTTP 201 Created con un mensaje de éxito
-                return StatusCode(201, new { mensaje = "Plato creado correctamente." });
-            }
+            Stream? stream = imagen?.OpenReadStream();
+            string? nombreArchivo = imagen?.FileName;
+            await _crearPlatoCasoDeUso.EjecutarAsync(restauranteId, platoDominio,
+               RutasCloudinary.MenuPlatos,
+               stream,
+               nombreArchivo);
+            return StatusCode(201, new { mensaje = "Plato creado correctamente." });
+         }
             catch (ArgumentException ex)
             {
                 // Si el Caso de Uso tira un error (ej: "El precio debe ser mayor a 0"), devolvemos 400 Bad Request
@@ -119,7 +117,7 @@ namespace PanComido.Presentacion.Controllers
                 // Si explota la base de datos o hay un error grave, devolvemos 500 Internal Server Error
                 return StatusCode(500, new { error = "Error interno.", detalle = ex.Message });
             }
-        }
+      }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Modificar(int id, [FromBody] ModificarPlatoDto request)

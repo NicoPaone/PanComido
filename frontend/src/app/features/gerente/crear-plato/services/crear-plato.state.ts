@@ -11,7 +11,10 @@ export class CrearPlatoState {
   private destroyRef = inject(DestroyRef);
 
   visible = signal<boolean>(true);
-  imagenSelected = signal<string>('');
+ // imagenSelected = signal<File| null>(null);
+
+ archivoImagen = signal<File|null>(null);
+ previsualizacionImagen = signal<string | null>(null);
   
   // Opciones desde el backend
   tiposPlato = signal<ItemDesplegableDto[]>([]);
@@ -25,7 +28,6 @@ export class CrearPlatoState {
   celiaco = computed(() => this.restriccionesSeleccionadas().includes(3));
   receta = signal<RecetaIngrediente[]>([]);
   mostrarExito = signal<boolean>(false);
-  mostrarSelectorImagen = signal<boolean>(false);
 
   readonly #loading = signal<boolean>(false);
   loading = this.#loading.asReadonly();
@@ -74,25 +76,32 @@ export class CrearPlatoState {
     this.receta.set(ingredientes);
   }
 
-  abrirSelectorImagen(): void {
-    this.mostrarSelectorImagen.set(true);
-  }
 
-  cerrarSelectorImagen(): void {
-    this.mostrarSelectorImagen.set(false);
-  }
-
-  seleccionarImagen(url: string): void {
-    this.imagenSelected.set(url);
-    this.mostrarSelectorImagen.set(false);
+  seleccionarImagen(archivo:File, previsializacion: string): void {
+    this.archivoImagen.set(archivo); // Lo que mandamos a .NET
+    this.previsualizacionImagen.set(previsializacion); // Lo que mostramos en pantalla    this.mostrarSelectorImagen.set(false);
   }
 
   setMostrarExito(val: boolean): void {
     this.mostrarExito.set(val);
   }
 
-  guardarPlato(platoData: { nombre: string; costo: number; precioVenta: number; tiempoPreparacion: number; tipoPlatoId: number; categoriaPlatoId: number; descripcion: string; }, callback: () => void): void {
-    this.#loading.set(true);
+  guardarPlato(platoData: { 
+    nombre: string; 
+    costo: number; 
+    precioVenta: number;
+    tiempoPreparacion: number; 
+    tipoPlatoId: number; 
+    categoriaPlatoId: number; 
+    descripcion: string; },
+     callback: () => void): void {
+       
+       const archivoFisico = this.archivoImagen();
+       if(!archivoFisico){
+         console.error('Falta seleccionar la imagen del plato');
+         return;
+        }
+        this.#loading.set(true);
 
     const request: CrearPlatoRequestDto = {
       nombre: platoData.nombre,
@@ -101,16 +110,15 @@ export class CrearPlatoState {
       tiempoPreparacionBase: platoData.tiempoPreparacion,
       tipoPlatoId: platoData.tipoPlatoId,
       categoriaPlatoId: platoData.categoriaPlatoId,
-      urlImagen: this.imagenSelected() || '',
       restriccionesIds: this.restriccionesSeleccionadas(),
       ingredientes: this.receta().map(ing => ({
         insumoId: Number(ing.id),
         cantidad: ing.cantidad,
         opcional: false
       }))
-    };
+    } as CrearPlatoRequestDto;
 
-    this.api.crearPlato(request)
+    this.api.crearPlato(request, archivoFisico)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
