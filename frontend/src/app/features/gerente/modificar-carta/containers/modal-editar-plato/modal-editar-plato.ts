@@ -36,6 +36,9 @@ export class ModalEditarPlatoComponent {
   busqueda = signal<string>('');
   insumos = signal<Insumo[]>([]);
 
+  ingredientesBase = computed(() => this.receta().filter(i => !i.opcional));
+  ingredientesOpcionales = computed(() => this.receta().filter(i => i.opcional));
+
   costo = computed(() => {
     return calcularCostoReceta(this.receta());
   });
@@ -98,7 +101,8 @@ export class ModalEditarPlatoComponent {
       nombre: producto.nombre,
       cantidad: 1,
       unidadMedida: this.normalizarUnidadMedida(producto.unidadMedida),
-      costoUnitario: producto.precioVentaFinal ?? 0
+      costoUnitario: producto.precioVentaFinal ?? 0,
+      opcional: false
     };
 
     this.receta.update(items => [...items, nuevo]);
@@ -107,6 +111,15 @@ export class ModalEditarPlatoComponent {
 
   eliminarIngrediente(id: string | number) {
     this.receta.update(items => items.filter(item => item.id !== id));
+  }
+
+  toggleOpcional(id: string | number) {
+    this.receta.update(items => items.map(item => {
+      if (item.id === id) {
+        return { ...item, opcional: !item.opcional };
+      }
+      return item;
+    }));
   }
 
   onCantidadCambiada(ing: RecetaIngrediente) {

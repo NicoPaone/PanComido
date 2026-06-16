@@ -42,6 +42,8 @@ export class CrearPlatoPage {
   vegano = this.state.vegano;
   vegetariano = this.state.vegetariano;
   celiaco = this.state.celiaco;
+  loading = this.state.loading;
+  nombresExistentes = this.state.nombresExistentes;
 
 
   constructor() {

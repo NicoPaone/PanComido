@@ -50,9 +50,4 @@ export interface DashboardVentaDia {
   ventas: number;
 }
 
-export interface DashboardFacturacionCentro {
-  centro: string;
-  total: number;
-  porcentaje: number;
-  color: string;
-}
+

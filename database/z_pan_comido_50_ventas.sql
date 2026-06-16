@@ -25,19 +25,12 @@ BEGIN
         -- 2. Seleccionar una mesa aleatoria (del 1 al 31 que existen)
         v_mesa_id := floor(random() * 31 + 1)::int;
         
-        -- 3. Insertar el Pago (primero con total 0, lo calcularemos al sumar artículos)
-        -- metodo_pago_id va de 1 a 4 (Efectivo, Tarjeta, Transferencia, MP)
-        INSERT INTO pago (cierre_id, metodo_pago_id, total)
-        VALUES (NULL, floor(random() * 4 + 1)::int, 0)
-        RETURNING id INTO v_pago_id;
-        
-        -- 4. Insertar la Comanda vinculada al pago.
+        -- 3. Insertar la Comanda vinculada al pago.
         -- estado_comanda_id = 4 (Finalizada)
         -- restaurante_id = 1
-        INSERT INTO comanda (mesa_id, pago_id, restaurante_id, estado_comanda_id, cant_comensales, hora_inicio, hora_fin)
+        INSERT INTO comanda (mesa_id, restaurante_id, estado_comanda_id, cant_comensales, hora_inicio, hora_fin)
         VALUES (
             v_mesa_id, 
-            v_pago_id, 
             1, 
             4, 
             floor(random() * 4 + 1)::int, 
@@ -45,6 +38,12 @@ BEGIN
             v_fecha + (random() * 2 || ' hours')::interval
         )
         RETURNING id INTO v_comanda_id;
+
+        -- 4. Insertar el Pago (primero con total 0, lo calcularemos al sumar artículos)
+        -- metodo_pago_id va de 1 a 4 (Efectivo, Tarjeta, Transferencia, MP)
+        INSERT INTO pago (comanda_id, cierre_id, metodo_pago_id, estado_pago_id, total)
+        VALUES (v_comanda_id, NULL, floor(random() * 4 + 1)::int, 2, 0)
+        RETURNING id INTO v_pago_id;
         
         v_total := 0;
         

@@ -125,36 +125,86 @@
 
         <!-- INGREDIENT PILLS LIST -->
         <div class="ingredients-list d-flex flex-column gap-2 flex-grow-1 overflow-auto pe-2">
-          @for (ing of receta(); track ing.id) {
-            <div class="ingredient-pill d-flex align-items-center justify-content-between p-2 rounded-3 border">
-              
-              <div class="ingredient-main d-flex align-items-center gap-2 min-w-0">
-                <div class="icon-circle bg-light text-secondary flex-shrink-0">
-                  <span class="material-symbols-outlined fs-6">kitchen</span>
-                </div>
-                <span class="fw-semibold text-dark text-truncate">{{ ing.nombre }}</span>
-              </div>
-
-              <div class="ingredient-controls d-flex align-items-center gap-2 flex-shrink-0">
-                <div class="qty-control d-flex align-items-center bg-light rounded-pill px-1">
-                  <input 
-                    type="number" 
-                    class="qty-input bg-transparent border-0 text-center fw-bold" 
-                    min="0.01" step="0.01"
-                    [(ngModel)]="ing.cantidad"
-                    (ngModelChange)="onCantidadCambiada(ing)">
-                </div>
+          @if (ingredientesBase().length > 0 || receta().length === 0) {
+            @if (receta().length > 0) {
+              <div class="fw-bold text-muted mt-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">INGREDIENTES FIJOS (BASE)</div>
+            }
+            @for (ing of ingredientesBase(); track ing.id) {
+              <div class="ingredient-pill d-flex align-items-center justify-content-between p-2 rounded-3 border">
                 
-                <span class="unit-pill bg-light fw-semibold rounded-pill" title="La unidad depende del insumo">
-                  {{ ing.unidadMedida || 's/u' }}
-                </span>
+                <div class="ingredient-main d-flex align-items-center gap-2 min-w-0">
+                  <div class="icon-circle bg-light text-secondary flex-shrink-0">
+                    <span class="material-symbols-outlined fs-6">kitchen</span>
+                  </div>
+                  <span class="fw-semibold text-dark text-truncate">{{ ing.nombre }}</span>
+                </div>
 
-                <button class="btn-delete-pill border-0 bg-transparent text-danger p-1 d-flex align-items-center justify-content-center" (click)="eliminarIngrediente(ing.id)">
-                  <span class="material-symbols-outlined fs-5">close</span>
-                </button>
+                <div class="ingredient-controls d-flex align-items-center gap-2 flex-shrink-0">
+                  <div class="qty-control d-flex align-items-center bg-light rounded-pill px-1">
+                    <input 
+                      type="number" 
+                      class="qty-input bg-transparent border-0 text-center fw-bold" 
+                      min="0.01" step="0.01"
+                      [(ngModel)]="ing.cantidad"
+                      (ngModelChange)="onCantidadCambiada(ing)">
+                  </div>
+                  
+                  <span class="unit-pill bg-light fw-semibold rounded-pill" title="La unidad depende del insumo">
+                    {{ ing.unidadMedida || 's/u' }}
+                  </span>
+
+                  <button class="border-0 bg-light text-secondary rounded p-1 d-flex align-items-center justify-content-center" (click)="toggleOpcional(ing.id)" title="Hacer opcional">
+                    <span class="material-symbols-outlined fs-5">move_down</span>
+                    <span class="ms-1 fw-bold" style="font-size: 0.75rem;">Hacer opcional</span>
+                  </button>
+
+                  <button class="btn-delete-pill border-0 bg-transparent text-danger p-1 d-flex align-items-center justify-content-center" (click)="eliminarIngrediente(ing.id)">
+                    <span class="material-symbols-outlined fs-5">close</span>
+                  </button>
+                </div>
+
               </div>
+            }
+          }
 
-            </div>
+          @if (ingredientesOpcionales().length > 0) {
+            <div class="fw-bold text-primary mt-2" style="font-size: 0.75rem; letter-spacing: 0.5px;">INGREDIENTES OPCIONALES</div>
+            @for (ing of ingredientesOpcionales(); track ing.id) {
+              <div class="ingredient-pill opcional-pill d-flex align-items-center justify-content-between p-2 rounded-3 border border-primary border-opacity-25" style="background-color: #f0f9ff; border-style: dashed !important;">
+                
+                <div class="ingredient-main d-flex align-items-center gap-2 min-w-0">
+                  <div class="icon-circle bg-white text-primary flex-shrink-0">
+                    <span class="material-symbols-outlined fs-6">kitchen</span>
+                  </div>
+                  <span class="fw-semibold text-primary text-truncate">{{ ing.nombre }}</span>
+                </div>
+
+                <div class="ingredient-controls d-flex align-items-center gap-2 flex-shrink-0">
+                  <div class="qty-control d-flex align-items-center bg-white rounded-pill px-1">
+                    <input 
+                      type="number" 
+                      class="qty-input bg-transparent border-0 text-center fw-bold text-primary" 
+                      min="0.01" step="0.01"
+                      [(ngModel)]="ing.cantidad"
+                      (ngModelChange)="onCantidadCambiada(ing)">
+                  </div>
+                  
+                  <span class="unit-pill bg-white fw-semibold text-primary rounded-pill" title="La unidad depende del insumo">
+                    {{ ing.unidadMedida || 's/u' }}
+                  </span>
+
+                  <button class="border-0 text-primary rounded p-1 d-flex align-items-center justify-content-center" style="background-color: #e0f2fe;" (click)="toggleOpcional(ing.id)" title="Hacer fijo">
+                    <span class="material-symbols-outlined fs-5">move_up</span>
+                    <span class="ms-1 fw-bold" style="font-size: 0.75rem;">Hacer fijo</span>
+                  </button>
+
+                  <button class="btn-delete-pill border-0 bg-transparent text-danger p-1 d-flex align-items-center justify-content-center" (click)="eliminarIngrediente(ing.id)">
+                    <span class="material-symbols-outlined fs-5">close</span>
+                  </button>
+                </div>
+
+              </div>
+            }
           }
           @if (receta().length === 0) {
             <div class="empty-recipe text-center p-4 bg-light rounded-3 mt-2 border border-dashed">

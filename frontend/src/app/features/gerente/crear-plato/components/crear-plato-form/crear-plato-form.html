@@ -11,6 +11,9 @@
     @if (platoForm.get('nombre')?.touched && platoForm.get('nombre')?.hasError('minlength')) {
     <span class="error-text">Debe tener al menos 3 caracteres.</span>
     }
+    @if (platoForm.get('nombre')?.touched && platoForm.get('nombre')?.hasError('nombreExiste')) {
+    <span class="error-text">Ya existe un plato con este nombre.</span>
+    }
   </div>
 
   <!-- Costo & Venta side-by-side -->
@@ -134,7 +137,7 @@
 
   <!-- Botones de acción -->
   <div class="d-flex justify-content-end gap-3">
-    <app-boton label="GUARDAR" variante="success" tamanio="md" (clicked)="onGuardar()">
+    <app-boton label="GUARDAR" variante="success" tamanio="md" [disabled]="loading()" (clicked)="onGuardar()">
     </app-boton>
   </div>
 </div>

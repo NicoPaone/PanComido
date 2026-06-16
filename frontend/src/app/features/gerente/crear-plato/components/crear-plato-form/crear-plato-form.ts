@@ -32,6 +32,9 @@ export class CrearPlatoFormComponent {
   vegano = input<boolean>(false);
   vegetariano = input<boolean>(false);
   celiaco = input<boolean>(false);
+  loading = input<boolean>(false);
+
+  nombresExistentes = input<string[]>([]);
 
   // Outputs
   guardar = output<PlatoFormData>();
@@ -39,7 +42,7 @@ export class CrearPlatoFormComponent {
 
   // Form
   platoForm = this.fb.group({
-    nombre: ['', [Validators.required, Validators.minLength(3)]],
+    nombre: ['', [Validators.required, Validators.minLength(3), (c: any) => this.nombreExisteValidator(c)]],
     costo: [0, [Validators.required, Validators.min(0.01)]],
     precioVenta: [0, [Validators.required, Validators.min(0.01)]],
     tiempoPreparacion: [15, [Validators.required, Validators.min(1)]],
@@ -47,6 +50,15 @@ export class CrearPlatoFormComponent {
     categoriaPlatoId: [null as number | null, [Validators.required]],
     descripcion: ['', [Validators.required, Validators.minLength(8)]]
   });
+
+  private nombreExisteValidator(control: any): { [key: string]: boolean } | null {
+    if (!control.value) return null;
+    const value = control.value.toLowerCase().trim();
+    if (this.nombresExistentes().includes(value)) {
+      return { nombreExiste: true };
+    }
+    return null;
+  }
 
   private readonly sincronizarCostoAutocalculado = effect(() => {
     const costo = this.costoSugerido();

@@ -26,7 +26,8 @@ export class DetalleRecetaComponent implements OnInit {
   busqueda = signal<string>('');
   ingredientesSeleccionados = signal<RecetaIngrediente[]>([]);
 
-
+  ingredientesBase = computed(() => this.ingredientesSeleccionados().filter(i => !i.opcional));
+  ingredientesOpcionales = computed(() => this.ingredientesSeleccionados().filter(i => i.opcional));
   sugerencias = computed(() => {
     const query = this.busqueda().toLowerCase().trim();
     if (!query) return [];
@@ -47,7 +48,8 @@ export class DetalleRecetaComponent implements OnInit {
       nombre: ingrediente.nombre,
       cantidad: 1,
       unidadMedida: ingrediente.unidadMedida,
-      costoUnitario: ingrediente.costoUnitario
+      costoUnitario: ingrediente.costoUnitario,
+      opcional: false
     };
 
     this.ingredientesSeleccionados.update(items => [...items, nuevo]);
@@ -57,6 +59,16 @@ export class DetalleRecetaComponent implements OnInit {
 
   eliminarIngrediente(id: string | number) {
     this.ingredientesSeleccionados.update(items => items.filter(item => item.id !== id));
+    this.notificarCambio();
+  }
+
+  toggleOpcional(id: string | number) {
+    this.ingredientesSeleccionados.update(items => items.map(item => {
+      if (item.id === id) {
+        return { ...item, opcional: !item.opcional };
+      }
+      return item;
+    }));
     this.notificarCambio();
   }
 

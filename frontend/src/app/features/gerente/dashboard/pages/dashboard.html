@@ -76,17 +76,53 @@
     </section>
   }
 
-    <section class="insight-grid" [class.month-mode]="state.periodo() === '30d'">
+  @if (state.resumenOperativo(); as resumen) {
+    <section class="kpi-grid" aria-label="Métricas clave">
+      <article class="kpi-card revenue">
+        <div class="kpi-meta">
+          <span>Ventas totales</span>
+          <strong [class.negative]="state.variacionVentasEsNegativa()">{{ resumen.variacionVentas }}</strong>
+        </div>
+        <div class="kpi-value">{{ resumen.totalVentas }}</div>
+        <small>En el período seleccionado</small>
+      </article>
+      <article class="kpi-card orders">
+        <div class="kpi-meta">
+          <span>Pedidos totales</span>
+          <strong [class.negative]="state.variacionPedidosEsNegativa()">{{ resumen.variacionPedidos }}</strong>
+        </div>
+        <div class="kpi-value">{{ resumen.totalPedidos }} u.</div>
+        <small>Promedio diario: {{ resumen.promedioDiarioPedidos }} u.</small>
+      </article>
+      <article class="kpi-card success">
+        <div class="kpi-meta">
+          <span>Ticket promedio</span>
+          <strong [class.negative]="state.variacionTicketEsNegativa()">{{ resumen.variacionTicket }}</strong>
+        </div>
+        <div class="kpi-value">{{ resumen.ticketPromedio }}</div>
+        <small>Por comanda finalizada</small>
+      </article>
+      <article class="kpi-card info">
+        <div class="kpi-meta">
+          <span>Promedio diario</span>
+        </div>
+        <div class="kpi-value">{{ state.promedioDiarioVentas() | arsCurrency }}</div>
+        <small>Facturación est. por día</small>
+      </article>
+    </section>
+  }
+
+    <section class="insight-grid" [class.month-mode]="state.esModoCalendario()">
     <article class="panel-card monthly-panel">
       <div class="panel-heading">
         <div>
           <h2>{{ state.tituloGrafico() }}</h2>
           <p>{{ state.subtituloGrafico() }}</p>
         </div>
-        <span class="panel-badge revenue-badge">{{ state.totalFacturacion() | arsCurrency }}</span>
+        <span class="panel-badge revenue-badge">{{ state.resumenOperativo()?.totalVentas }}</span>
       </div>
 
-      @if (state.periodo() === '30d') {
+      @if (state.esModoCalendario()) {
         <div class="month-heatmap" aria-label="Ventas diarias del mes">
           <div class="heatmap-weekdays" aria-hidden="true">
             <span>Lun</span>

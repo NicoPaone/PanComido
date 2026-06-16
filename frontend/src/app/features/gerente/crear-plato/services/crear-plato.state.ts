@@ -29,6 +29,8 @@ export class CrearPlatoState {
   receta = signal<RecetaIngrediente[]>([]);
   mostrarExito = signal<boolean>(false);
 
+  nombresExistentes = signal<string[]>([]);
+
   readonly #loading = signal<boolean>(false);
   loading = this.#loading.asReadonly();
 
@@ -38,20 +40,29 @@ export class CrearPlatoState {
 
   cargarDatosFormulario(): void {
     this.#loading.set(true);
-    this.api.getDatosFormulario()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (res) => {
-          this.tiposPlato.set(res.tiposPlato);
-          this.categoriasPlato.set(res.categoriasPlato);
-          this.restricciones.set(res.restricciones);
-          this.ingredientesDisponibles.set(res.ingredientes);
-          this.#loading.set(false);
-        },
-        error: () => {
-          this.#loading.set(false);
-        }
-      });
+    
+    // Para simplificar la importacion temporalmente, uso forkJoin desde rxjs (si no está importado, lo importo)
+    // Asumiendo que rxjs ya se importa en el componente. Si no, agregaremos el import arriba.
+    import('rxjs').then(({ forkJoin }) => {
+      forkJoin({
+        form: this.api.getDatosFormulario(),
+        platos: this.api.getPlatos()
+      })
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (res) => {
+            this.tiposPlato.set(res.form.tiposPlato);
+            this.categoriasPlato.set(res.form.categoriasPlato);
+            this.restricciones.set(res.form.restricciones);
+            this.ingredientesDisponibles.set(res.form.ingredientes);
+            this.nombresExistentes.set(res.platos.map(p => p.nombre.toLowerCase().trim()));
+            this.#loading.set(false);
+          },
+          error: () => {
+            this.#loading.set(false);
+          }
+        });
+    });
   }
 
   toggleRestriccion(id: number): void {
@@ -96,6 +107,8 @@ export class CrearPlatoState {
     descripcion: string; },
      callback: () => void): void {
        
+       if (this.#loading()) return;
+
        const archivoFisico = this.archivoImagen();
        if(!archivoFisico){
          console.error('Falta seleccionar la imagen del plato');
@@ -114,7 +127,7 @@ export class CrearPlatoState {
       ingredientes: this.receta().map(ing => ({
         insumoId: Number(ing.id),
         cantidad: ing.cantidad,
-        opcional: false
+        opcional: ing.opcional ?? false
       }))
     } as CrearPlatoRequestDto;
 
