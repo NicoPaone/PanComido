@@ -24,6 +24,7 @@ using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Repositorios.IA;
 using PanComido.Dominio.Interfaces.Servicios;
 using PanComido.Dominio.Interfaces.Servicios.IA;
+using PanComido.Dominio.Interfaces.Servicios.MercadoPago;
 using PanComido.Dominio.Servicios;
 using PanComido.Infraestructura.Persistencia;
 using PanComido.Infraestructura.Persistencia.Mappers;
@@ -34,6 +35,7 @@ using PanComido.Infraestructura.ServiciosExternos;
 using PanComido.Infraestructura.ServiciosExternos.Gemini;
 using PanComido.Infraestructura.ServiciosExternos.Gemini.Mappers;
 using PanComido.Infraestructura.ServiciosExternos.Gemini.Servicio;
+using PanComido.Infraestructura.ServiciosExternos.MercadoPago;
 using PanComido.Presentacion;
 using PanComido.Presentacion.Filtros;
 using PanComido.Presentacion.Hubs;
@@ -194,7 +196,6 @@ builder.Services.AddScoped<IFamiliaTipograficaRepositorio, FamiliaTipograficaRep
 builder.Services.AddScoped<IPorcentajesCategoriaRepositorio, PorcentajesGananciaRepositorio>();
 
 
-
 // Casos de uso
 builder.Services.AddScoped<ListarInsumoCasoDeUso>();
 builder.Services.AddScoped<CrearInsumoCasoDeUso>();
@@ -255,6 +256,7 @@ builder.Services.AddScoped<ActualizarFilaVirtualCasoDeUso>();
 builder.Services.AddScoped<ListarFamiliasTipograficasCasoDeUso>();
 builder.Services.AddScoped<ObtenerPorcentajesCasoDeUso>();
 builder.Services.AddScoped<ActualizarPorcentajesCasoDeUso>();
+builder.Services.AddScoped<CrearPreferenciaMPCasoDeUso>();
 
 
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
@@ -266,6 +268,7 @@ builder.Services.AddScoped<ISugerenciaPlatosIAServicio, GeminiSugerenciaPlatosIA
 builder.Services.AddScoped<IGestionStockServicio, GestionStockServicio>();
 builder.Services.AddScoped<IVencimientosProximosInsumosServicio, VencimientosProximosInsumosServicio>();
 builder.Services.AddScoped<ITiempoDePreparacionPlatoServicio, TiempoDePreparacionPlatoServicio>();
+builder.Services.AddScoped<ICalcularTotalComandaServicio, CalcularTotalComandaServicio>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
@@ -277,6 +280,7 @@ builder.Services.AddScoped<GeminiResponseMapper>();
 builder.Services.AddScoped<SugerenciaIAEntityMapper>();
 builder.Services.AddScoped<ISugerenciaIARepositorio, SugerenciaIARepositorio>();
 builder.Services.AddScoped<IImagenServicio,CloudinaryImagenServicio>();
+builder.Services.AddScoped<IMercadoPagoServicio, MercadoPagoServicio>();
 
 builder.Services.AddHttpClient();
 

@@ -2,6 +2,7 @@
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Interfaces.Servicios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +17,15 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
         private readonly IComandaRepositorio _comandaRepositorio;
         private readonly ILlamadoRepositorio _llamadoRepositorio;
         private readonly IMesaRepositorio _mesaRepositorio;
+        private readonly ICalcularTotalComandaServicio _calcularTotalComandaServicio;
 
-        public ConfirmarPagoEfectivoCasoDeUso(IPagoRepositorio pagoRepositorio, IComandaRepositorio comandaRepositorio, ILlamadoRepositorio llamadoRepositorio, IMesaRepositorio mesaRepositorio)
+        public ConfirmarPagoEfectivoCasoDeUso(IPagoRepositorio pagoRepositorio, IComandaRepositorio comandaRepositorio, ILlamadoRepositorio llamadoRepositorio, IMesaRepositorio mesaRepositorio, ICalcularTotalComandaServicio calcularTotalComandaServicio)
         {
             _pagoRepositorio = pagoRepositorio;
             _comandaRepositorio = comandaRepositorio;
             _llamadoRepositorio = llamadoRepositorio;
             _mesaRepositorio = mesaRepositorio;
+            _calcularTotalComandaServicio = calcularTotalComandaServicio;
         }
 
         public async Task<Pago> EjecutarAsync(int comandaId, int restauranteId)
@@ -32,15 +35,11 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
             if (comanda.Estado != EstadoComanda.EnEspera)
                 throw new ArgumentException("La comanda no está esperando pago.");
 
-            decimal totalComanda = 0;
-            foreach (var item in comanda.Items)
-            {
-                totalComanda += item.Cantidad * (item.Articulo.PrecioVentaFinal ?? 0);
-            }
+            decimal totalComanda = _calcularTotalComandaServicio.CalcularTotal(comanda);
 
             Pago pago = new Pago
             {
-                MetodoPagoId = 1,
+                MetodoDePago = MetodoPago.Efectivo,
                 Total = totalComanda,
                 ComandaId = comandaId,
                 EstadoPago = EstadoPago.Confirmado

@@ -24,20 +24,16 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             var efPago = new EF.Pago
             {
                 ComandaId = pago.ComandaId,
-                MetodoPagoId = pago.MetodoPagoId,
+                MetodoPagoId = (int)pago.MetodoDePago,
                 EstadoPagoId = (int)pago.EstadoPago,
                 Total = pago.Total,
+                ExternalReference = pago.ExternalReference,
                 CierreId = null
             };
             await _ctx.Pagos.AddAsync(efPago);
             await _ctx.SaveChangesAsync();
 
-            var efPagoCompleto = await _ctx.Pagos
-                .Include(p => p.MetodoPago)
-                .FirstAsync(p => p.Id == efPago.Id);
-
-            pago.PagoId = efPagoCompleto.Id;
-            pago.MetodoPagoDescripcion = efPagoCompleto.MetodoPago.Descripcion;
+            pago.PagoId = efPago.Id;
             return pago;
         }
     }

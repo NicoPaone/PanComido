@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.PagoCasoDeUso;
 using PanComido.Presentacion.DTOs;
+using PanComido.Presentacion.DTOs.Pago;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Sesion;
 
@@ -14,15 +15,18 @@ namespace PanComido.Presentacion.Controllers
     {
         private readonly SolicitarPagoEfectivoCasoDeUso _solicitarPagoEfectivoCasoDeUso;
         private readonly ConfirmarPagoEfectivoCasoDeUso _confirmarPagoEfectivoCasoDeUso;
+        private readonly CrearPreferenciaMPCasoDeUso _crearPreferenciaMPCasoDeUso;
         private readonly PagoMapper _pagoMapper;
 
         public PagoController(
             SolicitarPagoEfectivoCasoDeUso solicitarPagoEfectivoCasoDeUso,
             ConfirmarPagoEfectivoCasoDeUso confirmarPagoEfectivoCasoDeUso,
+            CrearPreferenciaMPCasoDeUso crearPreferenciaMPCasoDeUso,
             PagoMapper pagoMapper)
         {
             _solicitarPagoEfectivoCasoDeUso = solicitarPagoEfectivoCasoDeUso;
             _confirmarPagoEfectivoCasoDeUso = confirmarPagoEfectivoCasoDeUso;
+            _crearPreferenciaMPCasoDeUso = crearPreferenciaMPCasoDeUso;
             _pagoMapper = pagoMapper;
         }
 
@@ -54,6 +58,14 @@ namespace PanComido.Presentacion.Controllers
             var pagoConfirmado = await _confirmarPagoEfectivoCasoDeUso.EjecutarAsync(comandaId, restauranteId);
             var dto = _pagoMapper.aDto(pagoConfirmado);
             return Ok(dto);
+        }
+
+        [HttpPost("solicitar-mp/{comandaId}/comensal/{restauranteId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SolicitarPagoMercadoPagoComensal(int restauranteId, int comandaId)
+        {
+            var initPoint = await _crearPreferenciaMPCasoDeUso.EjecutarAsync(comandaId, restauranteId);
+            return Ok(new CrearPreferenciaResponseDto { InitPoint = initPoint });
         }
     }
 }
