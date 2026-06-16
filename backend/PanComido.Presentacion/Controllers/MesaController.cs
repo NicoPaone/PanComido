@@ -85,7 +85,7 @@ namespace PanComido.Presentacion.Controllers
             var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, idMesa, request.CantidadComensales.Value);
 
             return StatusCode(201,
-                new OcuparMesaResponseDto
+                new OcuparMesaComensalResponseDto
                 {
                     Mesa = _mapper.aMesaSinPosicionesResponseDto(mesaConPosiciones),
                     IdComandaGenerada = mesaConPosiciones.idComanda.Value
@@ -102,7 +102,7 @@ namespace PanComido.Presentacion.Controllers
 
             return StatusCode(201,
                 new OcuparMesaResponseDto {
-                    Mesa = _mapper.aMesaSinPosicionesResponseDto(mesaConPosiciones),
+                    Mesa = _mapper.aDto(mesaConPosiciones),
                     IdComandaGenerada = mesaConPosiciones.idComanda.Value
                 });
         }
