@@ -250,6 +250,7 @@ builder.Services.AddScoped<ActualizarFilaVirtualCasoDeUSo>();
 builder.Services.AddScoped<ListarFamiliasTipograficasCasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosMesaBienvenidaCasoDeUso>();
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
+builder.Services.AddScoped<ObtenerDatosInvitadoBienvenidaAComandaCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
