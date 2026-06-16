@@ -165,14 +165,14 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                                   && ac.Comanda.RestauranteId == restauranteId
                                   && ac.Comanda.HoraInicio >= fechaDesde
                                   && ac.Comanda.HoraInicio <= fechaHasta
-                                  && ac.Comanda.PagoId != null)
+                                  && ac.Comanda.Pagos.Any())
                         .Sum(ac => (int?)ac.Cantidad) ?? 0,
                     FacturacionTotal = _ctx.ArticuloComanda
                         .Where(ac => ac.ArticuloId == a.Id 
                                   && ac.Comanda.RestauranteId == restauranteId
                                   && ac.Comanda.HoraInicio >= fechaDesde
                                   && ac.Comanda.HoraInicio <= fechaHasta
-                                  && ac.Comanda.PagoId != null)
+                                  && ac.Comanda.Pagos.Any())
                         .Sum(ac => (decimal?)(ac.Cantidad * a.PrecioVentaFinal)) ?? 0m
                 });
         }
@@ -199,14 +199,14 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .Where(c => c.RestauranteId == restauranteId
                          && c.HoraInicio >= desde
                          && c.HoraInicio <= hasta
-                         && c.PagoId != null);
+                         && c.Pagos.Any());
 
             var result = await query
                 .GroupBy(c => 1)
                 .Select(g => new DOM.TotalesPeriodo
                 {
                     CantidadPedidos = g.Count(),
-                    TotalFacturado = g.Sum(c => c.Pago.Total)
+                    TotalFacturado = g.Sum(c => c.Pagos.Sum(p => p.Total))
                 })
                 .FirstOrDefaultAsync();
 
@@ -219,7 +219,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .Where(c => c.RestauranteId == restauranteId
                          && c.HoraInicio >= desde
                          && c.HoraInicio <= hasta
-                         && c.PagoId != null);
+                         && c.Pagos.Any());
 
             if (tipoAgrupacion == "Hora")
             {
@@ -228,7 +228,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     .Select(g => new
                     {
                         Key = g.Key,
-                        Total = g.Sum(c => c.Pago.Total)
+                        Total = g.Sum(c => c.Pagos.Sum(p => p.Total))
                     })
                     .OrderBy(x => x.Key)
                     .ToListAsync();
@@ -246,7 +246,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     .Select(g => new
                     {
                         Key = g.Key,
-                        Total = g.Sum(c => c.Pago.Total)
+                        Total = g.Sum(c => c.Pagos.Sum(p => p.Total))
                     })
                     .OrderBy(x => x.Key)
                     .ToListAsync();
@@ -265,7 +265,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     {
                         Year = g.Key.Year,
                         Month = g.Key.Month,
-                        Total = g.Sum(c => c.Pago.Total)
+                        Total = g.Sum(c => c.Pagos.Sum(p => p.Total))
                     })
                     .OrderBy(x => x.Year).ThenBy(x => x.Month)
                     .ToListAsync();
