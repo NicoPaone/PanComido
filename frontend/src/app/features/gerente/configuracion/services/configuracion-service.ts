@@ -4,12 +4,16 @@ import { Observable } from 'rxjs';
 import { DatosLocal } from '../../../../core/models/domain/datos-local';
 import { 
    ActualizarDatosLocalRequest,
+   ActualizarFilaVirtualRequest,
    ActualizarMetodoPagoRequest, 
+   ActualizarPorcentajeGananciaRequest, 
    ActualizarTurnoLaboralRequest 
   } from '../../../../core/models/dtos/requests/configuracion.requests';
 import { MetodoPago } from '../../../../core/models/domain/metodo-pago';
 import { TurnoLaboral } from '../../../../core/models/domain/turno-laboral';
 import { FamiliaTipografica } from '../../../../core/models/domain/familia-tipografica';
+import { FilaVirtual } from '../../../../core/models/domain/fila-virtual';
+import { PorcentajesGanancia } from '../../../../core/models/domain/porcentajes-ganancia';
 
 @Injectable({
   providedIn: 'root',
@@ -48,11 +52,35 @@ export class ConfiguracionService {
   obtenerFamiliasTipograficas(): Observable<FamiliaTipografica[]>{
     return this.api.get<FamiliaTipografica[]>(`${this.endpoint}/familias-tipograficas`);
   }
+  obtenerFilaVirtual(): Observable<FilaVirtual>{
+    return this.api.get<FilaVirtual>(`${this.endpoint}/fila-virtual`)
 
+  }
+  actualizarFilaVirtual(data: FilaVirtual):Observable<void>{
+    return this.api.put<void>(`${this.endpoint}/habilitar-fila-virtual`,this.#aRequestFilaVirtual(data));
+  }
+
+  obtenerPorcentajes():Observable<PorcentajesGanancia>{
+    return this.api.get<PorcentajesGanancia>(`${this.endpoint}/obtener-porcentajes`);
+  }
+  actualizarPorcentajes(data: PorcentajesGanancia):Observable<void>{
+    return this.api.put<void>(`${this.endpoint}/actualizar-porcentajes`, this.#aRequestPorcentajes(data));
+  }
+  
+  
   //MAPPERS PRIVADOS
   //viven aca porque es la unica capa quenecesitan saber cómo convertir el domain
   // a contrato de backend. DEBATIR SI VA EN infra/mappers (capa externa);
-
+  
+  #aRequestFilaVirtual(data: FilaVirtual): ActualizarFilaVirtualRequest {
+    return { habilitada : data.habilitada}
+  }
+  #aRequestPorcentajes(data: PorcentajesGanancia):ActualizarPorcentajeGananciaRequest{
+    return { 
+      platos:data.platos.map((p) => ({id: p.id, porcentaje:p.porcentaje})),
+      bebidas: data.bebidas.map((b) => ({id: b.id, porcentaje: b.porcentaje})),
+    }
+  }
   #aRequestDatosLocal(datos:DatosLocal): ActualizarDatosLocalRequest { 
     return {
       nombre: datos.nombre,

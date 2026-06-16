@@ -18,3 +18,14 @@ export interface ActualizarTurnoLaboralRequest {
   horarioFin: string;
   esNocturno: boolean;
 }
+export interface ActualizarFilaVirtualRequest { 
+  habilitada: boolean;
+}
+export interface PorcentajeItemRequest{ 
+  id:number;
+  porcentaje: number;
+}
+export interface ActualizarPorcentajeGananciaRequest{ 
+  platos: PorcentajeItemRequest[];
+  bebidas: PorcentajeItemRequest[];
+}
