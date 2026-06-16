@@ -13,7 +13,6 @@ namespace PanComido.Presentacion.Mappers
                 ComandaId = pago.ComandaId,
                 MetodoPago = pago.MetodoDePago.ToString(),
                 Total = pago.Total,
-                HoraFin = pago.HoraFin?.ToString("dd/MM/yyyy HH:mm")
             };
         }
     }

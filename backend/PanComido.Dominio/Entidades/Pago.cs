@@ -15,7 +15,6 @@ namespace PanComido.Dominio.Entidades
         public MetodoPago MetodoDePago { get; set; }
         public string? ExternalReference { get; set; }
         public decimal Total { get; set; }
-        public DateTime? HoraFin { get; set; }
         public EstadoPago EstadoPago { get; set; }
     }
 }

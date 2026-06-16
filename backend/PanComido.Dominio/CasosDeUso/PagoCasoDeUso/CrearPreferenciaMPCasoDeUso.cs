@@ -16,14 +16,16 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
         private readonly IComandaRepositorio _comandaRepositorio;
         private readonly IMercadoPagoServicio _mercadoPagoServicio;
         private readonly ICalcularTotalComandaServicio _calcularTotalComandaServicio;
+        private readonly IRestauranteRepositorio _restauranteRepositorio;
         private readonly IPagoRepositorio _pagoRepositorio;
 
 
-        public CrearPreferenciaMPCasoDeUso(IComandaRepositorio comandaRepositorio, IMercadoPagoServicio mercadoPagoServicio, ICalcularTotalComandaServicio calcularTotalComandaServicio, IPagoRepositorio pagoRepositorio)
+        public CrearPreferenciaMPCasoDeUso(IComandaRepositorio comandaRepositorio, IMercadoPagoServicio mercadoPagoServicio, ICalcularTotalComandaServicio calcularTotalComandaServicio,IRestauranteRepositorio restauranteRepositorio, IPagoRepositorio pagoRepositorio)
         {
             _comandaRepositorio = comandaRepositorio;
             _mercadoPagoServicio = mercadoPagoServicio;
             _calcularTotalComandaServicio = calcularTotalComandaServicio;
+            _restauranteRepositorio = restauranteRepositorio;
             _pagoRepositorio = pagoRepositorio;
         }
 
@@ -37,7 +39,9 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
             decimal totalComanda = _calcularTotalComandaServicio.CalcularTotal(comanda);
 
             string externalReference = $"Comanda-{comandaId}";
-            string descripcion = $"Pago de comanda #{comandaId}";
+            Restaurante restaurante = await _restauranteRepositorio.ObtenerDatosDelLocalAsync(restauranteId);
+
+            string descripcion = $"Pago a {restaurante.Nombre}";
 
             string initPoint = await _mercadoPagoServicio.CrearPreferenciaAsync(externalReference, totalComanda, descripcion);
 

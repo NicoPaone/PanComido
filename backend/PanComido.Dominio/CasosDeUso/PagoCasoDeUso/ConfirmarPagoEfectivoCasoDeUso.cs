@@ -48,10 +48,8 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
             Pago pagoCreado = await _pagoRepositorio.CrearPagoAsync(pago);
 
             pagoCreado.ComandaId = comandaId;
-            //comanda.PagoID = pagoCreado.PagoId;
             comanda.Estado = EstadoComanda.Finalizada;
             comanda.HoraFin = DateTime.Now;
-            pagoCreado.HoraFin = comanda.HoraFin;
             await _comandaRepositorio.ActualizarAsync(comanda);
 
             await _mesaRepositorio.ActualizarEstadoAsync(comanda.MesaId, EstadoMesa.Disponible);

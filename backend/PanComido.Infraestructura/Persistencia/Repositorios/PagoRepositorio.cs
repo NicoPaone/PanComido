@@ -8,6 +8,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Entidades;
 
 namespace PanComido.Infraestructura.Persistencia.Repositorios
 {
@@ -35,6 +36,11 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
             pago.PagoId = efPago.Id;
             return pago;
+        }
+
+        public Task<Pago> ObtenerPagoPorExternalReferenceAsync(string externalReference)
+        {
+            throw new NotImplementedException();
         }
     }
 }
