@@ -92,10 +92,14 @@ export class ComandaState {
   );
 }
 
+
+
   /**
    * Confirmar pedido (envía items al backend)
    */
   confirmarPedido(): void {
+
+    
     const comandaId = this.#comandaId();
     const restauranteId = this.#restauranteId();
 
@@ -111,6 +115,11 @@ export class ComandaState {
       return;
     }
 
+    console.log('comandaId:', comandaId);
+console.log('restauranteId:', restauranteId);
+console.log('pedidos:', pedidos);
+
+
     this.#cargando.set(true);
     this.#error.set(null);
 
@@ -121,7 +130,10 @@ export class ComandaState {
       observacionesGenerales: p.observacionesGenerales ?? null
     }));
 
-    this.comandaService.confirmarPedido(comandaId, restauranteId, { items })
+    this.comandaService.confirmarPedido(comandaId, restauranteId,  {
+    items,
+    nombreComensal: 'Invitado'
+  } as any)
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe({
         next: (response) => {
@@ -136,10 +148,13 @@ export class ComandaState {
           this.pedidoService.limpiarPedidos();
         },
         error: (err) => {
-          console.error('Error al confirmar pedido:', err);
-          this.#error.set('Error al confirmar el pedido. Intenta nuevamente.');
-          this.#cargando.set(false);
-        }
+  console.error('Error completo:', err);
+  console.log('Error body:', err.error);
+  console.log('Errores de validación:', err.error?.errors);
+
+  this.#error.set('Error al confirmar el pedido. Intenta nuevamente.');
+  this.#cargando.set(false);
+}
       });
   }
 
