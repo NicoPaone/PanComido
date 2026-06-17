@@ -83,14 +83,16 @@ export class VerCarta {
   ngOnInit(): void {
     //this.mesaId.set(history.state?.mesaId ?? 1);
     this.mesaId.set(Number(this.route.snapshot.paramMap.get('mesaId')));
-this.cantidadPersonas.set(Number(this.route.snapshot.paramMap.get('cantidadPersonas')));
+this.cantidadPersonas.set(
+  Number(this.route.snapshot.paramMap.get('cantidadPersonas'))
+);
 const restauranteId = Number(this.route.snapshot.paramMap.get('restauranteId'));
-    this.cantidadPersonas.set(history.state?.cantidadPersonas ?? 1);
-    this.state.cargarCarta();
-    const sesionRaw = sessionStorage.getItem('sesionComensal');
 
-if (!sesionRaw) {
-  console.error('No hay sesión de comensal');
+    this.state.cargarCarta();
+const sesionRaw = sessionStorage.getItem('sesionComensal');
+
+if (!sesionRaw || sesionRaw === 'undefined') {
+  console.error('No hay sesión válida de comensal');
   return;
 }
 
@@ -114,5 +116,26 @@ const sesion = JSON.parse(sesionRaw);
   agregarAlPedido(item: ItemPedido): void {
     this.pedidoService.agregarPedido(item);
   }
+
+  toggleQr(): void {
+  const sesionRaw = sessionStorage.getItem('sesionComensal');
+
+
+
+if (!sesionRaw || sesionRaw === 'undefined') {
+  console.error('No hay sesión de comensal');
+
+  // opcional: redirigir
+  this.router.navigate(['/comensal/seleccionar-mesa']);
+  return;
+}
+
+  const sesion = JSON.parse(sesionRaw);
+
+  this.urlInvitacion =
+    `${window.location.origin}/comensal/unirse/${sesion.comandaId}`;
+
+  this.mostrarQr = !this.mostrarQr;
+}
 }
 

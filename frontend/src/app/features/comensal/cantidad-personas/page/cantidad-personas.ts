@@ -44,19 +44,6 @@ export class CantidadPersonas {
     this.cantidadPersonas = numero;
   }
 
-  // aceptar() {
-  //   const restauranteId = history.state?.restauranteId ?? 1;
-  //   this.comandaState.ocuparMesa(this.mesaId, this.cantidadPersonas, restauranteId)
-  //     .pipe(takeUntilDestroyed(this.destroyRef))
-  //     .subscribe(() => {
-  //       this.router.navigate(['/comensal/ver-carta'], {
-  //         state: { mesaId: this.mesaId, cantidadPersonas: this.cantidadPersonas, restauranteId }
-  //       });
-  //     });
-  // }
-
-  
-
 
 aceptar() {
   console.log('route params:', this.route.snapshot.paramMap.keys);
@@ -66,16 +53,49 @@ aceptar() {
   const restauranteId = Number(this.route.snapshot.paramMap.get('restauranteId'));
   const mesaId = Number(this.route.snapshot.paramMap.get('mesaId'));
 
-  this.comandaState.ocuparMesa(mesaId, this.cantidadPersonas, restauranteId)
-    .pipe(takeUntilDestroyed(this.destroyRef))
-    .subscribe(() => {
+  this.comandaState.ocuparMesa(restauranteId, mesaId, this.cantidadPersonas)
+  .pipe(takeUntilDestroyed(this.destroyRef))
+ .subscribe({
+ next: (res: any) => {
+  if (!res || !res.idComandaGenerada) {
+    console.error('Respuesta inválida del backend', res);
+    return;
+  }
+
+  sessionStorage.setItem('sesionComensal', JSON.stringify(res));
+
+  this.router.navigate([
+    '/comensal/ver-carta',
+    restauranteId,
+    mesaId,
+    this.cantidadPersonas
+  ]);
+},
+error: (err) => {
+  console.error('Error ocupar mesa:', err);
+
+  if (err.status === 409) {
+    console.warn('Mesa ocupada, intentando recuperar sesión...');
+
+    const sesion = sessionStorage.getItem('sesionComensal');
+
+    if (sesion && sesion !== 'undefined') {
+      const parsed = JSON.parse(sesion);
+
       this.router.navigate([
         '/comensal/ver-carta',
-        restauranteId,
-        mesaId,
+        parsed.restauranteId,
+        parsed.mesaId,
         this.cantidadPersonas
       ]);
-    });
+      return;
+    }
+
+    alert('Mesa ocupada pero no hay sesión válida');
+  }
+}
+});
+
 }
 
   volverAtras() {

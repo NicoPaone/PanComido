@@ -28,11 +28,17 @@
   </div>
 
   <app-boton-comensal style="margin-bottom: 10px;" [backgroundColor]="configuracion.paleta.botonSecundario"
-            [textColor]="configuracion.paleta.textoOscuro"  (click)="mostrarQr = !mostrarQr">
+            [textColor]="configuracion.paleta.textoOscuro"  (clicked)="toggleQr()">>
   Invitar a la mesa
   </app-boton-comensal>
 
-@if (mostrarQr) {
+<!-- @if (mostrarQr) {
+  <qrcode
+    [qrdata]="urlInvitacion"
+    [width]="250">
+  </qrcode>
+} -->
+  @if (mostrarQr && urlInvitacion) {
   <qrcode
     [qrdata]="urlInvitacion"
     [width]="250">

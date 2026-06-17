@@ -58,30 +58,39 @@ export class ComandaState {
    * Ocupar mesa y crear comanda
    * Devuelve Observable para que el componente pueda reaccionar cuando termina
    */
-  ocuparMesa(mesaId: number, cantidadComensales: number, restauranteId: number): Observable<void> {
-    this.#restauranteId.set(restauranteId);
-    this.#mesaId.set(mesaId);
-    this.#cargando.set(true);
-    this.#error.set(null);
+ ocuparMesa(
+  restauranteId: number,
+  mesaId: number,
+  cantidadComensales: number
+): Observable<any> {
+  this.#restauranteId.set(restauranteId);
+  this.#mesaId.set(mesaId);
+  this.#cargando.set(true);
+  this.#error.set(null);
 
-    return this.comandaService.ocuparMesa(restauranteId, mesaId, cantidadComensales).pipe(
-      tap(response => {
-        this.#mesaInfo.set(response.mesa);
-        this.#comandaId.set(response.idComandaGenerada);
-        sessionStorage.setItem('restauranteId', String(restauranteId));
-        sessionStorage.setItem('comandaId', String(response.idComandaGenerada));
-        sessionStorage.setItem('mesaId', String(mesaId));
-        this.#cargando.set(false);
-      }),
-      catchError(err => {
-        console.error('Error al ocupar mesa:', err);
-        this.#error.set('No se pudo ocupar la mesa. Intenta nuevamente.');
-        this.#cargando.set(false);
-        return throwError(() => err);
-      }),
-      map(() => void 0)
-    );
-  }
+  return this.comandaService.ocuparMesa(
+    restauranteId,
+    mesaId,
+    cantidadComensales
+  ).pipe(
+    tap(response => {
+      this.#mesaInfo.set(response.mesa);
+      this.#comandaId.set(response.idComandaGenerada);
+
+      sessionStorage.setItem('restauranteId', String(restauranteId));
+      sessionStorage.setItem('comandaId', String(response.idComandaGenerada));
+      sessionStorage.setItem('mesaId', String(mesaId));
+
+      this.#cargando.set(false);
+    }),
+    catchError(err => {
+      console.error('Error al ocupar mesa:', err);
+      this.#error.set('No se pudo ocupar la mesa. Intenta nuevamente.');
+      this.#cargando.set(false);
+      return throwError(() => err);
+    })
+  );
+}
 
   /**
    * Confirmar pedido (envía items al backend)
