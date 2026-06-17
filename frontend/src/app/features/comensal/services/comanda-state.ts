@@ -6,11 +6,13 @@ import { PedidoState } from './pedido.state';
 import { EstadoPedido } from '../../../core/models/domain/comanda';
 import { Mesa } from '../../../core/models/domain/mesa';
 import { ComandaHubService } from '../../../core/services/hubs/comanda/comanda-hub-service';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class ComandaState {
   private comandaService = inject(ComandaService);
   private pedidoService = inject(PedidoState);
+  private http = inject(HttpClient);
   private comandaHub = inject(ComandaHubService);
   readonly #destroyRef = inject(DestroyRef);
 
@@ -184,4 +186,11 @@ export class ComandaState {
     const num = Number(val);
     return Number.isFinite(num) ? num : null;
   }
+
+  obtenerBienvenidaInvitado(comandaId: number) {
+  return this.http.get<any>(
+    `https://localhost:7204/comanda/${comandaId}/comensal/bienvenida-invitado`
+  );
+}
+
 }

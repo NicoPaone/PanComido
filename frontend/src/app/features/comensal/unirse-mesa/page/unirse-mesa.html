@@ -1,0 +1,17 @@
+<div class="container">
+
+  <h2>Te estás uniendo a la Mesa {{ datosMesa?.numeroMesa }}</h2>
+
+  <p>Restaurante: {{ datosMesa?.nombreRestaurante }}</p>
+
+  <input
+    type="text"
+    placeholder="Tu nombre"
+    (input)="nombre.set($any($event.target).value)"
+  />
+
+  <button (click)="unirse()">
+    Unirme a la mesa
+  </button>
+
+</div>

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 
+
 export const COMENSAL_ROUTES: Routes = [
   {
     path: '',
@@ -17,21 +18,28 @@ export const COMENSAL_ROUTES: Routes = [
     loadComponent: () =>
       import('./escanear-mesa/page/escanear-mesa').then(m => m.ScanQr)
   },
+  
   {
-    path: 'nro-de-mesa',
-    loadComponent: () =>
-      import('./nro-de-mesa/page/nro-de-mesa').then(m => m.NroDeMesa)
-  },
+  path: 'cantidad-personas/:restauranteId/:mesaId',
+  loadComponent: () =>
+    import('./cantidad-personas/page/cantidad-personas')
+      .then(m => m.CantidadPersonas)
+},
+  // {
+  //   path: 'cantidad-personas',
+  //   loadComponent: () =>
+  //     import('./cantidad-personas/page/cantidad-personas').then(m => m.CantidadPersonas)
+  // },
+  // {
+  //   path: 'ver-carta',
+  //   loadComponent: () =>
+  //     import('./ver-carta/page/ver-carta').then(m => m.VerCarta)
+  // },
   {
-    path: 'cantidad-personas',
-    loadComponent: () =>
-      import('./cantidad-personas/page/cantidad-personas').then(m => m.CantidadPersonas)
-  },
-  {
-    path: 'ver-carta',
-    loadComponent: () =>
-      import('./ver-carta/page/ver-carta').then(m => m.VerCarta)
-  },
+  path: 'ver-carta/:restauranteId/:mesaId/:cantidadPersonas',
+  loadComponent: () =>
+    import('./ver-carta/page/ver-carta').then(m => m.VerCarta)
+},
   {
     path: 'pedido',
     loadComponent: () =>
@@ -67,6 +75,16 @@ export const COMENSAL_ROUTES: Routes = [
     loadComponent: () =>
       import('./pago-confirmado/page/pago-confirmado')
         .then(m => m.PagoConfirmado)
-  }
+  },
+{
+  path: 'mesa/:restauranteId/:mesaId',
+  loadComponent: () =>
+    import('./nro-de-mesa/page/nro-de-mesa').then(m => m.NroDeMesa)
+},
+{
+  path: 'unirse/:comandaId',
+  loadComponent: () =>
+    import('./unirse-mesa/page/unirse-mesa').then(m => m.UnirseMesa)
+}
 ];
 

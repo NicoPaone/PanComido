@@ -27,6 +27,18 @@
     </button>
   </div>
 
+  <app-boton-comensal style="margin-bottom: 10px;" [backgroundColor]="configuracion.paleta.botonSecundario"
+            [textColor]="configuracion.paleta.textoOscuro"  (click)="mostrarQr = !mostrarQr">
+  Invitar a la mesa
+  </app-boton-comensal>
+
+@if (mostrarQr) {
+  <qrcode
+    [qrdata]="urlInvitacion"
+    [width]="250">
+  </qrcode>
+}
+
   <!-- Dropdown Ordenar (restaurado) -->
   <div class="ordenar-section">
     <div class="dropdown-ordenar">
@@ -72,6 +84,7 @@
 <app-filtros-carta-overlay (cerrar)="mostrarFiltros.set(false)" (toggleTipo)="state.toggleTipoPlato($event)"
   (limpiar)="state.limpiarFiltros()" />
 }
+
 
 <app-comensal-footer-cart [cantidadItems]="cantidadTotalPedido()" [total]="totalPedido()"
   [configuracion]="configuracion" (verPedido)="irAPedido()" [mesaId]="mesaId()" [enviando]="comensalState.enviando()"

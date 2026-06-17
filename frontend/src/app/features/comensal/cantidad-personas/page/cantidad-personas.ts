@@ -6,6 +6,7 @@ import { HeaderCantidadPersonas } from '../components/header-cantidad-personas/h
 import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
 import { configuracionRestauranteMock } from '../../../../infra/mocks/configuracion-restaurante.mock-data';
 import { ComandaState } from '../../services/comanda-state';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,6 +24,7 @@ export class CantidadPersonas {
   private router = inject(Router);
   private comandaState = inject(ComandaState);
   private destroyRef = inject(DestroyRef);
+  private route = inject(ActivatedRoute);
 
   cantidadPersonas = 1;
   maxCantidad = 5;
@@ -42,16 +44,39 @@ export class CantidadPersonas {
     this.cantidadPersonas = numero;
   }
 
-  aceptar() {
-    const restauranteId = history.state?.restauranteId ?? 1;
-    this.comandaState.ocuparMesa(this.mesaId, this.cantidadPersonas, restauranteId)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.router.navigate(['/comensal/ver-carta'], {
-          state: { mesaId: this.mesaId, cantidadPersonas: this.cantidadPersonas, restauranteId }
-        });
-      });
-  }
+  // aceptar() {
+  //   const restauranteId = history.state?.restauranteId ?? 1;
+  //   this.comandaState.ocuparMesa(this.mesaId, this.cantidadPersonas, restauranteId)
+  //     .pipe(takeUntilDestroyed(this.destroyRef))
+  //     .subscribe(() => {
+  //       this.router.navigate(['/comensal/ver-carta'], {
+  //         state: { mesaId: this.mesaId, cantidadPersonas: this.cantidadPersonas, restauranteId }
+  //       });
+  //     });
+  // }
+
+  
+
+
+aceptar() {
+  console.log('route params:', this.route.snapshot.paramMap.keys);
+  console.log('restauranteId:', this.route.snapshot.paramMap.get('restauranteId'));
+  console.log('mesaId:', this.route.snapshot.paramMap.get('mesaId'));
+
+  const restauranteId = Number(this.route.snapshot.paramMap.get('restauranteId'));
+  const mesaId = Number(this.route.snapshot.paramMap.get('mesaId'));
+
+  this.comandaState.ocuparMesa(mesaId, this.cantidadPersonas, restauranteId)
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe(() => {
+      this.router.navigate([
+        '/comensal/ver-carta',
+        restauranteId,
+        mesaId,
+        this.cantidadPersonas
+      ]);
+    });
+}
 
   volverAtras() {
     this.router.navigate(['/comensal/nro-de-mesa'], {

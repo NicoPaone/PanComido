@@ -1,5 +1,5 @@
 import { Component, HostListener, inject, input, signal , ChangeDetectionStrategy} from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Buscador } from '../../../../../app/shared/ui/buscador/buscador';
 import { ListaPlatosComensalComponent } from '../components/lista-platos-comensal/lista-platos-comensal';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -12,6 +12,8 @@ import { ComensalFooterCart } from '../../components/comensal-footer-cart/comens
 import { FiltrosCartaOverlay } from '../../components/filtros-carta-overlay/filtros-carta-overlay';
 import { CommonModule } from '@angular/common';
 import { ComensalState } from '../../services/comensal-state';
+import { QRCodeComponent } from 'angularx-qrcode';
+import {BotonComensal} from '../../../../shared/ui/botones/boton-comensal/boton-comensal';
 
 
 @Component({
@@ -24,7 +26,10 @@ import { ComensalState } from '../../services/comensal-state';
     Buscador,
     FontAwesomeModule,
     ComensalFooterCart,
-    FiltrosCartaOverlay
+    FiltrosCartaOverlay,
+    QRCodeComponent,
+    BotonComensal
+    
   ],
   templateUrl: './ver-carta.html',
   styleUrls: ['./ver-carta.css'],
@@ -36,6 +41,7 @@ export class VerCarta {
   private pedidoService = inject(PedidoState);
   state = inject(CartaState);
   comensalState = inject(ComensalState);
+  private route = inject(ActivatedRoute);
 
   logoUrl = input<string>('assets/images/logo/logo_el_ferroviario.png');
 
@@ -47,10 +53,14 @@ export class VerCarta {
 
   menuOrdenarAbierto = signal(false);
   ordenSeleccionado = signal('');
+  mostrarQr = false;
+  urlInvitacion = '';
 
   // Usar computed del servicio para reactividad
   cantidadTotalPedido = this.pedidoService.cantidadTotal;
   totalPedido = this.pedidoService.totalPrecio;
+
+  
 
   @HostListener('document:click', ['$event'])
   onClickOutSide(event: Event) {
@@ -71,10 +81,27 @@ export class VerCarta {
   }
 
   ngOnInit(): void {
-    this.mesaId.set(history.state?.mesaId ?? 1);
+    //this.mesaId.set(history.state?.mesaId ?? 1);
+    this.mesaId.set(Number(this.route.snapshot.paramMap.get('mesaId')));
+this.cantidadPersonas.set(Number(this.route.snapshot.paramMap.get('cantidadPersonas')));
+const restauranteId = Number(this.route.snapshot.paramMap.get('restauranteId'));
     this.cantidadPersonas.set(history.state?.cantidadPersonas ?? 1);
     this.state.cargarCarta();
+    const sesionRaw = sessionStorage.getItem('sesionComensal');
+
+if (!sesionRaw) {
+  console.error('No hay sesión de comensal');
+  return;
+}
+
+const sesion = JSON.parse(sesionRaw);
+  this.urlInvitacion =
+    `${window.location.origin}/comensal/unirse/${sesion.comandaId}`;
   }
+
+
+
+
 
   onSearch(valor: string): void {
     this.state.setBusqueda(valor);
