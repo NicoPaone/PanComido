@@ -334,7 +334,7 @@ export class ModificarCartaStateService {
       ingredientes: (updatedPlato.receta ?? []).map(ingrediente => ({
         insumoId: Number(ingrediente.id),
         cantidad: ingrediente.cantidad,
-        opcional: false
+        opcional: ingrediente.opcional ?? false
       }))
     };
 
