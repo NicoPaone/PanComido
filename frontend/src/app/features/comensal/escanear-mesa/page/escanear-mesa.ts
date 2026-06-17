@@ -22,62 +22,58 @@ export class ScanQr implements AfterViewInit, OnDestroy {
 
   constructor(private router: Router) { }
 
-//   async ngAfterViewInit() {
-//     try {
-//       const devices = await BrowserMultiFormatReader.listVideoInputDevices();
-//       if (devices.length === 0) {
-//         console.warn('No se encontraron dispositivos de cámara');
-//         return;
-//       }
+async ngAfterViewInit() {
+  try {
+    const devices = await BrowserMultiFormatReader.listVideoInputDevices();
 
-//       this.controls = await this.scanner.decodeFromVideoDevice(
-//         devices[0].deviceId,
-//         this.video.nativeElement,
-//         (result) => {
-//           if (result && !this.scanResult) {
-//             this.scanResult = true;
+    if (devices.length === 0) {
+      console.warn('No se encontraron dispositivos de cámara');
+      return;
+    }
 
-//             const texto = result.getText();
+    this.controls = await this.scanner.decodeFromVideoDevice(
+      devices[0].deviceId,
+      this.video.nativeElement,
+      (result) => {
+        if (result && !this.scanResult) {
+          this.scanResult = true;
 
-//             console.log('QR leído:', texto);
+          const texto = result.getText();
 
-//            // const mesaId = parseInt(texto, 10);
+          console.log('QR leído:', texto);
 
-//  const mesaId = 5;
+          const mesaId = parseInt(texto, 10);
 
+          if (!Number.isInteger(mesaId)) {
+            console.warn('QR inválido:', texto);
+            return;
+          }
 
-//             if (!Number.isInteger(mesaId)) {
-//               console.warn('QR inválido:', texto);
-//               return;
-//             }
-
-           
-
-//             this.router.navigate([
-//               '/comensal/mesa',
-//               1,       // restauranteId fijo
-//               mesaId   // viene del QR
-//             ]);
-//           }
-//         }
-//       );
-//     } catch (e) {
-//       console.error('Error al inicializar escáner:', e);
-//     }
-//   }
-ngAfterViewInit() {
-  console.log('SIMULANDO QR');
-
-  const mesaId = 5; // simulás QR
-
-  setTimeout(() => {
-    this.router.navigate([
-      '/comensal/cantidad-personas',
-      1,
-      mesaId
-    ]);
-  }, 1000);
+          this.router.navigate([
+            '/comensal/mesa',
+            1,      // restauranteId
+            mesaId  // obtenido del QR
+          ]);
+        }
+      }
+    );
+  } catch (e) {
+    console.error('Error al inicializar escáner:', e);
+  }
 }
+// ngAfterViewInit() {
+//   console.log('SIMULANDO QR');
+
+//   const mesaId = 5; // simulás QR
+
+//   setTimeout(() => {
+//     this.router.navigate([
+//       '/comensal/cantidad-personas',
+//       1,
+//       mesaId
+//     ]);
+//   }, 1000);
+// }
 
   ngOnDestroy() {
     this.controls?.stop();
