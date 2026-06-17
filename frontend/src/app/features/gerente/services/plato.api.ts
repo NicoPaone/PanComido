@@ -205,7 +205,8 @@ export class PlatoApiService {
           nombre: insumo?.nombre ?? `Insumo ${ingrediente.insumoId}`,
           cantidad: ingrediente.cantidad,
           unidadMedida: insumo?.unidadMedida ?? '',
-          costoUnitario: insumo?.costoUnitario ?? 0
+          costoUnitario: insumo?.costoUnitario ?? 0,
+          opcional: ingrediente.opcional
         };
       })
     };
@@ -232,7 +233,8 @@ export class PlatoApiService {
         nombre: '',
         cantidad: ingrediente.cantidad,
         unidadMedida: '',
-        costoUnitario: 0
+        costoUnitario: 0,
+        opcional: ingrediente.opcional
       }))
     };
   }
