@@ -41,13 +41,14 @@ namespace PanComido.Infraestructura.ServiciosExternos.MercadoPago
                 },
 
                 ExternalReference = externalReference,
-                BackUrls = new PreferenceBackUrlsRequest
-                {
-                    //cambiar a nuestrar urls reales (que no sean localhost)
-                    Success = "https://www.canva.com/design/DAHGUbn6JMw/n6vSal9_WcBau8Dr-y9ndg/edit",
-                    Failure = "https://app.clickup.com/90171215989/v/b/6-901713590751-2",
-                    Pending = "https://docs.google.com/document/d/1zVWsYOVtVLKrRgEQGIw9keGWLPDCA-ck959O6R-hsbI/edit?tab=t.iozh2a2tr3lv"
-                },
+                NotificationUrl = "https://pentomic-karla-unavoidably.ngrok-free.dev/pago/webhook/mercado-pago",
+                //BackUrls = new PreferenceBackUrlsRequest
+                //{
+                //    //cambiar a nuestrar urls reales (que no sean localhost)
+                //    Success = "https://www.canva.com/design/DAHGUbn6JMw/n6vSal9_WcBau8Dr-y9ndg/edit",
+                //    Failure = "https://app.clickup.com/90171215989/v/b/6-901713590751-2",
+                //    Pending = "https://docs.google.com/document/d/1zVWsYOVtVLKrRgEQGIw9keGWLPDCA-ck959O6R-hsbI/edit?tab=t.iozh2a2tr3lv"
+                //},
                 //Agregar cuando no sea local porque puede romper
                //AutoReturn = "approved"
             };

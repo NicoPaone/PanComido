@@ -20,14 +20,15 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
             _pagoRepositorio = pagoRepositorio;
         }
 
-        public async Task<Pago> EjecutarAsync(int paymentId)
+        public async Task<Pago?> EjecutarAsync(long paymentId)
         {
-            ResultadoPagoMP resultadoPagoMP = await _mercadoPagoServicio.ConsultarPagoAsync(paymentId);
-            Pago pago = await _pagoRepositorio.ObtenerPagoPorExternalReferenceAsync(resultadoPagoMP.ExternalReference);
-            if (resultadoPagoMP.Status == "Approved")
-            {
+            ResultadoPagoMP resultado = await _mercadoPagoServicio.ConsultarPagoAsync(paymentId);
 
+            if (resultado.Status == "approved")
+            {
+               return await _pagoRepositorio.ConfirmarPagoAsync(resultado.ExternalReference);
             }
+            return null;
         }
     }
 }

@@ -141,6 +141,7 @@ builder.Services.AddScoped<TurnoLaboralEntityMapper>();
 builder.Services.AddScoped<FilaVirtualEntityMapper>();
 builder.Services.AddScoped<FamiliaTipograficaEntityMapper>();
 builder.Services.AddScoped<PorcentajesCategoriaEntityMapper>();
+builder.Services.AddScoped<PagoEntityMapper>();
 
 
 
@@ -257,6 +258,7 @@ builder.Services.AddScoped<ListarFamiliasTipograficasCasoDeUso>();
 builder.Services.AddScoped<ObtenerPorcentajesCasoDeUso>();
 builder.Services.AddScoped<ActualizarPorcentajesCasoDeUso>();
 builder.Services.AddScoped<CrearPreferenciaMPCasoDeUso>();
+builder.Services.AddScoped<ConfirmarPagoMPCasoDeUso>();
 
 
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
