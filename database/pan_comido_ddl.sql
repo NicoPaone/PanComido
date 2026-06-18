@@ -234,7 +234,10 @@ CREATE TABLE mesa (
     posicion_y_fin      INTEGER NOT NULL,
     numero              INTEGER NOT NULL,
     codigo_invitacion   TEXT,
-    cant_personas_max   INTEGER NOT NULL
+    cant_personas_max   INTEGER NOT NULL,
+    tipo_elemento       INTEGER NOT NULL DEFAULT 1,
+    color               TEXT,
+    texto_objeto        TEXT
 );
 
 CREATE TABLE mozo_mesa (
