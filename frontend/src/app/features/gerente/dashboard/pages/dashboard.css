@@ -150,10 +150,7 @@ h1 {
   line-height: 1;
 }
 
-.executive-summary {
-  display: grid;
-  grid-template-columns: minmax(300px, 0.82fr) minmax(0, 1.55fr);
-  gap: 1rem;
+.attention-section {
   margin-bottom: 1.25rem;
 }
 
@@ -293,6 +290,7 @@ h1 {
 .kpi-card.orders::before { background: #1691ac; }
 .kpi-card.success::before { background: #22c55e; }
 .kpi-card.warning::before { background: #f59e0b; }
+.kpi-card.info::before { background: #8b5cf6; }
 
 .kpi-meta {
   display: flex;
@@ -338,14 +336,10 @@ h1 {
 
 .insight-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(340px, 0.65fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
   align-items: stretch;
   margin-bottom: 1.25rem;
-}
-
-.insight-grid.month-mode {
-  grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.55fr);
 }
 
 .operations-grid {
@@ -432,6 +426,8 @@ h1 {
 }
 
 .monthly-panel {
+  display: flex;
+  flex-direction: column;
   overflow: visible !important;
 }
 
@@ -777,11 +773,14 @@ h1 {
 
 .monthly-chart {
   display: grid;
+  flex: 1;
   width: 100%;
   gap: 0.7rem;
   min-height: 300px;
-  padding: 1rem;
+  padding: 1rem 1rem 1.5rem 1rem;
   align-items: end;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .month-column {
@@ -822,6 +821,7 @@ h1 {
 
 .month-heatmap {
   display: grid;
+  flex: 1;
   gap: 0.8rem;
   width: 100%;
   padding: 1.25rem;
@@ -1222,10 +1222,10 @@ h1 {
 
 .billing-donut-layout {
   display: grid;
-  grid-template-columns: minmax(150px, 0.72fr) minmax(0, 1fr);
-  gap: 1rem;
-  align-items: center;
-  padding: 1rem;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: start;
+  padding: 1.25rem 1rem;
 }
 
 .billing-panel.month-mode .billing-donut-layout {
@@ -1237,7 +1237,7 @@ h1 {
 
 .billing-donut {
   position: relative;
-  width: min(190px, 100%);
+  width: min(240px, 100%);
   aspect-ratio: 1;
   border-radius: 50%;
   margin: 0 auto;
@@ -1538,13 +1538,17 @@ h1 {
 }
 
 @media (max-width: 1180px) {
+  .insight-grid,
   .kpi-grid,
   .dashboard-grid,
-  .insight-grid,
   .operations-grid,
   .commercial-reading,
   .executive-summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  .insight-grid {
+    grid-template-columns: 1fr;
   }
 
   .sales-panel {
@@ -1639,7 +1643,6 @@ h1 {
 
   .kpi-grid,
   .dashboard-grid,
-  .insight-grid,
   .operations-grid,
   .commercial-reading,
   .executive-summary {

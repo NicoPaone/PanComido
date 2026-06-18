@@ -2,15 +2,6 @@
 -- PAN COMIDO - Script de creación de base de datos (PostgreSQL / Supabase)
 -- Grupo 5 - "No se deJava"
 -- ============================================================
--- Jerarquía de herencia:
---   Articulo (supertipo)
---   ├── Plato            (id_articulo → articulo.id)
---   └── Insumo           (id_articulo → articulo.id)  [tiene categoria_insumo_id y unidad_medida_id]
---       └── Ingrediente   (id_insumo → insumo.id_articulo)  [tabla marcadora para relaciones]
---           └── IngredientePreparado (id_ingrediente → ingrediente.id_insumo)
---
--- Las bebidas se identifican por categoria_insumo.tipo_aplica = 2 (no tienen tabla propia)
--- ============================================================
 
 BEGIN;
 
@@ -92,19 +83,31 @@ CREATE TABLE metodo_de_pago (
     descripcion     TEXT NOT NULL UNIQUE
 );
 
+CREATE TABLE estado_pago (
+    id              SERIAL PRIMARY KEY,
+    descripcion     TEXT NOT NULL UNIQUE
+);
+
+-- Familias tipográficas predefinidas con categoría estética
+CREATE TABLE familia_tipografica (
+    id                  SERIAL PRIMARY KEY,
+    categoria           TEXT NOT NULL,       -- 'Moderna', 'Clásica', 'Rústica'
+    tipografia_titulo   TEXT NOT NULL,       -- tipografía para títulos/encabezados
+    tipografia_cuerpo   TEXT NOT NULL        -- tipografía para texto general
+);
+
 -- ============================================================
 -- 2. RESTAURANTE Y DEPENDENCIAS DIRECTAS
 -- ============================================================
 
 CREATE TABLE restaurante (
-    id                  SERIAL PRIMARY KEY,
-    direccion_id        INTEGER NOT NULL REFERENCES ubicacion(id),
-    nombre              TEXT NOT NULL,
-    imagen              TEXT,
-    color_principal     TEXT,
-    color_secundario    TEXT,
-    texto_principal     TEXT,
-    texto_secundario    TEXT
+    id                      SERIAL PRIMARY KEY,
+    direccion_id            INTEGER NOT NULL REFERENCES ubicacion(id),
+    familia_tipografica_id  INTEGER REFERENCES familia_tipografica(id),
+    nombre                  TEXT NOT NULL,
+    imagen                  TEXT,
+    color_principal         TEXT,
+    color_secundario        TEXT
 );
 
 CREATE TABLE carta (
@@ -127,14 +130,12 @@ CREATE TABLE grilla (
     cant_filas      INTEGER NOT NULL
 );
 
--- CAMBIO: agregado campo habilitada
 CREATE TABLE fila_virtual (
     id              SERIAL PRIMARY KEY,
     restaurante_id  INTEGER NOT NULL REFERENCES restaurante(id),
     habilitada      BOOLEAN NOT NULL DEFAULT TRUE
 );
 
--- CAMBIO: agregado campo eliminado (eliminación lógica)
 CREATE TABLE bodega (
     id              SERIAL PRIMARY KEY,
     restaurante_id  INTEGER NOT NULL REFERENCES restaurante(id),
@@ -143,7 +144,6 @@ CREATE TABLE bodega (
     eliminado       BOOLEAN NOT NULL DEFAULT FALSE
 );
 
--- CAMBIO: agregado campo eliminado (eliminación lógica)
 CREATE TABLE proveedor (
     id                      SERIAL PRIMARY KEY,
     restaurante_id          INTEGER NOT NULL REFERENCES restaurante(id),
@@ -152,7 +152,6 @@ CREATE TABLE proveedor (
     eliminado               BOOLEAN NOT NULL DEFAULT FALSE
 );
 
--- Relación N:M CategoriaInsumo <-> Proveedor
 CREATE TABLE categoria_insumo_proveedor (
     categoria_insumo_id INTEGER NOT NULL REFERENCES categoria_insumo(id),
     proveedor_id        INTEGER NOT NULL REFERENCES proveedor(id),
@@ -173,11 +172,24 @@ CREATE TABLE sugerencia_plato_ia (
     json            JSONB NOT NULL
 );
 
+CREATE TABLE porcentaje_categoria_plato (
+    restaurante_id      INTEGER NOT NULL REFERENCES restaurante(id),
+    categoria_plato_id  INTEGER NOT NULL REFERENCES categoria_plato(id),
+    porcentaje          DECIMAL NOT NULL DEFAULT 20,
+    PRIMARY KEY (restaurante_id, categoria_plato_id)
+);
+
+CREATE TABLE porcentaje_categoria_bebida (
+    restaurante_id      INTEGER NOT NULL REFERENCES restaurante(id),
+    categoria_insumo_id INTEGER NOT NULL REFERENCES categoria_insumo(id),
+    porcentaje          DECIMAL NOT NULL DEFAULT 20,
+    PRIMARY KEY (restaurante_id, categoria_insumo_id)
+);
+
 -- ============================================================
 -- 3. EMPLEADOS Y ROLES
 -- ============================================================
 
--- CAMBIO: agregado campo eliminado (eliminación lógica)
 CREATE TABLE empleado (
     id              SERIAL PRIMARY KEY,
     restaurante_id  INTEGER NOT NULL REFERENCES restaurante(id),
@@ -201,9 +213,8 @@ CREATE TABLE mozo (
     activo          BOOLEAN NOT NULL DEFAULT TRUE
 );
 
--- Relación N:M Empleado <-> TurnoLaboral
 CREATE TABLE empleado_turno_laboral (
-    empleado_id     INTEGER NOT NULL REFERENCES empleado(id),
+    empleado_id      INTEGER NOT NULL REFERENCES empleado(id),
     turno_laboral_id INTEGER NOT NULL REFERENCES turno_laboral(id),
     PRIMARY KEY (empleado_id, turno_laboral_id)
 );
@@ -226,7 +237,6 @@ CREATE TABLE mesa (
     cant_personas_max   INTEGER NOT NULL
 );
 
--- Relación N:M Mozo <-> Mesa
 CREATE TABLE mozo_mesa (
     mozo_id     INTEGER NOT NULL REFERENCES mozo(id_empleado),
     mesa_id     INTEGER NOT NULL REFERENCES mesa(id),
@@ -265,14 +275,12 @@ CREATE TABLE turno_fila (
     id                  SERIAL PRIMARY KEY,
     fila_virtual_id     INTEGER NOT NULL REFERENCES fila_virtual(id),
     numero              INTEGER NOT NULL
-    -- tiempo_espera es campo calculado en la app
 );
 
 -- ============================================================
--- 7. ARTÍCULOS (supertipo) Y TODA LA JERARQUÍA
+-- 7. ARTÍCULOS
 -- ============================================================
 
--- CAMBIO: agregado campo eliminado (eliminación lógica)
 CREATE TABLE articulo (
     id                      SERIAL PRIMARY KEY,
     carta_id                INTEGER REFERENCES carta(id),
@@ -284,28 +292,23 @@ CREATE TABLE articulo (
     precio_promocional      DECIMAL,
     url_imagen              TEXT,
     eliminado               BOOLEAN NOT NULL DEFAULT FALSE
-    -- cantidad_actual es campo calculado en la app
 );
 
--- Relación N:M Articulo <-> ConfiguracionArticulo
 CREATE TABLE articulo_configuracion_articulo (
     articulo_id                 INTEGER NOT NULL REFERENCES articulo(id),
     configuracion_articulo_id   INTEGER NOT NULL REFERENCES configuracion_articulo(id),
     PRIMARY KEY (articulo_id, configuracion_articulo_id)
 );
 
--- Subtipo: Plato (hereda de Articulo)
 CREATE TABLE plato (
     id_articulo             INTEGER PRIMARY KEY REFERENCES articulo(id),
     tipo_plato_id           INTEGER NOT NULL REFERENCES tipo_plato(id),
     categoria_plato_id      INTEGER NOT NULL REFERENCES categoria_plato(id),
-    tiempo_preparacion_base INTEGER NOT NULL, -- en minutos
+    tiempo_preparacion_base INTEGER NOT NULL,
     destacado               BOOLEAN NOT NULL DEFAULT FALSE,
     sugerencia              BOOLEAN NOT NULL DEFAULT FALSE
-    -- costo_base es campo calculado en la app
 );
 
--- Subtipo: Insumo (hereda de Articulo)
 CREATE TABLE insumo (
     id_articulo         INTEGER PRIMARY KEY REFERENCES articulo(id),
     categoria_insumo_id INTEGER NOT NULL REFERENCES categoria_insumo(id),
@@ -313,37 +316,32 @@ CREATE TABLE insumo (
     stock_minimo        DECIMAL NOT NULL DEFAULT 0
 );
 
--- Subtipo de Insumo: Ingrediente (tabla marcadora para relaciones con Plato e IngredientePreparado)
 CREATE TABLE ingrediente (
     id_insumo   INTEGER PRIMARY KEY REFERENCES insumo(id_articulo)
 );
 
--- Sub-subtipo: IngredientePreparado (hereda de Ingrediente)
 CREATE TABLE ingrediente_preparado (
     id_ingrediente  INTEGER PRIMARY KEY REFERENCES ingrediente(id_insumo)
 );
 
--- Relación N:M Ingrediente <-> IngredientePreparado (composición)
 CREATE TABLE ingrediente_ingrediente_preparado (
-    ingrediente_id          INTEGER NOT NULL REFERENCES ingrediente(id_insumo),
+    ingrediente_id           INTEGER NOT NULL REFERENCES ingrediente(id_insumo),
     ingrediente_preparado_id INTEGER NOT NULL REFERENCES ingrediente_preparado(id_ingrediente),
-    cantidad        DECIMAL NOT NULL, -- por ahora siempre en kg
+    cantidad                 DECIMAL NOT NULL,
     PRIMARY KEY (ingrediente_id, ingrediente_preparado_id)
 );
 
--- Relación N:M Restriccion <-> Plato
 CREATE TABLE restriccion_plato (
     restriccion_id  INTEGER NOT NULL REFERENCES restriccion(id),
     plato_id        INTEGER NOT NULL REFERENCES plato(id_articulo),
     PRIMARY KEY (restriccion_id, plato_id)
 );
 
--- Relación N:M Plato <-> Ingrediente
 CREATE TABLE plato_ingrediente (
     plato_id        INTEGER NOT NULL REFERENCES plato(id_articulo),
     ingrediente_id  INTEGER NOT NULL REFERENCES ingrediente(id_insumo),
     opcional        BOOLEAN NOT NULL DEFAULT FALSE,
-    cantidad        DECIMAL NOT NULL, -- por ahora siempre en kg
+    cantidad        DECIMAL NOT NULL,
     PRIMARY KEY (plato_id, ingrediente_id)
 );
 
@@ -365,7 +363,6 @@ CREATE TABLE lote (
 -- 9. PAGOS Y CIERRES
 -- ============================================================
 
--- Relación N:M MetodoDePago <-> Restaurante
 CREATE TABLE metodo_de_pago_restaurante (
     restaurante_id      INTEGER NOT NULL REFERENCES restaurante(id),
     metodo_de_pago_id   INTEGER NOT NULL REFERENCES metodo_de_pago(id),
@@ -374,37 +371,45 @@ CREATE TABLE metodo_de_pago_restaurante (
 );
 
 CREATE TABLE cierre (
-    id                  SERIAL PRIMARY KEY,
-    restaurante_id      INTEGER NOT NULL REFERENCES restaurante(id),
-    turno_laboral_id    INTEGER NOT NULL REFERENCES turno_laboral(id),
-    diferencia          DECIMAL NOT NULL DEFAULT 0,
-    sobrante            DECIMAL NOT NULL DEFAULT 0
+    id                      SERIAL PRIMARY KEY,
+    restaurante_id          INTEGER NOT NULL REFERENCES restaurante(id),
+    turno_laboral_id        INTEGER NOT NULL REFERENCES turno_laboral(id),
+    diferencia              DECIMAL NOT NULL DEFAULT 0,
+    sobrante                DECIMAL NOT NULL DEFAULT 0,
+    total_efectivo          DECIMAL NOT NULL DEFAULT 0,
+    total_tarjeta           DECIMAL NOT NULL DEFAULT 0,
+    total_transferencia     DECIMAL NOT NULL DEFAULT 0,
+    total_mercado_pago      DECIMAL NOT NULL DEFAULT 0
+);
+
+-- NOTA: la tabla `pago` se crea más abajo (sección 10), DESPUÉS de `comanda`,
+-- porque ahora `pago` referencia a `comanda` (relación 1 comanda : N pagos).
+
+-- ============================================================
+-- 10. COMANDAS Y PAGOS
+-- ============================================================
+
+CREATE TABLE comanda (
+    id                        SERIAL PRIMARY KEY,
+    mesa_id                   INTEGER NOT NULL REFERENCES mesa(id),
+    restaurante_id            INTEGER NOT NULL REFERENCES restaurante(id),
+    estado_comanda_id         INTEGER NOT NULL REFERENCES estado_comanda(id),
+    cant_comensales           INTEGER NOT NULL,
+    hora_inicio               TIMESTAMP NOT NULL DEFAULT NOW(),
+    hora_fin                  TIMESTAMP,
+    hora_ultimo_cambio_estado TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE pago (
     id                  SERIAL PRIMARY KEY,
+    comanda_id          INTEGER NOT NULL REFERENCES comanda(id),
     cierre_id           INTEGER REFERENCES cierre(id),
     metodo_pago_id      INTEGER NOT NULL REFERENCES metodo_de_pago(id),
+    estado_pago_id      INTEGER NOT NULL REFERENCES estado_pago(id),
+    external_reference  TEXT,
     total               DECIMAL NOT NULL
 );
 
--- ============================================================
--- 10. COMANDAS
--- ============================================================
-
-CREATE TABLE comanda (
-    id                  SERIAL PRIMARY KEY,
-    mesa_id             INTEGER NOT NULL REFERENCES mesa(id),
-    pago_id             INTEGER REFERENCES pago(id),
-    restaurante_id      INTEGER NOT NULL REFERENCES restaurante(id),
-    estado_comanda_id   INTEGER NOT NULL REFERENCES estado_comanda(id),
-    cant_comensales     INTEGER NOT NULL,
-    hora_inicio         TIMESTAMP NOT NULL DEFAULT NOW(),
-    hora_fin            TIMESTAMP,
-    hora_ultimo_cambio_estado TIMESTAMP NOT NULL DEFAULT NOW()
-);
-
--- Relación N:M Articulo <-> Comanda (con atributos de relación)
 CREATE TABLE articulo_comanda (
     id                          SERIAL PRIMARY KEY,
     comanda_id                  INTEGER NOT NULL REFERENCES comanda(id),
@@ -412,7 +417,8 @@ CREATE TABLE articulo_comanda (
     cantidad                    INTEGER NOT NULL DEFAULT 1,
     entregado                   BOOLEAN NOT NULL DEFAULT FALSE,
     observaciones_ingrediente   TEXT,
-    observaciones_generales     TEXT
+    observaciones_generales     TEXT,
+    nombre_comensal             TEXT NOT NULL DEFAULT 'Anónimo' -- agregado para diferenciar quien pidio que
 );
 
 -- ============================================================
@@ -420,18 +426,17 @@ CREATE TABLE articulo_comanda (
 -- ============================================================
 
 CREATE TABLE pedido (
-    id                  SERIAL PRIMARY KEY,
-    proveedor_id        INTEGER NOT NULL REFERENCES proveedor(id),
-    estado_pedido_id    INTEGER NOT NULL REFERENCES estado_pedido(id),
-    fecha               DATE NOT NULL DEFAULT CURRENT_DATE
+    id               SERIAL PRIMARY KEY,
+    proveedor_id     INTEGER NOT NULL REFERENCES proveedor(id),
+    estado_pedido_id INTEGER NOT NULL REFERENCES estado_pedido(id),
+    fecha            DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
--- Relación N:M Pedido <-> Insumo
 CREATE TABLE pedido_insumo (
-    pedido_id       INTEGER NOT NULL REFERENCES pedido(id),
-    insumo_id       INTEGER NOT NULL REFERENCES insumo(id_articulo),
-    precio_compra   DECIMAL NOT NULL,
-    cantidad        DECIMAL NOT NULL,
+    pedido_id     INTEGER NOT NULL REFERENCES pedido(id),
+    insumo_id     INTEGER NOT NULL REFERENCES insumo(id_articulo),
+    precio_compra DECIMAL NOT NULL,
+    cantidad      DECIMAL NOT NULL,
     PRIMARY KEY (pedido_id, insumo_id)
 );
 

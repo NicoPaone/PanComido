@@ -25,15 +25,16 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
             var insumos = await _insumoRepositorio.ObtenerInsumosProximosAVencerAsync(restauranteId);
             var hoy = DateOnly.FromDateTime(DateTime.Now);
 
-            foreach (var insumo in insumos)
+            var insumosFiltrados = insumos
+                .Where(i => i.Vencimiento.HasValue && (i.Vencimiento.Value.DayNumber - hoy.DayNumber) <= 7)
+                .ToList();
+
+            foreach (var insumo in insumosFiltrados)
             {
-                if (insumo.Vencimiento.HasValue)
-                {
-                    insumo.CriticidadVencimiento = CalcularCriticidad(hoy, insumo.Vencimiento.Value);
-                }
+                insumo.CriticidadVencimiento = CalcularCriticidad(hoy, insumo.Vencimiento.Value);
             }
 
-            return insumos;
+            return insumosFiltrados;
         }
 
         private CriticidadVencimiento? CalcularCriticidad(DateOnly hoy, DateOnly vencimiento)

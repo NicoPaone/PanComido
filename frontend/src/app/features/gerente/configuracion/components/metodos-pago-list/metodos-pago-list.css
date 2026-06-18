@@ -1,0 +1,12 @@
+.custom-switch .form-check-input {
+  width: 3em;
+  height: 1.5em;
+  cursor: pointer;
+}
+.custom-switch .form-check-input:checked {
+  background-color: var(--status-success);
+  border-color: var(--status-success);
+}
+.custom-switch .form-check-input:focus {
+  box-shadow: none;
+}

@@ -19,6 +19,11 @@ namespace PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso
 
         public async Task<List<TurnoLaboral>> EjecutarAsync(int restauranteId, List<TurnoLaboral> turnosLaborales)
         {
+            foreach (var turno in turnosLaborales)
+            {
+                if (!turno.EsNocturno && turno.HorarioInicio >= turno.HorarioFin)
+                    throw new ArgumentException("El horario de inicio debe ser anterior al horario de fin.");
+            }
             return await _turnoLaboralRepositorio.ActualizarTurnosLaboralesAsync(restauranteId, turnosLaborales);
 
         }

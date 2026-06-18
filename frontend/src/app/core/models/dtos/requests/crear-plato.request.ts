@@ -5,7 +5,6 @@ export interface CrearPlatoRequestDto {
   tiempoPreparacionBase: number;
   tipoPlatoId: number;
   categoriaPlatoId: number;
-  urlImagen: string;
   restriccionesIds: number[];
   ingredientes: CrearPlatoIngredienteDto[];
 }

@@ -42,7 +42,11 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<EstadoMesa> EstadoMesas { get; set; }
 
+    public virtual DbSet<EstadoPago> EstadoPagos { get; set; }
+
     public virtual DbSet<EstadoPedido> EstadoPedidos { get; set; }
+
+    public virtual DbSet<FamiliaTipografica> FamiliaTipograficas { get; set; }
 
     public virtual DbSet<FilaVirtual> FilaVirtuals { get; set; }
 
@@ -81,6 +85,10 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Plato> Platos { get; set; }
 
     public virtual DbSet<PlatoIngrediente> PlatoIngredientes { get; set; }
+
+    public virtual DbSet<PorcentajeCategoriaBebidum> PorcentajeCategoriaBebida { get; set; }
+
+    public virtual DbSet<PorcentajeCategoriaPlato> PorcentajeCategoriaPlatos { get; set; }
 
     public virtual DbSet<Proveedor> Proveedors { get; set; }
 
@@ -144,6 +152,7 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.Cantidad).HasDefaultValue(1);
             entity.Property(e => e.Entregado).HasDefaultValue(false);
+            entity.Property(e => e.NombreComensal).HasDefaultValueSql("'Anónimo'::text");
 
             entity.HasOne(d => d.Articulo).WithMany(p => p.ArticuloComanda)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -251,8 +260,6 @@ public partial class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("comanda_mesa_id_fkey");
 
-            entity.HasOne(d => d.Pago).WithMany(p => p.Comanda).HasConstraintName("comanda_pago_id_fkey");
-
             entity.HasOne(d => d.Restaurante).WithMany(p => p.Comanda)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("comanda_restaurante_id_fkey");
@@ -309,9 +316,19 @@ public partial class AppDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("estado_mesa_pkey");
         });
 
+        modelBuilder.Entity<EstadoPago>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("estado_pago_pkey");
+        });
+
         modelBuilder.Entity<EstadoPedido>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("estado_pedido_pkey");
+        });
+
+        modelBuilder.Entity<FamiliaTipografica>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("familia_tipografica_pkey");
         });
 
         modelBuilder.Entity<FilaVirtual>(entity =>
@@ -515,6 +532,14 @@ public partial class AppDbContext : DbContext
 
             entity.HasOne(d => d.Cierre).WithMany(p => p.Pagos).HasConstraintName("pago_cierre_id_fkey");
 
+            entity.HasOne(d => d.Comanda).WithMany(p => p.Pagos)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("pago_comanda_id_fkey");
+
+            entity.HasOne(d => d.EstadoPago).WithMany(p => p.Pagos)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("pago_estado_pago_id_fkey");
+
             entity.HasOne(d => d.MetodoPago).WithMany(p => p.Pagos)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("pago_metodo_pago_id_fkey");
@@ -584,6 +609,36 @@ public partial class AppDbContext : DbContext
                 .HasConstraintName("plato_ingrediente_plato_id_fkey");
         });
 
+        modelBuilder.Entity<PorcentajeCategoriaBebidum>(entity =>
+        {
+            entity.HasKey(e => new { e.RestauranteId, e.CategoriaInsumoId }).HasName("porcentaje_categoria_bebida_pkey");
+
+            entity.Property(e => e.Porcentaje).HasDefaultValueSql("20");
+
+            entity.HasOne(d => d.CategoriaInsumo).WithMany(p => p.PorcentajeCategoriaBebida)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("porcentaje_categoria_bebida_categoria_insumo_id_fkey");
+
+            entity.HasOne(d => d.Restaurante).WithMany(p => p.PorcentajeCategoriaBebida)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("porcentaje_categoria_bebida_restaurante_id_fkey");
+        });
+
+        modelBuilder.Entity<PorcentajeCategoriaPlato>(entity =>
+        {
+            entity.HasKey(e => new { e.RestauranteId, e.CategoriaPlatoId }).HasName("porcentaje_categoria_plato_pkey");
+
+            entity.Property(e => e.Porcentaje).HasDefaultValueSql("20");
+
+            entity.HasOne(d => d.CategoriaPlato).WithMany(p => p.PorcentajeCategoriaPlatos)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("porcentaje_categoria_plato_categoria_plato_id_fkey");
+
+            entity.HasOne(d => d.Restaurante).WithMany(p => p.PorcentajeCategoriaPlatos)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("porcentaje_categoria_plato_restaurante_id_fkey");
+        });
+
         modelBuilder.Entity<Proveedor>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("proveedor_pkey");
@@ -611,6 +666,8 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.Direccion).WithMany(p => p.Restaurantes)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("restaurante_direccion_id_fkey");
+
+            entity.HasOne(d => d.FamiliaTipografica).WithMany(p => p.Restaurantes).HasConstraintName("restaurante_familia_tipografica_id_fkey");
         });
 
         modelBuilder.Entity<Restriccion>(entity =>
@@ -668,7 +725,9 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<TurnoLaboral>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("turno_laboral_pkey");
+
             entity.Property(e => e.EsNocturno).HasDefaultValue(false);
+
             entity.HasOne(d => d.Restaurante).WithMany(p => p.TurnoLaborals)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("turno_laboral_restaurante_id_fkey");

@@ -10,35 +10,38 @@ export class ComandaService {
   private api = inject(ApiService);
 
   /**
-   * POST /mesa/{mesaId}/ocupar
+   * POST /mesa/comensal/{restauranteId}/{mesaId}/ocupar
    * Body: { cantidadComensales: number }
    */
-  ocuparMesa(mesaId: number, cantidadComensales: number): Observable<MesaOcuparResponse> {
+  ocuparMesa(restauranteId: number, mesaId: number, cantidadComensales: number): Observable<MesaOcuparResponse> {
     return this.api.post<MesaOcuparResponse>(
-      `mesa/${mesaId}/ocupar`,
+      `mesa/comensal/${restauranteId}/${mesaId}/ocupar`,
       { cantidadComensales }
     );
   }
 
   /**
    * Confirmar pedido con items del carrito
+   * POST /comanda/{comandaId}/comensal/{restauranteId}/confirmar-pedido
    */
   confirmarPedido(
     comandaId: number,
+    restauranteId: number,
     request: ConfirmarPedidoRequest
   ): Observable<ComandaClienteResponse> {
     return this.api.post<ComandaClienteResponse>(
-      `comanda/${comandaId}/cliente/confirmar-pedido`,
+      `comanda/${comandaId}/comensal/${restauranteId}/confirmar-pedido`,
       request
     );
   }
 
   /**
    * Consultar estado actual del pedido
+   * GET /comanda/{comandaId}/comensal/{restauranteId}/estado-pedido
    */
-  obtenerEstado(comandaId: number): Observable<ComandaClienteResponse> {
+  obtenerEstado(comandaId: number, restauranteId: number): Observable<ComandaClienteResponse> {
     return this.api.get<ComandaClienteResponse>(
-      `comanda/${comandaId}/cliente/estado-pedido`
+      `comanda/${comandaId}/comensal/${restauranteId}/estado-pedido`
     );
   }
 }

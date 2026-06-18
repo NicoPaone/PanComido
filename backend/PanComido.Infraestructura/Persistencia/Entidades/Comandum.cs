@@ -16,9 +16,6 @@ public partial class Comandum
     [Column("mesa_id")]
     public int MesaId { get; set; }
 
-    [Column("pago_id")]
-    public int? PagoId { get; set; }
-
     [Column("restaurante_id")]
     public int RestauranteId { get; set; }
 
@@ -48,9 +45,8 @@ public partial class Comandum
     [InverseProperty("Comanda")]
     public virtual Mesa Mesa { get; set; } = null!;
 
-    [ForeignKey("PagoId")]
     [InverseProperty("Comanda")]
-    public virtual Pago? Pago { get; set; }
+    public virtual ICollection<Pago> Pagos { get; set; } = new List<Pago>();
 
     [ForeignKey("RestauranteId")]
     [InverseProperty("Comanda")]

@@ -1,7 +1,6 @@
 import { Component, EventEmitter, input, Input, output, Output, signal , ChangeDetectionStrategy} from '@angular/core';
 
 import { ItemPedido } from '../../../../../core/models/domain/item-pedido';
-import { BotonComensal } from '../../../../../shared/ui/botones/boton-comensal/boton-comensal';
 import { configuracionRestauranteMock } from '../../../../../infra/mocks/configuracion-restaurante.mock-data';
 import { CartaItem } from '../../../../../core/models/domain/carta-item';
 import { Boton } from '../../../../../shared/ui/botones/boton/boton';
@@ -11,7 +10,7 @@ import { Boton } from '../../../../../shared/ui/botones/boton/boton';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-card-plato-comensal',
   standalone: true,
-  imports: [BotonComensal, Boton],
+  imports: [Boton],
   templateUrl: './card-plato-comensal.html',
   styleUrls: ['./card-plato-comensal.css'],
 })

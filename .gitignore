@@ -519,5 +519,7 @@ bazel-out/
 .DS_Store
 Thumbs.db
 .eslintcache
-Estructura Frontend V2- PanComido.pdf
-Mock_Interceptor_teoria.pdf
+
+.atl/
+PanComido-Arquitectura_Frontend.pdf
+cierre_caja_api_spec.pdf

@@ -14,9 +14,11 @@ namespace PanComido.Presentacion.Mappers
                 Imagen = restaurante.Imagen,
                 ColorPrincipal = restaurante.ColorPrincipal,
                 ColorSecundario = restaurante.ColorSecundario,
-                TextoPrincipal = restaurante.TextoPrincipal,
-                TextoSecundario = restaurante.TextoSecundario,
-                Direccion = restaurante.Ubicacion?.Direccion
+                Direccion = restaurante.Ubicacion?.Direccion,
+                FamiliaTipograficaId = restaurante.FamiliaTipograficaId,
+                FamiliaCategoria = restaurante.FamiliaTipografica?.Categoria,
+                TipografiaTitulo = restaurante.FamiliaTipografica?.TipografiaTitulo,
+                TipografiaCuerpo = restaurante.FamiliaTipografica?.TipografiaCuerpo
             };
         }
 
@@ -25,11 +27,9 @@ namespace PanComido.Presentacion.Mappers
             return new DOM.Restaurante
             {
                 Nombre = restauranteRequest.Nombre,
-                Imagen = restauranteRequest.Imagen,
                 ColorPrincipal = restauranteRequest.ColorPrincipal,
                 ColorSecundario = restauranteRequest.ColorSecundario,
-                TextoPrincipal = restauranteRequest.TextoPrincipal,
-                TextoSecundario = restauranteRequest.TextoSecundario,
+                FamiliaTipograficaId = restauranteRequest.FamiliaTipograficaId
             };
         }
     }

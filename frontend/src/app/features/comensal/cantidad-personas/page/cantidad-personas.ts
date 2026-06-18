@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject , ChangeDetectionStrategy} from '@angular/core';
+import { DestroyRef, inject, Component, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { Boton } from '../../../../shared/ui/botones/boton/boton';
 import { HeaderCantidadPersonas } from '../components/header-cantidad-personas/header-cantidad-personas';
@@ -12,7 +12,6 @@ import { ComandaState } from '../../services/comanda-state';
   selector: 'app-cantidad-personas',
   standalone: true,
   imports: [
-    CommonModule,
     Boton,
     HeaderCantidadPersonas,
     BotonComensal
@@ -23,6 +22,7 @@ import { ComandaState } from '../../services/comanda-state';
 export class CantidadPersonas {
   private router = inject(Router);
   private comandaState = inject(ComandaState);
+  private destroyRef = inject(DestroyRef);
 
   cantidadPersonas = 1;
   maxCantidad = 5;
@@ -42,15 +42,15 @@ export class CantidadPersonas {
     this.cantidadPersonas = numero;
   }
 
-  async aceptar() {
-    try {
-      await this.comandaState.ocuparMesa(this.mesaId, this.cantidadPersonas);
-      this.router.navigate(['/comensal/ver-carta'], {
-        state: { mesaId: this.mesaId, cantidadPersonas: this.cantidadPersonas }
+  aceptar() {
+    const restauranteId = history.state?.restauranteId ?? 1;
+    this.comandaState.ocuparMesa(this.mesaId, this.cantidadPersonas, restauranteId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.router.navigate(['/comensal/ver-carta'], {
+          state: { mesaId: this.mesaId, cantidadPersonas: this.cantidadPersonas, restauranteId }
+        });
       });
-    } catch (error) {
-      console.error('Error al ocupar mesa:', error);
-    }
   }
 
   volverAtras() {

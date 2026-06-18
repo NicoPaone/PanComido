@@ -26,6 +26,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             var efRestaurante = await _ctx.Restaurantes
                 .Include(r => r.Direccion)
+                .Include(r => r.FamiliaTipografica)
                 .FirstOrDefaultAsync(r => r.Id == restauranteId);
 
             if (efRestaurante == null)

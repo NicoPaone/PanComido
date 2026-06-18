@@ -1,8 +1,6 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
+Ôªøusing MercadoPago.Config;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using PanComido.Dominio.CasosDeUso.ArticuloCasosDeUso;
 using PanComido.Dominio.CasosDeUso.AutenticacionCasosDeUso;
@@ -11,7 +9,9 @@ using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso.IA;
 using PanComido.Dominio.CasosDeUso.BodegaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.CartaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
+using PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso;
 using PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso;
+using PanComido.Dominio.CasosDeUso.Dashboard;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
@@ -20,7 +20,6 @@ using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.CasosDeUso.UnidadMedidaCasosDeUso;
-using PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Repositorios.IA;
 using PanComido.Dominio.Interfaces.Servicios;
@@ -40,9 +39,10 @@ using PanComido.Presentacion.Filtros;
 using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Servicios;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
-using PanComido.Dominio.CasosDeUso.Dashboard;
-
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -64,7 +64,7 @@ builder.Services.AddSwaggerGen(options =>
       Scheme = "Bearer",
       BearerFormat = "JWT",
       In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-      Description = "Peg· el token JWT ac·"
+      Description = "Peg√° el token JWT ac√°"
    });
    
    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
@@ -116,6 +116,8 @@ builder.Services.AddScoped<LoginCasoDeUso>();
 builder.Services.AddScoped<IEmpleadoRepositorio, EmpleadoRepositorio>();
 builder.Services.AddScoped<IContraseniaHasher, ContraseniaHasher>();
 
+//MERCADO PAGO
+MercadoPagoConfig.AccessToken = builder.Configuration["MercadoPago:AccessToken"];
 
 // Mappers de Infraestructura (Dominio <-> EF)
 builder.Services.AddScoped<InsumoEntityMapper>();
@@ -136,6 +138,8 @@ builder.Services.AddScoped<MetodoDePagoEntityMapper>();
 builder.Services.AddScoped<RestauranteEntityMapper>();
 builder.Services.AddScoped<TurnoLaboralEntityMapper>();
 builder.Services.AddScoped<FilaVirtualEntityMapper>();
+builder.Services.AddScoped<FamiliaTipograficaEntityMapper>();
+builder.Services.AddScoped<PorcentajesCategoriaEntityMapper>();
 
 
 
@@ -152,7 +156,7 @@ builder.Services.AddScoped<LoteRecepcionMapper>();
 builder.Services.AddScoped<MesaMapper>();
 builder.Services.AddScoped<LoteMapper>();
 builder.Services.AddScoped<LlamadoMapper>();
-builder.Services.AddScoped<CartaMapper>();
+builder.Services.AddScoped<CartaComensalMapper>();
 builder.Services.AddScoped<FormularioParaCrearPlatoMapper>();
 builder.Services.AddScoped<PlatoMapper>();
 builder.Services.AddScoped<ArticuloCartaMapper>();
@@ -161,9 +165,11 @@ builder.Services.AddScoped<RestauranteMapper>();
 builder.Services.AddScoped<TurnoLaboralMapper>();
 builder.Services.AddScoped<FilaVirtualMapper>();
 builder.Services.AddScoped<DashboardMapper>();
-
+builder.Services.AddScoped<FamiliaTipograficaMapper>();
+builder.Services.AddScoped<PorcentajesGananciaMapper>();
 builder.Services.AddScoped<ArticuloMapper>();
 builder.Services.AddScoped<PagoMapper>();
+builder.Services.AddScoped<DatosBienvenidaMesaMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -185,6 +191,8 @@ builder.Services.AddScoped<IMetodoDePagoRepositorio, MetodoDePagoRepositorio>();
 builder.Services.AddScoped<IRestauranteRepositorio, RestauranteRepositorio>();
 builder.Services.AddScoped<ITurnoLaboralRepositorio, TurnoLaboralRepositorio>();
 builder.Services.AddScoped<IFilaVirtualRepositorio, FilaVirtualRepositorio>();
+builder.Services.AddScoped<IFamiliaTipograficaRepositorio, FamiliaTipograficaRepositorio>();
+builder.Services.AddScoped<IPorcentajesCategoriaRepositorio, PorcentajesGananciaRepositorio>();
 
 
 
@@ -212,7 +220,7 @@ builder.Services.AddScoped<ObtenerDatosParaFormularioCrearPlato>();
 builder.Services.AddScoped<CrearPlatoCasoDeUso>();
 builder.Services.AddScoped<ModificarPlatoCasoDeUso>();
 builder.Services.AddScoped<ObtenerPlatoPorIdCasoDeUso>();
-builder.Services.AddScoped<ObtenerCartaCasoDeUso>();
+builder.Services.AddScoped<ObtenerCartaComensalCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConStockCriticoCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConVencimientoProximoCasoDeUso>();
 builder.Services.AddScoped<LlamarMozoCasoDeUso>();
@@ -235,7 +243,8 @@ builder.Services.AddScoped<ModificarProveedorCasoDeUso>();
 builder.Services.AddScoped<EliminarProveedorCasoDeuso>();
 builder.Services.AddScoped<ObtenerProveedorCasoDeUso>();
 builder.Services.AddScoped<ObtenerVencimientosYCriticidadDashboardCasoDeUso>();
-builder.Services.AddScoped<PanComido.Dominio.CasosDeUso.Dashboard.ObtenerRendimientoComercialCasoDeUso>();
+builder.Services.AddScoped<ObtenerRendimientoComercialCasoDeUso>();
+builder.Services.AddScoped<ObtenerResumenOperativoCasoDeUso>();
 builder.Services.AddScoped<ObtenerMetodosDePagoCasoDeUso>();
 builder.Services.AddScoped<ActualizarMetodosDePagoCasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosDelLocalCasoDeUso>();
@@ -243,10 +252,13 @@ builder.Services.AddScoped<ActualizarDatosDelLocalCasoDeUso>();
 builder.Services.AddScoped<ObtenerTurnosLaboralesCasoDeUso>();
 builder.Services.AddScoped<ActualizarTurnosLaboralesCasoDeUso>();
 builder.Services.AddScoped<ObtenerFilaVirtualCasoDeUso>();
-builder.Services.AddScoped<ActualizarFilaVirtualCasoDeUSo>();
-
-
+builder.Services.AddScoped<ActualizarFilaVirtualCasoDeUso>();
+builder.Services.AddScoped<ListarFamiliasTipograficasCasoDeUso>();
+builder.Services.AddScoped<ObtenerDatosMesaBienvenidaCasoDeUso>();
+builder.Services.AddScoped<ObtenerPorcentajesCasoDeUso>();
+builder.Services.AddScoped<ActualizarPorcentajesCasoDeUso>();
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
+builder.Services.AddScoped<ObtenerDatosInvitadoBienvenidaAComandaCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
@@ -254,9 +266,8 @@ builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticu
 builder.Services.AddScoped<ISugerenciaPlatosIAServicio, GeminiSugerenciaPlatosIAServicio >();
 builder.Services.AddScoped<IGestionStockServicio, GestionStockServicio>();
 builder.Services.AddScoped<IVencimientosProximosInsumosServicio, VencimientosProximosInsumosServicio>();
-builder.Services.AddScoped<ICantidadDeMesasServicio, CantidadDeMesasServicio>();
+builder.Services.AddScoped<ITiempoDePreparacionPlatoServicio, TiempoDePreparacionPlatoServicio>();
 
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 //Servicios externos
 builder.Services.AddScoped<IComandaNotificador, ComandaNotificadorSignalR>();
@@ -265,6 +276,10 @@ builder.Services.Configure<GeminiConfiguracion>(builder.Configuration.GetSection
 builder.Services.AddScoped<GeminiResponseMapper>();
 builder.Services.AddScoped<SugerenciaIAEntityMapper>();
 builder.Services.AddScoped<ISugerenciaIARepositorio, SugerenciaIARepositorio>();
+builder.Services.AddScoped<IImagenServicio,CloudinaryImagenServicio>();
+
+// Excepcion Handler
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddHttpClient();
 

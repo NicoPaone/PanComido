@@ -7,7 +7,8 @@ import { Llamado } from '../../../core/models/domain/llamado';
 export class PagoService {
   private api = inject(ApiService);
 
-  solicitarPagoEfectivo(comandaId: number): Observable<Llamado> {
-    return this.api.post<Llamado>(`pago/solicitar-efectivo/${comandaId}`, {});
+  solicitarPagoEfectivo(comandaId: number, restauranteId: number): Observable<Llamado> {
+    return this.api.post<Llamado>(`pago/solicitar-efectivo/${comandaId}/comensal/${restauranteId}`, {});
   }
 }
+  

@@ -111,15 +111,11 @@ if (categorias.length > 0) {
     this._cargando.set(true);
     this.api.obtenerCarta().subscribe({
       next: (data) => {
-         console.log('Primer item:', data[0]);
-  console.log('Restricciones primer item:', data[0]?.restricciones);
-
         this._items.set(data);
         this._cargando.set(false);
       },
       error: () => this._cargando.set(false)
     });
-    
   }
 
   setBusqueda(valor: string): void {

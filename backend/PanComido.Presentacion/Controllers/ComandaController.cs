@@ -20,10 +20,13 @@ namespace PanComido.Presentacion.Controllers
         private readonly ModificarEstadoComandaCasoDeUso _modificarEstadoComandaCasoDeUso;
         private readonly ConfirmarPedidoClienteAComandaCasoDeUso _confirmarPedidoCasoDeUso;
         private readonly MarcarItemsEntregadosCasoDeUso _marcarItemsEntregadosCasoDeUso;
-        private readonly ComandaMapper _mapper;
         private readonly LlamarMozoComandaCasoDeUso _llamarMozoCasoDeUso;
+        private readonly ObtenerDatosInvitadoBienvenidaAComandaCasoDeUso _obtenerDatosInvitadoBienvenidaAComandaCasoDeUso;
 
         private readonly IComandaRepositorio _comandaRepositorio;
+
+        private readonly ComandaMapper _mapper;
+
 
 
         public ComandaController(
@@ -32,6 +35,7 @@ namespace PanComido.Presentacion.Controllers
             ConfirmarPedidoClienteAComandaCasoDeUso confirmarPedidoCasoDeUso,
             MarcarItemsEntregadosCasoDeUso marcarItemsEntregadosCasoDeUso,
             LlamarMozoComandaCasoDeUso llamarMozoCasoDeUso,
+            ObtenerDatosInvitadoBienvenidaAComandaCasoDeUso obtenerDatosInvitadoBienvenidaAComandaCasoDeUso,
             ComandaMapper mapper,
             IComandaRepositorio comandaRepositorio)
         {
@@ -39,11 +43,13 @@ namespace PanComido.Presentacion.Controllers
             _modificarEstadoComandaCasoDeUso = modificar;
             _confirmarPedidoCasoDeUso = confirmarPedidoCasoDeUso;
             _llamarMozoCasoDeUso = llamarMozoCasoDeUso;
-            _listarComandasActivasCocinaCasoDeUso = listarComandaActivasCasoDeUso;
             _modificarEstadoComandaCasoDeUso = modificar;
             _marcarItemsEntregadosCasoDeUso = marcarItemsEntregadosCasoDeUso;
-            _mapper = mapper;
+            _obtenerDatosInvitadoBienvenidaAComandaCasoDeUso = obtenerDatosInvitadoBienvenidaAComandaCasoDeUso;
             _comandaRepositorio = comandaRepositorio;
+
+            _mapper = mapper;
+
 
         }
 
@@ -68,7 +74,7 @@ namespace PanComido.Presentacion.Controllers
             return Ok(comandaDto);
         }
 
-        [HttpPut("{comandaId}/entregar-items")]
+      [HttpPut("{comandaId}/entregar-items")]
       [Authorize(Roles = "Mozo")]
 
       public async Task<ActionResult<ComandaResponseDto>> MarcarItemComandaEntregado(int comandaId, [FromBody] List<int> itemsEntregados)
@@ -78,41 +84,33 @@ namespace PanComido.Presentacion.Controllers
             return Ok(comandaDto);
         }
 
-        [HttpPost("{comandaId}/cliente/confirmar-pedido")]
-        public async Task<ActionResult<ComandaClienteEstadoResponseDto>> ConfirmarPedido(int comandaId, [FromBody] ConfirmarPedidoClienteRequestDto request)
+        [HttpGet("{comandaId}/comensal/bienvenida-invitado")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ObtenerBienvenidaInvitado(int comandaId)
         {
-            try
-            {
-                int restauranteId = HttpContext.ObtenerRestauranteId();
+            BienvenidaDatosInvitadoComanda datosDominio = await _obtenerDatosInvitadoBienvenidaAComandaCasoDeUso.EjecutarAsync(comandaId);
 
-                List<ArticuloComanda> articulosSolicitados = _mapper.ParaListaArticuloComandaDominio(request);
-
-                Comanda comandaActualizada = await _confirmarPedidoCasoDeUso.EjecutarAsync(restauranteId, comandaId, articulosSolicitados);
-
-                ComandaClienteEstadoResponseDto responseDto = _mapper.ParaEstadoClienteDto(comandaActualizada);
-
-                return Ok(responseDto);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { mensaje = ex.Message });
-            }
-            catch (ArgumentException ex)
-            {
-                return NotFound(new { mensaje = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { mensaje = "Ocurrió un error al procesar el pedido.", detalle = ex.Message });
-            }
+            return Ok(_mapper.aInvitadoBienvenidaComandaDto(datosDominio));
         }
 
-        [HttpGet("{comandaId}/cliente/estado-pedido")]
-        public async Task<ActionResult<ComandaClienteEstadoResponseDto>> ObtenerEstadoComanda(int comandaId)
+        [HttpPost("{comandaId}/comensal/{restauranteId}/confirmar-pedido")]
+        [AllowAnonymous]
+        public async Task<ActionResult<ComandaClienteEstadoResponseDto>> ConfirmarPedido(int comandaId, int restauranteId, [FromBody] ConfirmarPedidoClienteRequestDto request)
         {
+            List<ArticuloComanda> articulosSolicitados = _mapper.ParaListaArticuloComandaDominio(request);
+            Comanda comandaActualizada = await _confirmarPedidoCasoDeUso.EjecutarAsync(restauranteId, comandaId, articulosSolicitados);
+            ComandaClienteEstadoResponseDto responseDto = _mapper.ParaEstadoClienteDto(comandaActualizada);
+            return Ok(responseDto);
+        }
+
+        [HttpGet("{comandaId}/comensal/{restauranteId}/estado-pedido")]
+        [AllowAnonymous]
+        public async Task<ActionResult<ComandaClienteEstadoResponseDto>> ObtenerEstadoComanda(int comandaId, int restauranteId)
+        {
+            // TODO: llevar a un caso de uso
             Comanda comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
 
-            if (comanda == null)
+            if (comanda == null || comanda.RestauranteId != restauranteId)
                 return NotFound(new { mensaje = $"No se encontró la comanda con ID {comandaId}." });
 
             ComandaClienteEstadoResponseDto responseDto = _mapper.ParaEstadoClienteDto(comanda);

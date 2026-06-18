@@ -6,6 +6,7 @@ export interface RecetaIngrediente {
   cantidad: number;
   unidadMedida: UnidadMedida | string;
   costoUnitario?: number;
+  opcional?: boolean;
 }
 
 export interface Plato {

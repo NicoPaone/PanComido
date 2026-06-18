@@ -4,6 +4,8 @@ namespace PanComido.Presentacion.DTOs.Pedidos
 {
     public class CrearPedidoRequestDto
     {
+        [Required]
+        [MinLength(1, ErrorMessage = "El pedido debe tener al menos un ítem")]
         public List<CrearPedidoItemDto> Items { get; set; } = new();
     }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PanComido.Dominio.Entidades.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,5 +16,6 @@ namespace PanComido.Dominio.Entidades
         public string MetodoPagoDescripcion { get; set; }
         public decimal Total { get; set; }
         public DateTime? HoraFin { get; set; }
+        public EstadoPago EstadoPago { get; set; }
     }
 }

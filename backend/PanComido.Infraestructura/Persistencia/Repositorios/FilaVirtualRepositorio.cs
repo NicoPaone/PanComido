@@ -1,12 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
+using EF = PanComido.Infraestructura.Persistencia.Entidades;
 using PanComido.Infraestructura.Persistencia.Mappers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PanComido.Infraestructura.Persistencia.Repositorios
 {
@@ -39,9 +35,15 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .FirstOrDefaultAsync(f => f.RestauranteId == restauranteId);
 
             if (efFila == null)
-                throw new KeyNotFoundException("Fila virtual no encontrada");
+            {
+                efFila = new EF.FilaVirtual { RestauranteId = restauranteId, Habilitada = habilitada };
+                await _ctx.FilaVirtuals.AddAsync(efFila);
+            }
+            else
+            {
+                _filaVirtualEntityMapper.paraActualizarEntidad(efFila, new FilaVirtual { Habilitada = habilitada });
+            }
 
-            _filaVirtualEntityMapper.paraActualizarEntidad(efFila, new FilaVirtual { Habilitada = habilitada });
             await _ctx.SaveChangesAsync();
 
             return _filaVirtualEntityMapper.paraDominio(efFila);

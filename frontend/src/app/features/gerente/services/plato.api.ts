@@ -74,8 +74,35 @@ export class PlatoApiService {
     return this.api.get<DatosFormularioCrearPlatoResponseDto>(`${this.endpoint}/formulario-plato`);
   }
 
-  crearPlato(request: CrearPlatoRequestDto): Observable<Plato> {
-    return this.api.post<Plato>(this.endpoint, request);
+  crearPlato(request: CrearPlatoRequestDto, archivo: File): Observable<Plato> {
+    const formData = this.platoAFormData(request,archivo);
+    return this.api.post<Plato>(this.endpoint, formData);
+  }
+  platoAFormData(plato: CrearPlatoRequestDto, archivo: File):FormData {
+    const formData= new FormData();
+    formData.append('Nombre',plato.nombre);
+    formData.append('PrecioVentaFinal',plato.precioVentaFinal.toString());
+    formData.append('TiempoPreparacionBase',plato.tiempoPreparacionBase.toString());
+    formData.append('TipoPlatoId', plato.tipoPlatoId.toString());
+    formData.append('CategoriaPlatoId',plato.categoriaPlatoId.toString());
+
+    if(plato.descripcion){
+      formData.append('Descripcion',plato.descripcion);
+    }
+    if (plato.restriccionesIds && plato.restriccionesIds.length > 0) {
+      plato.restriccionesIds.forEach((id, index) => {
+        formData.append(`RestriccionesIds[${index}]`, id.toString());
+       });
+      }
+      if (plato.ingredientes && plato.ingredientes.length > 0) {
+        plato.ingredientes.forEach((ingrediente, index) => {
+          formData.append(`Ingredientes[${index}].InsumoId`, ingrediente.insumoId.toString());
+          formData.append(`Ingredientes[${index}].Cantidad`, ingrediente.cantidad.toString());
+          formData.append(`Ingredientes[${index}].Opcional`, ingrediente.opcional ? 'true' : 'false');
+          });
+        }
+        formData.append('imagen', archivo);
+        return formData;
   }
 
   getPlatos(): Observable<Plato[]> {
@@ -86,7 +113,7 @@ export class PlatoApiService {
         precioVenta: dto.precioVentaFinal,
         costo: dto.costo,
         visible: dto.visibleEnCarta,
-        imagen: dto.urlImagen ? environment.apiUrl + dto.urlImagen : '',
+        imagen: dto.urlImagen || '',
         tipo: dto.tipoArticulo,
         categoria: dto.categoria
       })))
@@ -138,7 +165,7 @@ export class PlatoApiService {
           if (dto.precioVentaFinal !== undefined) result.precioVenta = dto.precioVentaFinal;
           if (dto.costo !== undefined) result.costo = dto.costo;
           if (dto.visibleEnCarta !== undefined) result.visible = dto.visibleEnCarta;
-          if (dto.urlImagen !== undefined) result.imagen = dto.urlImagen ? environment.apiUrl + dto.urlImagen : '';
+          if (dto.urlImagen !== undefined) result.imagen = dto.urlImagen || '';
           if (dto.tipoArticulo !== undefined) result.tipo = dto.tipoArticulo;
           if (dto.categoria !== undefined) result.categoria = dto.categoria;
         }
@@ -170,7 +197,7 @@ export class PlatoApiService {
       categoria,
       restriccionesIds: dto.restriccionesIds ?? [],
       visible: dto.esVisibleEnCarta,
-      imagen: dto.urlImagen ? environment.apiUrl + dto.urlImagen : '',
+      imagen: dto.urlImagen || '',
       receta: ingredientes.map(ingrediente => {
         const insumo = formulario.ingredientes.find(item => item.id === ingrediente.insumoId);
         return {
@@ -178,7 +205,8 @@ export class PlatoApiService {
           nombre: insumo?.nombre ?? `Insumo ${ingrediente.insumoId}`,
           cantidad: ingrediente.cantidad,
           unidadMedida: insumo?.unidadMedida ?? '',
-          costoUnitario: insumo?.costoUnitario ?? 0
+          costoUnitario: insumo?.costoUnitario ?? 0,
+          opcional: ingrediente.opcional
         };
       })
     };
@@ -205,7 +233,8 @@ export class PlatoApiService {
         nombre: '',
         cantidad: ingrediente.cantidad,
         unidadMedida: '',
-        costoUnitario: 0
+        costoUnitario: 0,
+        opcional: ingrediente.opcional
       }))
     };
   }

@@ -19,11 +19,12 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
 
         public async Task<ResumenRendimientoComercial> EjecutarAsync(int restauranteId, DateTime desde, DateTime hasta)
         {
-            // Ajustar 'hasta' para que incluya todo el día hasta las 23:59:59
-            DateTime hastaAjustado = hasta.Date.AddDays(1).AddTicks(-1);
+            // PostgreSQL no permite mezclar fechas UTC con columnas 'timestamp without time zone'
+            DateTime desdeAjustado = DateTime.SpecifyKind(desde, DateTimeKind.Unspecified);
+            DateTime hastaAjustado = DateTime.SpecifyKind(hasta.Date.AddDays(1).AddTicks(-1), DateTimeKind.Unspecified);
 
-            var masVendidos = await _comandaRepositorio.ObtenerTopPlatosMasVendidosAsync(restauranteId, desde, hastaAjustado, 5);
-            var menosVendidos = await _comandaRepositorio.ObtenerTopPlatosMenosVendidosAsync(restauranteId, desde, hastaAjustado, 5);
+            var masVendidos = await _comandaRepositorio.ObtenerTopPlatosMasVendidosAsync(restauranteId, desdeAjustado, hastaAjustado, 5);
+            var menosVendidos = await _comandaRepositorio.ObtenerTopPlatosMenosVendidosAsync(restauranteId, desdeAjustado, hastaAjustado, 5);
 
             return new ResumenRendimientoComercial
             {
