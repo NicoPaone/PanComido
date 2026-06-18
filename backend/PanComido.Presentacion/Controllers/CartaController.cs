@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.CartaCasosDeUso;
@@ -56,8 +56,9 @@ namespace PanComido.Presentacion.Controllers
 
         public async Task<IActionResult> ObtenerArticulosParaCarta()
         {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
             // Ejecutamos el caso de uso que trae la lista y hace la matemática
-            var articulosDominio = await _obtenerArticulosCasoDeUso.EjecutarAsync();
+            var articulosDominio = await _obtenerArticulosCasoDeUso.EjecutarAsync(restauranteId);
 
             // Usamos nuestro mapper para traducirlo al DTO de Angular y devolvemos 200 OK
             return Ok(_mapper.aListaDto(articulosDominio));

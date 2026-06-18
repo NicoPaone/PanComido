@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Infraestructura.Persistencia.Mappers;
@@ -128,9 +128,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             return _mapper.paraDominio(efArticulo);
         }
 
-        public async Task<List<Articulo>> ObtenerTodosLosArticulosParaCartaAsync()
+        public async Task<List<Articulo>> ObtenerTodosLosArticulosParaCartaAsync(int restauranteId)
         {
-            // TODO: hacerlo para traertelo de 1 restaurante
           var efArticulos = await _ctx.Articulos
                 .AsNoTracking()
                 .Include(a => a.ConfiguracionArticulos)
@@ -149,7 +148,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     .ThenInclude(i => i.PedidoInsumos) // <-- CAMBIO ACÁ
                 .Include(a => a.Plato)
                     .ThenInclude(p => p.Restriccions) // <-- AGREGO ACÁ
-                .Where(a => a.Plato != null || (a.Insumo != null && a.Insumo.CategoriaInsumo.TipoAplica == 2))
+                .Where(a => a.RestauranteId == restauranteId 
+                         && !a.Eliminado 
+                         && (a.Plato != null || (a.Insumo != null && a.Insumo.CategoriaInsumo.TipoAplica == 2)))
                 .ToListAsync();
 
             // Usamos tu mapper inyectado para devolver la lista de Dominio

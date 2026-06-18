@@ -1,4 +1,4 @@
-﻿using PanComido.Presentacion.DTOs;
+using PanComido.Presentacion.DTOs;
 using DOM = PanComido.Dominio.Entidades;
 
 
@@ -7,6 +7,13 @@ namespace PanComido.Presentacion.Mappers
 {
     public class FormularioParaCrearPlatoMapper
     {
+        private readonly PorcentajesGananciaMapper _porcentajesMapper;
+
+        public FormularioParaCrearPlatoMapper(PorcentajesGananciaMapper porcentajesMapper)
+        {
+            _porcentajesMapper = porcentajesMapper;
+        }
+
         public ItemDesplegableDto aDto(DOM.TipoPlato d) => new ItemDesplegableDto { Id = d.Id, Descripcion = d.Descripcion };
         public ItemDesplegableDto aDto(DOM.CategoriaPlato d) => new ItemDesplegableDto { Id = d.Id, Descripcion = d.Descripcion };
         public ItemDesplegableDto aDto(DOM.Restriccion d) => new ItemDesplegableDto { Id = d.Id, Descripcion = d.Descripcion };
@@ -25,7 +32,9 @@ namespace PanComido.Presentacion.Mappers
                 // Concatenamos las dos listas del dominio en la lista única del DTO
                 Ingredientes = dom.Ingredientes.Select(aDto)
                     .Concat(dom.IngredientePreparados.Select(aDto))
-                    .ToList()
+                    .ToList(),
+                
+                Porcentajes = dom.Porcentajes != null ? _porcentajesMapper.aDto(dom.Porcentajes) : null
             };
         }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +13,7 @@ namespace PanComido.Dominio.Entidades
         public List<Restriccion> Restricciones { get; set; } = new List<Restriccion>();
         public List<Ingrediente> Ingredientes { get; set; } = new List<Ingrediente>();
         public List<IngredientePreparado> IngredientePreparados { get; set; } = new List<IngredientePreparado>();
+        public PorcentajesGanancia Porcentajes { get; set; }
 
     }
 

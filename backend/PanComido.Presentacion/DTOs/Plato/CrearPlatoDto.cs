@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace PanComido.Presentacion.DTOs.Plato
 {
@@ -44,7 +44,7 @@ namespace PanComido.Presentacion.DTOs.Plato
         public bool Opcional { get; set; }
 
         // Nombre del insumo para respuestas (útil en la UI del comensal)
-        public string? Nombre { get; set; }
+        // Eliminado: se pasa a IngredienteRecetaResponseDto
     }
 
 }

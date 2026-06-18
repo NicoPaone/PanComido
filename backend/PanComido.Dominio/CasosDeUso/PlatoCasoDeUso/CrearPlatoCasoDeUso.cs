@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -39,6 +39,13 @@ namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
             {
                 throw new ArgumentException("El plato debe tener al menos un ingrediente.");
             }
+
+            bool existePlato = await _platoRepositorio.ExistePlatoConNombreAsync(restauranteID, plato.Nombre);
+            if (existePlato)
+            {
+                throw new ArgumentException($"Ya existe un plato con el nombre '{plato.Nombre}' en el restaurante.");
+            }
+
          string?  urlImagen = null;
 
          if (stream != null && !string.IsNullOrEmpty(nombreImagen))

@@ -47,6 +47,15 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
         }
 
+        public async Task<bool> ExistePlatoConNombreAsync(int restauranteId, string nombre)
+        {
+            return await _ctx.Articulos
+                .AnyAsync(a => a.RestauranteId == restauranteId 
+                            && a.Plato != null 
+                            && !a.Eliminado 
+                            && a.Nombre.ToLower() == nombre.ToLower());
+        }
+
         public async Task<Dominio.Entidades.Plato> ObtenerPorIdAsync(int platoId, int restauranteId)
         {
             var efArticulo = await _ctx.Articulos
