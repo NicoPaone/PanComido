@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades.Enums;
+using PanComido.Dominio.Entidades.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +15,8 @@ namespace PanComido.Dominio.Entidades
         public int CantPersonasMax { get; set; }
         public int GrillaId { get; set; }
         public int DimensionMesaId { get; set; }
+        public int TipoElemento { get; set; } = 1;
+        public string? Color { get; set; }
+        public string? TextoObjeto { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -42,6 +42,15 @@ public partial class Mesa
 
     [Column("cant_personas_max")]
     public int CantPersonasMax { get; set; }
+
+    [Column("tipo_elemento")]
+    public int TipoElemento { get; set; } = 1;
+
+    [Column("color")]
+    public string? Color { get; set; }
+
+    [Column("texto_objeto")]
+    public string? TextoObjeto { get; set; }
 
     [InverseProperty("Mesa")]
     public virtual ICollection<Comandum> Comanda { get; set; } = new List<Comandum>();

@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CdkDragEnd, DragDropModule } from '@angular/cdk/drag-drop';
+import { CdkDragEnd, CdkDragMove, DragDropModule } from '@angular/cdk/drag-drop';
 import { MesaState } from '../../services/mesa.state';
 import { EstadoMesa, FormaMesa, Mesa } from '../../../../core/models/domain/mesa';
 import { MesaItem } from '../../../../shared/components/mesa-item/mesa-item';
@@ -80,7 +80,37 @@ export class MapaMesas implements OnInit {
   // Función que fuerza a la mesa a moverse visualmente en saltos de 15px
 
 
+  // Mapa de colisiones activas
+  colisionesActivas = signal<Record<number, boolean>>({});
+
+  onDragMoved(id: number, event: CdkDragMove) {
+    const mesaActual = this.state.mesas().find(m => m.id === id);
+    if (!mesaActual) return;
+
+    const x = mesaActual.posicionXInicio + event.distance.x;
+    const y = mesaActual.posicionYInicio + event.distance.y;
+    const ancho = mesaActual.posicionXFin - mesaActual.posicionXInicio;
+    const alto = mesaActual.posicionYFin - mesaActual.posicionYInicio;
+
+    const colision = this.state.mesas().some(otra => {
+      if (otra.id === id) return false;
+      const superponenX = x < otra.posicionXFin && (x + ancho) > otra.posicionXInicio;
+      const superponenY = y < otra.posicionYFin && (y + alto) > otra.posicionYInicio;
+      return superponenX && superponenY;
+    });
+
+    this.colisionesActivas.update(cols => ({ ...cols, [id]: colision }));
+  }
+
   onDragEnded(id: number, event: CdkDragEnd) {
+    const hayColision = this.colisionesActivas()[id];
+    this.colisionesActivas.update(cols => ({ ...cols, [id]: false }));
+
+    if (hayColision) {
+      event.source._dragRef.reset();
+      return;
+    }
+
     // También ajustamos la matemática acá para que el Signal guarde el múltiplo exacto
     const deltaX = Math.round(event.distance.x / this.gridSize) * this.gridSize;
     const deltaY = Math.round(event.distance.y / this.gridSize) * this.gridSize;
@@ -137,7 +167,9 @@ export class MapaMesas implements OnInit {
   }
 
   mesasOrdenadas() {
-    return [...this.state.mesas()].sort((a, b) => a.numeroMesa - b.numeroMesa);
+    return [...this.state.mesas()]
+      .filter(m => m.tipoElemento !== 2)
+      .sort((a, b) => a.numeroMesa - b.numeroMesa);
   }
 
   getMobileClass(estado: string): string {

@@ -24,7 +24,7 @@ describe('MapaMesas', () => {
 
     mockAuth = {
       currentRestauranteId: 1,
-      hasRole: vi.fn().mockReturnValue(true),
+      tieneRoles: vi.fn().mockReturnValue(true),
     };
 
     await TestBed.configureTestingModule({

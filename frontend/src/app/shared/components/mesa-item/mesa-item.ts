@@ -14,6 +14,7 @@ export class MesaItem {
   mesa = input.required<Mesa>();
   isEditorMode = input<boolean>(false);
   isSeleccionada = input<boolean>(false);
+  enColision = input<boolean>(false);
 
   clickMesa = output<number>();
   accionMenu = output<'ocupar' | 'detalles' | 'deshabilitar' | 'cerrar' | 'abrir'>();

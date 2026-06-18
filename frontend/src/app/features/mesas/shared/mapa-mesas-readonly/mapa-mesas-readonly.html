@@ -14,16 +14,29 @@
   <!-- VISTA DESKTOP (PLANO) -->
   <div class="plano-fondo d-none d-md-block" [style.height]="altura()" (click)="state.seleccionarMesa(null)">
     @for (mesa of state.mesas(); track mesa.id) {
-      <app-mesa-item
-        [mesa]="mesa"
-        [isEditorMode]="false"
-        [isSeleccionada]="state.mesaSeleccionada() === mesa.id"
-        (clickMesa)="onMesaClick($event)"
-        (accionMenu)="ejecutarAccion(mesa.id, $event)"
-        style="position: absolute; display: block;"
-        [style.left.px]="mesa.posicionXInicio"
-        [style.top.px]="mesa.posicionYInicio">
-      </app-mesa-item>
+      @if (mesa.tipoElemento !== 2) {
+        <app-mesa-item
+          [mesa]="mesa"
+          [isEditorMode]="false"
+          [isSeleccionada]="state.mesaSeleccionada() === mesa.id"
+          (clickMesa)="onMesaClick($event)"
+          (accionMenu)="ejecutarAccion(mesa.id, $event)"
+          style="position: absolute; display: block;"
+          [style.left.px]="mesa.posicionXInicio"
+          [style.top.px]="mesa.posicionYInicio">
+        </app-mesa-item>
+      } @else {
+        <div class="objeto-fijo"
+             [style.width.px]="mesa.posicionXFin - mesa.posicionXInicio"
+             [style.height.px]="mesa.posicionYFin - mesa.posicionYInicio"
+             [style.background-color]="mesa.color"
+             [style.position]="'absolute'"
+             [style.left.px]="mesa.posicionXInicio"
+             [style.top.px]="mesa.posicionYInicio"
+             [style.z-index]="1">
+          <span style="color: white; font-weight: bold; pointer-events: none; display: flex; align-items: center; justify-content: center; height: 100%;">{{ mesa.textoObjeto }}</span>
+        </div>
+      }
     }
   </div>
 

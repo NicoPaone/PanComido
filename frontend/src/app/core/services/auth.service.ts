@@ -27,7 +27,7 @@ export class AuthService {
   readonly nombre = this.nombreActual.asReadonly();
   readonly email = this.emailActual.asReadonly();
 
-   get restauranteId(): number {
+  get restauranteId(): number {
     const payload = this.decodificarToken();
     return payload ? Number(payload.restauranteId) : 0;
   }
@@ -36,15 +36,15 @@ export class AuthService {
     return payload ? Number(payload.sub) : 0;
   }
 
-  constructor(){
+  constructor() {
     this.cargarSesion();
   }
 
 
 
-  login(email:string, contrasenia: string): Observable<LoginResponse>{
-    const body: LoginRequest = {email,contrasenia};
-    return this.api.post<LoginResponse>('autenticacion/login',body).pipe(
+  login(email: string, contrasenia: string): Observable<LoginResponse> {
+    const body: LoginRequest = { email, contrasenia };
+    return this.api.post<LoginResponse>('autenticacion/login', body).pipe(
       tap(response => {
         localStorage.setItem(TOKEN_KEY, response.token);
         this.rolActual.set(response.rol);
@@ -52,10 +52,10 @@ export class AuthService {
         this.emailActual.set(email);
       })
     )
-    
+
   }
 
-  logout():void{
+  logout(): void {
     localStorage.removeItem(TOKEN_KEY);
     this.rolActual.set('');
     this.nombreActual.set('');
@@ -63,27 +63,27 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-  tieneRoles(roles: string[]): boolean{
+  tieneRoles(roles: string[]): boolean {
     return roles.includes(this.rolActual());
   }
 
-  obtenerRutaHome():string{
-   return ROLE_ROUTES[this.rolActual()] || DEFAULT_ROUTE;
+  obtenerRutaHome(): string {
+    return ROLE_ROUTES[this.rolActual()] || DEFAULT_ROUTE;
   }
 
-  obtenerPerfilUsuario(){
-    return{
+  obtenerPerfilUsuario() {
+    return {
       name: this.nombreActual(),
       role: this.rolActual(),
       initials: this.generarIniciales(this.nombreActual()),
       avatarColor: '#f5a5a5'
     };
   }
-  private cargarSesion():void{
+  private cargarSesion(): void {
     const payload = this.decodificarToken();
-    if(!payload) return;
+    if (!payload) return;
 
-    if(this.estaExpirado(payload)){
+    if (this.estaExpirado(payload)) {
       localStorage.removeItem(TOKEN_KEY);
       return;
     }
@@ -91,15 +91,15 @@ export class AuthService {
     this.nombreActual.set(payload.name);
     this.emailActual.set(payload.email);
   }
-  private decodificarToken(): JwtPayload | null{
+  private decodificarToken(): JwtPayload | null {
 
     const token = localStorage.getItem(TOKEN_KEY);
-    if(!token) return null;
+    if (!token) return null;
 
-    try{
+    try {
       return jwtDecode<JwtPayload>(token);
-     
-    }catch {
+
+    } catch {
       return null;
     }
   }
@@ -107,13 +107,13 @@ export class AuthService {
     if (!payload.exp) return false;
     return Date.now() >= payload.exp * 1000;
   }
-  private generarIniciales(nombre:string): string{
+  private generarIniciales(nombre: string): string {
 
     return nombre.split(' ')
-    .map(parte => parte.charAt(0))
-    .join('')
-    .toUpperCase()
-    .slice(0,2);
+      .map(parte => parte.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
   }
 
 }
