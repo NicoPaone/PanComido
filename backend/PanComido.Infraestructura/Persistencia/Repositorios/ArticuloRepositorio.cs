@@ -85,6 +85,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             List<EF.Articulo> articulosEnCarta = await _ctx.Articulos
             .AsNoTracking()
+            .Include(a => a.ConfiguracionArticulos)
             .Include(a => a.Insumo)
                 .ThenInclude(i => i.CategoriaInsumo)
             .Include(a => a.Insumo)
@@ -97,7 +98,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             .Include(a => a.Plato)
                 .ThenInclude(p => p.Restriccions)
             .Where(a => a.RestauranteId == restauranteId
-                     && a.CartaId != null) 
+                     && a.ConfiguracionArticulos.Any(c => c.Id == 2)) 
             .ToListAsync();
 
             return articulosEnCarta.Select(a => _mapper.paraDominio(a)).ToList();

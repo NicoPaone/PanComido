@@ -8,11 +8,11 @@ namespace PanComido.Presentacion.DTOs.Mesas
         public int Id { get; set; }
 
         [Required(ErrorMessage = "El número de mesa es requerido.")]
-        [Range(1, 999, ErrorMessage = "El número de mesa debe ser mayor a 0.")]
+        [Range(0, 999, ErrorMessage = "El número de mesa debe ser 0 o mayor.")]
         public int NumeroMesa { get; set; }
 
         [Required(ErrorMessage = "La capacidad es requerida.")]
-        [Range(1, 100, ErrorMessage = "La capacidad debe ser mayor a 0.")]
+        [Range(0, 100, ErrorMessage = "La capacidad debe ser 0 o mayor.")]
         public int CantidadPersonasMax { get; set; }
 
         [Required]
@@ -36,6 +36,10 @@ namespace PanComido.Presentacion.DTOs.Mesas
 
         [Required]
         public DimensionMesaDto DimensionMesa { get; set; }
+
+        public int TipoElemento { get; set; } = 1;
+        public string? Color { get; set; }
+        public string? TextoObjeto { get; set; }
     }
 
     

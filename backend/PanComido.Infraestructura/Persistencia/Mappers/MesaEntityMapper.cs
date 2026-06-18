@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades.Enums;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Infraestructura.Persistencia.Entidades;
 using System;
 using System.Collections.Generic;
@@ -24,7 +24,10 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 DimensionMesaId = mesaEF.DimensionMesaId,
                 CantPersonasMax = mesaEF.CantPersonasMax,
                 EstadoMesa = (DOM.Enums.EstadoMesa)mesaEF.EstadoMesaId,
-                Numero = mesaEF.Numero
+                Numero = mesaEF.Numero,
+                TipoElemento = mesaEF.TipoElemento,
+                Color = mesaEF.Color,
+                TextoObjeto = mesaEF.TextoObjeto
             };
         }
 
@@ -37,7 +40,10 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 DimensionMesaId = mesaDominio.DimensionMesaId,
                 CantPersonasMax = mesaDominio.CantPersonasMax,
                 EstadoMesaId = (int)mesaDominio.EstadoMesa,
-                Numero = mesaDominio.Numero
+                Numero = mesaDominio.Numero,
+                TipoElemento = mesaDominio.TipoElemento,
+                Color = mesaDominio.Color,
+                TextoObjeto = mesaDominio.TextoObjeto
             };
         }
       public DOM.MesaConPosiciones? paraDominioCompleto(EF.Mesa mesaEF)
@@ -57,6 +63,9 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             PosicionYFin = mesaEF.PosicionYFin,
             DimensionMesaId = mesaEF.DimensionMesaId,
             Forma = mesaEF.DimensionMesa?.Forma ?? "cuadrada",
+            TipoElemento = mesaEF.TipoElemento,
+            Color = mesaEF.Color,
+            TextoObjeto = mesaEF.TextoObjeto
          };
       }
    }

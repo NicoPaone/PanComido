@@ -1,4 +1,4 @@
-﻿namespace PanComido.Presentacion.DTOs.Mesas
+namespace PanComido.Presentacion.DTOs.Mesas
 {
    public class MesaResponseDto
    {
@@ -13,6 +13,9 @@
       public int PosicionYFin { get; set; }
       public string CodigoInvitacion { get; set; } = string.Empty;
       public DimensionMesaDto DimensionMesa { get; set; } = null!;
+      public int TipoElemento { get; set; } = 1;
+      public string? Color { get; set; }
+      public string? TextoObjeto { get; set; }
 
     }
    public class DimensionMesaDto
