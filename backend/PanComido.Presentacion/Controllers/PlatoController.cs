@@ -33,9 +33,10 @@ namespace PanComido.Presentacion.Controllers
 
         private readonly ModificarPlatoCasoDeUso _modificarPlatoCasoDeUso;
         private readonly ObtenerPlatoPorIdCasoDeUso _obtenerPlatoPorIdCasoDeUso;
+        private readonly EliminarPlatoCasoDeUso _eliminarPlatoCasoDeUso;
 
 
-        public PlatoController(ObtenerDatosParaFormularioCrearPlato obtenerDatosCasoDeUso, FormularioParaCrearPlatoMapper mapper, CrearPlatoCasoDeUso crearPlatoCasoDeUso, PlatoMapper platoMapper, ModificarPlatoCasoDeUso modificarPlatoCasoDeUso, ObtenerPlatoPorIdCasoDeUso obtenerPlatoPorIdCasoDeUso)
+        public PlatoController(ObtenerDatosParaFormularioCrearPlato obtenerDatosCasoDeUso, FormularioParaCrearPlatoMapper mapper, CrearPlatoCasoDeUso crearPlatoCasoDeUso, PlatoMapper platoMapper, ModificarPlatoCasoDeUso modificarPlatoCasoDeUso, ObtenerPlatoPorIdCasoDeUso obtenerPlatoPorIdCasoDeUso, EliminarPlatoCasoDeUso eliminarPlatoCasoDeUso)
         {
             _obtenerDatosCasoDeUso = obtenerDatosCasoDeUso;
             this._mapper = mapper;
@@ -43,7 +44,7 @@ namespace PanComido.Presentacion.Controllers
             _platoMapper = platoMapper;
             _modificarPlatoCasoDeUso = modificarPlatoCasoDeUso;
             _obtenerPlatoPorIdCasoDeUso = obtenerPlatoPorIdCasoDeUso;
-
+            _eliminarPlatoCasoDeUso = eliminarPlatoCasoDeUso;
         }
 
         
@@ -86,6 +87,7 @@ namespace PanComido.Presentacion.Controllers
 
             return Ok(_mapper.aDto(datosDominio));
         }
+        
       [HttpPost]
       public async Task<IActionResult> Crear([FromForm] CrearPlatoDto request, IFormFile? imagen)
       {
@@ -93,30 +95,19 @@ namespace PanComido.Presentacion.Controllers
          {
             return BadRequest(ModelState);
          }
-         try
-         {
-            int restauranteId = HttpContext.ObtenerRestauranteId();
-            var platoDominio = _platoMapper.aDominio(request);
+         
+         int restauranteId = HttpContext.ObtenerRestauranteId();
+         var platoDominio = _platoMapper.aDominio(request);
 
-
-            Stream? stream = imagen?.OpenReadStream();
-            string? nombreArchivo = imagen?.FileName;
-            await _crearPlatoCasoDeUso.EjecutarAsync(restauranteId, platoDominio,
+         Stream? stream = imagen?.OpenReadStream();
+         string? nombreArchivo = imagen?.FileName;
+         
+         await _crearPlatoCasoDeUso.EjecutarAsync(restauranteId, platoDominio,
                RutasCloudinary.MenuPlatos,
                stream,
                nombreArchivo);
-            return StatusCode(201, new { mensaje = "Plato creado correctamente." });
-         }
-            catch (ArgumentException ex)
-            {
-                // Si el Caso de Uso tira un error (ej: "El precio debe ser mayor a 0"), devolvemos 400 Bad Request
-                return BadRequest(new { error = ex.Message });
-            }
-            catch (System.Exception ex)
-            {
-                // Si explota la base de datos o hay un error grave, devolvemos 500 Internal Server Error
-                return StatusCode(500, new { error = "Error interno.", detalle = ex.Message });
-            }
+               
+         return StatusCode(201, new { mensaje = "Plato creado correctamente." });
       }
 
         [HttpPut("{id}")]
@@ -139,6 +130,13 @@ namespace PanComido.Presentacion.Controllers
 
 
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+            await _eliminarPlatoCasoDeUso.EjecutarAsync(id, restauranteId);
+            return Ok(new { mensaje = "Plato eliminado correctamente." });
+        }
     }
 
 }

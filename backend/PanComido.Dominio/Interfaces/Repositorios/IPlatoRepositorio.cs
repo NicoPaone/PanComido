@@ -13,5 +13,6 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task<bool> ExistePlatoConNombreAsync(int restauranteId, string nombre);
         Task CrearAsync(Plato plato);
         Task ActualizarAsync(Plato plato);
+        Task EliminarAsync(int platoId, int restauranteId);
     }
 }
