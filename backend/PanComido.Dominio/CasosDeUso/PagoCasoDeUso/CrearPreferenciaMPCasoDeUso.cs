@@ -29,7 +29,7 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
             _pagoRepositorio = pagoRepositorio;
         }
 
-        public async Task<string> EjecutarAsync(int restauranteId, int comandaId)
+        public async Task<string> EjecutarAsync(int comandaId, int restauranteId)
         {
             var comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
             if (comanda == null || comanda.RestauranteId != restauranteId) throw new KeyNotFoundException("Comanda no encontrada");

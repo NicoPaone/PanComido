@@ -1,8 +1,10 @@
 ﻿using MercadoPago.Client.Payment;
 using MercadoPago.Client.Preference;
 using MercadoPago.Resource.Preference;
+using Microsoft.Extensions.Options;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Servicios.MercadoPago;
+using PanComido.Infraestructura.ServiciosExternos.Gemini;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +15,13 @@ namespace PanComido.Infraestructura.ServiciosExternos.MercadoPago
 {
     public class MercadoPagoServicio : IMercadoPagoServicio
     {
+        private readonly MercadoPagoConfiguracion _configuracionMP;
+
+        public MercadoPagoServicio(IOptions<MercadoPagoConfiguracion> configuracionMP)
+        {
+            _configuracionMP = configuracionMP.Value;
+        }
+
         public async Task<ResultadoPagoMP> ConsultarPagoAsync(long paymentId)
         {
             var client = new PaymentClient();
@@ -41,16 +50,15 @@ namespace PanComido.Infraestructura.ServiciosExternos.MercadoPago
                 },
 
                 ExternalReference = externalReference,
-                NotificationUrl = "https://pentomic-karla-unavoidably.ngrok-free.dev/pago/webhook/mercado-pago",
+                NotificationUrl = "https://pentomic-karla-unavoidably.ngrok-free.dev/pago/webhook/mercado-pago"
                 //BackUrls = new PreferenceBackUrlsRequest
                 //{
-                //    //cambiar a nuestrar urls reales (que no sean localhost)
-                //    Success = "https://www.canva.com/design/DAHGUbn6JMw/n6vSal9_WcBau8Dr-y9ndg/edit",
-                //    Failure = "https://app.clickup.com/90171215989/v/b/6-901713590751-2",
-                //    Pending = "https://docs.google.com/document/d/1zVWsYOVtVLKrRgEQGIw9keGWLPDCA-ck959O6R-hsbI/edit?tab=t.iozh2a2tr3lv"
+                //    //poner nuestrar urls reales (que no sean localhost)
+                //    Success = "",
+                //    Failure = "",
+                //    Pending = ""
                 //},
-                //Agregar cuando no sea local porque puede romper
-               //AutoReturn = "approved"
+                //AutoReturn = "approved"
             };
 
             var client = new PreferenceClient();

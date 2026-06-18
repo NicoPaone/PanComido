@@ -68,7 +68,7 @@ namespace PanComido.Presentacion.Controllers
 
         [HttpPost("solicitar-mp/{comandaId}/comensal/{restauranteId}")]
         [AllowAnonymous]
-        public async Task<IActionResult> SolicitarPagoMercadoPagoComensal(int restauranteId, int comandaId)
+        public async Task<IActionResult> SolicitarPagoMercadoPagoComensal(int comandaId, int restauranteId)
         {
             _logger.LogInformation("Solicitud preferencia MP. Comanda: {ComandaId}, Restaurante: {RestauranteId}", comandaId, restauranteId);
             var initPoint = await _crearPreferenciaMPCasoDeUso.EjecutarAsync(comandaId, restauranteId);

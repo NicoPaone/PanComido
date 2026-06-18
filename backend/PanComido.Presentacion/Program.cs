@@ -117,9 +117,6 @@ builder.Services.AddScoped<LoginCasoDeUso>();
 builder.Services.AddScoped<IEmpleadoRepositorio, EmpleadoRepositorio>();
 builder.Services.AddScoped<IContraseniaHasher, ContraseniaHasher>();
 
-//MERCADO PAGO
-MercadoPagoConfig.AccessToken = builder.Configuration["MercadoPago:AccessToken"];
-
 // Mappers de Infraestructura (Dominio <-> EF)
 builder.Services.AddScoped<InsumoEntityMapper>();
 builder.Services.AddScoped<BodegaEntityMapper>();
@@ -283,6 +280,10 @@ builder.Services.AddScoped<SugerenciaIAEntityMapper>();
 builder.Services.AddScoped<ISugerenciaIARepositorio, SugerenciaIARepositorio>();
 builder.Services.AddScoped<IImagenServicio,CloudinaryImagenServicio>();
 builder.Services.AddScoped<IMercadoPagoServicio, MercadoPagoServicio>();
+
+//MERCADO PAGO
+MercadoPagoConfig.AccessToken = builder.Configuration["MercadoPago:AccessToken"];
+builder.Services.Configure<MercadoPagoConfiguracion>(builder.Configuration.GetSection("MercadoPago"));
 
 builder.Services.AddHttpClient();
 
