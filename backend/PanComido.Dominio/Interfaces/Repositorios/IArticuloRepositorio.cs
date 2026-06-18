@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +13,7 @@ namespace PanComido.Dominio.Interfaces.Repositorios
 
         Task<Articulo> ObtenerDetalleAsync(int restauranteId, int articuloId);
 
-        Task<List<Articulo>> ObtenerTodosLosArticulosParaCartaAsync();
+        Task<List<Articulo>> ObtenerTodosLosArticulosParaCartaAsync(int restauranteId);
 
         Task ActualizarAsync(Articulo articulo);
 
