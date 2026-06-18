@@ -484,42 +484,6 @@ $RECYCLE.BIN/
 *.swp
 
 
-AGENTS.md
-
-#ANGULAR
-
-# Node & Dependencias
-node_modules/
-npm-debug.log*
-yarn-error.log*
-yarn-debug.log*
-.npm/
-
-# Testing & Coverage (CRÍTICO: Pesa muchísimo y se autogenera)
-coverage/
-.karma/
-
-# Compilación y Output de Angular
-dist/
-tmp/
-out-tsc/
-bazel-out/
-
-# Caché interna
-.angular/
-
-# Variables de entorno y Seguridad
-.env
-.env.*
-!.env.example 
-
-# IDEs, Linters y SO
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
-.eslintcache
-
+# Tooling
 .atl/
-PanComido-Arquitectura_Frontend.pdf
-cierre_caja_api_spec.pdf
+AGENTS.md
