@@ -1,7 +1,7 @@
 using PanComido.Dominio.Interfaces.Repositorios;
 using System.Threading.Tasks;
 
-namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
+namespace PanComido.Dominio.CasosDeUso.PlatoCasoDeUso
 {
     public class EliminarPlatoCasoDeUso
     {
