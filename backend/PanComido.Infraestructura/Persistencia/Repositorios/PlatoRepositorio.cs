@@ -167,6 +167,20 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
             await _ctx.SaveChangesAsync();
         }
+
+        public async Task EliminarAsync(int platoId, int restauranteId)
+        {
+            var efArticulo = await _ctx.Articulos
+                .FirstOrDefaultAsync(a => a.Id == platoId && a.RestauranteId == restauranteId && a.Plato != null);
+
+            if (efArticulo == null)
+            {
+                throw new ArgumentException("El plato no existe o no pertenece al restaurante.");
+            }
+
+            efArticulo.Eliminado = true;
+            await _ctx.SaveChangesAsync();
+        }
     }
 
     }

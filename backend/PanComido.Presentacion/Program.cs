@@ -1,4 +1,4 @@
-﻿using MercadoPago.Config;
+using MercadoPago.Config;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -219,6 +219,7 @@ builder.Services.AddScoped<GuardarMapaCasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosParaFormularioCrearPlato>();
 builder.Services.AddScoped<CrearPlatoCasoDeUso>();
 builder.Services.AddScoped<ModificarPlatoCasoDeUso>();
+builder.Services.AddScoped<EliminarPlatoCasoDeUso>();
 builder.Services.AddScoped<ObtenerPlatoPorIdCasoDeUso>();
 builder.Services.AddScoped<ObtenerCartaComensalCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConStockCriticoCasoDeUso>();
