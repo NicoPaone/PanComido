@@ -1,6 +1,16 @@
 <app-header-cantidad-personas (back)="volverAtras()">
 </app-header-cantidad-personas>
 
+<div class="nombre-container">
+  <label for="nombre">Tu nombre</label>
+
+  <input
+    id="nombre"
+    type="text"
+    [(ngModel)]="nombreComensal"
+    placeholder="Ingresá tu nombre">
+</div>
+
 <div class="cantidad-card">
   <h1>¿Cuántas personas son en tu grupo?</h1>
 

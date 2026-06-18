@@ -38,9 +38,18 @@ export class Pedido {
     this.router.navigate(['/comensal/detalle-pedido']);
   }
 
+
   volver(): void {
-    this.router.navigate(['/comensal/ver-carta']);
-  }
+  const restauranteId = this.comandaState.restauranteId();
+  const mesaId = this.comandaState.mesaId();
+
+  this.router.navigate([
+    '/comensal/ver-carta',
+    restauranteId,
+    mesaId,
+    1
+  ]);
+}
 
   eliminarPedido(index: number): void {
     this.pedidoService.eliminarPedido(index);

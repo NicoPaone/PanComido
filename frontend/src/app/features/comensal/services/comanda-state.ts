@@ -123,6 +123,8 @@ console.log('pedidos:', pedidos);
     this.#cargando.set(true);
     this.#error.set(null);
 
+    const nombreComensal = sessionStorage.getItem('nombreComensal') ?? '';
+
     const items = pedidos.map(p => ({
       articuloId: p.plato.articuloId,
       cantidad: p.cantidad,
@@ -132,8 +134,8 @@ console.log('pedidos:', pedidos);
 
     this.comandaService.confirmarPedido(comandaId, restauranteId,  {
     items,
-    nombreComensal: 'Invitado'
-  } as any)
+    nombreComensal
+  } )
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe({
         next: (response) => {

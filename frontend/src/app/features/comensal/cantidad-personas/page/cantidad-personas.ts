@@ -7,6 +7,7 @@ import { BotonComensal } from '../../../../shared/ui/botones/boton-comensal/boto
 import { configuracionRestauranteMock } from '../../../../infra/mocks/configuracion-restaurante.mock-data';
 import { ComandaState } from '../../services/comanda-state';
 import { ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,7 +16,8 @@ import { ActivatedRoute } from '@angular/router';
   imports: [
     Boton,
     HeaderCantidadPersonas,
-    BotonComensal
+    BotonComensal,
+    FormsModule
   ],
   templateUrl: './cantidad-personas.html',
   styleUrls: ['./cantidad-personas.css']
@@ -30,6 +32,7 @@ export class CantidadPersonas {
   maxCantidad = 5;
   configuracion = configuracionRestauranteMock;
   cargando = this.comandaState.cargando;
+  nombreComensal = '';
 
   // Viene del paso anterior (nro-de-mesa)
   mesaId: number = history.state?.mesaId ?? 1;
@@ -46,6 +49,12 @@ export class CantidadPersonas {
 
 
 aceptar() {
+
+  if (!this.nombreComensal.trim()) {
+    alert('Ingresá tu nombre');
+    return;
+  }
+
   console.log('route params:', this.route.snapshot.paramMap.keys);
   console.log('restauranteId:', this.route.snapshot.paramMap.get('restauranteId'));
   console.log('mesaId:', this.route.snapshot.paramMap.get('mesaId'));
