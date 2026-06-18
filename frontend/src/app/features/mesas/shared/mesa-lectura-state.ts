@@ -30,11 +30,11 @@ export class MesaLecturaState {
   }
 
   mesasDisponibles = computed(() =>
-    this.#mesas().filter(m => m.estadoMesa === EstadoMesa.Disponible)
+    this.#mesas().filter(m => m.estadoMesa === EstadoMesa.Disponible && m.tipoElemento !== 2)
   );
 
   mesasOcupadas = computed(() =>
-    this.#mesas().filter(m => m.estadoMesa === EstadoMesa.Ocupada)
+    this.#mesas().filter(m => m.estadoMesa === EstadoMesa.Ocupada && m.tipoElemento !== 2)
   );
 
   cargarMesas(): void {

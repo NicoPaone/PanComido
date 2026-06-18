@@ -57,6 +57,25 @@ export class MesaState {
     );
   }
 
+  agregarObjetoFijo(): void {
+    const idNegativo = -(Math.floor(Math.random() * 1000000) + 1);
+    const nuevoObjeto: Mesa = {
+      id: idNegativo,
+      codigoInvitacion: '',
+      numeroMesa: 0,
+      cantidadPersonasMax: 0,
+      estadoMesa: EstadoMesa.Disponible,
+      dimensionMesa: { id: 0, forma: FormaMesa.Cuadrada },
+      posicionXInicio: 15, posicionXFin: 215,
+      posicionYInicio: 15, posicionYFin: 115,
+      tipoElemento: 2,
+      color: '#34495e',
+      textoObjeto: 'Escenario'
+    };
+
+    this.lectura.updateMesas(m => [...m, nuevoObjeto]);
+  }
+
   agregarMesa(forma: FormaMesa): void {
     const mesas = this.lectura.mesas();
     const proximoNumero = mesas.length > 0 ? Math.max(...mesas.map(m => m.numeroMesa)) + 1 : 1;
@@ -97,6 +116,39 @@ export class MesaState {
     this.lectura.updateMesas(mesas =>
       mesas.map(m => m.id === id ? { ...m, numeroMesa: nuevoNumero } : m)
     );
+  }
+
+  actualizarTextoObjeto(id: number, event: Event): void {
+    const nuevoTexto = (event.target as HTMLInputElement).value;
+    this.lectura.updateMesas(mesas =>
+      mesas.map(m => m.id === id ? { ...m, textoObjeto: nuevoTexto } : m)
+    );
+  }
+
+  actualizarTamanoObjeto(id: number, event: MouseEvent): void {
+    const element = event.target as HTMLElement;
+    // Nos aseguramos que sea el div objeto-fijo y no el input interno
+    if (!element.classList.contains('objeto-fijo')) return;
+    
+    const newWidth = element.offsetWidth;
+    const newHeight = element.offsetHeight;
+    
+    const mesas = this.lectura.mesas();
+    const mesa = mesas.find(m => m.id === id);
+    if (!mesa) return;
+    
+    const anchoActual = mesa.posicionXFin - mesa.posicionXInicio;
+    const altoActual = mesa.posicionYFin - mesa.posicionYInicio;
+    
+    if (newWidth !== anchoActual || newHeight !== altoActual) {
+       this.lectura.updateMesas(mesasList =>
+         mesasList.map(m => m.id === id ? { 
+           ...m, 
+           posicionXFin: m.posicionXInicio + newWidth,
+           posicionYFin: m.posicionYInicio + newHeight
+         } : m)
+       );
+    }
   }
 
   guardarConfiguracion(): void {

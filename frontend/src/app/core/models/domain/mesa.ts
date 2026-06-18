@@ -29,6 +29,9 @@ export interface Mesa {
   posicionYFin: number;
   dimensionMesa: DimensionMesa;
   estadoMesa: string;
+  tipoElemento?: number;
+  color?: string;
+  textoObjeto?: string;
 }
 
 export interface MesaOcupar {

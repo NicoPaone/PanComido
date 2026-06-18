@@ -14,5 +14,8 @@ namespace PanComido.Dominio.Entidades
         public int PosicionYFin { get; set; }
         public int DimensionMesaId { get; set; }
         public string Forma { get; set; }
+        public int TipoElemento { get; set; } = 1;
+        public string? Color { get; set; }
+        public string? TextoObjeto { get; set; }
     }
 }

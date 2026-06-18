@@ -118,7 +118,10 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     PosicionXFin = mesaNueva.PosicionXFin,
                     PosicionYInicio = mesaNueva.PosicionYInicio,
                     PosicionYFin = mesaNueva.PosicionYFin,
-                    DimensionMesaId = dimensionId
+                    DimensionMesaId = dimensionId,
+                    TipoElemento = mesaNueva.TipoElemento,
+                    Color = mesaNueva.Color,
+                    TextoObjeto = mesaNueva.TextoObjeto
                 };
                 _ctx.Mesas.Add(nuevaMesaEF);
             }
@@ -143,6 +146,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     mesaExistente.PosicionYFin = mapDatos.PosicionYFin;
                     mesaExistente.DimensionMesaId = mapDatos.DimensionMesaId;
                     mesaExistente.EstadoMesaId = (int)mapDatos.EstadoMesa;
+                    mesaExistente.TipoElemento = mapDatos.TipoElemento;
+                    mesaExistente.Color = mapDatos.Color;
+                    mesaExistente.TextoObjeto = mapDatos.TextoObjeto;
 
                     _ctx.Mesas.Update(mesaExistente);
                 }

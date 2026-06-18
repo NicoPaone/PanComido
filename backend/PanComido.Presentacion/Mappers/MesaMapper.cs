@@ -21,6 +21,9 @@ namespace PanComido.Presentacion.Mappers
             PosicionXFin = mesa.PosicionXFin,
             PosicionYInicio = mesa.PosicionYInicio,
             PosicionYFin = mesa.PosicionYFin,
+            TipoElemento = mesa.TipoElemento,
+            Color = mesa.Color,
+            TextoObjeto = mesa.TextoObjeto,
             DimensionMesa = new DimensionMesaDto
             {
                Id = mesa.DimensionMesaId,
@@ -56,7 +59,10 @@ namespace PanComido.Presentacion.Mappers
               PosicionYInicio = dto.PosicionYInicio,
               PosicionYFin = dto.PosicionYFin,
               DimensionMesaId = dto.DimensionMesa.Id,
-              Forma = dto.DimensionMesa.Forma
+              Forma = dto.DimensionMesa.Forma,
+              TipoElemento = dto.TipoElemento,
+              Color = dto.Color,
+              TextoObjeto = dto.TextoObjeto
           };
       }
 

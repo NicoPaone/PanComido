@@ -167,7 +167,9 @@ export class MapaMesas implements OnInit {
   }
 
   mesasOrdenadas() {
-    return [...this.state.mesas()].sort((a, b) => a.numeroMesa - b.numeroMesa);
+    return [...this.state.mesas()]
+      .filter(m => m.tipoElemento !== 2)
+      .sort((a, b) => a.numeroMesa - b.numeroMesa);
   }
 
   getMobileClass(estado: string): string {

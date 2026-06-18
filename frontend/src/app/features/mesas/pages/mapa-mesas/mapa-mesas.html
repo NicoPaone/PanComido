@@ -44,31 +44,63 @@
           <button type="button" class="btn-mesa cuadrada" (click)="state.agregarMesa(FormaMesa.Cuadrada)">+</button>
           <button type="button" class="btn-mesa horizontal" (click)="state.agregarMesa(FormaMesa.HorizontalLarga)">+</button>
           <button type="button" class="btn-mesa vertical" (click)="state.agregarMesa(FormaMesa.HorizontalAlta)">+</button>
+          <button type="button" class="btn-agregar btn-dark ms-3" (click)="state.agregarObjetoFijo()">+ Objeto Fijo</button>
         </div>
       }
 
   <!-- VISTA DESKTOP (PLANO) -->
   <div class="plano-fondo d-none d-md-block" [class.modo-grilla]="state.isEditorMode()" (click)="state.seleccionarMesa(null)">
   @for (mesa of state.mesas(); track mesa.id) {
-   <app-mesa-item
-      [mesa]="mesa"
-      [isEditorMode]="state.isEditorMode()"
-      [isSeleccionada]="state.mesaSeleccionada() === mesa.id"
-      [enColision]="colisionesActivas()[mesa.id] || false"
-      cdkDrag
-      cdkDragBoundary=".plano-fondo"
-      [cdkDragDisabled]="!state.isEditorMode()"
-      (cdkDragMoved)="onDragMoved(mesa.id, $event)"
-      (cdkDragEnded)="onDragEnded(mesa.id, $event)"
-      (clickMesa)="state.seleccionarMesa($event)"
-      (cambioNumero)="state.actualizarNumero($event.id, $event.numero)"
-      (eliminar)="state.eliminarMesa($event)"
-      (accionMenu)="ejecutarAccion(mesa.id, $event)"
-      style="position: absolute; display: block;"
-      [style.left.px]="mesa.posicionXInicio"
-      [style.top.px]="mesa.posicionYInicio"
-      [style.z-index]="state.mesaSeleccionada() === mesa.id ? 1000 : 1">
-    </app-mesa-item>
+    @if (mesa.tipoElemento !== 2) {
+      <app-mesa-item
+          [mesa]="mesa"
+          [isEditorMode]="state.isEditorMode()"
+          [isSeleccionada]="state.mesaSeleccionada() === mesa.id"
+          [enColision]="colisionesActivas()[mesa.id] || false"
+          cdkDrag
+          cdkDragBoundary=".plano-fondo"
+          [cdkDragDisabled]="!state.isEditorMode()"
+          (cdkDragMoved)="onDragMoved(mesa.id, $event)"
+          (cdkDragEnded)="onDragEnded(mesa.id, $event)"
+          (clickMesa)="state.seleccionarMesa($event)"
+          (cambioNumero)="state.actualizarNumero($event.id, $event.numero)"
+          (eliminar)="state.eliminarMesa($event)"
+          (accionMenu)="ejecutarAccion(mesa.id, $event)"
+          style="position: absolute; display: block;"
+          [style.left.px]="mesa.posicionXInicio"
+          [style.top.px]="mesa.posicionYInicio"
+          [style.z-index]="state.mesaSeleccionada() === mesa.id ? 1000 : 1">
+        </app-mesa-item>
+    } @else {
+      <div class="objeto-fijo"
+           cdkDrag
+           cdkDragBoundary=".plano-fondo"
+           [cdkDragDisabled]="!state.isEditorMode()"
+           [style.width.px]="mesa.posicionXFin - mesa.posicionXInicio"
+           [style.height.px]="mesa.posicionYFin - mesa.posicionYInicio"
+           [style.background-color]="mesa.color"
+           [style.position]="'absolute'"
+           [style.left.px]="mesa.posicionXInicio"
+           [style.top.px]="mesa.posicionYInicio"
+           [style.z-index]="state.mesaSeleccionada() === mesa.id ? 1000 : 1"
+           [style.resize]="state.isEditorMode() ? 'both' : 'none'"
+           [style.overflow]="state.isEditorMode() ? 'hidden' : 'visible'"
+           (mouseup)="state.isEditorMode() ? state.actualizarTamanoObjeto(mesa.id, $event) : null"
+           (cdkDragMoved)="onDragMoved(mesa.id, $event)"
+           (cdkDragEnded)="onDragEnded(mesa.id, $event)">
+        
+        @if (state.isEditorMode()) {
+          <input type="text"
+                 [value]="mesa.textoObjeto || ''"
+                 (blur)="state.actualizarTextoObjeto(mesa.id, $event)"
+                 (mousedown)="$event.stopPropagation()"
+                 style="width: 80%; text-align: center; font-weight: bold; border: none; background: rgba(255,255,255,0.2); color: white; outline: none; margin: auto; display: block; position: relative; top: 50%; transform: translateY(-50%);">
+          <button class="btn btn-sm btn-danger p-0" style="position: absolute; top: 5px; right: 5px; width: 24px; height: 24px; border-radius: 50%; z-index: 10;" (click)="state.eliminarMesa(mesa.id)">X</button>
+        } @else {
+          <span style="color: white; font-weight: bold; pointer-events: none; display: flex; align-items: center; justify-content: center; height: 100%;">{{ mesa.textoObjeto }}</span>
+        }
+      </div>
+    }
   }
   </div>
 
