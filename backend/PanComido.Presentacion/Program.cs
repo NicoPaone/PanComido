@@ -25,6 +25,7 @@ using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Repositorios.IA;
 using PanComido.Dominio.Interfaces.Servicios;
 using PanComido.Dominio.Interfaces.Servicios.IA;
+using PanComido.Dominio.Interfaces.Servicios.MercadoPago;
 using PanComido.Dominio.Servicios;
 using PanComido.Infraestructura.Persistencia;
 using PanComido.Infraestructura.Persistencia.Mappers;
@@ -35,6 +36,7 @@ using PanComido.Infraestructura.ServiciosExternos;
 using PanComido.Infraestructura.ServiciosExternos.Gemini;
 using PanComido.Infraestructura.ServiciosExternos.Gemini.Mappers;
 using PanComido.Infraestructura.ServiciosExternos.Gemini.Servicio;
+using PanComido.Infraestructura.ServiciosExternos.MercadoPago;
 using PanComido.Presentacion;
 using PanComido.Presentacion.Filtros;
 using PanComido.Presentacion.Hubs;
@@ -117,9 +119,6 @@ builder.Services.AddScoped<LoginCasoDeUso>();
 builder.Services.AddScoped<IEmpleadoRepositorio, EmpleadoRepositorio>();
 builder.Services.AddScoped<IContraseniaHasher, ContraseniaHasher>();
 
-//MERCADO PAGO
-MercadoPagoConfig.AccessToken = builder.Configuration["MercadoPago:AccessToken"];
-
 // Mappers de Infraestructura (Dominio <-> EF)
 builder.Services.AddScoped<InsumoEntityMapper>();
 builder.Services.AddScoped<BodegaEntityMapper>();
@@ -141,6 +140,7 @@ builder.Services.AddScoped<TurnoLaboralEntityMapper>();
 builder.Services.AddScoped<FilaVirtualEntityMapper>();
 builder.Services.AddScoped<FamiliaTipograficaEntityMapper>();
 builder.Services.AddScoped<PorcentajesCategoriaEntityMapper>();
+builder.Services.AddScoped<PagoEntityMapper>();
 
 
 
@@ -194,7 +194,6 @@ builder.Services.AddScoped<ITurnoLaboralRepositorio, TurnoLaboralRepositorio>();
 builder.Services.AddScoped<IFilaVirtualRepositorio, FilaVirtualRepositorio>();
 builder.Services.AddScoped<IFamiliaTipograficaRepositorio, FamiliaTipograficaRepositorio>();
 builder.Services.AddScoped<IPorcentajesCategoriaRepositorio, PorcentajesGananciaRepositorio>();
-
 
 
 // Casos de uso
@@ -259,6 +258,10 @@ builder.Services.AddScoped<ListarFamiliasTipograficasCasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosMesaBienvenidaCasoDeUso>();
 builder.Services.AddScoped<ObtenerPorcentajesCasoDeUso>();
 builder.Services.AddScoped<ActualizarPorcentajesCasoDeUso>();
+builder.Services.AddScoped<CrearPreferenciaMPCasoDeUso>();
+builder.Services.AddScoped<ConfirmarPagoMPCasoDeUso>();
+
+
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosInvitadoBienvenidaAComandaCasoDeUso>();
 
@@ -269,6 +272,7 @@ builder.Services.AddScoped<ISugerenciaPlatosIAServicio, GeminiSugerenciaPlatosIA
 builder.Services.AddScoped<IGestionStockServicio, GestionStockServicio>();
 builder.Services.AddScoped<IVencimientosProximosInsumosServicio, VencimientosProximosInsumosServicio>();
 builder.Services.AddScoped<ITiempoDePreparacionPlatoServicio, TiempoDePreparacionPlatoServicio>();
+builder.Services.AddScoped<ICalcularTotalComandaServicio, CalcularTotalComandaServicio>();
 
 
 //Servicios externos
@@ -279,6 +283,11 @@ builder.Services.AddScoped<GeminiResponseMapper>();
 builder.Services.AddScoped<SugerenciaIAEntityMapper>();
 builder.Services.AddScoped<ISugerenciaIARepositorio, SugerenciaIARepositorio>();
 builder.Services.AddScoped<IImagenServicio,CloudinaryImagenServicio>();
+builder.Services.AddScoped<IMercadoPagoServicio, MercadoPagoServicio>();
+
+//MERCADO PAGO
+MercadoPagoConfig.AccessToken = builder.Configuration["MercadoPago:AccessToken"];
+builder.Services.Configure<MercadoPagoConfiguracion>(builder.Configuration.GetSection("MercadoPago"));
 
 // Excepcion Handler
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

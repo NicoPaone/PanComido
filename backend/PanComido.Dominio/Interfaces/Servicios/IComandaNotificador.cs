@@ -14,5 +14,6 @@ namespace PanComido.Dominio.Interfaces.Servicios
         Task NotificarLlamadoCocinaAsync(Comanda comanda, List<int> mozoIds);
 
         Task NotificarComandaActualizadaAMesaAsync(Comanda comanda);
+        Task NotificarPagoRechazadoAMesaAsync(Comanda comanda);
     }
 }

@@ -9,6 +9,7 @@ public class MarcarItemsEntregadosCasoDeUso
     private readonly IComandaNotificador _comandaNotificador;
     private readonly IMesaRepositorio _mesaRepositorio;
 
+
     public MarcarItemsEntregadosCasoDeUso(
         IComandaRepositorio comandaRepositorio,
         IComandaNotificador comandaNotificador,
