@@ -11,6 +11,8 @@ namespace PanComido.Dominio.Interfaces.Repositorios
     {
         Task<Pago> CrearPagoAsync(Pago pago);
         Task<Pago?> ObtenerPagoPorExternalReferenceAsync(string externalReference);
+        Task<Pago?> ObtenerPagoPorComandaIdAsync(int comandaId);
         Task<Pago?> ConfirmarPagoAsync(string externalReference);
+        Task<Pago?> RechazarPagoAsync(string externalReference);
     }
 }

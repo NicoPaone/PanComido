@@ -31,14 +31,14 @@ namespace PanComido.Presentacion.Servicios
                     HoraInicio = comanda.HoraInicio,
                     HoraFin = comanda.HoraFin,
                     HoraUltimoCambioEstado = comanda.HoraUltimoCambioEstado,
-                    Items = platos 
+                    Items = platos
                 };
 
                 await _hubContext.Clients.Group($"Cocina_{comanda.RestauranteId}").SendAsync("EstadoComandaModificada", comandaParaCocinaConSoloPlatos);
             }
 
             await _hubContext.Clients.Group($"Mesa_{comanda.MesaId}").SendAsync("EstadoComandaModificada", comanda);
-            
+
             foreach (int mozoId in mozoIds)
             {
                 await _hubContext.Clients.Group($"Mozo_{mozoId}").SendAsync("EstadoComandaModificada", comanda);
@@ -51,6 +51,16 @@ namespace PanComido.Presentacion.Servicios
             {
                 await _hubContext.Clients.Group($"Mozo_{mozoId}").SendAsync("LlamadoCocina", comanda);
             }
+        }
+
+        public async Task NotificarComandaActualizadaAMesaAsync(Comanda comanda)
+        {
+            await _hubContext.Clients.Group($"Mesa_{comanda.MesaId}").SendAsync("ComandaActualizada", comanda);
+        }
+
+        public async Task NotificarPagoRechazadoAMesaAsync(Comanda comanda)
+        {
+            await _hubContext.Clients.Group($"Mesa_{comanda.MesaId}").SendAsync("PagoRechazado", comanda);
         }
     }
 }

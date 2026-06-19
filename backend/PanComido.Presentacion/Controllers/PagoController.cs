@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.PagoCasoDeUso;
-using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.DTOs.Pago;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Sesion;

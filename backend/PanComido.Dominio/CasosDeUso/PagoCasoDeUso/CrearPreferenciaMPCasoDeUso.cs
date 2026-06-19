@@ -41,6 +41,9 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
             string externalReference = $"Comanda-{comandaId}";
             Restaurante restaurante = await _restauranteRepositorio.ObtenerDatosDelLocalAsync(restauranteId);
 
+            Pago pagoExistente = await _pagoRepositorio.ObtenerPagoPorComandaIdAsync(comandaId);
+            if (pagoExistente != null && pagoExistente.EstadoPago == EstadoPago.Confirmado) throw new InvalidOperationException("El pago ya fue confirmado");
+            
             string descripcion = $"Pago a {restaurante.Nombre}";
 
             string initPoint = await _mercadoPagoServicio.CrearPreferenciaAsync(externalReference, totalComanda, descripcion);

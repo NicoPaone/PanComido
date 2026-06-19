@@ -16,15 +16,13 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
         private readonly IPagoRepositorio _pagoRepositorio;
         private readonly IComandaRepositorio _comandaRepositorio;
         private readonly ILlamadoRepositorio _llamadoRepositorio;
-        private readonly IMesaRepositorio _mesaRepositorio;
         private readonly ICalcularTotalComandaServicio _calcularTotalComandaServicio;
 
-        public ConfirmarPagoEfectivoCasoDeUso(IPagoRepositorio pagoRepositorio, IComandaRepositorio comandaRepositorio, ILlamadoRepositorio llamadoRepositorio, IMesaRepositorio mesaRepositorio, ICalcularTotalComandaServicio calcularTotalComandaServicio)
+        public ConfirmarPagoEfectivoCasoDeUso(IPagoRepositorio pagoRepositorio, IComandaRepositorio comandaRepositorio, ILlamadoRepositorio llamadoRepositorio, ICalcularTotalComandaServicio calcularTotalComandaServicio)
         {
             _pagoRepositorio = pagoRepositorio;
             _comandaRepositorio = comandaRepositorio;
             _llamadoRepositorio = llamadoRepositorio;
-            _mesaRepositorio = mesaRepositorio;
             _calcularTotalComandaServicio = calcularTotalComandaServicio;
         }
 
@@ -37,6 +35,9 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
 
             decimal totalComanda = _calcularTotalComandaServicio.CalcularTotal(comanda);
 
+            Pago pagoExistente = await _pagoRepositorio.ObtenerPagoPorComandaIdAsync(comandaId);
+            if (pagoExistente != null && pagoExistente.EstadoPago == EstadoPago.Confirmado) throw new InvalidOperationException("El pago ya fue confirmado");
+
             Pago pago = new Pago
             {
                 MetodoDePago = MetodoPago.Efectivo,
@@ -47,12 +48,10 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
 
             Pago pagoCreado = await _pagoRepositorio.CrearPagoAsync(pago);
 
-            pagoCreado.ComandaId = comandaId;
             comanda.Estado = EstadoComanda.Finalizada;
             comanda.HoraFin = DateTime.Now;
             await _comandaRepositorio.ActualizarAsync(comanda);
 
-            await _mesaRepositorio.ActualizarEstadoAsync(comanda.MesaId, EstadoMesa.Disponible);
             await _llamadoRepositorio.ResolverLlamadoPorMesaYCategoriaAsync(comanda.MesaId, 7);
             return pagoCreado;
         }
