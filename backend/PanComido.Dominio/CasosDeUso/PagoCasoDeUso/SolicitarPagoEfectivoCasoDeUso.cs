@@ -31,9 +31,9 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
             {
                 throw new KeyNotFoundException("Comanda no encontrada para el restaurante especificado.");
             }
-            if(comanda.Estado == EstadoComanda.EnEspera || comanda.Estado == EstadoComanda.Finalizada)
+            if(comanda.Estado != EstadoComanda.EnEspera)
             {
-                throw new ArgumentException("La comanda ya tiene una solicitud de pago pendiente o está finalizada.");
+                throw new ArgumentException("La comanda no está esperando pago.");
             }
 
             comanda.Estado = EstadoComanda.EnEspera;
