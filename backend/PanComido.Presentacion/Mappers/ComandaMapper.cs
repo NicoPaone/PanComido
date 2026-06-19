@@ -36,7 +36,10 @@ namespace PanComido.Presentacion.Mappers
                     Entregado = ac.Entregado,
                     Cantidad = ac.Cantidad,
                     ObservacionesGenerales = ac.ObservacionesGenerales,
-                    ObservacionesIngredientes = ac.ObservacionesIngredientes,
+                    ObservacionesIngredientes = ac.IngredientesExcluidos != null 
+                                                    && ac.IngredientesExcluidos.Any()
+                        ? ac.IngredientesExcluidos.Select(i => $"- Sin {i.Nombre}").ToList()
+                        : new List<string>(),
                     Articulo = new ArticuloResponseDto
                     {
                         Id = ac.Articulo.Id,
@@ -60,11 +63,11 @@ namespace PanComido.Presentacion.Mappers
             {
                 ArticuloId = item.ArticuloId,
                 Cantidad = item.Cantidad,
-                ObservacionesIngredientes = item.ObservacionesIngredientes,
                 ObservacionesGenerales = item.ObservacionesGenerales,
                 Entregado = false,
+                NombreComensal = dto.NombreComensal,
+                IngredientesExcluidosIds = item.IdIngredientesPersonalizadosSacados ?? new List<int>()
 
-                NombreComensal = dto.NombreComensal
             }).ToList();
         }
 
@@ -76,7 +79,6 @@ namespace PanComido.Presentacion.Mappers
                 EstadoUI = TraducirEstadoParaUI(comanda.Estado),
                 TotalAPagar = comanda.Items?.Sum(i => (i.Articulo?.PrecioVentaFinal ?? 0m) * i.Cantidad) ?? 0m,
 
-                // Mapeamos los ítems con su precio para que Angular dibuje el ticket
                 Items = comanda.Items?.Select(ac => new ItemPedidoClienteResponseDto
                 {
                     ArticuloId = ac.Articulo.Id,
@@ -85,16 +87,16 @@ namespace PanComido.Presentacion.Mappers
                     Entregado = ac.Entregado,
                     PrecioUnitario = ac.Articulo.PrecioVentaFinal ?? 0m,
                     Subtotal = (ac.Articulo.PrecioVentaFinal ?? 0m) * ac.Cantidad,
-
-                    ObservacionesIngredientes = ac.ObservacionesIngredientes,
                     ObservacionesGenerales = ac.ObservacionesGenerales,
-
-                    NombreComensal = ac.NombreComensal
+                    NombreComensal = ac.NombreComensal,
+                    ObservacionesIngredientes = ac.IngredientesExcluidos != null
+                                                    && ac.IngredientesExcluidos.Any()
+                        ? ac.IngredientesExcluidos.Select(i => $"- Sin {i.Nombre}").ToList()
+                        : new List<string>(),
                 }).ToList() ?? new List<ItemPedidoClienteResponseDto>()
             };
         }
 
-        // Método privado de ayuda para traducir los estados que va a tener la vista
         private string TraducirEstadoParaUI(EstadoComanda estado)
         {
             return estado switch

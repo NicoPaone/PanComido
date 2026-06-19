@@ -49,9 +49,6 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
 
             var stockInsumosDisponibles = await _loteRepositorio.ObtenerStockTotalDeInsumosDisponible(restauranteId, DateOnly.FromDateTime(DateTime.UtcNow));
 
-            // TODO: aca ver si tambien no validar los ingredientes opcionales que saco, sacar de la lista a los articulos que saco el comensal
-            // basicamente validar lo que el usuario pidio, no demas
-
             foreach (ArticuloComanda item in articulosSolicitados)
             {
                 var articuloCompleto = await _articuloRepositorio.ObtenerDetalleAsync(restauranteId, item.ArticuloId);
@@ -70,9 +67,19 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
 
                 if (articuloCompleto is Plato plato)
                 {
+                    var ingredientesValidosDelPlato = plato.Ingredientes.Select(i => i.InsumoId).ToList();
+
+                    item.IngredientesExcluidosIds = item.IngredientesExcluidosIds
+                        .Where(id => ingredientesValidosDelPlato.Contains(id))
+                        .Distinct()
+                        .ToList();
+
                     foreach (var recetaItem in plato.Ingredientes)
                     {
-                        if (stockInsumosDisponibles.ContainsKey(recetaItem.InsumoId))
+                        bool ingredienteExcluido = item.IngredientesExcluidosIds.Contains(recetaItem.InsumoId);
+                        bool ingredienteSeEncuentraEnElStock = stockInsumosDisponibles.ContainsKey(recetaItem.InsumoId);
+
+                        if (!ingredienteExcluido && ingredienteSeEncuentraEnElStock)
                         {
                             decimal cantidadARestar = recetaItem.Cantidad * item.Cantidad;
                             stockInsumosDisponibles[recetaItem.InsumoId] -= cantidadARestar;
@@ -81,6 +88,8 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
                 }
                 else // bebida por descarte
                 {
+                    item.IngredientesExcluidosIds = new List<int>();
+
                     if (stockInsumosDisponibles.ContainsKey(articuloCompleto.Id))
                         stockInsumosDisponibles[articuloCompleto.Id] -= item.Cantidad;
                 }
@@ -98,16 +107,19 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
 
 
             var mozosId = await _mesaRepositorio.ObtenerMozoIdsPorMesaAsync(comanda.MesaId);
+
             // signalR
             await _comandaNotificador.NotificarEstadoModificadoAsync(comanda, mozosId);
             await _comandaNotificador.NotificarComandaActualizadaAMesaAsync(comanda);
 
 
             await _gestionDeStockServicio.DescontarStockPorArticulosAsync(restauranteId, articulosSolicitados);
-            
+
             // signal R para actualizar stock en tiempo real?
 
-            return comanda;
+            Comanda comandaCompleta = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
+
+            return comandaCompleta;
         }
     }
 }

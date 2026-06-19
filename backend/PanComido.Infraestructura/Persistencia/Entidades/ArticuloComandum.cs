@@ -25,9 +25,6 @@ public partial class ArticuloComandum
     [Column("entregado")]
     public bool Entregado { get; set; }
 
-    [Column("observaciones_ingrediente")]
-    public string? ObservacionesIngrediente { get; set; }
-
     [Column("observaciones_generales")]
     public string? ObservacionesGenerales { get; set; }
 
@@ -37,6 +34,9 @@ public partial class ArticuloComandum
     [ForeignKey("ArticuloId")]
     [InverseProperty("ArticuloComanda")]
     public virtual Articulo Articulo { get; set; } = null!;
+
+    [InverseProperty("ArticuloComanda")]
+    public virtual ICollection<ArticuloComandaIngredienteExcluido> ArticuloComandaIngredienteExcluidos { get; set; } = new List<ArticuloComandaIngredienteExcluido>();
 
     [ForeignKey("ComandaId")]
     [InverseProperty("ArticuloComanda")]
