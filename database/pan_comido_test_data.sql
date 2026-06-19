@@ -356,21 +356,32 @@ INSERT INTO comanda (id, mesa_id, restaurante_id, estado_comanda_id, cant_comens
 INSERT INTO pago (id, comanda_id, cierre_id, metodo_pago_id, estado_pago_id, external_reference, total) VALUES
     (1, 3, 1, 1, 2, NULL, 28500.00);
 
-INSERT INTO articulo_comanda (comanda_id, articulo_id, cantidad, entregado, observaciones_ingrediente, observaciones_generales) VALUES
-    (1, 1,  1, FALSE, 'Sin orégano', NULL),
-    (1, 12, 2, TRUE,  NULL,          NULL),
-    (1, 6,  1, FALSE, NULL,          'Cocción a punto'),
-    (1, 9,  1, TRUE,  NULL,          NULL),
-    (2, 8,  2, FALSE, NULL,          NULL),
-    (2, 3,  1, FALSE, 'Sin jamón',   'Que no toque la ensalada'),
-    (2, 4,  2, FALSE, 'Sin cebolla', NULL),
-    (2, 5,  1, FALSE, NULL,          'Aderezo aparte'),
-    (2, 14, 2, FALSE, NULL,          NULL),
-    (2, 15, 1, FALSE, NULL,          NULL),
-    (2, 13, 2, FALSE, NULL,          NULL),
-    (3, 2,  1, TRUE,  NULL,          NULL),
-    (3, 11, 1, TRUE,  'Sin pimienta', NULL),
-    (3, 16, 2, TRUE,  NULL,          NULL);
+INSERT INTO articulo_comanda (id, comanda_id, articulo_id, cantidad, entregado, observaciones_generales, nombre_comensal) VALUES
+    (1,  1, 1,  1, FALSE, NULL,                       'Lucas'), -- Era: 'Sin orégano'
+    (2,  1, 12, 2, TRUE,  NULL,                       'Lucas'),
+    (3,  1, 6,  1, FALSE, 'Cocción a punto',          'Ana'),
+    (4,  1, 9,  1, TRUE,  NULL,                       'Ana'),
+    (5,  2, 8,  2, FALSE, NULL,                       'Marcos'),
+    (6,  2, 3,  1, FALSE, 'Que no toque la ensalada', 'Marcos'), -- Era: 'Sin jamón'
+    (7,  2, 4,  2, FALSE, NULL,                       'Julia'),  -- Era: 'Sin cebolla'
+    (8,  2, 5,  1, FALSE, 'Aderezo aparte',           'Julia'),
+    (9,  2, 14, 2, FALSE, NULL,                       'Pedro'),
+    (10, 2, 15, 1, FALSE, NULL,                       'Pedro'),
+    (11, 2, 13, 2, FALSE, NULL,                       'Julia'),
+    (12, 3, 2,  1, TRUE,  NULL,                       'Martin'),
+    (13, 3, 11, 1, TRUE,  NULL,                       'Martin'), -- Era: 'Sin pimienta'
+    (14, 3, 16, 2, TRUE,  NULL,                       'Nicole');
+
+-- ============================================================
+-- INGREDIENTES EXCLUIDOS (Relación N:N)
+-- Mapeo de las exclusiones del viejo campo de texto a IDs reales
+-- ============================================================
+
+INSERT INTO articulo_comanda_ingrediente_excluido (articulo_comanda_id, ingrediente_id) VALUES
+    (1, 36), -- A la Pizza Muzzarella (ID 1) se le saca el Orégano (Insumo 36)
+    (6, 37), -- A la Milanesa Napolitana (ID 6) se le saca el Jamón cocido (Insumo 37)
+    (7, 30), -- A las Hamburguesas (ID 7) se les saca la Cebolla (Insumo 30)
+    (13, 25); -- Al Wok de Pollo (ID 13) se le saca la Pimienta (Insumo 25)
 
 -- ============================================================
 -- LLAMADOS
@@ -468,5 +479,6 @@ SELECT setval('notificacion_id_seq',      (SELECT MAX(id) FROM notificacion));
 SELECT setval('bodega_id_seq',            (SELECT MAX(id) FROM bodega));
 SELECT setval('articulo_comanda_id_seq',  (SELECT MAX(id) FROM articulo_comanda));
 SELECT setval('familia_tipografica_id_seq',        (SELECT MAX(id) FROM familia_tipografica));
+SELECT setval('articulo_comanda_ingrediente_excluido_id_seq', (SELECT MAX(id) FROM articulo_comanda_ingrediente_excluido));
 
 COMMIT;

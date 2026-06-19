@@ -56,8 +56,13 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             var efComanda = await _ctx.Comanda
             .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.Plato != null))
-            .ThenInclude(ac => ac.Articulo)
-            .ThenInclude(a => a.Plato)
+                .ThenInclude(ac => ac.Articulo)
+                    .ThenInclude(a => a.Plato)
+            .Include(c => c.ArticuloComanda)
+                .ThenInclude(ac => ac.ArticuloComandaIngredienteExcluidos)
+                    .ThenInclude(ex => ex.Ingrediente)
+                        .ThenInclude(i => i.IdInsumoNavigation)
+                           .ThenInclude(ins => ins.IdArticuloNavigation)
             .FirstOrDefaultAsync(m => m.MesaId == mesaId 
                                    && m.EstadoComandaId != (int)EstadoComanda.Finalizada
                                    && m.EstadoComandaId != (int)EstadoComanda.Abierta);
@@ -72,6 +77,11 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.Plato != null))
                    .ThenInclude(ac => ac.Articulo)
                        .ThenInclude(a => a.Plato)
+               .Include(c => c.ArticuloComanda)
+                   .ThenInclude(ac => ac.ArticuloComandaIngredienteExcluidos)
+                      .ThenInclude(ex => ex.Ingrediente)
+                       .ThenInclude(i => i.IdInsumoNavigation)
+                           .ThenInclude(ins => ins.IdArticuloNavigation)
                .Where(c => c.RestauranteId == restauranteId)
                .Where(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada
                            && c.EstadoComandaId != (int)EstadoComanda.Abierta)
@@ -90,6 +100,11 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.ConfiguracionArticulos.Any(ca => ca.Id == 1)))
                     .ThenInclude(ac => ac.Articulo)
                         .ThenInclude(a => a.Insumo)
+                .Include(c => c.ArticuloComanda)
+                    .ThenInclude(ac => ac.ArticuloComandaIngredienteExcluidos)
+                      .ThenInclude(ex => ex.Ingrediente)
+                        .ThenInclude(i => i.IdInsumoNavigation)        
+                            .ThenInclude(ins => ins.IdArticuloNavigation)
                 .Include(c => c.Mesa)
                     .ThenInclude(m => m.Mozos);
         }
