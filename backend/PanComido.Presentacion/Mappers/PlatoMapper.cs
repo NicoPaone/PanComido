@@ -19,7 +19,6 @@ namespace PanComido.Presentacion.Mappers
                 TiempoPreparacionBase = platoDto.TiempoPreparacionBase,
                 TipoPlatoId = platoDto.TipoPlatoId,
                 CategoriaPlatoId = platoDto.CategoriaPlatoId,
-                UrlImagen = platoDto.UrlImagen,
 
 
                 // Mapeamos la lista de números (IDs) a una lista de objetos Restriccion
@@ -89,14 +88,13 @@ namespace PanComido.Presentacion.Mappers
                 UrlImagen = platoDominio.UrlImagen,
                 EsVisibleEnCarta = platoDominio.EsVisibleEnCarta,
                 RestriccionesIds = platoDominio.Restricciones?.Select(r => r.Id).ToList() ?? new List<int>(),
-                Ingredientes = platoDominio.Ingredientes?.Select(i => new IngredienteRecetaDto
+                Ingredientes = platoDominio.Ingredientes?.Select(i => new IngredienteRecetaResponseDto
                 {
                     InsumoId = i.InsumoId,
                     Cantidad = i.Cantidad,
-                    Opcional = i.Opcional
-                    ,
+                    Opcional = i.Opcional,
                     Nombre = i.Insumo?.Nombre
-                }).ToList() ?? new List<IngredienteRecetaDto>()
+                }).ToList() ?? new List<IngredienteRecetaResponseDto>()
             };
         }
     }

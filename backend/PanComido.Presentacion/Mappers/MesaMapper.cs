@@ -21,6 +21,9 @@ namespace PanComido.Presentacion.Mappers
             PosicionXFin = mesa.PosicionXFin,
             PosicionYInicio = mesa.PosicionYInicio,
             PosicionYFin = mesa.PosicionYFin,
+            TipoElemento = mesa.TipoElemento,
+            Color = mesa.Color,
+            TextoObjeto = mesa.TextoObjeto,
             DimensionMesa = new DimensionMesaDto
             {
                Id = mesa.DimensionMesaId,
@@ -34,7 +37,20 @@ namespace PanComido.Presentacion.Mappers
          return mesas.Select(aDto).ToList();
       }
 
-      private EstadoMesa ParsearEstado(string estadoStr)
+        // Mapper especifico para cuando se hace la accion de ocupar mesa
+
+        public MesaSinPosicionesResponseDto aMesaSinPosicionesResponseDto(MesaConPosiciones mesa)
+        {
+            return new MesaSinPosicionesResponseDto
+            {
+                Id = mesa.Id,
+                NumeroMesa = mesa.Numero,
+                CantidadPersonasMax = mesa.CantPersonasMax,
+                EstadoMesa = mesa.EstadoMesa
+            };
+        }
+
+        private EstadoMesa ParsearEstado(string estadoStr)
       {
           // Intentamos parsear. Si falla o viene vacío, lo dejamos Disponible por seguridad.
           if (Enum.TryParse<EstadoMesa>(estadoStr, true, out var estado))
@@ -56,7 +72,10 @@ namespace PanComido.Presentacion.Mappers
               PosicionYInicio = dto.PosicionYInicio,
               PosicionYFin = dto.PosicionYFin,
               DimensionMesaId = dto.DimensionMesa.Id,
-              Forma = dto.DimensionMesa.Forma
+              Forma = dto.DimensionMesa.Forma,
+              TipoElemento = dto.TipoElemento,
+              Color = dto.Color,
+              TextoObjeto = dto.TextoObjeto
           };
       }
 

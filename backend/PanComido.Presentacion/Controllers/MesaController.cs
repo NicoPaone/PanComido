@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
+using PanComido.Dominio.Entidades;
 using PanComido.Presentacion.DTOs.Mesas;
 using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
@@ -18,28 +19,37 @@ namespace PanComido.Presentacion.Controllers
     {
       private readonly OcuparMesaCasoDeUso _ocuparMesaCasoDeUso;
       private readonly ListarMesasCasoDeUso _listarMesas;
-      private readonly MesaMapper _mapper;
       private readonly GuardarMapaCasoDeUso _guardarMapaCasoDeUso;
       private readonly CambiarEstadoMesaCasoDeUso _cambiarEstadoMesaCasoDeUso;
+      private readonly ObtenerDatosMesaBienvenidaCasoDeUso _obtenerDatosMesaBienvenidaCasoDeUso;
       private readonly IHubContext<PanComidoHub> _hubContext;
 
-      public MesaController(
+      private readonly MesaMapper _mapper;
+      private readonly DatosBienvenidaMesaMapper _datosBienvenidaMesaMapper;
+
+
+        public MesaController(
           OcuparMesaCasoDeUso ocuparMesaCasoDeUso, 
           ListarMesasCasoDeUso listar, 
-          MesaMapper mapper,
           GuardarMapaCasoDeUso guardarMapaCasoDeUso,
           CambiarEstadoMesaCasoDeUso cambiarEstadoMesaCasoDeUso,
+          ObtenerDatosMesaBienvenidaCasoDeUso obtenerDatosMesaBienvenidaCasoDeUso,
+          MesaMapper mapper,
+          DatosBienvenidaMesaMapper datosBienvenidaMesaMapper,
           IHubContext<PanComidoHub> hubContext)
       {
          _ocuparMesaCasoDeUso = ocuparMesaCasoDeUso;
          _listarMesas = listar; 
-         _mapper = mapper;
          _guardarMapaCasoDeUso = guardarMapaCasoDeUso;
          _cambiarEstadoMesaCasoDeUso = cambiarEstadoMesaCasoDeUso;
+         _obtenerDatosMesaBienvenidaCasoDeUso = obtenerDatosMesaBienvenidaCasoDeUso;
          _hubContext = hubContext;
-      }
 
-      [HttpGet]
+        _mapper = mapper;
+        _datosBienvenidaMesaMapper = datosBienvenidaMesaMapper;
+        }
+
+        [HttpGet]
       public async Task<ActionResult<List<MesaResponseDto>>> ObtenerTodas()
       {
          int restauranteId = HttpContext.ObtenerRestauranteId();
@@ -60,16 +70,24 @@ namespace PanComido.Presentacion.Controllers
           return Ok(new { mensaje = "Mapa de mesas guardado correctamente." });
       }
 
-    [HttpPost("comensal/{restauranteId}/{idMesa}/ocupar")]
-    [AllowAnonymous]
+        [HttpGet("{idMesa}/comensal/{restauranteId}/bienvenida")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ObtenerDatosBienvenidaQR(int idMesa, int restauranteId)
+        {
+            BienvenidaMesaDatos datosBienvenidaDominio = await _obtenerDatosMesaBienvenidaCasoDeUso.EjecutarAsync(idMesa, restauranteId);
+            return Ok(_datosBienvenidaMesaMapper.aDto(datosBienvenidaDominio));
+        }
+
+        [HttpPost("comensal/{restauranteId}/{idMesa}/ocupar")]
+        [AllowAnonymous]
         public async Task<IActionResult> Ocupar(int restauranteId, int idMesa, [FromBody] OcuparMesaRequestDto request)
         {
             var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, idMesa, request.CantidadComensales.Value);
 
             return StatusCode(201,
-                new OcuparMesaResponseDto
+                new OcuparMesaComensalResponseDto
                 {
-                    Mesa = _mapper.aDto(mesaConPosiciones),
+                    Mesa = _mapper.aMesaSinPosicionesResponseDto(mesaConPosiciones),
                     IdComandaGenerada = mesaConPosiciones.idComanda.Value
                 });
         }

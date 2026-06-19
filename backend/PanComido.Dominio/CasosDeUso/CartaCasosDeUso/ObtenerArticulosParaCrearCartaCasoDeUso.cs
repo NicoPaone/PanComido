@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
 using System.Collections.Generic;
@@ -19,10 +19,10 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
             _tiempoDePreparacionPlatoServicio = tiempoDePreparacionPlatoServicio;
         }
 
-        public async Task<List<Articulo>> EjecutarAsync()
+        public async Task<List<Articulo>> EjecutarAsync(int restauranteId)
         {
             // 1. Traemos la lista cruda de la base de datos
-            var articulosDb = await _articuloRepositorio.ObtenerTodosLosArticulosParaCartaAsync();
+            var articulosDb = await _articuloRepositorio.ObtenerTodosLosArticulosParaCartaAsync(restauranteId);
 
             // 2. Le calculamos el costo a cada uno "en el aire"
             foreach (var art in articulosDb)

@@ -1,4 +1,4 @@
-﻿using MercadoPago.Config;
+using MercadoPago.Config;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -17,6 +17,7 @@ using PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.PagoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
+using PanComido.Dominio.CasosDeUso.PlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.CasosDeUso.UnidadMedidaCasosDeUso;
@@ -44,6 +45,7 @@ using PanComido.Presentacion.Servicios;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -166,9 +168,9 @@ builder.Services.AddScoped<FilaVirtualMapper>();
 builder.Services.AddScoped<DashboardMapper>();
 builder.Services.AddScoped<FamiliaTipograficaMapper>();
 builder.Services.AddScoped<PorcentajesGananciaMapper>();
-
 builder.Services.AddScoped<ArticuloMapper>();
 builder.Services.AddScoped<PagoMapper>();
+builder.Services.AddScoped<DatosBienvenidaMesaMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -217,6 +219,7 @@ builder.Services.AddScoped<GuardarMapaCasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosParaFormularioCrearPlato>();
 builder.Services.AddScoped<CrearPlatoCasoDeUso>();
 builder.Services.AddScoped<ModificarPlatoCasoDeUso>();
+builder.Services.AddScoped<EliminarPlatoCasoDeUso>();
 builder.Services.AddScoped<ObtenerPlatoPorIdCasoDeUso>();
 builder.Services.AddScoped<ObtenerCartaComensalCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConStockCriticoCasoDeUso>();
@@ -241,8 +244,8 @@ builder.Services.AddScoped<ModificarProveedorCasoDeUso>();
 builder.Services.AddScoped<EliminarProveedorCasoDeuso>();
 builder.Services.AddScoped<ObtenerProveedorCasoDeUso>();
 builder.Services.AddScoped<ObtenerVencimientosYCriticidadDashboardCasoDeUso>();
-builder.Services.AddScoped<PanComido.Dominio.CasosDeUso.Dashboard.ObtenerRendimientoComercialCasoDeUso>();
-builder.Services.AddScoped<PanComido.Dominio.CasosDeUso.Dashboard.ObtenerResumenOperativoCasoDeUso>();
+builder.Services.AddScoped<ObtenerRendimientoComercialCasoDeUso>();
+builder.Services.AddScoped<ObtenerResumenOperativoCasoDeUso>();
 builder.Services.AddScoped<ObtenerMetodosDePagoCasoDeUso>();
 builder.Services.AddScoped<ActualizarMetodosDePagoCasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosDelLocalCasoDeUso>();
@@ -252,6 +255,7 @@ builder.Services.AddScoped<ActualizarTurnosLaboralesCasoDeUso>();
 builder.Services.AddScoped<ObtenerFilaVirtualCasoDeUso>();
 builder.Services.AddScoped<ActualizarFilaVirtualCasoDeUso>();
 builder.Services.AddScoped<ListarFamiliasTipograficasCasoDeUso>();
+builder.Services.AddScoped<ObtenerDatosMesaBienvenidaCasoDeUso>();
 builder.Services.AddScoped<ObtenerPorcentajesCasoDeUso>();
 builder.Services.AddScoped<ActualizarPorcentajesCasoDeUso>();
 builder.Services.AddScoped<CrearPreferenciaMPCasoDeUso>();
@@ -259,6 +263,7 @@ builder.Services.AddScoped<ConfirmarPagoMPCasoDeUso>();
 
 
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
+builder.Services.AddScoped<ObtenerDatosInvitadoBienvenidaAComandaCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
@@ -269,7 +274,6 @@ builder.Services.AddScoped<IVencimientosProximosInsumosServicio, VencimientosPro
 builder.Services.AddScoped<ITiempoDePreparacionPlatoServicio, TiempoDePreparacionPlatoServicio>();
 builder.Services.AddScoped<ICalcularTotalComandaServicio, CalcularTotalComandaServicio>();
 
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 //Servicios externos
 builder.Services.AddScoped<IComandaNotificador, ComandaNotificadorSignalR>();
@@ -284,6 +288,9 @@ builder.Services.AddScoped<IMercadoPagoServicio, MercadoPagoServicio>();
 //MERCADO PAGO
 MercadoPagoConfig.AccessToken = builder.Configuration["MercadoPago:AccessToken"];
 builder.Services.Configure<MercadoPagoConfiguracion>(builder.Configuration.GetSection("MercadoPago"));
+
+// Excepcion Handler
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddHttpClient();
 

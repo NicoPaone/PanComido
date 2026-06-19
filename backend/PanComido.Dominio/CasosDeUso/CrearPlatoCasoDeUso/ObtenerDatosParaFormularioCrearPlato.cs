@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using System;
 using System.Collections.Generic;
@@ -11,10 +11,12 @@ namespace PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso
     public class ObtenerDatosParaFormularioCrearPlato
     {
         private readonly IFormularioPlatoRepositorio _repositorio;
+        private readonly IPorcentajesCategoriaRepositorio _porcentajesRepositorio;
 
-        public ObtenerDatosParaFormularioCrearPlato(IFormularioPlatoRepositorio repositorio)
+        public ObtenerDatosParaFormularioCrearPlato(IFormularioPlatoRepositorio repositorio, IPorcentajesCategoriaRepositorio porcentajesRepositorio)
         {
             _repositorio = repositorio;
+            _porcentajesRepositorio = porcentajesRepositorio;
         }
 
         public async Task < DatosFormularioCrearPlato> Ejecutar (int restauranteId)
@@ -25,9 +27,8 @@ namespace PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso
                 CategoriasPlato = await _repositorio.ObtenerCategoriasPlatoAsync(),
                 Restricciones = await _repositorio.ObtenerRestriccionesAsync(),
                 Ingredientes = await _repositorio.ObtenerIngredientesBaseAsync(restauranteId),
-                IngredientePreparados = await _repositorio.ObtenerIngredientesPreparadosAsync(restauranteId)
-              
-
+                IngredientePreparados = await _repositorio.ObtenerIngredientesPreparadosAsync(restauranteId),
+                Porcentajes = await _porcentajesRepositorio.ObtenerPorcentajesGananciaAsync(restauranteId)
             };
             return datos;
         }

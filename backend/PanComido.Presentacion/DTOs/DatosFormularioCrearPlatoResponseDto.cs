@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+
+using PanComido.Presentacion.DTOs.PorcetajesGanancia;
 
 namespace PanComido.Presentacion.DTOs
 {
@@ -11,7 +13,7 @@ namespace PanComido.Presentacion.DTOs
         // El frontend recibe una sola lista unificada para el buscador
         public List<IngredienteDisponibleDto> Ingredientes { get; set; } = new List<IngredienteDisponibleDto>();
 
-
+        public PorcentajesGananciaResponseDto Porcentajes { get; set; }
 
     }
 

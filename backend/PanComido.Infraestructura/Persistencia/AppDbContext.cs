@@ -152,6 +152,7 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.Cantidad).HasDefaultValue(1);
             entity.Property(e => e.Entregado).HasDefaultValue(false);
+            entity.Property(e => e.NombreComensal).HasDefaultValueSql("'Anónimo'::text");
 
             entity.HasOne(d => d.Articulo).WithMany(p => p.ArticuloComanda)
                 .OnDelete(DeleteBehavior.ClientSetNull)
