@@ -31,12 +31,12 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
 
         public async Task<string> EjecutarAsync(int comandaId, int restauranteId)
         {
-            var comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
-            if (comanda == null || comanda.RestauranteId != restauranteId) throw new KeyNotFoundException("Comanda no encontrada");
-            if (comanda.Estado != EstadoComanda.EnEspera)
-                throw new ArgumentException("La comanda no está esperando pago.");
+         var comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
+         if (comanda == null || comanda.RestauranteId != restauranteId) throw new KeyNotFoundException("Comanda no encontrada");
+         if (comanda.Estado != EstadoComanda.EnEspera)
+            throw new ArgumentException("La comanda no está esperando pago.");
 
-            decimal totalComanda = _calcularTotalComandaServicio.CalcularTotal(comanda);
+         decimal totalComanda = _calcularTotalComandaServicio.CalcularTotal(comanda);
 
             string externalReference = $"Comanda-{comandaId}";
             Restaurante restaurante = await _restauranteRepositorio.ObtenerDatosDelLocalAsync(restauranteId);

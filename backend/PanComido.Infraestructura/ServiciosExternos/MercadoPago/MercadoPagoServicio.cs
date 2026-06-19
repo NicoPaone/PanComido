@@ -50,15 +50,15 @@ namespace PanComido.Infraestructura.ServiciosExternos.MercadoPago
                 },
 
                 ExternalReference = externalReference,
-                NotificationUrl = "https://pentomic-karla-unavoidably.ngrok-free.dev/pago/webhook/mercado-pago"
-                //BackUrls = new PreferenceBackUrlsRequest
-                //{
-                //    //poner nuestrar urls reales (que no sean localhost)
-                //    Success = "",
-                //    Failure = "",
-                //    Pending = ""
-                //},
-                //AutoReturn = "approved"
+                NotificationUrl = _configuracionMP.NotificationUrl,
+                BackUrls = new PreferenceBackUrlsRequest
+                {
+                   //poner nuestrar urls reales (que no sean localhost)
+                   Success = _configuracionMP.SuccessUrl,
+                   Failure = _configuracionMP.FailureUrl,
+                   Pending = _configuracionMP.PendingUrl,
+                },
+               AutoReturn = "approved"
             };
 
             var client = new PreferenceClient();
