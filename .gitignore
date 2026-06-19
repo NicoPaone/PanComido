@@ -487,3 +487,6 @@ $RECYCLE.BIN/
 # Tooling
 .atl/
 AGENTS.md
+
+# Frontend (migrado a repo separado)
+frontend/
