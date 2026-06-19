@@ -19,7 +19,6 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
 
         public async Task<ResumenRendimientoComercial> EjecutarAsync(int restauranteId, DateTime desde, DateTime hasta)
         {
-            // PostgreSQL no permite mezclar fechas UTC con columnas 'timestamp without time zone'
             DateTime desdeAjustado = DateTime.SpecifyKind(desde, DateTimeKind.Unspecified);
             DateTime hastaAjustado = DateTime.SpecifyKind(hasta.Date.AddDays(1).AddTicks(-1), DateTimeKind.Unspecified);
 

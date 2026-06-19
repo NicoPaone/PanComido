@@ -17,10 +17,8 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
 
         public async Task<ResumenOperativo> EjecutarAsync(int restauranteId, DateTime desde, DateTime hasta)
         {
-            // 1. Ajustar 'hasta' al final del día si las fechas vienen sin hora
             DateTime hastaAjustado = hasta.Date.AddDays(1).AddTicks(-1);
 
-            // 2. Determinar la agrupación para el gráfico
             TimeSpan diferencia = hastaAjustado - desde;
             string tipoAgrupacion = "Hora";
             if (diferencia.TotalDays > 35)
@@ -32,18 +30,15 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                 tipoAgrupacion = "Dia";
             }
 
-            // 3. Obtener totales actuales y ventas agrupadas (Consultas SQL optimizadas)
             var totalesActuales = await _comandaRepositorio.ObtenerTotalesPeriodoAsync(restauranteId, desde, hastaAjustado);
             var ventasAgrupadas = await _comandaRepositorio.ObtenerVentasAgrupadasAsync(restauranteId, desde, hastaAjustado, tipoAgrupacion);
 
-            // 4. Calcular el período anterior exacto para las variaciones porcentuales
             TimeSpan duracionPeriodo = hastaAjustado - desde;
             DateTime desdeAnterior = desde.Subtract(duracionPeriodo);
             DateTime hastaAnterior = hastaAjustado.Subtract(duracionPeriodo);
 
             var totalesAnteriores = await _comandaRepositorio.ObtenerTotalesPeriodoAsync(restauranteId, desdeAnterior, hastaAnterior);
 
-            // 5. Cálculos de Variaciones y Promedios (Lógica de Negocio Pura)
             decimal ticketActual = totalesActuales.CantidadPedidos > 0 
                 ? totalesActuales.TotalFacturado / totalesActuales.CantidadPedidos 
                 : 0;
