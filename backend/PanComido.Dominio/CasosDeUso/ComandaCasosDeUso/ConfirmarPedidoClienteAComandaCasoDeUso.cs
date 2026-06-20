@@ -1,4 +1,6 @@
-﻿using PanComido.Dominio.Entidades;
+﻿using Microsoft.Extensions.Logging;
+using PanComido.Dominio.CasosDeUso.ArticuloCasosDeUso;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
@@ -22,6 +24,8 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
 
         private readonly IComandaNotificador _comandaNotificador;
 
+        private readonly ILogger<ConfirmarPedidoClienteAComandaCasoDeUso> _logger;
+
         public ConfirmarPedidoClienteAComandaCasoDeUso(
             IComandaRepositorio comandaRepositorio,
             ILoteRepositorio loteRepositorio,
@@ -29,7 +33,8 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
             IMesaRepositorio mesaRepositorio,
             IDisponibilidadArticuloServicio disponibilidadServicio,
             IGestionStockServicio gestionDeStockServicio,
-            IComandaNotificador comandaNotificador)
+            IComandaNotificador comandaNotificador,
+            ILogger<ConfirmarPedidoClienteAComandaCasoDeUso> logger)
         {
             _comandaRepositorio = comandaRepositorio;
             _loteRepositorio = loteRepositorio;
@@ -38,14 +43,19 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
             _disponibilidadServicio = disponibilidadServicio;
             _gestionDeStockServicio = gestionDeStockServicio;
             _comandaNotificador = comandaNotificador;
+            _logger = logger;
         }
 
         public async Task<Comanda> EjecutarAsync(int restauranteId, int comandaId, List<ArticuloComanda> articulosSolicitados)
         {
+            _logger.LogInformation("Iniciando confirmación de pedido para la Comanda {ComandaId} en el Restaurante {RestauranteId}. Artículos solicitados: {CantidadArticulos}", comandaId, restauranteId, articulosSolicitados.Count);
 
             Comanda comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
             if (comanda == null || comanda.Estado == EstadoComanda.Finalizada)
+            {
+                _logger.LogWarning("Rechazo al confirmar pedido: La comanda {ComandaId} no existe o ya se encuentra finalizada.", comandaId);
                 throw new InvalidOperationException("La comanda no existe o esta finalizada.");
+            }
 
             var stockInsumosDisponibles = await _loteRepositorio.ObtenerStockTotalDeInsumosDisponible(restauranteId, DateOnly.FromDateTime(DateTime.UtcNow));
 
@@ -54,12 +64,18 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
                 var articuloCompleto = await _articuloRepositorio.ObtenerDetalleAsync(restauranteId, item.ArticuloId);
 
                 if (articuloCompleto == null || !articuloCompleto.EsVisibleEnCarta)
+                {
+                    _logger.LogWarning("Rechazo al confirmar pedido (Comanda {ComandaId}): El artículo {ArticuloId} no está disponible o no es visible en carta.", comandaId, item.ArticuloId);
                     throw new ArgumentException($"El artículo con ID {item.ArticuloId} no está disponible.");
+                }
 
                 bool estaDisponible = _disponibilidadServicio.VerificarDisponibilidad(articuloCompleto, item.Cantidad, stockInsumosDisponibles);
 
                 if (!estaDisponible)
+                {
+                    _logger.LogWarning("Rechazo al confirmar pedido (Comanda {ComandaId}): Quiebre de stock. No alcanza para preparar {Cantidad}x '{NombreArticulo}' (Id: {ArticuloId}).", comandaId, item.Cantidad, articuloCompleto.Nombre, item.ArticuloId);
                     throw new InvalidOperationException($"No hay stock suficiente para preparar {item.Cantidad}x {articuloCompleto.Nombre}");
+                }
 
                 item.Articulo = articuloCompleto;
                 item.Entregado = false;
@@ -108,16 +124,14 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
 
             var mozosId = await _mesaRepositorio.ObtenerMozoIdsPorMesaAsync(comanda.MesaId);
 
-            // signalR
             await _comandaNotificador.NotificarEstadoModificadoAsync(comanda, mozosId);
             await _comandaNotificador.NotificarComandaActualizadaAMesaAsync(comanda);
 
-
             await _gestionDeStockServicio.DescontarStockPorArticulosAsync(restauranteId, articulosSolicitados);
 
-            // signal R para actualizar stock en tiempo real?
-
             Comanda comandaCompleta = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
+
+            _logger.LogInformation("Pedido confirmado y procesado exitosamente para la Comanda {ComandaId}. Se actualizaron inventarios y se emitieron notificaciones.", comandaId);
 
             return comandaCompleta;
         }
