@@ -3,6 +3,7 @@ using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
+using Microsoft.Extensions.Logging;
 
 namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
 {
@@ -34,7 +35,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
                 .Setup(r => r.ObtenerPorIdAsync(mesaId, restauranteId))
                 .ReturnsAsync(mesaMock);
 
-            var casoDeUso = new ObtenerDatosMesaBienvenidaCasoDeUso(_restauranteMockRepo.Object, _mesaMockRepo.Object);
+            var casoDeUso = new ObtenerDatosMesaBienvenidaCasoDeUso(_restauranteMockRepo.Object, _mesaMockRepo.Object, new Mock<ILogger<ObtenerDatosMesaBienvenidaCasoDeUso>>().Object);
 
             var resultado = await casoDeUso.EjecutarAsync(mesaId, restauranteId);
 
@@ -53,7 +54,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
                 .Setup(r => r.ObtenerDatosDelLocalAsync(restauranteId))
                 .ReturnsAsync((Restaurante)null);
 
-            var casoDeUso = new ObtenerDatosMesaBienvenidaCasoDeUso(_restauranteMockRepo.Object, _mesaMockRepo.Object);
+            var casoDeUso = new ObtenerDatosMesaBienvenidaCasoDeUso(_restauranteMockRepo.Object, _mesaMockRepo.Object, new Mock<ILogger<ObtenerDatosMesaBienvenidaCasoDeUso>>().Object);
 
             await Assert.ThrowsAsync<KeyNotFoundException>(() => casoDeUso.EjecutarAsync(mesaId, restauranteId));
         }
@@ -72,7 +73,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
                 .Setup(r => r.ObtenerPorIdAsync(mesaId, restauranteId))
                 .ReturnsAsync((MesaConPosiciones)null);
 
-            var casoDeUso = new ObtenerDatosMesaBienvenidaCasoDeUso(_restauranteMockRepo.Object, _mesaMockRepo.Object);
+            var casoDeUso = new ObtenerDatosMesaBienvenidaCasoDeUso(_restauranteMockRepo.Object, _mesaMockRepo.Object, new Mock<ILogger<ObtenerDatosMesaBienvenidaCasoDeUso>>().Object);
 
             await Assert.ThrowsAsync<KeyNotFoundException>(() => casoDeUso.EjecutarAsync(mesaId, restauranteId));
         }
@@ -94,7 +95,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
                 .Setup(r => r.ObtenerPorIdAsync(mesaId, restauranteId))
                 .ReturnsAsync(new MesaConPosiciones { Id = mesaId, EstadoMesa = estado });
 
-            var casoDeUso = new ObtenerDatosMesaBienvenidaCasoDeUso(_restauranteMockRepo.Object, _mesaMockRepo.Object);
+            var casoDeUso = new ObtenerDatosMesaBienvenidaCasoDeUso(_restauranteMockRepo.Object, _mesaMockRepo.Object, new Mock<ILogger<ObtenerDatosMesaBienvenidaCasoDeUso>>().Object);
 
             await Assert.ThrowsAsync<InvalidOperationException>(() => casoDeUso.EjecutarAsync(mesaId, restauranteId));
         }
