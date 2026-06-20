@@ -31,5 +31,21 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Configuracion
             Assert.NotNull(resultado);
             Assert.Equal(restauranteId, resultado.Id);
         }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoNoExisteRestaurante_DevuelveNull()
+        {
+            int restauranteId = 1;
+
+            _restauranteRepoMock
+                .Setup(r => r.ObtenerDatosDelLocalAsync(restauranteId))
+                .ReturnsAsync((DOM.Restaurante?)null);
+
+            var casoDeUso = new ObtenerDatosDelLocalCasoDeUso(_restauranteRepoMock.Object);
+
+            var resultado = await casoDeUso.EjecutarAsync(restauranteId);
+
+            Assert.Null(resultado);
+        }
     }
 }

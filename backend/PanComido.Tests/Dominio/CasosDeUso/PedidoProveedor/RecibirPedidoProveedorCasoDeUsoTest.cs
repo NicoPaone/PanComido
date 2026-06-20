@@ -143,18 +143,6 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
                 .Setup(r => r.ObtenerPedidoPorIdAsync(pedidoId))
                 .ReturnsAsync(new DOM.Pedido { Id = pedidoId, Estado = "Enviado" });
 
-            _bodegaRepoMock
-                .Setup(r => r.ExisteBodegaEnRestauranteAsync(restauranteId, 1))
-                .ReturnsAsync(true);
-
-            _loteRepoMock
-                .Setup(r => r.CrearLotesAsync(It.IsAny<List<DOM.Lote>>()))
-                .Returns(Task.CompletedTask);
-
-            _pedidoRepoMock
-                .Setup(r => r.MarcarComoRecibidoAsync(pedidoId))
-                .Returns(Task.CompletedTask);
-
             var casoDeUso = new RecibirPedidoProveedorCasoDeUso(
                  _pedidoRepoMock.Object,
                  _loteRepoMock.Object,
@@ -184,18 +172,6 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
             _pedidoRepoMock
                 .Setup(r => r.ObtenerPedidoPorIdAsync(pedidoId))
                 .ReturnsAsync(new DOM.Pedido { Id = pedidoId, Estado = "Enviado" });
-
-            _bodegaRepoMock
-                .Setup(r => r.ExisteBodegaEnRestauranteAsync(restauranteId, 1))
-                .ReturnsAsync(true);
-
-            _loteRepoMock
-                .Setup(r => r.CrearLotesAsync(It.IsAny<List<DOM.Lote>>()))
-                .Returns(Task.CompletedTask);
-
-            _pedidoRepoMock
-                .Setup(r => r.MarcarComoRecibidoAsync(pedidoId))
-                .Returns(Task.CompletedTask);
 
             var casoDeUso = new RecibirPedidoProveedorCasoDeUso(
                  _pedidoRepoMock.Object,

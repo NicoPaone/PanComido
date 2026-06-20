@@ -1,4 +1,5 @@
-﻿using PanComido.Dominio.Entidades;
+﻿using Microsoft.Extensions.Logging;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using System;
 using System.Collections.Generic;
@@ -11,17 +12,22 @@ namespace PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso
     public class ActualizarPorcentajesCasoDeUso
     {
         private readonly IPorcentajesCategoriaRepositorio _porcentajesCategoriaRepositorio;
+        private readonly ILogger<ActualizarPorcentajesCasoDeUso> _logger;
 
-        public ActualizarPorcentajesCasoDeUso(IPorcentajesCategoriaRepositorio porcentajesCategoriaRepositorio)
+        public ActualizarPorcentajesCasoDeUso(IPorcentajesCategoriaRepositorio porcentajesCategoriaRepositorio, ILogger<ActualizarPorcentajesCasoDeUso> logger)
         {
             _porcentajesCategoriaRepositorio = porcentajesCategoriaRepositorio;
+            _logger = logger;
         }
 
         public async Task<PorcentajesGanancia> EjecutarAsync(int restauranteId, List<PorcentajesCategoria> platos, List<PorcentajesCategoria> bebidas)
         {
             if (platos.Any(p => p.Porcentaje < 0) || bebidas.Any(b => b.Porcentaje < 0))
                 throw new ArgumentException("El porcentaje no puede ser negativo.");
-            return await _porcentajesCategoriaRepositorio.ActualizarPorcentajesGananciaAsync(restauranteId, platos, bebidas);
+
+            PorcentajesGanancia resultado = await _porcentajesCategoriaRepositorio.ActualizarPorcentajesGananciaAsync(restauranteId, platos, bebidas);
+            _logger.LogInformation("Porcentajes de ganancia actualizados. RestauranteId: {RestauranteId}", restauranteId);
+            return resultado;
         }
     }
 }

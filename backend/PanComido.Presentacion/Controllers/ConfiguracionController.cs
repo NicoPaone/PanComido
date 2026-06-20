@@ -97,23 +97,23 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPut("actualizar-datos")]
-      public async Task<ActionResult> ActualizarDatosLocal([FromForm] 
+        public async Task<ActionResult> ActualizarDatosLocal([FromForm]
       RestauranteRequestDto restauranteRequestDto,
            IFormFile? imagen)
-      {
-         var restauranteId = HttpContext.ObtenerRestauranteId();
-         Restaurante restauranteDatos = _restauranteMapper.aDominio(restauranteRequestDto);
+        {
+            var restauranteId = HttpContext.ObtenerRestauranteId();
+            Restaurante restauranteDatos = _restauranteMapper.aDominio(restauranteRequestDto);
 
-         Stream? stream = imagen?.OpenReadStream();
-         string? nombreArchivo = imagen?.FileName;
-         
-         var restauranteActualizado = await _actualizarDatosDelLocalCasoDeUso
-            .EjecutarAsync(restauranteId, 
-                           restauranteDatos,
-                           RutasCloudinary.SistemaLogos,
-                           stream,
-                           nombreArchivo
-                           );
+            Stream? stream = imagen?.OpenReadStream();
+            string? nombreArchivo = imagen?.FileName;
+
+            var restauranteActualizado = await _actualizarDatosDelLocalCasoDeUso
+               .EjecutarAsync(restauranteId,
+                              restauranteDatos,
+                              RutasCloudinary.SistemaLogos,
+                              stream,
+                              nombreArchivo
+                              );
 
             var dto = _restauranteMapper.aDto(restauranteActualizado);
             return Ok(dto);
