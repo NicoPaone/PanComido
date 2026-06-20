@@ -65,7 +65,8 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             Forma = mesaEF.DimensionMesa?.Forma ?? "cuadrada",
             TipoElemento = mesaEF.TipoElemento,
             Color = mesaEF.Color,
-            TextoObjeto = mesaEF.TextoObjeto
+            TextoObjeto = mesaEF.TextoObjeto,
+            MozosAsignadosIds = mesaEF.Mozos?.Select(m => m.IdEmpleado).ToList() ?? new List<int>()
          };
       }
    }

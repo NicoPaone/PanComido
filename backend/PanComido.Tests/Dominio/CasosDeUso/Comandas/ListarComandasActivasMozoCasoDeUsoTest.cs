@@ -2,9 +2,9 @@
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
-using DOM = PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
 
-namespace PanComido.Tests.Dominio.CasosDeUso.Comanda
+namespace PanComido.Tests.Dominio.CasosDeUso.Comandas
 {
     public class ListarComandasActivasMozoCasoDeUsoTest
     {
@@ -21,10 +21,10 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Comanda
             int restauranteId = 1;
             int mozoId = 1;
 
-            var comandas = new List<DOM.Comanda>
+            var comandas = new List<Comanda>
             {
-                new DOM.Comanda { Id = 1, MesaId = 1, RestauranteId = restauranteId },
-                new DOM.Comanda { Id = 2, MesaId = 2, RestauranteId = restauranteId }
+                new Comanda { Id = 1, MesaId = 1, RestauranteId = restauranteId },
+                new Comanda { Id = 2, MesaId = 2, RestauranteId = restauranteId }
             };
 
             _comandaRepoMock
