@@ -13,9 +13,9 @@ namespace PanComido.Presentacion.Controllers
 {
     [Route("proveedor")]
     [ApiController]
-   [Authorize(Roles = "Gerente")]
+    [Authorize(Roles = "Gerente")]
 
-   public class ProveedorController : ControllerBase
+    public class ProveedorController : ControllerBase
     {
         private readonly ListarProveedorCasoDeUso _listarProveedorCasoDeUso;
         private readonly ObtenerHistorialPedidosCasoDeUso _obtenerHistorialCasoDeUso;
@@ -94,7 +94,7 @@ namespace PanComido.Presentacion.Controllers
             proveedorDominio.Id = idProveedor;
             proveedorDominio.RestauranteId = restauranteId;
 
-           
+
             var proveedorModificado = await _modificarProveedorCasoDeUso.EjecutarAsync(proveedorDominio);
             return Ok(new
             {
@@ -134,7 +134,7 @@ namespace PanComido.Presentacion.Controllers
         [HttpGet("{idProveedor}/insumos-a-reponer")]
         public async Task<ActionResult<List<InsumoParaReponerResponseDto>>> obtenerInsumosAReponer(int idProveedor)
         {
-            var restauranteId = HttpContext.ObtenerRestauranteId(); 
+            var restauranteId = HttpContext.ObtenerRestauranteId();
             var insumosSugeridos = await _obtenerInsumosParaPedidoCasoDeUso.EjecutarAsync(idProveedor, restauranteId);
 
             var dtos = _insumoConsugerenciaMapper.aListaDto(insumosSugeridos);
