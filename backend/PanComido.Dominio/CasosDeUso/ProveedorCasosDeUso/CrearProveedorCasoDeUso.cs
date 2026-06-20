@@ -1,4 +1,5 @@
-﻿using PanComido.Dominio.Entidades;
+﻿using Microsoft.Extensions.Logging;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using System;
 using System.Collections.Generic;
@@ -11,10 +12,14 @@ namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
     public class CrearProveedorCasoDeUso
     {
         private readonly IProveedorRepositorio _proveedorRepositorio;
+        private readonly ILogger<CrearProveedorCasoDeUso> _logger;
 
-        public CrearProveedorCasoDeUso(IProveedorRepositorio proveedorRepositorio)
+
+        public CrearProveedorCasoDeUso(IProveedorRepositorio proveedorRepositorio, ILogger<CrearProveedorCasoDeUso> logger)
         {
             _proveedorRepositorio = proveedorRepositorio;
+            _logger = logger;
+
         }
 
         public async Task<Proveedor> EjecutarAsync(Proveedor proveedor)
@@ -29,7 +34,10 @@ namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
             if (nombreExistente)
                 throw new ArgumentException($"Ya existe un proveedor con el nombre '{proveedor.Nombre}' en este restaurante.");
 
-            return await _proveedorRepositorio.CrearProveedorAsync(proveedor);
+            Proveedor proveedorCreado = await _proveedorRepositorio.CrearProveedorAsync(proveedor);
+            _logger.LogInformation("Proveedor creado. ProveedorId: {ProveedorId}, Nombre: {Nombre}, RestauranteId: {RestauranteId}", proveedorCreado.Id, proveedorCreado.Nombre, proveedorCreado.RestauranteId);
+
+            return proveedorCreado;
         }
     }
 }

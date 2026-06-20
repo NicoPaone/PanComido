@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
 using PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
 using DOM = PanComido.Dominio.Entidades;
@@ -8,11 +9,16 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Configuracion
     public class ActualizarTurnosLaboralesCasoDeUsoTest
     {
         private readonly Mock<ITurnoLaboralRepositorio> _turnoLaboralRepoMock;
+        private readonly Mock<ILogger<ActualizarTurnosLaboralesCasoDeUso>> _loggerMock;
 
         public ActualizarTurnosLaboralesCasoDeUsoTest()
         {
             _turnoLaboralRepoMock = new Mock<ITurnoLaboralRepositorio>();
+            _loggerMock = new Mock<ILogger<ActualizarTurnosLaboralesCasoDeUso>>();
         }
+
+        private ActualizarTurnosLaboralesCasoDeUso CrearCasoDeUso() =>
+            new ActualizarTurnosLaboralesCasoDeUso(_turnoLaboralRepoMock.Object, _loggerMock.Object);
 
         [Fact]
         public async Task EjecutarAsync_CuandoTurnosDiurnosConHorariosValidos_DevuelveListaActualizada()
@@ -33,9 +39,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Configuracion
                 .Setup(r => r.ActualizarTurnosLaboralesAsync(restauranteId, turnosEntrada))
                 .ReturnsAsync(turnosSalida);
 
-            var casoDeUso = new ActualizarTurnosLaboralesCasoDeUso(_turnoLaboralRepoMock.Object);
-
-            var resultado = await casoDeUso.EjecutarAsync(restauranteId, turnosEntrada);
+            var resultado = await CrearCasoDeUso().EjecutarAsync(restauranteId, turnosEntrada);
 
             Assert.NotNull(resultado);
             Assert.Equal(2, resultado.Count);
@@ -50,9 +54,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Configuracion
                 new DOM.TurnoLaboral { Id = 1, EsNocturno = false, HorarioInicio = new TimeOnly(16, 0), HorarioFin = new TimeOnly(8, 0) }
             };
 
-            var casoDeUso = new ActualizarTurnosLaboralesCasoDeUso(_turnoLaboralRepoMock.Object);
-
-            await Assert.ThrowsAsync<ArgumentException>(() => casoDeUso.EjecutarAsync(restauranteId, turnosEntrada));
+            await Assert.ThrowsAsync<ArgumentException>(() => CrearCasoDeUso().EjecutarAsync(restauranteId, turnosEntrada));
         }
 
         [Fact]
@@ -64,9 +66,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Configuracion
                 new DOM.TurnoLaboral { Id = 1, EsNocturno = false, HorarioInicio = new TimeOnly(8, 0), HorarioFin = new TimeOnly(8, 0) }
             };
 
-            var casoDeUso = new ActualizarTurnosLaboralesCasoDeUso(_turnoLaboralRepoMock.Object);
-
-            await Assert.ThrowsAsync<ArgumentException>(() => casoDeUso.EjecutarAsync(restauranteId, turnosEntrada));
+            await Assert.ThrowsAsync<ArgumentException>(() => CrearCasoDeUso().EjecutarAsync(restauranteId, turnosEntrada));
         }
 
         [Fact]
@@ -83,9 +83,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Configuracion
                 .Setup(r => r.ActualizarTurnosLaboralesAsync(restauranteId, turnosEntrada))
                 .ReturnsAsync(turnosSalida);
 
-            var casoDeUso = new ActualizarTurnosLaboralesCasoDeUso(_turnoLaboralRepoMock.Object);
-
-            var resultado = await casoDeUso.EjecutarAsync(restauranteId, turnosEntrada);
+            var resultado = await CrearCasoDeUso().EjecutarAsync(restauranteId, turnosEntrada);
 
             Assert.NotNull(resultado);
             Assert.Single(resultado);
