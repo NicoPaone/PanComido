@@ -488,5 +488,6 @@ $RECYCLE.BIN/
 .atl/
 AGENTS.md
 
-# Frontend (migrado a repo separado)
 frontend/
+frontend/PanComido-frontend/
+

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +11,11 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
    public class ObtenerMesaPorIdCasoDeUso
    {
       private readonly IMesaRepositorio _mesaRepositorio;
+
+      public ObtenerMesaPorIdCasoDeUso(IMesaRepositorio mesaRepositorio)
+      {
+         _mesaRepositorio = mesaRepositorio;
+      }
 
       public async Task<MesaConPosiciones?> EjecutarAsync(int mesaId, int restauranteId)
       {

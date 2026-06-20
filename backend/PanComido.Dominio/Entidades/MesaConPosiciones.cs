@@ -19,5 +19,7 @@ namespace PanComido.Dominio.Entidades
       // para devolver comanda que se genera cuando se ocupa la mesa
       public int? idComanda { get; set; }
 
+      public List<int> MozosAsignadosIds { get; set; } = new List<int>();
+
     }
 }

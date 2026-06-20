@@ -18,5 +18,8 @@ namespace PanComido.Dominio.Entidades
         public int TipoElemento { get; set; } = 1;
         public string? Color { get; set; }
         public string? TextoObjeto { get; set; }
+
+        // Relación N:M con Mozos
+        public virtual ICollection<MozoMesa> MozosAsignados { get; set; } = new List<MozoMesa>();
     }
 }

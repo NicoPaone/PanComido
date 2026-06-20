@@ -264,7 +264,9 @@ builder.Services.AddScoped<ConfirmarPagoMPCasoDeUso>();
 
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosInvitadoBienvenidaAComandaCasoDeUso>();
-
+builder.Services.AddScoped<AsignarMozosMesaCasoDeUso>();
+builder.Services.AddScoped<DesasignarMozoMesaCasoDeUso>();
+builder.Services.AddScoped<ListarMozosParaMesaCasoDeUso>();
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
 builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticuloServicio>();
