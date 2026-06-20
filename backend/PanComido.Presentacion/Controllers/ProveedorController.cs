@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.DTOs.Insumos;
 using PanComido.Presentacion.DTOs.Pedidos;
 using PanComido.Presentacion.DTOs.Proveedores;
+using PanComido.Presentacion.DTOs.Restaurante;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Sesion;
 
@@ -62,6 +64,7 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<ProveedorResponseDto>>> obtener()
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -73,6 +76,9 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPost("crear-proveedor")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CrearProveedor([FromBody] ProveedorRequestDto proveedorRequest)
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -87,6 +93,10 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPatch("{idProveedor}/modificar-proveedor")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ModificarProveedor(int idProveedor, [FromBody] ProveedorRequestDto proveedorRequest)
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -104,6 +114,9 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpDelete("{idProveedor}")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> EliminarProveedor(int idProveedor)
         {
             await _eliminarProveedorCasoDeUso.EjecutarAsync(idProveedor);
@@ -112,6 +125,9 @@ namespace PanComido.Presentacion.Controllers
 
 
         [HttpGet("{idProveedor}/historial-pedidos")]
+        [ProducesResponseType(typeof(List<PedidoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<PedidoResponseDto>>> obtenerHistorialPedidos(int idProveedor)
         {
             var pedidos = await _obtenerHistorialCasoDeUso.EjecutarAsync(idProveedor);
@@ -122,6 +138,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("{idProveedor}/insumos")]
+        [ProducesResponseType(typeof(List<InsumoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<InsumoResponseDto>>> obtenerInsumos(int idProveedor)
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -132,6 +150,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("{idProveedor}/insumos-a-reponer")]
+        [ProducesResponseType(typeof(List<InsumoParaReponerResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<InsumoParaReponerResponseDto>>> obtenerInsumosAReponer(int idProveedor)
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -142,6 +162,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("obtener-proveedor/{idProveedor}")]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> ObtenerProveedorId(int idProveedor)
         {
             var proveedorEncontrado = await _obtenerProveedorCasoDeuso.EjecutarAsync(idProveedor);

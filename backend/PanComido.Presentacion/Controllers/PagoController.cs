@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.PagoCasoDeUso;
+using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.DTOs.Pago;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Sesion;
@@ -37,6 +38,10 @@ namespace PanComido.Presentacion.Controllers
 
         [HttpPost("solicitar-efectivo/{comandaId}/comensal/{restauranteId}")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> SolicitarPagoEfectivoComensal(int comandaId, int restauranteId)
         {
             var resultado = await _solicitarPagoEfectivoCasoDeUso.EjecutarAsync(comandaId, restauranteId);
@@ -45,6 +50,11 @@ namespace PanComido.Presentacion.Controllers
 
         [HttpPost("confirmar-pago-efectivo/{comandaId}")]
         [Authorize(Roles = "Mozo, Gerente")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ConfirmarPagoEfectivo(int comandaId)
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -55,6 +65,11 @@ namespace PanComido.Presentacion.Controllers
 
         [HttpPost("solicitar-mp/{comandaId}/comensal/{restauranteId}")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> SolicitarPagoMercadoPagoComensal(int comandaId, int restauranteId)
         {
             _logger.LogInformation("Solicitud preferencia MP. Comanda: {ComandaId}, Restaurante: {RestauranteId}", comandaId, restauranteId);
@@ -64,6 +79,9 @@ namespace PanComido.Presentacion.Controllers
 
         [HttpPost("webhook/mercado-pago")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ConfirmarPagoMercadoPago([FromBody] MercadoPagoWebhookDto notificacion)
         {
             _logger.LogInformation("Webhook MP recibido. Tipo: {Type}", notificacion.Type);

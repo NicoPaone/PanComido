@@ -5,6 +5,8 @@ using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Presentacion.DTOs.Cliente;
 using PanComido.Presentacion.DTOs.Comanda;
+using PanComido.Presentacion.DTOs.ErrorResponse;
+using PanComido.Presentacion.DTOs.MetodoDePago;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Sesion;
 
@@ -12,9 +14,9 @@ namespace PanComido.Presentacion.Controllers
 {
     [Route("comanda")]
     [ApiController]
-   [Authorize]
+    [Authorize]
 
-   public class ComandaController : ControllerBase
+    public class ComandaController : ControllerBase
     {
         private readonly ListarComandaActivaCocinaCasoDeUso _listarComandasActivasCocinaCasoDeUso;
         private readonly ModificarEstadoComandaCasoDeUso _modificarEstadoComandaCasoDeUso;
@@ -54,9 +56,10 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("activas")]
-      [Authorize(Roles = "Cocina")]
-
-      public async Task<ActionResult<List<ComandaResponseDto>>> ObtenerComandasActivas()
+        [Authorize(Roles = "Cocina")]
+        [ProducesResponseType(typeof(List<ComandaResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<List<ComandaResponseDto>>> ObtenerComandasActivas()
         {
             int restauranteId = 1;
             var comandas = await _listarComandasActivasCocinaCasoDeUso.Ejecutar(restauranteId);
@@ -65,19 +68,24 @@ namespace PanComido.Presentacion.Controllers
 
         }
         [HttpPut("activas/{comandaId}/{estadoId}")]
-      [Authorize(Roles = "Cocina")]
-
-      public async Task<ActionResult<ComandaResponseDto>> ModificarEstadoDeComanda(int comandaId, int estadoId)
+        [Authorize(Roles = "Cocina")]
+        [ProducesResponseType(typeof(List<ComandaResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<ComandaResponseDto>> ModificarEstadoDeComanda(int comandaId, int estadoId)
         {
             var comanda = await _modificarEstadoComandaCasoDeUso.EjecutarAsync(comandaId, estadoId);
             var comandaDto = _mapper.ComandaResponseDto(comanda);
             return Ok(comandaDto);
         }
 
-      [HttpPut("{comandaId}/entregar-items")]
-      [Authorize(Roles = "Mozo")]
-
-      public async Task<ActionResult<ComandaResponseDto>> MarcarItemComandaEntregado(int comandaId, [FromBody] List<int> itemsEntregados)
+        [HttpPut("{comandaId}/entregar-items")]
+        [Authorize(Roles = "Mozo")]
+        [ProducesResponseType(typeof(List<ComandaResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<ComandaResponseDto>> MarcarItemComandaEntregado(int comandaId, [FromBody] List<int> itemsEntregados)
         {
             var comanda = await _marcarItemsEntregadosCasoDeUso.EjecutarAsync(comandaId, itemsEntregados);
             var comandaDto = _mapper.ComandaResponseDto(comanda);
@@ -86,6 +94,10 @@ namespace PanComido.Presentacion.Controllers
 
         [HttpGet("{comandaId}/comensal/bienvenida-invitado")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(List<ComandaResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObtenerBienvenidaInvitado(int comandaId)
         {
             BienvenidaDatosInvitadoComanda datosDominio = await _obtenerDatosInvitadoBienvenidaAComandaCasoDeUso.EjecutarAsync(comandaId);
@@ -95,6 +107,10 @@ namespace PanComido.Presentacion.Controllers
 
         [HttpPost("{comandaId}/comensal/{restauranteId}/confirmar-pedido")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(List<ComandaClienteEstadoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ComandaClienteEstadoResponseDto>> ConfirmarPedido(int comandaId, int restauranteId, [FromBody] ConfirmarPedidoClienteRequestDto request)
         {
             List<ArticuloComanda> articulosSolicitados = _mapper.ParaListaArticuloComandaDominio(request);
@@ -105,9 +121,11 @@ namespace PanComido.Presentacion.Controllers
 
         [HttpGet("{comandaId}/comensal/{restauranteId}/estado-pedido")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(List<ComandaClienteEstadoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+
         public async Task<ActionResult<ComandaClienteEstadoResponseDto>> ObtenerEstadoComanda(int comandaId, int restauranteId)
         {
-            // TODO: llevar a un caso de uso
             Comanda comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
 
             if (comanda == null || comanda.RestauranteId != restauranteId)
@@ -119,6 +137,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPost("{id}/llamar-mozo")]
+        [ProducesResponseType(typeof(List<ComandaResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> LlamarMozo(int id)
         {
             // Sacamos el ID del restaurante del token del usuario logueado

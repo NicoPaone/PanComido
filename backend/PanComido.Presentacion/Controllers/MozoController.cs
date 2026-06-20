@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
 using PanComido.Presentacion.DTOs.Comanda;
+using PanComido.Presentacion.DTOs.ErrorResponse;
+using PanComido.Presentacion.DTOs.MetodoDePago;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Sesion;
 
@@ -22,6 +24,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("listar-comandas")]
+        [ProducesResponseType(typeof(List<ComandaResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<ComandaResponseDto>>> ObtenerComandasActivas()
         {
             int restauranteId = HttpContext.ObtenerRestauranteId();

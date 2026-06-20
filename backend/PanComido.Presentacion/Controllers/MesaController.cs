@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
 using PanComido.Dominio.Entidades;
+using PanComido.Presentacion.DTOs;
+using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.DTOs.Mesas;
 using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
@@ -13,62 +15,66 @@ namespace PanComido.Presentacion.Controllers
 {
     [Route("mesa")]
     [ApiController]
-   [Authorize]
+    [Authorize]
 
-   public class MesaController : ControllerBase
+    public class MesaController : ControllerBase
     {
-      private readonly OcuparMesaCasoDeUso _ocuparMesaCasoDeUso;
-      private readonly ListarMesasCasoDeUso _listarMesas;
-      private readonly GuardarMapaCasoDeUso _guardarMapaCasoDeUso;
-      private readonly CambiarEstadoMesaCasoDeUso _cambiarEstadoMesaCasoDeUso;
-      private readonly ObtenerDatosMesaBienvenidaCasoDeUso _obtenerDatosMesaBienvenidaCasoDeUso;
-      private readonly IHubContext<PanComidoHub> _hubContext;
+        private readonly OcuparMesaCasoDeUso _ocuparMesaCasoDeUso;
+        private readonly ListarMesasCasoDeUso _listarMesas;
+        private readonly GuardarMapaCasoDeUso _guardarMapaCasoDeUso;
+        private readonly CambiarEstadoMesaCasoDeUso _cambiarEstadoMesaCasoDeUso;
+        private readonly ObtenerDatosMesaBienvenidaCasoDeUso _obtenerDatosMesaBienvenidaCasoDeUso;
+        private readonly IHubContext<PanComidoHub> _hubContext;
 
-      private readonly MesaMapper _mapper;
-      private readonly DatosBienvenidaMesaMapper _datosBienvenidaMesaMapper;
+        private readonly MesaMapper _mapper;
+        private readonly DatosBienvenidaMesaMapper _datosBienvenidaMesaMapper;
 
 
         public MesaController(
-          OcuparMesaCasoDeUso ocuparMesaCasoDeUso, 
-          ListarMesasCasoDeUso listar, 
+          OcuparMesaCasoDeUso ocuparMesaCasoDeUso,
+          ListarMesasCasoDeUso listar,
           GuardarMapaCasoDeUso guardarMapaCasoDeUso,
           CambiarEstadoMesaCasoDeUso cambiarEstadoMesaCasoDeUso,
           ObtenerDatosMesaBienvenidaCasoDeUso obtenerDatosMesaBienvenidaCasoDeUso,
           MesaMapper mapper,
           DatosBienvenidaMesaMapper datosBienvenidaMesaMapper,
           IHubContext<PanComidoHub> hubContext)
-      {
-         _ocuparMesaCasoDeUso = ocuparMesaCasoDeUso;
-         _listarMesas = listar; 
-         _guardarMapaCasoDeUso = guardarMapaCasoDeUso;
-         _cambiarEstadoMesaCasoDeUso = cambiarEstadoMesaCasoDeUso;
-         _obtenerDatosMesaBienvenidaCasoDeUso = obtenerDatosMesaBienvenidaCasoDeUso;
-         _hubContext = hubContext;
+        {
+            _ocuparMesaCasoDeUso = ocuparMesaCasoDeUso;
+            _listarMesas = listar;
+            _guardarMapaCasoDeUso = guardarMapaCasoDeUso;
+            _cambiarEstadoMesaCasoDeUso = cambiarEstadoMesaCasoDeUso;
+            _obtenerDatosMesaBienvenidaCasoDeUso = obtenerDatosMesaBienvenidaCasoDeUso;
+            _hubContext = hubContext;
 
-        _mapper = mapper;
-        _datosBienvenidaMesaMapper = datosBienvenidaMesaMapper;
+            _mapper = mapper;
+            _datosBienvenidaMesaMapper = datosBienvenidaMesaMapper;
         }
 
         [HttpGet]
-      public async Task<ActionResult<List<MesaResponseDto>>> ObtenerTodas()
-      {
-         int restauranteId = HttpContext.ObtenerRestauranteId();
-         var mesas = await _listarMesas.EjecutarAsync(restauranteId);
-         return Ok(_mapper.aListaDto(mesas));
-      }
+        [ProducesResponseType(typeof(List<MesaResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<List<MesaResponseDto>>> ObtenerTodas()
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+            var mesas = await _listarMesas.EjecutarAsync(restauranteId);
+            return Ok(_mapper.aListaDto(mesas));
+        }
 
-      [HttpPut("mapa")]
+        [HttpPut("mapa")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GuardarMapa([FromBody] List<GuardarMesaRequestDto> request)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
 
-      public async Task<IActionResult> GuardarMapa([FromBody] List<GuardarMesaRequestDto> request)
-      {
-          int restauranteId = HttpContext.ObtenerRestauranteId();
+            var mesasDominio = _mapper.aListaDominio(request);
 
-          var mesasDominio = _mapper.aListaDominio(request);
+            await _guardarMapaCasoDeUso.EjecutarAsync(restauranteId, mesasDominio);
 
-          await _guardarMapaCasoDeUso.EjecutarAsync(restauranteId, mesasDominio);
-
-          return Ok(new { mensaje = "Mapa de mesas guardado correctamente." });
-      }
+            return Ok(new { mensaje = "Mapa de mesas guardado correctamente." });
+        }
 
         [HttpGet("{idMesa}/comensal/{restauranteId}/bienvenida")]
         [AllowAnonymous]
@@ -80,6 +86,10 @@ namespace PanComido.Presentacion.Controllers
 
         [HttpPost("comensal/{restauranteId}/{idMesa}/ocupar")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Ocupar(int restauranteId, int idMesa, [FromBody] OcuparMesaRequestDto request)
         {
             var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, idMesa, request.CantidadComensales.Value);
@@ -94,6 +104,10 @@ namespace PanComido.Presentacion.Controllers
 
         [HttpPost("{idMesa}/ocupar")]
         [Authorize(Roles = "Mozo, Gerente")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Ocupar(int idMesa, [FromBody] OcuparMesaRequestDto request)
         {
             int restauranteId = HttpContext.ObtenerRestauranteId();
@@ -101,23 +115,26 @@ namespace PanComido.Presentacion.Controllers
             var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, idMesa, request.CantidadComensales.Value);
 
             return StatusCode(201,
-                new OcuparMesaResponseDto {
+                new OcuparMesaResponseDto
+                {
                     Mesa = _mapper.aDto(mesaConPosiciones),
                     IdComandaGenerada = mesaConPosiciones.idComanda.Value
                 });
         }
 
         [HttpPatch("{id}/estado")]
-      [Authorize(Roles = "Mozo, Gerente")]
-
-      public async Task<IActionResult> CambiarEstado(int id, [FromBody] CambiarEstadoMesaRequestDto request)
+        [Authorize(Roles = "Mozo, Gerente")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CambiarEstado(int id, [FromBody] CambiarEstadoMesaRequestDto request)
         {
             int restauranteId = HttpContext.ObtenerRestauranteId();
             if (!Enum.TryParse<PanComido.Dominio.Entidades.Enums.EstadoMesa>(request.EstadoMesa, true, out var estado))
             {
                 return BadRequest(new { error = "Estado de mesa inválido." });
             }
-            
+
             var mesaActualizada = await _cambiarEstadoMesaCasoDeUso.EjecutarAsync(restauranteId, id, estado);
             var mesaDto = _mapper.aDto(mesaActualizada);
 

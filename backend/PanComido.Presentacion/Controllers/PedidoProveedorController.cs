@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Presentacion.DTOs.Comanda;
+using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.DTOs.Pedidos;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Sesion;
@@ -39,6 +41,11 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPost("{idProveedor}/crear-pedido")]
+        [ProducesResponseType(typeof(List<CrearPedidoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<CrearPedidoResponseDto>> crear(
                     int idProveedor,
                     [FromBody] CrearPedidoRequestDto request)
@@ -63,6 +70,11 @@ namespace PanComido.Presentacion.Controllers
 
 
         [HttpPut("{pedidoId}/confirmar")]
+        [ProducesResponseType(typeof(List<EnviarPedidoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<EnviarPedidoResponseDto>> ConfirmarPedido(int pedidoId, [FromBody] ConfirmarPedidoRequestDto request)
         {
             var itemsInsumo = request.ListaInsumosPedido.Select(item => new DOM.PedidoInsumo
@@ -86,6 +98,10 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("{pedidoId}/previsualizar-confirmacion")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<string>> PrevisualizarConfirmacion(int pedidoId)
         {
             var sugerencias = await _generarSugerenciasRecepcionCasoDeUso.EjecutarAsync(pedidoId);
@@ -94,6 +110,11 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPut("{pedidoId}/recibir")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> RecibirPedido(int pedidoId, [FromBody] RecibirPedidoRequestDto request)
         {
             int restauranteId = HttpContext.ObtenerRestauranteId();
