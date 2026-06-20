@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
-using PanComido.Presentacion.DTOs;
+using PanComido.Presentacion.DTOs.Insumos;
 using PanComido.Presentacion.Mappers;
 
 namespace PanComido.Presentacion.Controllers

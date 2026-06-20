@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.UnidadMedidaCasosDeUso;
-using PanComido.Presentacion.DTOs;
+using PanComido.Presentacion.DTOs.UnidadesDeMedida;
 using PanComido.Presentacion.Mappers;
 
 namespace PanComido.Presentacion.Controllers

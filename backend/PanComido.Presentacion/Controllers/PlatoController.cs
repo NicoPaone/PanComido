@@ -6,7 +6,6 @@ using PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 using PanComido.Dominio.Constantes;
-using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.DTOs.Plato;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Sesion;
