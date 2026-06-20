@@ -42,7 +42,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
                 .Returns(Task.CompletedTask);
 
             _comandaMockRepo
-                .Setup(r => r.CrearAsync(It.IsAny<PanComido.Dominio.Entidades.Comanda>()))
+                .Setup(r => r.CrearAsync(It.IsAny<Comanda>()))
                 .ReturnsAsync(comandaNuevaId);
 
             var casoDeUso = new OcuparMesaCasoDeUso(_mesaMockRepo.Object, _comandaMockRepo.Object, new Mock<ILogger<OcuparMesaCasoDeUso>>().Object);
@@ -53,7 +53,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
             Assert.Equal(EstadoMesa.Ocupada, resultado.EstadoMesa);
             Assert.Equal(comandaNuevaId, resultado.idComanda);
             
-            _comandaMockRepo.Verify(r => r.CrearAsync(It.IsAny<PanComido.Dominio.Entidades.Comanda>()), Times.Once());
+            _comandaMockRepo.Verify(r => r.CrearAsync(It.IsAny<Comanda>()), Times.Once());
             _mesaMockRepo.Verify(r => r.ActualizarEstadoAsync(mesaId, EstadoMesa.Ocupada), Times.Once());
         }
 
