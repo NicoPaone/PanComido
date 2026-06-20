@@ -4,7 +4,7 @@ using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
 using DOM = PanComido.Dominio.Entidades;
 
-namespace PanComido.Tests.Dominio.CasosDeUso.Comanda
+namespace PanComido.Tests.Dominio.CasosDeUso.Comandas
 {
     public class ListarComandasActivasMozoCasoDeUsoTest
     {

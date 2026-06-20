@@ -7,7 +7,7 @@ using PanComido.Infraestructura.Persistencia.Entidades;
 using DOM = PanComido.Dominio.Entidades;
 
 
-namespace PanComido.Tests.Dominio.CasosDeUso.Comanda
+namespace PanComido.Tests.Dominio.CasosDeUso.Comandas
 {
     public class MarcarItemsEntregadosCasoDeUsoTest
     {

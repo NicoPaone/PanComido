@@ -44,7 +44,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
             if (efComanda == null)
                 return null;
-            // esto deberia hacerlo el dominio
+            
             efComanda.EstadoComandaId = estadoId;
             efComanda.HoraUltimoCambioEstado = DateTime.Now;
 
@@ -160,7 +160,6 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             var efActualizado = _mapper.paraEntidad(comanda);
 
             efComanda.EstadoComandaId = efActualizado.EstadoComandaId;
-            //efComanda.PagoId = efActualizado.PagoId;
             efComanda.HoraFin = efActualizado.HoraFin;
             efComanda.HoraUltimoCambioEstado = DateTime.Now;
 

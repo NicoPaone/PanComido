@@ -24,8 +24,6 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             _mapper = mapper;
         }
 
-        // Consulta base donde obtenemos articulos que son insumos, con toda su info relacionada
-        // (ingrediente, categoria ingrediente, unidad medida, bebida y categoria bebida)
         private IQueryable<EF.Articulo> BaseQuery(int restauranteId) => _ctx.Articulos
             .Where(a => a.RestauranteId == restauranteId
                      && a.Insumo != null)
