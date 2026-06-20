@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Presentacion.DTOs;
+using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.DTOs.Insumos;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Sesion;
@@ -37,6 +39,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(List<InsumoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<InsumoResponseDto>>> obtener() {
 
             var restauranteId = HttpContext.ObtenerRestauranteId();

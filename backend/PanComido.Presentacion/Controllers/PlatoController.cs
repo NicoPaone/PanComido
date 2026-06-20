@@ -1,14 +1,17 @@
 
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 using PanComido.Dominio.Constantes;
+using PanComido.Presentacion.DTOs;
+using PanComido.Presentacion.DTOs.ErrorResponse;
+using PanComido.Presentacion.DTOs.Mesas;
 using PanComido.Presentacion.DTOs.Plato;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Sesion;
+using System.Threading.Tasks;
 
 namespace PanComido.Presentacion.Controllers
 {
@@ -48,6 +51,8 @@ namespace PanComido.Presentacion.Controllers
         
         [HttpGet("{id}")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObtenerPlatoPorId(int id)
         {
             int restauranteId = 1; 
@@ -72,6 +77,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("formulario-plato")]
+        [ProducesResponseType(typeof(List<DatosFormularioCrearPlatoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<DatosFormularioCrearPlatoResponseDto>> ObtenerDatosFormulario()
         {
             int restauranteId = HttpContext.ObtenerRestauranteId();
@@ -82,7 +89,10 @@ namespace PanComido.Presentacion.Controllers
         }
         
       [HttpPost]
-      public async Task<IActionResult> Crear([FromForm] CrearPlatoDto request, IFormFile? imagen)
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Crear([FromForm] CrearPlatoDto request, IFormFile? imagen)
       {
          if (!ModelState.IsValid)
          {
@@ -104,6 +114,9 @@ namespace PanComido.Presentacion.Controllers
       }
 
         [HttpPut("{id}")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Modificar(int id, [FromBody] ModificarPlatoDto request)
         {
             if (!ModelState.IsValid)
@@ -124,6 +137,8 @@ namespace PanComido.Presentacion.Controllers
 
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Eliminar(int id)
         {
             int restauranteId = HttpContext.ObtenerRestauranteId();

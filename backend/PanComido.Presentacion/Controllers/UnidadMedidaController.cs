@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.UnidadMedidaCasosDeUso;
 using PanComido.Presentacion.DTOs.UnidadesDeMedida;
+using PanComido.Presentacion.DTOs;
+using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.Mappers;
 
 namespace PanComido.Presentacion.Controllers
@@ -23,6 +25,8 @@ namespace PanComido.Presentacion.Controllers
 
 
         [HttpGet]
+        [ProducesResponseType(typeof(List<UnidadMedidaResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<UnidadMedidaResponseDto>>> obtener()
         {
             var unidadesDeMedidaDominio = await _listarUnidadesDeMedidaUseCase.EjecutarAsync();

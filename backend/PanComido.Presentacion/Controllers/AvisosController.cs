@@ -4,6 +4,8 @@ using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso.IA;
 using PanComido.Dominio.Entidades.IA;
 using PanComido.Presentacion.DTOs.Avisos;
+using PanComido.Presentacion.DTOs.ErrorResponse;
+using PanComido.Presentacion.DTOs.Llamado;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Sesion;
 
@@ -35,6 +37,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(List<AvisosResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<AvisosResponseDto>> obtener()
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -51,6 +55,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPost("sugerencias-ia")]
+        [ProducesResponseType(typeof(List<SugerenciaIA>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<SugerenciaIA>> Generar()
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();

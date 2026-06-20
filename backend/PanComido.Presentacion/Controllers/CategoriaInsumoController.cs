@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Presentacion.DTOs.Insumos;
+using PanComido.Presentacion.DTOs;
+using PanComido.Presentacion.DTOs.Avisos;
+using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.Mappers;
 
 namespace PanComido.Presentacion.Controllers
@@ -24,6 +27,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(List<CategoriaInsumoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<CategoriaInsumoResponseDto>>> obtener()
         {
 

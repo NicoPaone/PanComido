@@ -31,7 +31,7 @@ namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
 
             var insumosProveedor = await _insumoRepositorio.ObtenerInsumosDelProveedorAsync(proveedorId, restauranteId);
             var insumosResto = await _insumoRepositorio.ObtenerInsumosAsync(restauranteId);
-
+            //filtrar insumos que ya están en pedidos pendientes
             List<int> insumoEnPedidoPendiente = await _pedidoRepositorio.ObtenerInsumosEnPedidosNoRecibidosAsync(proveedorId);
 
             var insumosConSugerencia = new List<InsumoConSugerencia>();
