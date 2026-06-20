@@ -1,10 +1,12 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.CartaCasosDeUso;
 using PanComido.Presentacion.DTOs.Carta;
+using PanComido.Presentacion.DTOs.ErrorResponse;
+using PanComido.Presentacion.DTOs.MetodoDePago;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Sesion;
+using System.Threading.Tasks;
 
 namespace PanComido.Presentacion.Controllers
 {
@@ -32,6 +34,8 @@ namespace PanComido.Presentacion.Controllers
 
         [HttpGet("{restauranteId}/comensal")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObtenerCartaParaComensal(int restauranteId)
         {
             var articulosDisponibles = await _obtenerCartaComensalCasoDeUso.EjecutarAsync(restauranteId);
@@ -43,6 +47,8 @@ namespace PanComido.Presentacion.Controllers
 
         [HttpGet("mozo")]
         [Authorize(Roles = "Mozo")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObtenerCartaParaMozo()
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -53,7 +59,8 @@ namespace PanComido.Presentacion.Controllers
 
         [HttpGet("obtener-articulos")]
         [AllowAnonymous]
-
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObtenerArticulosParaCarta()
         {
             int restauranteId = HttpContext.ObtenerRestauranteId();
@@ -64,7 +71,10 @@ namespace PanComido.Presentacion.Controllers
 
         [HttpPatch("articulos/{id}")]
         [Authorize(Roles = "Gerente")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
 
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ModificarArticulo(int id, [FromBody] ModificarArticuloRequestDto request)
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -73,9 +83,5 @@ namespace PanComido.Presentacion.Controllers
 
             return Ok(new { mensaje = "Artículo actualizado exitosamente" });
         }
-
-
-
-
     }
 }

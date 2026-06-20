@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso;
 using PanComido.Dominio.Constantes;
 using PanComido.Dominio.Entidades;
+using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.DTOs.FamiliaTipografica;
 using PanComido.Presentacion.DTOs.FilaVirtual;
 using PanComido.Presentacion.DTOs.MetodoDePago;
@@ -76,6 +77,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("familias-tipograficas")]
+        [ProducesResponseType(typeof(List<FamiliaTipograficaResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<FamiliaTipograficaResponseDto>>> ObtenerFamiliasTipograficas()
         {
 
@@ -86,6 +89,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("datos-local")]
+        [ProducesResponseType(typeof(List<RestauranteResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<RestauranteResponseDto>> ObtenerDatosDelLocal()
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -97,6 +102,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPut("actualizar-datos")]
+        [ProducesResponseType(typeof(RestauranteResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> ActualizarDatosLocal([FromForm]
       RestauranteRequestDto restauranteRequestDto,
            IFormFile? imagen)
@@ -120,6 +127,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("metodos-pago")]
+        [ProducesResponseType(typeof(List<MetodoDePagoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<MetodoDePagoResponseDto>>> ObtenerMetodosDePago()
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -131,6 +140,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPut("habilitar-metodos-pago")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<MetodoDePagoRequestDto>>> HabilitarMetodoDePago([FromBody] List<MetodoDePagoRequestDto> metodoDePagoRequest)
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -142,6 +153,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("turno")]
+        [ProducesResponseType(typeof(List<TurnoLaboralResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<TurnoLaboralResponseDto>>> ObtenerTurnosLaborales()
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -153,6 +166,9 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPut("actualizar-turno")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> ActualizarTurnoLaboral([FromBody] List<TurnoLaboralRequestDto> turnosLaboralesRequest)
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -164,6 +180,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("obtener-porcentajes")]
+        [ProducesResponseType(typeof(List<PorcentajesGananciaResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PorcentajesGananciaResponseDto>> ObtenerPorcentajesGanancia()
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -175,6 +193,9 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPut("actualizar-porcentajes")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> ActualizarPorcentajesGanancia([FromBody] PorcentajesGananciaRequestDto porcentajesGananciaRequest)
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -186,6 +207,9 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("fila-virtual")]
+        [ProducesResponseType(typeof(List<FilaVirtualResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<FilaVirtualResponseDto>> ObtenerFilaVirual()
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -197,6 +221,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPut("habilitar-fila-virtual")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> HabilitarFilaVirtual([FromBody] FilaVirtualRequestDto filaVirtualRequest)
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();

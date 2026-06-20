@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso;
+using PanComido.Presentacion.DTOs.Comanda;
+using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.DTOs.Llamado;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Sesion;
@@ -31,6 +33,9 @@ namespace PanComido.Presentacion.Controllers
 
         [HttpPost("generar-llamado")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(List<LlamadoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<LlamadoResponseDto>> CrearLlamado([FromBody] LlamarMozoRequestDto request)
         {
            
@@ -43,6 +48,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("ver-pendientes")]
+        [ProducesResponseType(typeof(List<LlamadoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<LlamadoResponseDto>>> ObtenerLlamadosPendientes()
         {
             var mozoId = HttpContext.ObtenerEmpleadoId();
@@ -53,6 +60,9 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPut("resolver/{llamadoId}")]
+        [ProducesResponseType(typeof(List<LlamadoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<LlamadoResponseDto>>> ResolverLlamado(int llamadoId)
         {
              await _resolverLlamadoCasoDeUso.EjecutarAsync(llamadoId);

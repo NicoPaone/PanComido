@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.Dashboard;
+using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Sesion;
 using System;
@@ -24,6 +25,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("vencimientos")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObtenerVencimientos()
         {
             int restauranteId = HttpContext.ObtenerRestauranteId();
@@ -35,6 +38,8 @@ namespace PanComido.Presentacion.Controllers
             return Ok(respuestaDto);
         }
         [HttpGet("rendimiento")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObtenerRendimiento(
             [FromServices] ObtenerRendimientoComercialCasoDeUso obtenerRendimientoCasoDeUso,
             [FromQuery] DateTime desde, 
@@ -50,6 +55,8 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("resumen")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObtenerResumenOperativo(
             [FromServices] ObtenerResumenOperativoCasoDeUso obtenerResumenOperativoCasoDeUso,
             [FromQuery] DateTime desde, 

@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
 using PanComido.Dominio.Entidades;
+using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.DTOs.Mesas;
 using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
@@ -63,6 +63,8 @@ namespace PanComido.Presentacion.Controllers
             }
 
             [HttpGet]
+            [ProducesResponseType(typeof(List<MesaResponseDto>), StatusCodes.Status200OK)]
+            [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
             public async Task<ActionResult<List<MesaResponseDto>>> ObtenerTodas()
             {
                 int restauranteId = HttpContext.ObtenerRestauranteId();
@@ -80,7 +82,9 @@ namespace PanComido.Presentacion.Controllers
             }
 
             [HttpPut("mapa")]
-
+            [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+            [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
+            [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
             public async Task<IActionResult> GuardarMapa([FromBody] List<GuardarMesaRequestDto> request)
             {
                 int restauranteId = HttpContext.ObtenerRestauranteId();
@@ -100,11 +104,15 @@ namespace PanComido.Presentacion.Controllers
                 return Ok(_datosBienvenidaMesaMapper.aDto(datosBienvenidaDominio));
             }
 
-            [HttpPost("comensal/{restauranteId}/{idMesa}/ocupar")]
-            [AllowAnonymous]
+        [HttpPost("comensal/{restauranteId}/{idMesa}/ocupar")]
+        [AllowAnonymous]
+            [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+            [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+            [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
+            [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
             public async Task<IActionResult> Ocupar(int restauranteId, int idMesa, [FromBody] OcuparMesaRequestDto request)
-            {
-                var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, idMesa, request.CantidadComensales.Value);
+        {
+            var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, idMesa, request.CantidadComensales.Value);
 
                 return StatusCode(201,
                     new OcuparMesaComensalResponseDto
@@ -116,11 +124,15 @@ namespace PanComido.Presentacion.Controllers
 
             [HttpPost("{idMesa}/ocupar")]
             [Authorize(Roles = "Mozo, Gerente")]
+            [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+            [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+            [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
+            [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
             public async Task<IActionResult> Ocupar(int idMesa, [FromBody] OcuparMesaRequestDto request)
             {
                 int restauranteId = HttpContext.ObtenerRestauranteId();
 
-                var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, idMesa, request.CantidadComensales.Value);
+            var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, idMesa, request.CantidadComensales.Value);
 
                 return StatusCode(201,
                     new OcuparMesaResponseDto
@@ -132,7 +144,9 @@ namespace PanComido.Presentacion.Controllers
 
             [HttpPatch("{id}/estado")]
             [Authorize(Roles = "Mozo, Gerente")]
-
+            [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+            [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+            [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
             public async Task<IActionResult> CambiarEstado(int id, [FromBody] CambiarEstadoMesaRequestDto request)
             {
                 int restauranteId = HttpContext.ObtenerRestauranteId();
