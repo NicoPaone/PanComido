@@ -16,6 +16,7 @@ namespace PanComido.Presentacion.DTOs.Mesas
       public int TipoElemento { get; set; } = 1;
       public string? Color { get; set; }
       public string? TextoObjeto { get; set; }
+      public List<int> MozosAsignadosIds { get; set; } = new List<int>();
 
     }
    public class DimensionMesaDto

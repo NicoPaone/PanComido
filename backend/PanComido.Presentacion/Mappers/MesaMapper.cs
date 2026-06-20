@@ -28,7 +28,8 @@ namespace PanComido.Presentacion.Mappers
             {
                Id = mesa.DimensionMesaId,
                Forma = mesa.Forma,
-            }
+            },
+            MozosAsignadosIds = mesa.MozosAsignadosIds
          };
       }
 
