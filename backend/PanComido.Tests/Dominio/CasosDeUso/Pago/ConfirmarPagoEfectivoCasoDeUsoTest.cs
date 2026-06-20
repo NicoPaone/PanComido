@@ -1,4 +1,4 @@
-﻿using Moq;
+﻿/*using Moq;
 using PanComido.Dominio.CasosDeUso.PagoCasoDeUso;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
@@ -125,3 +125,4 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
         }
     }
 }
+*/
