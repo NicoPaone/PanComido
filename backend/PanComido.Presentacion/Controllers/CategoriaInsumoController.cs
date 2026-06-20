@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
+using PanComido.Presentacion.DTOs.Insumos;
 using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.DTOs.Avisos;
 using PanComido.Presentacion.DTOs.ErrorResponse;

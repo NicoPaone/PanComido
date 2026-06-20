@@ -36,15 +36,12 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<List<Ingrediente>> ObtenerIngredientesBaseAsync(int restauranteId)
         {
             var lista = await _ctx.Ingredientes
-                // 1. Subimos al Insumo y luego al Artículo para poder filtrar por restaurante
                 .Include(i => i.IdInsumoNavigation)
                     .ThenInclude(ins => ins.IdArticuloNavigation)
 
-                // 2. Traemos la Unidad de Medida
                 .Include(i => i.IdInsumoNavigation)
                     .ThenInclude(ins => ins.UnidadMedida)
 
-                // 3. ¡CLAVE! Traemos los pedidos para que el Mapper pueda sacar el Precio de Compra
                 .Include(i => i.IdInsumoNavigation)
                     .ThenInclude(ins => ins.PedidoInsumos)
 

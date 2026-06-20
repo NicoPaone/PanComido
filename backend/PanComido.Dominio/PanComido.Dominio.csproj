@@ -9,9 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Excepciones\**" />
+    <Compile Remove="ObjetosDeValor\**" />
+    <EmbeddedResource Remove="Excepciones\**" />
+    <EmbeddedResource Remove="ObjetosDeValor\**" />
+    <None Remove="Excepciones\**" />
+    <None Remove="ObjetosDeValor\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="CasosDeUso\MozoCasoDeUso\" />
-    <Folder Include="Excepciones\" />
-    <Folder Include="ObjetosDeValor\" />
   </ItemGroup>
 
   <ItemGroup>

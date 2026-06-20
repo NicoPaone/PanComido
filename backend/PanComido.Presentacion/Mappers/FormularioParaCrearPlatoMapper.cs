@@ -1,4 +1,4 @@
-using PanComido.Presentacion.DTOs;
+using PanComido.Presentacion.DTOs.Plato;
 using DOM = PanComido.Dominio.Entidades;
 
 

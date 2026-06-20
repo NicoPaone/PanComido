@@ -27,9 +27,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             var efArticulo = _articuloMapper.paraEntidad(platoDominio);
 
-            // 2. Relación Muchos-a-Muchos: Restricciones
-            // Entity Framework necesita que busquemos las restricciones existentes en la BD
-            // para "atarlas" al plato nuevo, en lugar de intentar crear restricciones nuevas.
+           
             if (platoDominio.Restricciones != null && platoDominio.Restricciones.Any())
             {
                 var idsRestricciones = platoDominio.Restricciones.Select(r => r.Id).ToList();
@@ -92,7 +90,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 throw new InvalidOperationException("Plato no encontrado para actualizar.");
             }
 
-            // Actualizar datos de Articulo
+            // actualizar datos de Articulo
             efArticulo.Nombre = platoDominio.Nombre;
             efArticulo.Descripcion = platoDominio.Descripcion;
             efArticulo.PrecioVentaFinal = platoDominio.PrecioVentaFinal;
@@ -115,12 +113,12 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 }
             }
 
-            // Actualizar datos de Plato
+            // actualizar datos de Plato
             efArticulo.Plato.TiempoPreparacionBase = platoDominio.TiempoPreparacionBase;
             efArticulo.Plato.TipoPlatoId = platoDominio.TipoPlatoId;
             efArticulo.Plato.CategoriaPlatoId = platoDominio.CategoriaPlatoId;
 
-            // Actualizar Restricciones
+            // actualizar Restricciones
             efArticulo.Plato.Restriccions.Clear();
             if (platoDominio.Restricciones != null && platoDominio.Restricciones.Any())
             {
@@ -134,7 +132,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 }
             }
 
-            // Actualizar Ingredientes
+            // actualizar Ingredientes
             var ingredientesActuales = efArticulo.Plato.PlatoIngredientes.ToList();
             var idsNuevos = platoDominio.Ingredientes.Select(i => i.InsumoId).ToList();
 
