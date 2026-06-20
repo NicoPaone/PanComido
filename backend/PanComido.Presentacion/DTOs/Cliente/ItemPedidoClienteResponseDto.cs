@@ -8,9 +8,9 @@
         public bool Entregado { get; set; }
         public decimal PrecioUnitario { get; set; } 
         public decimal Subtotal { get; set; }
-        public string? ObservacionesIngredientes { get; set; }
         public string? ObservacionesGenerales { get; set; }
-
+        public List<string> ObservacionesIngredientes { get; set; } = new List<string>();
         public string NombreComensal { get; set; }
+
     }
 }

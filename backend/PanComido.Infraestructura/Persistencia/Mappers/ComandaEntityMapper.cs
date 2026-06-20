@@ -41,17 +41,32 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 {
                     if (relacion.Articulo != null)
                     {
+                        var idsExcluidos = relacion.ArticuloComandaIngredienteExcluidos?
+                            .Select(i => i.IngredienteId).ToList() ?? new List<int>();
+
+                        var entidadesExcluidas = new List<DOM.Articulo>();
+                        if (relacion.ArticuloComandaIngredienteExcluidos != null)
+                        {
+                            foreach (var efExcluido in relacion.ArticuloComandaIngredienteExcluidos)
+                            {
+                                var efArticuloDelInsumo = efExcluido.Ingrediente?.IdInsumoNavigation?.IdArticuloNavigation;
+                                if (efArticuloDelInsumo != null)
+                                    entidadesExcluidas.Add(_articuloMapper.paraDominio(efArticuloDelInsumo));
+                            }
+                        }
+
                         comandaDominio.Items.Add(new DOM.ArticuloComanda
                         {
                             Id = relacion.Id,
                             ArticuloId = relacion.ArticuloId,
                             Cantidad = relacion.Cantidad,
                             ObservacionesGenerales = relacion.ObservacionesGenerales,
-                            ObservacionesIngredientes = relacion.ObservacionesIngrediente,
                             Entregado = relacion.Entregado,
                             NombreComensal = relacion.NombreComensal,
+                            Articulo = _articuloMapper.paraDominio(relacion.Articulo),
 
-                            Articulo = _articuloMapper.paraDominio(relacion.Articulo)
+                            IngredientesExcluidosIds = idsExcluidos,
+                            IngredientesExcluidos = entidadesExcluidas
                         });
                     }
                 }
@@ -79,11 +94,17 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                     ArticuloId = item.ArticuloId,
                     Cantidad = item.Cantidad,
                     Entregado = item.Entregado,
-                    ObservacionesIngrediente = item.ObservacionesIngredientes,
                     ObservacionesGenerales = item.ObservacionesGenerales,
                     ComandaId = comandaDominio.Id,
+                    NombreComensal = item.NombreComensal,
 
-                    NombreComensal = item.NombreComensal
+                    ArticuloComandaIngredienteExcluidos = item.Id == 0
+                        ? item.IngredientesExcluidosIds?.Select(id => new EF.ArticuloComandaIngredienteExcluido
+                        {
+                            IngredienteId = id
+                        }).ToList()
+                        : null
+
                 }).ToList() ?? new List<EF.ArticuloComandum>()
             };
         }

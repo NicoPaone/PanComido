@@ -107,6 +107,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<DOM.Articulo> ObtenerDetalleAsync(int restauranteId, int articuloId)
         {
             var efArticulo = await _ctx.Articulos
+                .AsNoTracking()
                 .Include(a => a.Insumo)
                     .ThenInclude(i => i.CategoriaInsumo)
                 .Include(a => a.Plato)

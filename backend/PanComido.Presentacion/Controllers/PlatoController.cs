@@ -20,11 +20,9 @@ namespace PanComido.Presentacion.Controllers
    public class PlatoController : ControllerBase
     {
 
-        //dependencias del GET (formulario para crear plato)
         private readonly ObtenerDatosParaFormularioCrearPlato _obtenerDatosCasoDeUso;
         private readonly FormularioParaCrearPlatoMapper _mapper;
 
-        // dependencias del POST (crear plato)
         private readonly CrearPlatoCasoDeUso _crearPlatoCasoDeUso;
         private readonly PlatoMapper _platoMapper;
 
@@ -53,19 +51,15 @@ namespace PanComido.Presentacion.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ObtenerPlatoPorId(int id)
         {
-            // Si viene autenticado, obtener del context; si no, del query param o valor por defecto
-            int restauranteId = 1; // valor por defecto
-            try
+            int restauranteId = 1; 
+            
+            if (HttpContext.Items.TryGetValue("restauranteId", out var idSesion))
             {
-                restauranteId = HttpContext.ObtenerRestauranteId();
+                restauranteId = (int)idSesion;
             }
-            catch
+            else if (int.TryParse(HttpContext.Request.Query["restauranteId"], out int queryRestauranteId))
             {
-                // Si no hay token válido, intentar obtener del query param
-                if (int.TryParse(HttpContext.Request.Query["restauranteId"], out int queryRestauranteId))
-                {
-                    restauranteId = queryRestauranteId;
-                }
+                restauranteId = queryRestauranteId;
             }
 
             var platoDominio = await _obtenerPlatoPorIdCasoDeUso.EjecutarAsync(id, restauranteId);
@@ -81,7 +75,6 @@ namespace PanComido.Presentacion.Controllers
         [HttpGet("formulario-plato")]
         public async Task<ActionResult<DatosFormularioCrearPlatoResponseDto>> ObtenerDatosFormulario()
         {
-            // Extraemos el ID del filtro de contexto, sin hardcodear nada
             int restauranteId = HttpContext.ObtenerRestauranteId();
 
             var datosDominio = await _obtenerDatosCasoDeUso.Ejecutar(restauranteId);

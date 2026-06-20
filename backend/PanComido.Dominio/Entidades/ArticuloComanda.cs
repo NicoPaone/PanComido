@@ -15,8 +15,12 @@ namespace PanComido.Dominio.Entidades
 
         public int Cantidad { get; set; }
         public bool Entregado { get; set; }
-        public string? ObservacionesIngredientes { get; set; }
         public string? ObservacionesGenerales { get; set; }
         public Articulo Articulo { get; set; }
+        // para lectura
+        public List<Articulo> IngredientesExcluidos { get; set; } = new List<Articulo>();
+        // para escritura
+        public List<int> IngredientesExcluidosIds { get; set; } = new List<int>();
+
     }
 }

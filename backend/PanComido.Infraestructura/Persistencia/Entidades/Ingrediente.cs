@@ -13,6 +13,9 @@ public partial class Ingrediente
     [Column("id_insumo")]
     public int IdInsumo { get; set; }
 
+    [InverseProperty("Ingrediente")]
+    public virtual ICollection<ArticuloComandaIngredienteExcluido> ArticuloComandaIngredienteExcluidos { get; set; } = new List<ArticuloComandaIngredienteExcluido>();
+
     [ForeignKey("IdInsumo")]
     [InverseProperty("Ingrediente")]
     public virtual Insumo IdInsumoNavigation { get; set; } = null!;

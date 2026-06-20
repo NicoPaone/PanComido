@@ -24,7 +24,6 @@ namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
                 throw new ArgumentException("El plato que intenta modificar no existe o no pertenece al restaurante.");
             }
 
-            // Actualizamos los campos en la entidad de dominio
             platoExistente.Nombre = platoModificado.Nombre;
             platoExistente.Descripcion = platoModificado.Descripcion;
             platoExistente.PrecioVentaFinal = platoModificado.PrecioVentaFinal;
@@ -34,7 +33,6 @@ namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
             platoExistente.UrlImagen = platoModificado.UrlImagen;
             platoExistente.EsVisibleEnCarta = platoModificado.EsVisibleEnCarta;
 
-            // Actualizamos colecciones
             platoExistente.Restricciones = platoModificado.Restricciones;
             platoExistente.Ingredientes = platoModificado.Ingredientes;
 

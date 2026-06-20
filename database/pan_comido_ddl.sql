@@ -419,9 +419,15 @@ CREATE TABLE articulo_comanda (
     articulo_id                 INTEGER NOT NULL REFERENCES articulo(id),
     cantidad                    INTEGER NOT NULL DEFAULT 1,
     entregado                   BOOLEAN NOT NULL DEFAULT FALSE,
-    observaciones_ingrediente   TEXT,
     observaciones_generales     TEXT,
     nombre_comensal             TEXT NOT NULL DEFAULT 'Anónimo' -- agregado para diferenciar quien pidio que
+);
+
+CREATE TABLE articulo_comanda_ingrediente_excluido (
+    id                  SERIAL PRIMARY KEY,
+    articulo_comanda_id INTEGER NOT NULL REFERENCES articulo_comanda(id),
+    ingrediente_id      INTEGER NOT NULL REFERENCES ingrediente(id_insumo),
+    UNIQUE (articulo_comanda_id, ingrediente_id) -- evita que guarden dos veces "Sin cebolla" en la misma hamburguesa
 );
 
 -- ============================================================
