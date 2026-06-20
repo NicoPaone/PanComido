@@ -1,25 +1,23 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
 using PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso;
-using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
-using PanComido.Dominio.Interfaces.Servicios;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PanComido.Tests.Dominio.CasosDeUso.LlamadoMozo
 {
     public class ResolverLlamadoCasoDeUsoTest
     {
         private readonly Mock<ILlamadoRepositorio> _llamadoRepoMock;
+        private readonly Mock<ILogger<ResolverLlamadoCasoDeUso>> _loggerMock;
 
         public ResolverLlamadoCasoDeUsoTest()
         {
             _llamadoRepoMock = new Mock<ILlamadoRepositorio>();
+            _loggerMock = new Mock<ILogger<ResolverLlamadoCasoDeUso>>();
         }
 
+        private ResolverLlamadoCasoDeUso CrearCasoDeUso() =>
+            new ResolverLlamadoCasoDeUso(_llamadoRepoMock.Object, _loggerMock.Object);
 
         [Fact]
         public async Task EjecutarAsync_CuandoElLlamadoExiste_ResuelveLlamado()
@@ -30,9 +28,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.LlamadoMozo
                 .Setup(r => r.ResolverLlamadoAsync(llamadoId))
                 .ReturnsAsync(true);
 
-            var casoDeUso = new ResolverLlamadoCasoDeUso(_llamadoRepoMock.Object);
-
-            await casoDeUso.EjecutarAsync(llamadoId);
+            await CrearCasoDeUso().EjecutarAsync(llamadoId);
 
             _llamadoRepoMock.Verify(r => r.ResolverLlamadoAsync(llamadoId), Times.Once);
         }
@@ -46,9 +42,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.LlamadoMozo
                 .Setup(r => r.ResolverLlamadoAsync(llamadoId))
                 .ReturnsAsync(false);
 
-            var casoDeUso = new ResolverLlamadoCasoDeUso(_llamadoRepoMock.Object);
-
-            await Assert.ThrowsAsync<KeyNotFoundException>(() => casoDeUso.EjecutarAsync(llamadoId));
+            await Assert.ThrowsAsync<KeyNotFoundException>(() => CrearCasoDeUso().EjecutarAsync(llamadoId));
         }
     }
 }

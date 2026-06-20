@@ -1,40 +1,40 @@
-﻿using Microsoft.Extensions.Logging;
-using Moq;
+﻿using Moq;
 using PanComido.Dominio.CasosDeUso.PagoCasoDeUso;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
+using PanComido.Dominio.Interfaces.Servicios.MercadoPago;
 using DOM = PanComido.Dominio.Entidades;
 
 namespace PanComido.Tests.Dominio.CasosDeUso.Pago
 {
-    public class ConfirmarPagoEfectivoCasoDeUsoTest
+    public class CrearPreferenciaMPCasoDeUsoTest
     {
-        private readonly Mock<IPagoRepositorio> _pagoMockRepo;
-        private readonly Mock<ILlamadoRepositorio> _llamadoMockRepo;
         private readonly Mock<IComandaRepositorio> _comandaMockRepo;
+        private readonly Mock<IMercadoPagoServicio> _mercadoPagoMockServicio;
         private readonly Mock<ICalcularTotalComandaServicio> _calcularTotalMockServicio;
-        private readonly Mock<ILogger<ConfirmarPagoEfectivoCasoDeUso>> _loggerMock;
+        private readonly Mock<IRestauranteRepositorio> _restauranteMockRepo;
+        private readonly Mock<IPagoRepositorio> _pagoMockRepo;
 
-        public ConfirmarPagoEfectivoCasoDeUsoTest()
+        public CrearPreferenciaMPCasoDeUsoTest()
         {
-            _pagoMockRepo = new Mock<IPagoRepositorio>();
-            _llamadoMockRepo = new Mock<ILlamadoRepositorio>();
             _comandaMockRepo = new Mock<IComandaRepositorio>();
+            _mercadoPagoMockServicio = new Mock<IMercadoPagoServicio>();
             _calcularTotalMockServicio = new Mock<ICalcularTotalComandaServicio>();
-            _loggerMock = new Mock<ILogger<ConfirmarPagoEfectivoCasoDeUso>>();
+            _restauranteMockRepo = new Mock<IRestauranteRepositorio>();
+            _pagoMockRepo = new Mock<IPagoRepositorio>();
         }
 
-        private ConfirmarPagoEfectivoCasoDeUso CrearCasoDeUso() =>
-            new ConfirmarPagoEfectivoCasoDeUso(
-                _pagoMockRepo.Object,
+        private CrearPreferenciaMPCasoDeUso CrearCasoDeUso() =>
+            new CrearPreferenciaMPCasoDeUso(
                 _comandaMockRepo.Object,
-                _llamadoMockRepo.Object,
+                _mercadoPagoMockServicio.Object,
                 _calcularTotalMockServicio.Object,
-                _loggerMock.Object);
+                _restauranteMockRepo.Object,
+                _pagoMockRepo.Object);
 
         [Fact]
-        public async Task EjecutarAsync_CuandoTodoEsValido_ConfirmaElPago()
+        public async Task EjecutarAsync_CuandoTodoEsValido_RetornaInitPoint()
         {
             int comandaId = 1;
             int restauranteId = 1;
@@ -42,23 +42,14 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
             var comanda = new DOM.Comanda
             {
                 Id = comandaId,
-                MesaId = 1,
-                Estado = EstadoComanda.EnEspera,
-                Items = new List<DOM.ArticuloComanda>
-                {
-                    new DOM.ArticuloComanda
-                    {
-                        Cantidad = 2,
-                        Articulo = new DOM.Plato { PrecioVentaFinal = 500 }
-                    }
-                }
+                RestauranteId = restauranteId,
+                Estado = EstadoComanda.EnEspera
             };
 
-            var pagoCreado = new DOM.Pago
+            var restaurante = new DOM.Restaurante
             {
-                PagoId = 1,
-                Total = 1000,
-                MetodoDePago = MetodoPago.Efectivo
+                Id = restauranteId,
+                Nombre = "El Buen Sabor"
             };
 
             _comandaMockRepo
@@ -69,26 +60,27 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
                 .Setup(s => s.CalcularTotal(comanda))
                 .Returns(1000m);
 
+            _restauranteMockRepo
+                .Setup(r => r.ObtenerDatosDelLocalAsync(restauranteId))
+                .ReturnsAsync(restaurante);
+
             _pagoMockRepo
                 .Setup(r => r.ObtenerPagoPorComandaIdAsync(comandaId))
                 .ReturnsAsync((DOM.Pago?)null);
 
+            _mercadoPagoMockServicio
+                .Setup(s => s.CrearPreferenciaAsync("Comanda-1", 1000m, "Pago a El Buen Sabor"))
+                .ReturnsAsync("https://mp.com/init-point");
+
             _pagoMockRepo
                 .Setup(r => r.CrearPagoAsync(It.IsAny<DOM.Pago>()))
-                .ReturnsAsync(pagoCreado);
-
-            _comandaMockRepo
-                .Setup(r => r.ActualizarAsync(It.IsAny<DOM.Comanda>()))
-                .Returns(Task.CompletedTask);
-
-            _llamadoMockRepo
-                .Setup(r => r.ResolverLlamadoPorMesaYCategoriaAsync(It.IsAny<int>(), It.IsAny<int>()))
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync(new DOM.Pago());
 
             var resultado = await CrearCasoDeUso().EjecutarAsync(comandaId, restauranteId);
-            Assert.NotNull(resultado);
-            Assert.Equal(1000, resultado.Total);
+
+            Assert.Equal("https://mp.com/init-point", resultado);
             _pagoMockRepo.Verify(r => r.CrearPagoAsync(It.IsAny<DOM.Pago>()), Times.Once);
+            _mercadoPagoMockServicio.Verify(s => s.CrearPreferenciaAsync("Comanda-1", 1000m, "Pago a El Buen Sabor"), Times.Once);
         }
 
         [Fact]
@@ -105,6 +97,19 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
         }
 
         [Fact]
+        public async Task EjecutarAsync_CuandoLaComandaEsDeOtroRestaurante_LanzaKeyNotFoundException()
+        {
+            int comandaId = 1;
+            int restauranteId = 1;
+
+            _comandaMockRepo
+                .Setup(r => r.ObtenerComandaPorIdAsync(comandaId))
+                .ReturnsAsync(new DOM.Comanda { Id = comandaId, RestauranteId = 99 });
+
+            await Assert.ThrowsAsync<KeyNotFoundException>(() => CrearCasoDeUso().EjecutarAsync(comandaId, restauranteId));
+        }
+
+        [Fact]
         public async Task EjecutarAsync_CuandoLaComandaNoEstaEnEspera_LanzaArgumentException()
         {
             int comandaId = 1;
@@ -115,6 +120,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
                 .ReturnsAsync(new DOM.Comanda
                 {
                     Id = comandaId,
+                    RestauranteId = restauranteId,
                     Estado = EstadoComanda.EnPreparacion
                 });
 
@@ -130,15 +136,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
             var comanda = new DOM.Comanda
             {
                 Id = comandaId,
-                MesaId = 1,
+                RestauranteId = restauranteId,
                 Estado = EstadoComanda.EnEspera
-            };
-
-            var pagoExistente = new DOM.Pago
-            {
-                PagoId = 1,
-                ComandaId = comandaId,
-                EstadoPago = EstadoPago.Confirmado
             };
 
             _comandaMockRepo
@@ -149,9 +148,13 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
                 .Setup(s => s.CalcularTotal(comanda))
                 .Returns(1000m);
 
+            _restauranteMockRepo
+                .Setup(r => r.ObtenerDatosDelLocalAsync(restauranteId))
+                .ReturnsAsync(new DOM.Restaurante { Id = restauranteId, Nombre = "El Buen Sabor" });
+
             _pagoMockRepo
                 .Setup(r => r.ObtenerPagoPorComandaIdAsync(comandaId))
-                .ReturnsAsync(pagoExistente);
+                .ReturnsAsync(new DOM.Pago { EstadoPago = EstadoPago.Confirmado });
 
             await Assert.ThrowsAsync<InvalidOperationException>(() => CrearCasoDeUso().EjecutarAsync(comandaId, restauranteId));
         }

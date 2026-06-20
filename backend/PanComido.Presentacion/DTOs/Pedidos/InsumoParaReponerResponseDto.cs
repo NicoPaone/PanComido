@@ -1,4 +1,4 @@
-﻿namespace PanComido.Presentacion.DTOs
+﻿namespace PanComido.Presentacion.DTOs.Pedidos
 {
     public class InsumoParaReponerResponseDto
     {

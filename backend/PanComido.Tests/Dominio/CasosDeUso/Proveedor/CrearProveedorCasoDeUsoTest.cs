@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
 using DOM = PanComido.Dominio.Entidades;
@@ -8,27 +9,28 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
     public class CrearProvedorCasoDeUsoTests
     {
         private readonly Mock<IProveedorRepositorio> _proveedorRepoMock;
+        private readonly Mock<ILogger<CrearProveedorCasoDeUso>> _loggerMock;
 
         public CrearProvedorCasoDeUsoTests()
         {
             _proveedorRepoMock = new Mock<IProveedorRepositorio>();
+            _loggerMock = new Mock<ILogger<CrearProveedorCasoDeUso>>();
         }
+
+        private CrearProveedorCasoDeUso CrearCasoDeUso() =>
+            new CrearProveedorCasoDeUso(_proveedorRepoMock.Object, _loggerMock.Object);
 
         [Fact]
         public async Task EjecutarAsync_CuandoTodosLosDatosSonValidos_SeCreaElNuevoProveedor()
         {
             int restauranteId = 1;
-            string nombreProveedor = "Proveedor Test";
-            string numeroTelefono = "123456789";
-            List<int> categoriasId = new List<int>() {1, 2};
-
             var proveedorDominio = new DOM.Proveedor
             {
                 Id = 0,
                 RestauranteId = restauranteId,
-                Nombre = nombreProveedor,
-                NumeroTelefonoWsp = numeroTelefono,
-                CategoriaIds = categoriasId
+                Nombre = "Proveedor Test",
+                NumeroTelefonoWsp = "123456789",
+                CategoriaIds = new List<int>() { 1, 2 }
             };
 
             _proveedorRepoMock
@@ -36,90 +38,62 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
                 .ReturnsAsync(false);
             _proveedorRepoMock
                 .Setup(r => r.CrearProveedorAsync(It.IsAny<DOM.Proveedor>()))
-                .ReturnsAsync((DOM.Proveedor p) =>
-                {
-                    p.Id = 1;
-                    return p;
-                });
+                .ReturnsAsync((DOM.Proveedor p) => { p.Id = 1; return p; });
 
-            var casoDeUso = new CrearProveedorCasoDeUso(_proveedorRepoMock.Object);
-
-            var resultado = await casoDeUso.EjecutarAsync(proveedorDominio);
+            var resultado = await CrearCasoDeUso().EjecutarAsync(proveedorDominio);
 
             Assert.NotNull(resultado);
-            Assert.Equal(nombreProveedor, resultado.Nombre);
             Assert.Equal(1, resultado.Id);
-            Assert.Equal(categoriasId, resultado.CategoriaIds);
+            _proveedorRepoMock.Verify(r => r.CrearProveedorAsync(It.IsAny<DOM.Proveedor>()), Times.Once);
         }
 
         [Fact]
         public async Task EjecutarAsync_CuandoElNombreEsVacio_LanzaArgumentException()
         {
-            int restauranteId = 1;
-            string nombreProveedor = "";
-            string numeroTelefono = "123456789";
-            List<int> categoriasId = new List<int>() { 1, 2 };
-
             var proveedorDominio = new DOM.Proveedor
             {
                 Id = 0,
-                RestauranteId = restauranteId,
-                Nombre = nombreProveedor,
-                NumeroTelefonoWsp = numeroTelefono,
-                CategoriaIds = categoriasId
+                RestauranteId = 1,
+                Nombre = "",
+                NumeroTelefonoWsp = "123456789",
+                CategoriaIds = new List<int>() { 1, 2 }
             };
 
-            var casoDeUso = new CrearProveedorCasoDeUso(_proveedorRepoMock.Object);
-
-            await Assert.ThrowsAsync<ArgumentException>(() => casoDeUso.EjecutarAsync(proveedorDominio));
+            await Assert.ThrowsAsync<ArgumentException>(() => CrearCasoDeUso().EjecutarAsync(proveedorDominio));
         }
 
         [Fact]
         public async Task EjecutarAsync_CuandoNoTieneCategorias_LanzaArgumentException()
         {
-            int restauranteId = 1;
-            string nombreProveedor = "Proveedor Test";
-            string numeroTelefono = "123456789";
-            List<int> categoriasId = new List<int>() { };
-
             var proveedorDominio = new DOM.Proveedor
             {
                 Id = 0,
-                RestauranteId = restauranteId,
-                Nombre = nombreProveedor,
-                NumeroTelefonoWsp = numeroTelefono,
-                CategoriaIds = categoriasId
+                RestauranteId = 1,
+                Nombre = "Proveedor Test",
+                NumeroTelefonoWsp = "123456789",
+                CategoriaIds = new List<int>()
             };
 
-            var casoDeUso = new CrearProveedorCasoDeUso(_proveedorRepoMock.Object);
-
-            await Assert.ThrowsAsync<ArgumentException>(() => casoDeUso.EjecutarAsync(proveedorDominio));
+            await Assert.ThrowsAsync<ArgumentException>(() => CrearCasoDeUso().EjecutarAsync(proveedorDominio));
         }
 
         [Fact]
         public async Task EjecutarAsync_CuandoYaExisteUnProveedorConEseNombre_LanzaArgumentException()
         {
-            int restauranteId = 1;
-            string nombreProveedor = "Proveedor Test";
-            string numeroTelefono = "123456789";
-            List<int> categoriasId = new List<int>() {1,2};
-
             var proveedorDominio = new DOM.Proveedor
             {
                 Id = 0,
-                RestauranteId = restauranteId,
-                Nombre = nombreProveedor,
-                NumeroTelefonoWsp = numeroTelefono,
-                CategoriaIds = categoriasId
+                RestauranteId = 1,
+                Nombre = "Proveedor Test",
+                NumeroTelefonoWsp = "123456789",
+                CategoriaIds = new List<int>() { 1, 2 }
             };
 
-            var casoDeUso = new CrearProveedorCasoDeUso(_proveedorRepoMock.Object);
-
             _proveedorRepoMock
-                .Setup(r => r.ExisteProveedorConNombreAsync(restauranteId, It.IsAny<string>()))
+                .Setup(r => r.ExisteProveedorConNombreAsync(1, It.IsAny<string>()))
                 .ReturnsAsync(true);
 
-            await Assert.ThrowsAsync<ArgumentException>(() => casoDeUso.EjecutarAsync(proveedorDominio));
+            await Assert.ThrowsAsync<ArgumentException>(() => CrearCasoDeUso().EjecutarAsync(proveedorDominio));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using PanComido.Dominio.Entidades;
+﻿using Microsoft.Extensions.Logging;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
@@ -17,17 +18,20 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
         private readonly IPagoRepositorio _pagoRepositorio;
         private readonly IComandaRepositorio _comandaRepositorio;
         private readonly IComandaNotificador _comandaNotificador;
+        private readonly ILogger<ConfirmarPagoMPCasoDeUso> _logger;
 
         public ConfirmarPagoMPCasoDeUso(
             IMercadoPagoServicio mercadoPagoServicio,
             IPagoRepositorio pagoRepositorio,
             IComandaRepositorio comandaRepositorio,
-            IComandaNotificador comandaNotificador)
+            IComandaNotificador comandaNotificador,
+            ILogger<ConfirmarPagoMPCasoDeUso> logger)
         {
             _mercadoPagoServicio = mercadoPagoServicio;
             _pagoRepositorio = pagoRepositorio;
             _comandaRepositorio = comandaRepositorio;
             _comandaNotificador = comandaNotificador;
+            _logger = logger;
         }
 
         public async Task<Pago?> EjecutarAsync(long paymentId)
@@ -35,7 +39,11 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
             ResultadoPagoMP resultado = await _mercadoPagoServicio.ConsultarPagoAsync(paymentId);
             Pago pagoAConfirmar = await _pagoRepositorio.ObtenerPagoPorExternalReferenceAsync(resultado.ExternalReference);
 
-            if (pagoAConfirmar == null) throw new KeyNotFoundException("El pago no fue encontrado");
+            if (pagoAConfirmar == null)
+            {
+                _logger.LogWarning("Pago no encontrado para ExternalReference: {ExternalReference}", resultado.ExternalReference);
+                throw new KeyNotFoundException("El pago no fue encontrado");
+            }
 
             Comanda comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(pagoAConfirmar.ComandaId);
 
@@ -44,6 +52,7 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
 
             if (resultado.Status != "approved")
             {
+                _logger.LogWarning("Pago rechazado por MP. ExternalReference: {ExternalReference}, Status: {Status}", resultado.ExternalReference, resultado.Status);
                 await _pagoRepositorio.RechazarPagoAsync(resultado.ExternalReference);
                 await _comandaNotificador.NotificarPagoRechazadoAMesaAsync(comanda);
                 return null;

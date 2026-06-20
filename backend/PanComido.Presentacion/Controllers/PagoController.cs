@@ -39,21 +39,9 @@ namespace PanComido.Presentacion.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> SolicitarPagoEfectivoComensal(int comandaId, int restauranteId)
         {
-            // El restauranteId viene de la URL. El framework y el Global Handler se encargan de los errores.
             var resultado = await _solicitarPagoEfectivoCasoDeUso.EjecutarAsync(comandaId, restauranteId);
             return Ok(resultado);
         }
-
-        //[HttpPost("solicitar-efectivo/{comandaId}/mozo")]
-        //[Authorize(Roles = "Mozo, Gerente")]
-        //public async Task<IActionResult> SolicitarPagoEfectivoMozo(int comandaId)
-        //{
-        //    // Extraemos el restauranteId de forma segura del token
-        //    var restauranteId = HttpContext.ObtenerRestauranteId();
-
-        //    var resultado = await _solicitarPagoEfectivoCasoDeUso.EjecutarAsync(comandaId, restauranteId);
-        //    return Ok(resultado);
-        //}
 
         [HttpPost("confirmar-pago-efectivo/{comandaId}")]
         [Authorize(Roles = "Mozo, Gerente")]
