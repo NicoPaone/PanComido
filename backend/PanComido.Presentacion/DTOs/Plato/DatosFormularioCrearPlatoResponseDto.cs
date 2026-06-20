@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-
 using PanComido.Presentacion.DTOs.PorcetajesGanancia;
 
-namespace PanComido.Presentacion.DTOs
+namespace PanComido.Presentacion.DTOs.Plato
 {
     public class DatosFormularioCrearPlatoResponseDto
     {

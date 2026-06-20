@@ -61,33 +61,24 @@ namespace PanComido.Presentacion.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            try
-            {
-                int restauranteId = HttpContext.ObtenerRestauranteId();
+           
+            int restauranteId = HttpContext.ObtenerRestauranteId();
 
-                Insumo insumoDominio = _mapper.aDominio(request);
+            Insumo insumoDominio = _mapper.aDominio(request);
 
-                Insumo insumoCreado = await _crearInsumoCasoDeUso.EjecutarAsync(
-                    restauranteId,
-                    insumoDominio,
-                    request.CantidadInicial,
-                    request.BodegaId,
-                    request.FechaVencimiento
-                );
+            Insumo insumoCreado = await _crearInsumoCasoDeUso.EjecutarAsync(
+                restauranteId,
+                insumoDominio,
+                request.CantidadInicial,
+                request.BodegaId,
+                request.FechaVencimiento
+            );
 
-                return StatusCode(201, new {
-                    insumo = _mapper.aDto(insumoCreado),
-                    mensaje = "Insumo creado correctamente." 
-                });
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { error = "Ocurrió un error interno al intentar crear el insumo." });
-            }
+            return StatusCode(201, new {
+                insumo = _mapper.aDto(insumoCreado),
+                mensaje = "Insumo creado correctamente." 
+            });
+            
         }
 
 
