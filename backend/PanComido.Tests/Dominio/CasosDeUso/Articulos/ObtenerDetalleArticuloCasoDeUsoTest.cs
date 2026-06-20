@@ -78,7 +78,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Articulos
 
             Assert.Equal("El artículo no existe o no pertenece al restaurante.", excepcion.Message);
 
-            // Nunca llega a consultar stock
+            // nunca llega a consultar stock
             _loteRepoMock.Verify(r => r.ObtenerStockTotalDeInsumosDisponible(It.IsAny<int>(), It.IsAny<DateOnly>()), Times.Never);
         }
 
@@ -100,7 +100,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Articulos
 
             Assert.Equal("El artículo solicitado no está disponible en la carta.", excepcion.Message);
 
-            // Nunca llega a consultar stock
+            // nunca llega a consultar stock
             _loteRepoMock.Verify(r => r.ObtenerStockTotalDeInsumosDisponible(It.IsAny<int>(), It.IsAny<DateOnly>()), Times.Never);
         }
 
@@ -118,7 +118,6 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Articulos
             _articuloRepoMock.Setup(r => r.ObtenerDetalleAsync(restauranteId, articuloId)).ReturnsAsync(articuloVisible);
             _loteRepoMock.Setup(r => r.ObtenerStockTotalDeInsumosDisponible(restauranteId, It.IsAny<DateOnly>())).ReturnsAsync(stockVacio);
 
-            // Forzamos que el servicio diga que no hay stock
             _disponibilidadServicioMock.Setup(s => s.VerificarDisponibilidad(articuloVisible, stockVacio)).Returns(false);
 
             // 2. Ejecutar y 3. Verificar que lanza la excepcion
