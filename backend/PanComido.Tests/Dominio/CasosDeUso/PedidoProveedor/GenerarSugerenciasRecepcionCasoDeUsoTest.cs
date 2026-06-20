@@ -10,13 +10,10 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
     {
         private readonly Mock<IPedidoRepositorio> _pedidoRepoMock;
         private readonly Mock<ILoteRepositorio> _loteRepoMock;
-        private readonly Mock<IBodegaRepositorio> _bodegaRepoMock;
-
         public GenerarSugerenciasRecepcionCasoDeUsoTest()
         {
             _pedidoRepoMock = new Mock<IPedidoRepositorio>();
             _loteRepoMock = new Mock<ILoteRepositorio>();
-            _bodegaRepoMock = new Mock<IBodegaRepositorio>();
         }
 
         [Fact]
@@ -40,7 +37,6 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
                     }
                 }
             };
-
 
             _pedidoRepoMock
                 .Setup(r => r.ObtenerPedidoPorIdAsync(pedidoId))

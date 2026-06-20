@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -44,7 +44,7 @@ public partial class Mesa
     public int CantPersonasMax { get; set; }
 
     [Column("tipo_elemento")]
-    public int TipoElemento { get; set; } = 1;
+    public int TipoElemento { get; set; }
 
     [Column("color")]
     public string? Color { get; set; }

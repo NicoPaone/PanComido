@@ -13,10 +13,8 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
             _articuloRepositorio = articuloRepositorio;
         }
 
-        // Agregamos el restauranteId como primer parámetro
         public async Task EjecutarAsync(int restauranteId, int articuloId, bool? visibleEnCarta, bool? destacado)
         {
-            // Ahora usamos el ID real que viene de la sesión
             var articulo = await _articuloRepositorio.ObtenerDetalleAsync(restauranteId, articuloId);
 
             if (articulo == null)

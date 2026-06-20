@@ -1,4 +1,5 @@
-﻿using PanComido.Dominio.Entidades;
+﻿using Microsoft.Extensions.Logging;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
@@ -15,13 +16,16 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
         private readonly IComandaRepositorio _comandaRepositorio;
         private readonly ILlamadoRepositorio _llamadoRepositorio;
         private readonly ILlamadoNotificador _llamadoNotificador;
+        private readonly ILogger<SolicitarPagoEfectivoCasoDeUso> _logger;
+
 
         public SolicitarPagoEfectivoCasoDeUso(IComandaRepositorio comandaRepositorio, ILlamadoRepositorio llamadoRepositorio,
-            ILlamadoNotificador llamadoNotificador)
+            ILlamadoNotificador llamadoNotificador, ILogger<SolicitarPagoEfectivoCasoDeUso> logger)
         {
             _comandaRepositorio = comandaRepositorio;
             _llamadoRepositorio = llamadoRepositorio;
             _llamadoNotificador = llamadoNotificador;
+            _logger = logger;
         }
 
         public async Task<Llamado> EjecutarAsync(int comandaId, int restauranteId)
@@ -29,15 +33,15 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
             Comanda comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
             if (comanda == null || comanda.RestauranteId != restauranteId)
             {
+                _logger.LogWarning("Comanda no encontrada para solicitud de pago efectivo. ComandaId: {ComandaId}, RestauranteId: {RestauranteId}", comandaId, restauranteId);
                 throw new KeyNotFoundException("Comanda no encontrada para el restaurante especificado.");
             }
-            if(comanda.Estado == EstadoComanda.EnEspera || comanda.Estado == EstadoComanda.Finalizada)
-            {
-                throw new ArgumentException("La comanda ya tiene una solicitud de pago pendiente o está finalizada.");
-            }
 
-            comanda.Estado = EstadoComanda.EnEspera;
-            await _comandaRepositorio.ActualizarAsync(comanda);
+            if (comanda.Estado != EstadoComanda.EnEspera)
+            {
+                _logger.LogWarning("Intento de solicitar pago efectivo en estado inválido. ComandaId: {ComandaId}, Estado: {Estado}", comandaId, comanda.Estado);
+                throw new ArgumentException("La comanda no está esperando pago.");
+            }
 
             Llamado llamado = new Llamado
             {
@@ -50,6 +54,7 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
 
             Llamado llamadoCreado = await _llamadoRepositorio.crearLlamadoAsync(llamado);
             await _llamadoNotificador.NotificarLlamadoAsync(llamadoCreado);
+            _logger.LogInformation("Pago efectivo solicitado. ComandaId: {ComandaId}, MesaId: {MesaId}, MozoId: {MozoId}", comandaId, comanda.MesaId, comanda.MozoId);
             return llamadoCreado;
         }
     }

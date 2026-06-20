@@ -1,4 +1,4 @@
-﻿using PanComido.Presentacion.DTOs;
+﻿using PanComido.Presentacion.DTOs.Pago;
 using DOM = PanComido.Dominio.Entidades;
 
 namespace PanComido.Presentacion.Mappers
@@ -11,9 +11,8 @@ namespace PanComido.Presentacion.Mappers
             {
                 PagoId = pago.PagoId, 
                 ComandaId = pago.ComandaId,
-                MetodoPago = pago.MetodoPagoDescripcion,
+                MetodoPago = pago.MetodoDePago.ToString(),
                 Total = pago.Total,
-                HoraFin = pago.HoraFin?.ToString("dd/MM/yyyy HH:mm")
             };
         }
     }

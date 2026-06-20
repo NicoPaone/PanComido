@@ -37,5 +37,20 @@ namespace PanComido.Tests.Dominio.CasosDeUso.LlamadoMozo
             Assert.Equal(2, resultado.Count);
         }
 
+        [Fact]
+        public async Task EjecutarAsync_CuandoNoHayLlamadosPendientes_DevuelveListaVacia()
+        {
+            int mozoId = 1;
+
+            _llamadoMockRepo
+                .Setup(r => r.ObtenerLlamadosPendientesPorMozoAsync(mozoId))
+                .ReturnsAsync(new List<DOM.Llamado>());
+
+            var casoDeUso = new ListarLlamadosPendientesCasoDeUso(_llamadoMockRepo.Object);
+
+            var resultado = await casoDeUso.EjecutarAsync(mozoId);
+            Assert.NotNull(resultado);
+            Assert.Empty(resultado);
+        }
     }
 }

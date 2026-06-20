@@ -14,6 +14,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Articulo> Articulos { get; set; }
 
+    public virtual DbSet<ArticuloComandaIngredienteExcluido> ArticuloComandaIngredienteExcluidos { get; set; }
+
     public virtual DbSet<ArticuloComandum> ArticuloComanda { get; set; }
 
     public virtual DbSet<Bodega> Bodegas { get; set; }
@@ -144,6 +146,19 @@ public partial class AppDbContext : DbContext
                         j.IndexerProperty<int>("ArticuloId").HasColumnName("articulo_id");
                         j.IndexerProperty<int>("ConfiguracionArticuloId").HasColumnName("configuracion_articulo_id");
                     });
+        });
+
+        modelBuilder.Entity<ArticuloComandaIngredienteExcluido>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("articulo_comanda_ingrediente_excluido_pkey");
+
+            entity.HasOne(d => d.ArticuloComanda).WithMany(p => p.ArticuloComandaIngredienteExcluidos)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("articulo_comanda_ingrediente_excluido_articulo_comanda_id_fkey");
+
+            entity.HasOne(d => d.Ingrediente).WithMany(p => p.ArticuloComandaIngredienteExcluidos)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("articulo_comanda_ingrediente_excluido_ingrediente_id_fkey");
         });
 
         modelBuilder.Entity<ArticuloComandum>(entity =>
@@ -449,6 +464,8 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<Mesa>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("mesa_pkey");
+
+            entity.Property(e => e.TipoElemento).HasDefaultValue(1);
 
             entity.HasOne(d => d.DimensionMesa).WithMany(p => p.Mesas)
                 .OnDelete(DeleteBehavior.ClientSetNull)

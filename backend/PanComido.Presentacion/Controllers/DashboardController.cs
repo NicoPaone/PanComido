@@ -26,16 +26,12 @@ namespace PanComido.Presentacion.Controllers
         [HttpGet("vencimientos")]
         public async Task<IActionResult> ObtenerVencimientos()
         {
-            // Extraemos el restauranteId del HttpContext inyectado por el filtro
             int restauranteId = HttpContext.ObtenerRestauranteId();
 
-            // Ejecutamos el caso de uso del dominio
             var insumosPorVencer = await _obtenerVencimientosCasoDeUso.EjecutarAsync(restauranteId);
 
-            // Traducimos al DTO plano que espera el frontend
             var respuestaDto = _mapper.aListaVencimientosDto(insumosPorVencer);
 
-            // Retornamos 200 OK con la lista limpia
             return Ok(respuestaDto);
         }
         [HttpGet("rendimiento")]

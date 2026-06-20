@@ -28,22 +28,13 @@ namespace PanComido.Dominio.Servicios
                 {
                     foreach (var itemReceta in plato.Ingredientes)
                     {
-                        // TODO: A futuro para descontar el stock de ingredientes opcionales
-                        // chequear si el cliente destildo este ingrediente para no restarlo.
-
-                        if (!insumosARestar.ContainsKey(itemReceta.InsumoId))
-                            insumosARestar[itemReceta.InsumoId] = 0;
-
-                        insumosARestar[itemReceta.InsumoId] += itemReceta.Cantidad * itemComanda.Cantidad;
+                        bool ingredienteExcluidoPorElCliente = itemComanda.IngredientesExcluidosIds.Contains(itemReceta.InsumoId);
+                        if (!ingredienteExcluidoPorElCliente)
+                            AcumularInsumoARestar(insumosARestar, itemReceta.InsumoId, itemReceta.Cantidad * itemComanda.Cantidad);
                     }
                 }
                 else if (itemComanda.Articulo is Insumo bebida)
-                {
-                    if (!insumosARestar.ContainsKey(bebida.Id))
-                        insumosARestar[bebida.Id] = 0;
-
-                    insumosARestar[bebida.Id] += itemComanda.Cantidad;
-                }
+                    AcumularInsumoARestar(insumosARestar, bebida.Id, itemComanda.Cantidad);
             }
 
             List<Lote> lotesModificados = new();
@@ -58,28 +49,30 @@ namespace PanComido.Dominio.Servicios
 
                 foreach (var lote in lotesDisponibles)
                 {
-                    // si ya descontamos todo lo que necesitamos, salimos del loop de lotes
                     if (cantidadPorDescontar <= 0)
                         break;
 
-                    // el lote tiene suficiente stock para cubrir todo el pedido
-                    if (lote.Cantidad >= cantidadPorDescontar)
-                    {
-                        lote.Cantidad -= cantidadPorDescontar;
-                        cantidadPorDescontar = 0;
-                        lotesModificados.Add(lote);
-                    }
-                    else // lote no tiene suficiente stock, lo vaciamos y seguimos descontando del proximo lote
-                    {
-                        cantidadPorDescontar -= lote.Cantidad;
-                        lote.Cantidad = 0;
-                        lotesModificados.Add(lote);
-                    }
+                    decimal aDescontarDeEsteLote = Math.Min(cantidadPorDescontar, lote.Cantidad);
+
+                    lote.Cantidad -= aDescontarDeEsteLote;
+                    cantidadPorDescontar -= aDescontarDeEsteLote;
+
+                    lotesModificados.Add(lote);
                 }
             }
 
             if (lotesModificados.Any())
                 await _loteRepositorio.ActualizarLotesAsync(lotesModificados);
         }
+        private void AcumularInsumoARestar(Dictionary<int, decimal> diccionario, int insumoId, decimal cantidadASumar)
+        {
+            if (!diccionario.ContainsKey(insumoId))
+            {
+                diccionario[insumoId] = 0;
+            }
+
+            diccionario[insumoId] += cantidadASumar;
+        }
     }
+
 }

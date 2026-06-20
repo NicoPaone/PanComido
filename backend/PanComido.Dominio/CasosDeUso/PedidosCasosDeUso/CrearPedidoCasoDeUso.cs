@@ -1,4 +1,5 @@
-﻿using PanComido.Dominio.Entidades;
+﻿using Microsoft.Extensions.Logging;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using System;
 using System.Collections.Generic;
@@ -13,15 +14,19 @@ namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
         private readonly IPedidoRepositorio _pedidoRepositorio;
         private readonly IProveedorRepositorio _proveedorRepositorio;
         private readonly IInsumoRepositorio _insumoRepositorio;
+        private readonly ILogger<CrearPedidoCasoDeUso> _logger;
+
 
         public CrearPedidoCasoDeUso(
             IPedidoRepositorio pedidoRepositorio,
             IProveedorRepositorio proveedorRepositorio,
-            IInsumoRepositorio insumoRepositorio)
+            IInsumoRepositorio insumoRepositorio,
+            ILogger<CrearPedidoCasoDeUso> logger)
         {
             _pedidoRepositorio = pedidoRepositorio;
             _proveedorRepositorio = proveedorRepositorio;
             _insumoRepositorio = insumoRepositorio;
+            _logger = logger;
         }
 
         public async Task<Pedido> EjecutarAsync(Pedido pedido, int restauranteId)
@@ -44,7 +49,9 @@ namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
             pedido.Fecha = DateOnly.FromDateTime(DateTime.Now);
             pedido.Estado = "Pendiente";
 
-            return await _pedidoRepositorio.CrearPedidoAsync(pedido);
+            Pedido pedidoCreado = await _pedidoRepositorio.CrearPedidoAsync(pedido);
+            _logger.LogInformation("Pedido creado. PedidoId: {PedidoId}, ProveedorId: {ProveedorId}, RestauranteId: {RestauranteId}, Items: {CantidadItems}", pedidoCreado.Id, pedidoCreado.ProveedorId, restauranteId, pedidoCreado.ItemsInsumo.Count);
+            return pedidoCreado;
         }
     }
 }
