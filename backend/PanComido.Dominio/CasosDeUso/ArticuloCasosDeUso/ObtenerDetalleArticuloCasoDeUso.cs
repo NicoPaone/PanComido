@@ -1,4 +1,5 @@
-﻿using PanComido.Dominio.Entidades;
+﻿using Microsoft.Extensions.Logging;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
 using System;
@@ -16,15 +17,18 @@ namespace PanComido.Dominio.CasosDeUso.ArticuloCasosDeUso
 
         private readonly IDisponibilidadArticuloServicio _disponibilidadServicio;
 
+        private readonly ILogger<ObtenerDetalleArticuloCasoDeUso> _logger;
+
         public ObtenerDetalleArticuloCasoDeUso(
             IArticuloRepositorio articuloRepositorio, 
-            IDisponibilidadArticuloServicio disponibilidadServicio
-            ,
-            ILoteRepositorio loteRepositorio)
+            IDisponibilidadArticuloServicio disponibilidadServicio,
+            ILoteRepositorio loteRepositorio,
+            ILogger<ObtenerDetalleArticuloCasoDeUso> logger)
         {
             _articuloRepositorio = articuloRepositorio;
             _disponibilidadServicio = disponibilidadServicio;
             _loteRepositorio = loteRepositorio;
+            _logger = logger;
         }
 
         public async Task<Articulo> EjecutarAsync(int restauranteId, int articuloId)
@@ -32,10 +36,14 @@ namespace PanComido.Dominio.CasosDeUso.ArticuloCasosDeUso
             Articulo articulo = await _articuloRepositorio.ObtenerDetalleAsync(restauranteId, articuloId);
 
             if (articulo == null)
+            {
+                _logger.LogWarning("Intento de obtener detalle de un artículo inexistente o ajeno al local. RestauranteId: {RestauranteId}, ArticuloId: {ArticuloId}", restauranteId, articuloId);
                 throw new ArgumentException("El artículo no existe o no pertenece al restaurante.");
+            }
 
             if (!articulo.EsVisibleEnCarta)
             {
+                _logger.LogWarning("Intento de acceder a un artículo oculto en la carta. RestauranteId: {RestauranteId}, ArticuloId: {ArticuloId}", restauranteId, articuloId);
                 throw new ArgumentException("El artículo solicitado no está disponible en la carta.");
             }
 
@@ -45,6 +53,7 @@ namespace PanComido.Dominio.CasosDeUso.ArticuloCasosDeUso
             
             if (!sePuedeProducir)
             {
+                _logger.LogWarning("Intento de acceder a un artículo sin stock suficiente para su producción. RestauranteId: {RestauranteId}, ArticuloId: {ArticuloId}", restauranteId, articuloId);
                 throw new ArgumentException("El artículo solicitado no está disponible actualmente debido a la falta de insumos.");
             }
 

@@ -1,9 +1,17 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace PanComido.Presentacion
 {
     public class GlobalExceptionHandler : IExceptionHandler
     {
+        private readonly ILogger<GlobalExceptionHandler> _logger;
+
+        public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
+        {
+            _logger = logger;
+        }
+
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
             switch (exception)
@@ -24,19 +32,18 @@ namespace PanComido.Presentacion
                     httpContext.Response.StatusCode = 409;
                     await httpContext.Response.WriteAsJsonAsync(new { error = exception.Message });
                     break;
-                // default:
-                //     httpContext.Response.StatusCode = 500;
-                //     await httpContext.Response.WriteAsJsonAsync(new { error = "Error interno del servidor." });
-                //     break;
                 default:
-    httpContext.Response.StatusCode = 500;
-    await httpContext.Response.WriteAsJsonAsync(
-        new
-        {
-            error = exception.Message,
-            detalle = exception.ToString()
-        });
-    break;
+
+                _logger.LogError(exception, "ERROR FATAL NO MANEJADO: {Mensaje}", exception.Message);
+
+                httpContext.Response.StatusCode = 500;
+                await httpContext.Response.WriteAsJsonAsync(
+                    new
+                    {
+                        error = "Ocurrió un error interno en el servidor.",
+                        detalle = exception.ToString()
+                    });
+            break;
             }
             return await ValueTask.FromResult(true);
         }
