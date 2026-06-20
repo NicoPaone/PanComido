@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
 using PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
@@ -10,12 +11,20 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Configuracion
     {
         private readonly Mock<IRestauranteRepositorio> _restauranteRepoMock;
         private readonly Mock<IImagenServicio> _imagenServicioMock;
+        private readonly Mock<ILogger<ActualizarDatosDelLocalCasoDeUso>> _loggerMock;
 
         public ActualizarDatosDelLocalCasoDeUsoTest()
         {
             _restauranteRepoMock = new Mock<IRestauranteRepositorio>();
             _imagenServicioMock = new Mock<IImagenServicio>();
+            _loggerMock = new Mock<ILogger<ActualizarDatosDelLocalCasoDeUso>>();
         }
+
+        private ActualizarDatosDelLocalCasoDeUso CrearCasoDeUso() =>
+            new ActualizarDatosDelLocalCasoDeUso(
+                _restauranteRepoMock.Object,
+                _imagenServicioMock.Object,
+                _loggerMock.Object);
 
         [Fact]
         public async Task EjecutarAsync_SinImagen_NoSubeImagenYDevuelveRestaurante()
@@ -32,11 +41,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Configuracion
                 .Setup(r => r.ObtenerDatosDelLocalAsync(restauranteId))
                 .ReturnsAsync(restauranteActualizado);
 
-            var casoDeUso = new ActualizarDatosDelLocalCasoDeUso(
-                _restauranteRepoMock.Object,
-                _imagenServicioMock.Object);
-
-            var resultado = await casoDeUso.EjecutarAsync(
+            var resultado = await CrearCasoDeUso().EjecutarAsync(
                 restauranteId, restauranteDatos, "carpeta", null, null);
 
             Assert.NotNull(resultado);
@@ -66,11 +71,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Configuracion
                 .Setup(r => r.ObtenerDatosDelLocalAsync(restauranteId))
                 .ReturnsAsync(restauranteActualizado);
 
-            var casoDeUso = new ActualizarDatosDelLocalCasoDeUso(
-                _restauranteRepoMock.Object,
-                _imagenServicioMock.Object);
-
-            var resultado = await casoDeUso.EjecutarAsync(
+            var resultado = await CrearCasoDeUso().EjecutarAsync(
                 restauranteId, restauranteDatos, "carpeta", stream, "imagen.jpg");
 
             Assert.NotNull(resultado);
@@ -78,6 +79,31 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Configuracion
             _imagenServicioMock.Verify(
                 s => s.SubirImagenAsync(stream, "imagen.jpg", "carpeta"),
                 Times.Once);
+        }
+
+        [Fact]
+        public async Task EjecutarAsync_ConStreamPeroSinNombreImagen_NoSubeImagenYActualiza()
+        {
+            int restauranteId = 1;
+            var restauranteDatos = new DOM.Restaurante { Id = restauranteId };
+            var restauranteActualizado = new DOM.Restaurante { Id = restauranteId, Nombre = "Pan Comido" };
+            using var stream = new MemoryStream();
+
+            _restauranteRepoMock
+                .Setup(r => r.ActualizarDatosDelLocalAsync(restauranteId, It.IsAny<DOM.Restaurante>()))
+                .Returns(Task.CompletedTask);
+
+            _restauranteRepoMock
+                .Setup(r => r.ObtenerDatosDelLocalAsync(restauranteId))
+                .ReturnsAsync(restauranteActualizado);
+
+            var resultado = await CrearCasoDeUso().EjecutarAsync(
+                restauranteId, restauranteDatos, "carpeta", stream, null);
+
+            Assert.NotNull(resultado);
+            _imagenServicioMock.Verify(
+                s => s.SubirImagenAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()),
+                Times.Never);
         }
     }
 }

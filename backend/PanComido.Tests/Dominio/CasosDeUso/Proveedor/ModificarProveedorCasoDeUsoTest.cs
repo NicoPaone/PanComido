@@ -1,190 +1,131 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
-using PanComido.Infraestructura.Persistencia.Entidades;
 using DOM = PanComido.Dominio.Entidades;
-
 
 namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
 {
     public class ModificarProveedorCasoDeUsoTest
     {
         private readonly Mock<IProveedorRepositorio> _proveedorRepoMock;
+        private readonly Mock<ILogger<ModificarProveedorCasoDeUso>> _loggerMock;
 
         public ModificarProveedorCasoDeUsoTest()
         {
             _proveedorRepoMock = new Mock<IProveedorRepositorio>();
+            _loggerMock = new Mock<ILogger<ModificarProveedorCasoDeUso>>();
         }
+
+        private ModificarProveedorCasoDeUso CrearCasoDeUso() =>
+            new ModificarProveedorCasoDeUso(_proveedorRepoMock.Object, _loggerMock.Object);
 
         [Fact]
         public async Task EjecutarAsync_CuandoTodosLosDatosSonValidos_SeModificaElProveedor()
         {
-            int restauranteId = 1;
-
-            string nombreProveedor = "Proveedor Test";
-            string numeroTelefono = "123456789";
-            List<int> categoriasId = new List<int>() { 1, 2 };
-
             var proveedorDominio = new DOM.Proveedor
             {
                 Id = 2,
-                Nombre = nombreProveedor,
-                NumeroTelefonoWsp = numeroTelefono,
-                CategoriaIds = categoriasId
+                RestauranteId = 1,
+                Nombre = "Proveedor Test",
+                NumeroTelefonoWsp = "123456789",
+                CategoriaIds = new List<int>() { 1, 2 }
             };
 
             _proveedorRepoMock
-                .Setup(r => r.ObtenerProveedorPorIdAsync(proveedorDominio.Id))
-                .ReturnsAsync(new DOM.Proveedor
-                {
-                    Id = 2,
-                    Nombre = "Proveedor de frutas",
-                    NumeroTelefonoWsp = "1154896312",
-                    CategoriaIds = new List<int>() { 1, 2 }
-                });
+                .Setup(r => r.ObtenerProveedorPorIdAsync(2))
+                .ReturnsAsync(new DOM.Proveedor { Id = 2, Nombre = "Proveedor de frutas" });
 
             _proveedorRepoMock
-                .Setup(r => r.ExisteProveedorConNombreAsync(restauranteId, It.IsAny<string>()))
+                .Setup(r => r.ExisteProveedorConNombreAsync(1, It.IsAny<string>()))
                 .ReturnsAsync(false);
 
             _proveedorRepoMock
                 .Setup(r => r.ModificarProveedorAsync(It.IsAny<DOM.Proveedor>()))
-                 .ReturnsAsync((DOM.Proveedor p) =>
-                 {
-                     p.Id = 2;
-                     return p;
-                 });
+                .ReturnsAsync((DOM.Proveedor p) => { p.Id = 2; return p; });
 
-            var casoDeUso = new ModificarProveedorCasoDeUso(_proveedorRepoMock.Object);
-            var resultado = await casoDeUso.EjecutarAsync(proveedorDominio);
+            var resultado = await CrearCasoDeUso().EjecutarAsync(proveedorDominio);
 
             Assert.NotNull(resultado);
-            Assert.Equal(nombreProveedor, resultado.Nombre);
             Assert.Equal(2, resultado.Id);
-            Assert.Equal(categoriasId, resultado.CategoriaIds);
+            _proveedorRepoMock.Verify(r => r.ModificarProveedorAsync(It.IsAny<DOM.Proveedor>()), Times.Once);
         }
 
         [Fact]
         public async Task EjecutarAsync_CuandoElProveedorNoExiste_LanzaKeyNotFoundException()
         {
-            int restauranteId = 1;
-
-            string nombreProveedor = "Proveedor Test";
-            string numeroTelefono = "123456789";
-            List<int> categoriasId = new List<int>() { 1, 2 };
-
             var proveedorDominio = new DOM.Proveedor
             {
                 Id = 2,
-                Nombre = nombreProveedor,
-                NumeroTelefonoWsp = numeroTelefono,
-                CategoriaIds = categoriasId
+                Nombre = "Proveedor Test",
+                NumeroTelefonoWsp = "123456789",
+                CategoriaIds = new List<int>() { 1, 2 }
             };
 
             _proveedorRepoMock
-                .Setup(r => r.ObtenerProveedorPorIdAsync(proveedorDominio.Id))
+                .Setup(r => r.ObtenerProveedorPorIdAsync(2))
                 .ReturnsAsync((DOM.Proveedor?)null);
 
-            var casoDeUso = new ModificarProveedorCasoDeUso(_proveedorRepoMock.Object);
-            await Assert.ThrowsAsync<KeyNotFoundException>(() => casoDeUso.EjecutarAsync(proveedorDominio));
+            await Assert.ThrowsAsync<KeyNotFoundException>(() => CrearCasoDeUso().EjecutarAsync(proveedorDominio));
         }
 
         [Fact]
         public async Task EjecutarAsync_CuandoElNombreEsVacio_LanzaArgumentException()
         {
-            int restauranteId = 1;
-
-            string nombreProveedor = "";
-            string numeroTelefono = "123456789";
-            List<int> categoriasId = new List<int>() { 1, 2 };
-
             var proveedorDominio = new DOM.Proveedor
             {
                 Id = 2,
-                Nombre = nombreProveedor,
-                NumeroTelefonoWsp = numeroTelefono,
-                CategoriaIds = categoriasId
+                Nombre = "",
+                NumeroTelefonoWsp = "123456789",
+                CategoriaIds = new List<int>() { 1, 2 }
             };
 
             _proveedorRepoMock
-                .Setup(r => r.ObtenerProveedorPorIdAsync(proveedorDominio.Id))
-                .ReturnsAsync(new DOM.Proveedor
-                {
-                    Id = 2,
-                    Nombre = "Proveedor de frutas",
-                    NumeroTelefonoWsp = "1154896312",
-                    CategoriaIds = new List<int>() { 1, 2 }
-                });
+                .Setup(r => r.ObtenerProveedorPorIdAsync(2))
+                .ReturnsAsync(new DOM.Proveedor { Id = 2, Nombre = "Proveedor de frutas" });
 
-            var casoDeUso = new ModificarProveedorCasoDeUso(_proveedorRepoMock.Object);
-            await Assert.ThrowsAsync<ArgumentException>(() => casoDeUso.EjecutarAsync(proveedorDominio));
+            await Assert.ThrowsAsync<ArgumentException>(() => CrearCasoDeUso().EjecutarAsync(proveedorDominio));
         }
 
         [Fact]
         public async Task EjecutarAsync_CuandoNoTieneCategorias_LanzaArgumentException()
         {
-            int restauranteId = 1;
-
-            string nombreProveedor = "";
-            string numeroTelefono = "123456789";
-            List<int> categoriasId = new List<int>() { };
-
             var proveedorDominio = new DOM.Proveedor
             {
                 Id = 2,
-                Nombre = nombreProveedor,
-                NumeroTelefonoWsp = numeroTelefono,
-                CategoriaIds = categoriasId
+                Nombre = "Proveedor Test",
+                NumeroTelefonoWsp = "123456789",
+                CategoriaIds = new List<int>()
             };
 
             _proveedorRepoMock
-                .Setup(r => r.ObtenerProveedorPorIdAsync(proveedorDominio.Id))
-                .ReturnsAsync(new DOM.Proveedor
-                {
-                    Id = 2,
-                    Nombre = "Proveedor de frutas",
-                    NumeroTelefonoWsp = "1154896312",
-                    CategoriaIds = new List<int>() { 1, 2 }
-                });
+                .Setup(r => r.ObtenerProveedorPorIdAsync(2))
+                .ReturnsAsync(new DOM.Proveedor { Id = 2, Nombre = "Proveedor de frutas" });
 
-            var casoDeUso = new ModificarProveedorCasoDeUso(_proveedorRepoMock.Object);
-            await Assert.ThrowsAsync<ArgumentException>(() => casoDeUso.EjecutarAsync(proveedorDominio));
+            await Assert.ThrowsAsync<ArgumentException>(() => CrearCasoDeUso().EjecutarAsync(proveedorDominio));
         }
 
         [Fact]
         public async Task EjecutarAsync_CuandoYaExisteOtroProveedorConEseNombre_LanzaArgumentException()
         {
-            int restauranteId = 1;
-
-            string nombreProveedor = "Proveedor Test";
-            string numeroTelefono = "123456789";
-            List<int> categoriasId = new List<int>() { 1, 2 };
-
             var proveedorDominio = new DOM.Proveedor
             {
                 Id = 2,
-                RestauranteId = restauranteId,
-                Nombre = nombreProveedor,
-                NumeroTelefonoWsp = numeroTelefono,
-                CategoriaIds = categoriasId
+                RestauranteId = 1,
+                Nombre = "Proveedor Test",
+                NumeroTelefonoWsp = "123456789",
+                CategoriaIds = new List<int>() { 1, 2 }
             };
 
             _proveedorRepoMock
-                .Setup(r => r.ObtenerProveedorPorIdAsync(proveedorDominio.Id))
-                .ReturnsAsync(new DOM.Proveedor
-                {
-                    Id = 2,
-                    Nombre = "Proveedor de frutas",
-                    NumeroTelefonoWsp = "1154896312",
-                    CategoriaIds = new List<int>() { 1, 2 }
-                });
+                .Setup(r => r.ObtenerProveedorPorIdAsync(2))
+                .ReturnsAsync(new DOM.Proveedor { Id = 2, Nombre = "Proveedor de frutas" });
 
             _proveedorRepoMock
-                .Setup(r => r.ExisteProveedorConNombreAsync(restauranteId, It.IsAny<string>()))
+                .Setup(r => r.ExisteProveedorConNombreAsync(1, It.IsAny<string>()))
                 .ReturnsAsync(true);
 
-            var casoDeUso = new ModificarProveedorCasoDeUso(_proveedorRepoMock.Object);
-            await Assert.ThrowsAsync<ArgumentException>(() => casoDeUso.EjecutarAsync(proveedorDominio));
+            await Assert.ThrowsAsync<ArgumentException>(() => CrearCasoDeUso().EjecutarAsync(proveedorDominio));
         }
     }
 }

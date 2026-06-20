@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using DOM = PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using System;
@@ -11,10 +12,12 @@ namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
     public class EnviarPedidoProveedorCasoDeUso
     {
         private readonly IPedidoRepositorio _pedidoRepositorio;
+        private readonly ILogger<EnviarPedidoProveedorCasoDeUso> _logger;
 
-        public EnviarPedidoProveedorCasoDeUso(IPedidoRepositorio pedidoRepositorio)
+        public EnviarPedidoProveedorCasoDeUso(IPedidoRepositorio pedidoRepositorio, ILogger<EnviarPedidoProveedorCasoDeUso> logger)
         {
             _pedidoRepositorio = pedidoRepositorio;
+            _logger = logger;
         }
 
         public async Task<(DOM.Pedido pedido, string linkWpp)> EjecutarAsync(int pedidoId, List<DOM.PedidoInsumo> itemsNuevos)
@@ -40,6 +43,7 @@ namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
             string mensajeEncodeado = Uri.EscapeDataString(sb.ToString());
             string linkWpp = $"https://wa.me/{pedidoConfirmado.ProveedorTelefono}?text={mensajeEncodeado}";
 
+            _logger.LogInformation("Pedido enviado a proveedor. PedidoId: {PedidoId}, ProveedorNombre: {ProveedorNombre}", pedidoId, pedidoConfirmado.ProveedorNombre);
             return (pedidoConfirmado, linkWpp);
         }
     }

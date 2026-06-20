@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
 using PanComido.Dominio.CasosDeUso.PagoCasoDeUso;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
@@ -11,124 +12,26 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
     {
         private readonly Mock<IComandaRepositorio> _comandaMockRepo;
         private readonly Mock<ILlamadoRepositorio> _llamadoMockRepo;
-        private readonly Mock<ILlamadoNotificador> _llamadoNotificadorMockRepo;
+        private readonly Mock<ILlamadoNotificador> _llamadoNotificadorMock;
+        private readonly Mock<ILogger<SolicitarPagoEfectivoCasoDeUso>> _loggerMock;
 
         public SolicitarPagoEfectivoCasoDeUsoTest()
         {
             _comandaMockRepo = new Mock<IComandaRepositorio>();
             _llamadoMockRepo = new Mock<ILlamadoRepositorio>();
-            _llamadoNotificadorMockRepo = new Mock<ILlamadoNotificador>();
+            _llamadoNotificadorMock = new Mock<ILlamadoNotificador>();
+            _loggerMock = new Mock<ILogger<SolicitarPagoEfectivoCasoDeUso>>();
         }
+
+        private SolicitarPagoEfectivoCasoDeUso CrearCasoDeUso() =>
+            new SolicitarPagoEfectivoCasoDeUso(
+                _comandaMockRepo.Object,
+                _llamadoMockRepo.Object,
+                _llamadoNotificadorMock.Object,
+                _loggerMock.Object);
 
         [Fact]
         public async Task EjecutarAsync_CuandoTodoEsValido_SolicitaElPago()
-        {
-            int comandaId = 1;
-            int restauranteId = 1;
-
-            var comanda = new DOM.Comanda
-            {
-                Id = comandaId,
-                RestauranteId = restauranteId,
-                MesaId = 1,
-                MozoId = 1,
-                Estado = EstadoComanda.EnPreparacion
-            };
-
-            var llamadoCreado = new DOM.Llamado
-            {
-                Id = 1,
-                MozoId = 1,
-                MesaId = 1,
-                CategoriaLlamadoId = 7
-            };
-
-            _comandaMockRepo
-                .Setup(r => r.ObtenerComandaPorIdAsync(comandaId))
-                .ReturnsAsync(comanda);
-
-            _comandaMockRepo
-                .Setup(r => r.ActualizarAsync(It.IsAny<DOM.Comanda>()))
-                .Returns(Task.CompletedTask);
-
-            _llamadoMockRepo
-                .Setup(r => r.crearLlamadoAsync(It.IsAny<DOM.Llamado>()))
-                .ReturnsAsync(llamadoCreado);
-
-            _llamadoNotificadorMockRepo
-                .Setup(r => r.NotificarLlamadoAsync(It.IsAny<DOM.Llamado>()))
-                .Returns(Task.CompletedTask);
-
-            var casoDeUso = new SolicitarPagoEfectivoCasoDeUso(
-                _comandaMockRepo.Object,
-                _llamadoMockRepo.Object,
-                _llamadoNotificadorMockRepo.Object);
-
-            var resultado = await casoDeUso.EjecutarAsync(comandaId, restauranteId);
-            Assert.NotNull(resultado);
-            Assert.Equal(7, resultado.CategoriaLlamadoId);
-            _llamadoMockRepo.Verify(r => r.crearLlamadoAsync(It.IsAny<DOM.Llamado>()), Times.Once);
-        }
-
-        [Fact]
-        public async Task EjecutarAsync_CuandoLaComandaNoExiste_LanzaKeyNotFoundException()
-        {
-            int comandaId = 1;
-            int restauranteId = 1;
-
-            var comanda = new DOM.Comanda
-            {
-                Id = comandaId,
-                RestauranteId = restauranteId,
-                MesaId = 1,
-                MozoId = 1,
-                Estado = EstadoComanda.EnPreparacion
-            };
-
-            var llamadoCreado = new DOM.Llamado
-            {
-                Id = 1,
-                MozoId = 1,
-                MesaId = 1,
-                CategoriaLlamadoId = 7
-            };
-
-            _comandaMockRepo
-                .Setup(r => r.ObtenerComandaPorIdAsync(comandaId))
-                .ReturnsAsync((DOM.Comanda?)null);
-
-            var casoDeUso = new SolicitarPagoEfectivoCasoDeUso(
-                _comandaMockRepo.Object,
-                _llamadoMockRepo.Object,
-                _llamadoNotificadorMockRepo.Object);
-
-            await Assert.ThrowsAsync<KeyNotFoundException>(() => casoDeUso.EjecutarAsync(comandaId, restauranteId));
-        }
-
-        [Fact]
-        public async Task EjecutarAsync_CuandoLaComandaEsDeOtroRestaurante_LanzaKeyNotFoundException()
-        {
-            int comandaId = 1;
-            int restauranteId = 1;
-
-            _comandaMockRepo
-                .Setup(r => r.ObtenerComandaPorIdAsync(comandaId))
-                .ReturnsAsync(new DOM.Comanda
-                {
-                    Id = comandaId,
-                    RestauranteId = 99
-                });
-
-            var casoDeUso = new SolicitarPagoEfectivoCasoDeUso(
-                _comandaMockRepo.Object,
-                _llamadoMockRepo.Object,
-                _llamadoNotificadorMockRepo.Object);
-
-            await Assert.ThrowsAsync<KeyNotFoundException>(() => casoDeUso.EjecutarAsync(comandaId, restauranteId));
-        }
-
-        [Fact]
-        public async Task EjecutarAsync_CuandoLaComandaEstaEnEspera_LanzaArgumentException()
         {
             int comandaId = 1;
             int restauranteId = 1;
@@ -154,12 +57,48 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
                 .Setup(r => r.ObtenerComandaPorIdAsync(comandaId))
                 .ReturnsAsync(comanda);
 
-            var casoDeUso = new SolicitarPagoEfectivoCasoDeUso(
-                _comandaMockRepo.Object,
-                _llamadoMockRepo.Object,
-                _llamadoNotificadorMockRepo.Object);
+            _llamadoMockRepo
+                .Setup(r => r.crearLlamadoAsync(It.IsAny<DOM.Llamado>()))
+                .ReturnsAsync(llamadoCreado);
 
-            await Assert.ThrowsAsync<ArgumentException>(() => casoDeUso.EjecutarAsync(comandaId, restauranteId));
+            _llamadoNotificadorMock
+                .Setup(r => r.NotificarLlamadoAsync(It.IsAny<DOM.Llamado>()))
+                .Returns(Task.CompletedTask);
+
+            var resultado = await CrearCasoDeUso().EjecutarAsync(comandaId, restauranteId);
+            Assert.NotNull(resultado);
+            Assert.Equal(7, resultado.CategoriaLlamadoId);
+            _llamadoMockRepo.Verify(r => r.crearLlamadoAsync(It.IsAny<DOM.Llamado>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoLaComandaNoExiste_LanzaKeyNotFoundException()
+        {
+            int comandaId = 1;
+            int restauranteId = 1;
+
+            _comandaMockRepo
+                .Setup(r => r.ObtenerComandaPorIdAsync(comandaId))
+                .ReturnsAsync((DOM.Comanda?)null);
+
+            await Assert.ThrowsAsync<KeyNotFoundException>(() => CrearCasoDeUso().EjecutarAsync(comandaId, restauranteId));
+        }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoLaComandaEsDeOtroRestaurante_LanzaKeyNotFoundException()
+        {
+            int comandaId = 1;
+            int restauranteId = 1;
+
+            _comandaMockRepo
+                .Setup(r => r.ObtenerComandaPorIdAsync(comandaId))
+                .ReturnsAsync(new DOM.Comanda
+                {
+                    Id = comandaId,
+                    RestauranteId = 99
+                });
+
+            await Assert.ThrowsAsync<KeyNotFoundException>(() => CrearCasoDeUso().EjecutarAsync(comandaId, restauranteId));
         }
 
         [Fact]
@@ -168,33 +107,16 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
             int comandaId = 1;
             int restauranteId = 1;
 
-            var comanda = new DOM.Comanda
-            {
-                Id = comandaId,
-                RestauranteId = restauranteId,
-                MesaId = 1,
-                MozoId = 1,
-                Estado = EstadoComanda.Finalizada
-            };
-
-            var llamadoCreado = new DOM.Llamado
-            {
-                Id = 1,
-                MozoId = 1,
-                MesaId = 1,
-                CategoriaLlamadoId = 7
-            };
-
             _comandaMockRepo
                 .Setup(r => r.ObtenerComandaPorIdAsync(comandaId))
-                .ReturnsAsync(comanda);
+                .ReturnsAsync(new DOM.Comanda
+                {
+                    Id = comandaId,
+                    RestauranteId = restauranteId,
+                    Estado = EstadoComanda.Finalizada
+                });
 
-            var casoDeUso = new SolicitarPagoEfectivoCasoDeUso(
-                _comandaMockRepo.Object,
-                _llamadoMockRepo.Object,
-                _llamadoNotificadorMockRepo.Object);
-
-            await Assert.ThrowsAsync<ArgumentException>(() => casoDeUso.EjecutarAsync(comandaId, restauranteId));
+            await Assert.ThrowsAsync<ArgumentException>(() => CrearCasoDeUso().EjecutarAsync(comandaId, restauranteId));
         }
     }
 }
