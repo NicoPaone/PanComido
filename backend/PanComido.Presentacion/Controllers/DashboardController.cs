@@ -59,7 +59,7 @@ namespace PanComido.Presentacion.Controllers
 
             var resumen = await obtenerResumenOperativoCasoDeUso.EjecutarAsync(restauranteId, desde, hasta);
 
-            var respuestaDto = PanComido.Presentacion.Mappers.Dashboard.ResumenOperativoMapper.ParaDto(resumen);
+            var respuestaDto = Presentacion.Mappers.Dashboard.ResumenOperativoMapper.ParaDto(resumen);
 
             return Ok(respuestaDto);
         }
