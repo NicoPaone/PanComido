@@ -39,9 +39,7 @@ namespace PanComido.Presentacion.Controllers
         public async Task<ActionResult<LlamadoResponseDto>> CrearLlamado([FromBody] LlamarMozoRequestDto request)
         {
            
-            var llamadoGuardado = await _llamarMozoCasoDeUSo.EjecutarAsync(
-               request.restauranteId, 
-                request.MesaId, request.CategoriaLlamadoId, request.Descripcion);
+            var llamadoGuardado = await _llamarMozoCasoDeUSo.EjecutarAsync(request.restauranteId, request.MesaId, request.CategoriaLlamadoId, request.Descripcion);
 
             var dto = _llamadoMapper.aDto(llamadoGuardado);
             return StatusCode(201, dto);
