@@ -11,6 +11,7 @@ namespace PanComido.Dominio.Entidades
     {
         public int Id { get; set; }
         public int MesaId { get; set; }
+        public int NumeroDeMesa { get; set; }
         public int RestauranteId { get; set; }
         //public int? PagoID { get; set; }
         public int CantComensales { get; set; }

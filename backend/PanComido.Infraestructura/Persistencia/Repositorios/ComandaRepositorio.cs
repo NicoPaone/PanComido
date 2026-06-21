@@ -82,6 +82,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                       .ThenInclude(ex => ex.Ingrediente)
                        .ThenInclude(i => i.IdInsumoNavigation)
                            .ThenInclude(ins => ins.IdArticuloNavigation)
+               .Include(c => c.Mesa)
                .Where(c => c.RestauranteId == restauranteId)
                .Where(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada
                            && c.EstadoComandaId != (int)EstadoComanda.Abierta)

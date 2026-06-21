@@ -17,6 +17,7 @@ namespace PanComido.Presentacion.Mappers
             {
                 Id = comanda.Id,
                 MesaId = comanda.MesaId,
+                NumeroDeMesa = comanda.NumeroDeMesa,
                 CantComensales = comanda.CantComensales,
                 Estado = comanda.Estado.ToString(),
                 HoraInicio = comanda.HoraInicio.ToString("dd/MM/yyyy HH:mm"),
@@ -117,13 +118,7 @@ namespace PanComido.Presentacion.Mappers
                 IdMesa = datosDominio.Mesa.Id,
                 NumeroMesa = datosDominio.Mesa.Numero,
                 CantComensales = datosDominio.CantComensales,
-                RestauranteId = datosDominio.RestauranteDatos.Id,
-                NombreRestaurante = datosDominio.RestauranteDatos.Nombre,
-                LogoUrl = datosDominio.RestauranteDatos.Imagen,
-                ColorPrincipal = datosDominio.RestauranteDatos.ColorPrincipal,
-                ColorSecundario = datosDominio.RestauranteDatos.ColorSecundario,
-                TipografiaTitulo = datosDominio.RestauranteDatos.FamiliaTipografica.TipografiaTitulo,
-                TipografiaCuerpo = datosDominio.RestauranteDatos.FamiliaTipografica.TipografiaCuerpo
+                RestauranteId = datosDominio.RestauranteId
             };
         }
     }

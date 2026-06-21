@@ -38,6 +38,12 @@ namespace PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso
                 _logger.LogInformation("Imagen subida a Cloudinary. RestauranteId: {RestauranteId}, NombreImagen: {NombreImagen}", restauranteId, nombreImagen);
                 restauranteDatos.Imagen = urlImagen;
             }
+         else
+         {
+            //evitar que se setee a null la img al actualizar otro dato
+            var datosExistentes = await _restauranteRepositorio.ObtenerDatosDelLocalAsync(restauranteId);
+            restauranteDatos.Imagen = datosExistentes.Imagen;
+         }
 
             await _restauranteRepositorio.ActualizarDatosDelLocalAsync(restauranteId, restauranteDatos);
             _logger.LogInformation("Datos del local actualizados. RestauranteId: {RestauranteId}", restauranteId);

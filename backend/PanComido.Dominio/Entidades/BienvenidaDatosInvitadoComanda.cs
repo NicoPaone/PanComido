@@ -11,6 +11,6 @@ namespace PanComido.Dominio.Entidades
         public int IdComanda { get; set; }
         public int CantComensales { get; set; }
         public MesaConPosiciones Mesa { get; set; }
-        public Restaurante RestauranteDatos { get; set; }
+        public int RestauranteId { get; set; }
     }
 }

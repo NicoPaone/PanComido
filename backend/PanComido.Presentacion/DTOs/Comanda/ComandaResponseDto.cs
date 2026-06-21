@@ -6,6 +6,8 @@ namespace PanComido.Presentacion.DTOs.Comanda
     {
         public int Id { get; set; }
         public int MesaId { get; set; }
+
+        public int NumeroDeMesa {  get; set; }
         public int CantComensales { get; set; }
         public string Estado { get; set; }
         public string HoraInicio { get; set; }

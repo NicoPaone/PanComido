@@ -35,6 +35,11 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 MozoId = efComanda.Mesa?.Mozos.FirstOrDefault()?.IdEmpleado
             };
 
+            if(efComanda.Mesa != null)
+            {
+                comandaDominio.NumeroDeMesa = efComanda.Mesa.Numero;
+            }
+
             if (efComanda.ArticuloComanda != null)
             {
                 foreach (var relacion in efComanda.ArticuloComanda)
