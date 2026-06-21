@@ -9,6 +9,6 @@ namespace PanComido.Dominio.Entidades
     public class BienvenidaMesaDatos
     {
         public MesaConPosiciones Mesa { get; set; }
-        public Restaurante RestauranteDatos { get; set; }
+        public int RestauranteId { get; set; }
     }
 }

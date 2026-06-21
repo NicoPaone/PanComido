@@ -5,6 +5,6 @@
         public int ArticuloId { get; set; }
         public int Cantidad { get; set; }
         public string? ObservacionesGenerales { get; set; } // texto libre
-        public List<int> IdIngredientesPersonalizadosSacados { get; set; }
+        public List<int>? IdIngredientesPersonalizadosSacados { get; set; }
     }
 }
