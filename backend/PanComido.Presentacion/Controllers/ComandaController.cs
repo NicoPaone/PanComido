@@ -61,7 +61,7 @@ namespace PanComido.Presentacion.Controllers
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<ComandaResponseDto>>> ObtenerComandasActivas()
         {
-            int restauranteId = 1;
+            int restauranteId = HttpContext.ObtenerRestauranteId();
             var comandas = await _listarComandasActivasCocinaCasoDeUso.Ejecutar(restauranteId);
             var comandasDto = _mapper.ComandaResponseDtoList(comandas);
             return Ok(comandasDto);
@@ -101,7 +101,6 @@ namespace PanComido.Presentacion.Controllers
         public async Task<IActionResult> ObtenerBienvenidaInvitado(int comandaId)
         {
             BienvenidaDatosInvitadoComanda datosDominio = await _obtenerDatosInvitadoBienvenidaAComandaCasoDeUso.EjecutarAsync(comandaId);
-
             return Ok(_mapper.aInvitadoBienvenidaComandaDto(datosDominio));
         }
 
@@ -141,13 +140,8 @@ namespace PanComido.Presentacion.Controllers
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> LlamarMozo(int id)
         {
-            // Sacamos el ID del restaurante del token del usuario logueado
-            // var restauranteId = HttpContext.ObtenerRestauranteId();
-            var restauranteId = 1;
-            // Ejecutamos la lógica de negocio
+            var restauranteId = HttpContext.ObtenerRestauranteId();
             await _llamarMozoCasoDeUso.EjecutarAsync(restauranteId, id);
-
-            // Devolvemos el 200 OK
             return Ok(new { mensaje = "Notificación enviada al mozo exitosamente." });
         }
 
