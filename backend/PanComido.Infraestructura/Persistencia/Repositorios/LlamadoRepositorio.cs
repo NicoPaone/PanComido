@@ -31,6 +31,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             var completo = await _ctx.Llamados
                 .AsNoTracking()
                 .Include(l => l.CategoriaLlamado)
+                .Include(l => l.Mesa)
                 .Include(l => l.Mozo)
                     .ThenInclude(m => m.Mesas)
                 .FirstAsync(l => l.Id == efLlamado.Id);

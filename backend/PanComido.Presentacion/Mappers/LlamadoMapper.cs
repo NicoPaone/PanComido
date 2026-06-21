@@ -13,6 +13,7 @@ namespace PanComido.Presentacion.Mappers
                 Id = llamado.Id,
                 MozoId = llamado.MozoId,
                 MesaId = llamado.MesaId,
+                NumeroDeMesa = llamado.NumeroDeMesa,
                 CategoriaLlamadoId = llamado.CategoriaLlamadoId,
                 CategoriaDescripcion = llamado.CategoriaDescripcion,
                 Descripcion = llamado.Descripcion,

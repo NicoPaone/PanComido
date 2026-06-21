@@ -55,6 +55,7 @@ namespace PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso
             {
                 MozoId = mozoId,
                 MesaId = mesaId,
+                NumeroDeMesa = mesaObtenidaId.Numero,
                 CategoriaLlamadoId = categoriaLlamadoId,
                 Descripcion = descripcion,
                 Resuelto = false
