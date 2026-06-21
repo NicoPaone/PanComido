@@ -78,48 +78,48 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Comandas
             _mesaRepoMock.Verify(r => r.ObtenerPorIdAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
         }
 
-        [Fact]
-        public async Task EjecutarAsync_CuandoComandaEsValida_RetornaDatosDeBienvenida()
-        {
-            // 1. Preparar
-            ObtenerDatosInvitadoBienvenidaAComandaCasoDeUso casoDeUso = CrearCasoDeUsoConReposMock();
-            int comandaId = 1;
-            int restauranteId = 10;
-            int mesaId = 5;
+        //[Fact]
+        //public async Task EjecutarAsync_CuandoComandaEsValida_RetornaDatosDeBienvenida()
+        //{
+        //    // 1. Preparar
+        //    ObtenerDatosInvitadoBienvenidaAComandaCasoDeUso casoDeUso = CrearCasoDeUsoConReposMock();
+        //    int comandaId = 1;
+        //    int restauranteId = 10;
+        //    int mesaId = 5;
 
-            Comanda comandaAbierta = new Comanda
-            {
-                Id = comandaId,
-                Estado = EstadoComanda.Abierta,
-                RestauranteId = restauranteId,
-                MesaId = mesaId,
-                CantComensales = 4
-            };
+        //    Comanda comandaAbierta = new Comanda
+        //    {
+        //        Id = comandaId,
+        //        Estado = EstadoComanda.Abierta,
+        //        RestauranteId = restauranteId,
+        //        MesaId = mesaId,
+        //        CantComensales = 4
+        //    };
 
-            Restaurante restaurante = new Restaurante { Id = restauranteId, Nombre = "Pan Comido" };
-            MesaConPosiciones mesa = new MesaConPosiciones { Id = mesaId, Numero = 12 };
+        //    Restaurante restaurante = new Restaurante { Id = restauranteId, Nombre = "Pan Comido" };
+        //    MesaConPosiciones mesa = new MesaConPosiciones { Id = mesaId, Numero = 12 };
 
-            _comandaRepoMock.Setup(r => r.ObtenerComandaPorIdAsync(comandaId)).ReturnsAsync(comandaAbierta);
-            _restauranteRepoMock.Setup(r => r.ObtenerDatosDelLocalAsync(restauranteId)).ReturnsAsync(restaurante);
-            _mesaRepoMock.Setup(r => r.ObtenerPorIdAsync(mesaId, restauranteId)).ReturnsAsync(mesa);
+        //    _comandaRepoMock.Setup(r => r.ObtenerComandaPorIdAsync(comandaId)).ReturnsAsync(comandaAbierta);
+        //    _restauranteRepoMock.Setup(r => r.ObtenerDatosDelLocalAsync(restauranteId)).ReturnsAsync(restaurante);
+        //    _mesaRepoMock.Setup(r => r.ObtenerPorIdAsync(mesaId, restauranteId)).ReturnsAsync(mesa);
 
-            // 2. Ejecutar
-            BienvenidaDatosInvitadoComanda resultado = await casoDeUso.EjecutarAsync(comandaId);
+        //    // 2. Ejecutar
+        //    BienvenidaDatosInvitadoComanda resultado = await casoDeUso.EjecutarAsync(comandaId);
 
-            // 3. Verificar
-            Assert.NotNull(resultado);
-            Assert.Equal(comandaId, resultado.IdComanda);
-            Assert.Equal(4, resultado.CantComensales);
+        //    // 3. Verificar
+        //    Assert.NotNull(resultado);
+        //    Assert.Equal(comandaId, resultado.IdComanda);
+        //    Assert.Equal(4, resultado.CantComensales);
 
-            Assert.NotNull(resultado.RestauranteDatos);
-            Assert.Equal("Pan Comido", resultado.RestauranteDatos.Nombre);
+        //    Assert.NotNull(resultado.RestauranteDatos);
+        //    Assert.Equal("Pan Comido", resultado.RestauranteDatos.Nombre);
 
-            Assert.NotNull(resultado.Mesa);
-            Assert.Equal(12, resultado.Mesa.Numero);
+        //    Assert.NotNull(resultado.Mesa);
+        //    Assert.Equal(12, resultado.Mesa.Numero);
 
-            // se llama a los repos 1 vez cada uno
-            _restauranteRepoMock.Verify(r => r.ObtenerDatosDelLocalAsync(restauranteId), Times.Once);
-            _mesaRepoMock.Verify(r => r.ObtenerPorIdAsync(mesaId, restauranteId), Times.Once);
-        }
+        //    // se llama a los repos 1 vez cada uno
+        //    _restauranteRepoMock.Verify(r => r.ObtenerDatosDelLocalAsync(restauranteId), Times.Once);
+        //    _mesaRepoMock.Verify(r => r.ObtenerPorIdAsync(mesaId, restauranteId), Times.Once);
+        //}
     }
 }

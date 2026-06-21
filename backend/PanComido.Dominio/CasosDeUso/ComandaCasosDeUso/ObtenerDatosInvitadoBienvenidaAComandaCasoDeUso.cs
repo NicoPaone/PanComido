@@ -47,7 +47,6 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
             }
                 
 
-            Restaurante restaurante = await _restauranteRepositorio.ObtenerDatosDelLocalAsync(comanda.RestauranteId);
             MesaConPosiciones mesa = await _mesaRepositorio.ObtenerPorIdAsync(comanda.MesaId, comanda.RestauranteId);
 
             return new BienvenidaDatosInvitadoComanda
@@ -55,7 +54,7 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
                 IdComanda = comanda.Id,
                 CantComensales = comanda.CantComensales,
                 Mesa = mesa,
-                RestauranteDatos = restaurante
+                RestauranteId = comanda.RestauranteId
             };
         }
     }

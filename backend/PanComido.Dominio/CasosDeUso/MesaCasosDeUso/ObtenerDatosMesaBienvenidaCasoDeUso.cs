@@ -57,7 +57,7 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
             return new BienvenidaMesaDatos
             {
                 Mesa = mesa,
-                RestauranteDatos = restauranteDatos
+                RestauranteId = restauranteId
             };
         }
     }

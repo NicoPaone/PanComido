@@ -13,13 +13,7 @@ namespace PanComido.Presentacion.Mappers
                     NumeroMesa = datosBienvenidaDominio.Mesa.Numero,
                     CantidadMaximaComensales = datosBienvenidaDominio.Mesa.CantPersonasMax,
                     EstadoActual = datosBienvenidaDominio.Mesa.EstadoMesa.ToString(),
-                    RestauranteId = datosBienvenidaDominio.RestauranteDatos.Id,
-                    NombreRestaurante = datosBienvenidaDominio.RestauranteDatos.Nombre,
-                    LogoUrl = datosBienvenidaDominio.RestauranteDatos.Imagen,
-                    ColorPrincipal = datosBienvenidaDominio.RestauranteDatos.ColorPrincipal,
-                    ColorSecundario = datosBienvenidaDominio.RestauranteDatos.ColorSecundario,
-                    TipografiaTitulo = datosBienvenidaDominio.RestauranteDatos.FamiliaTipografica.TipografiaTitulo,
-                    TipografiaCuerpo = datosBienvenidaDominio.RestauranteDatos.FamiliaTipografica.TipografiaCuerpo
+                    RestauranteId = datosBienvenidaDominio.RestauranteId
                 };
         }
     }
