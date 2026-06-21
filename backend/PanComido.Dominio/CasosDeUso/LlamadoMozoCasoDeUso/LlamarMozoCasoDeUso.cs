@@ -50,11 +50,12 @@ namespace PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso
                 throw new KeyNotFoundException("No se encontro la mesa.");
             }
 
-
+            //pasarlo a un servicio, en el pago se hace uno similar, agregar enum de categoria llamado
             var llamado = new DOM.Llamado
             {
                 MozoId = mozoId,
                 MesaId = mesaId,
+                NumeroDeMesa = mesaObtenidaId.Numero,
                 CategoriaLlamadoId = categoriaLlamadoId,
                 Descripcion = descripcion,
                 Resuelto = false

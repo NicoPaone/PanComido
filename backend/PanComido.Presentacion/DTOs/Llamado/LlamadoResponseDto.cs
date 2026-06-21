@@ -5,6 +5,7 @@
         public int Id { get; set; }
         public int? MozoId { get; set; }
         public int? MesaId { get; set; }
+        public int? NumeroDeMesa { get; set; }
         public int CategoriaLlamadoId { get; set; }
         public string CategoriaDescripcion { get; set; }
         public string Descripcion { get; set; }

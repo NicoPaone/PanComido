@@ -25,11 +25,18 @@ namespace PanComido.Presentacion.Servicios
                 {
                     Id = comanda.Id,
                     MesaId = comanda.MesaId,
+                    NumeroDeMesa = comanda.NumeroDeMesa,
                     RestauranteId = comanda.RestauranteId,
                     Estado = comanda.Estado,
                     CantComensales = comanda.CantComensales,
                     HoraInicio = comanda.HoraInicio,
                     HoraFin = comanda.HoraFin,
+                    TiempoEstimadoTotal = comanda.Items
+                    .Select(i => i.Articulo)
+                    .OfType<Plato>()
+                    .Select(plato => plato.TiempoPreparacionBase)
+                    .DefaultIfEmpty(0)
+                    .Max(),
                     HoraUltimoCambioEstado = comanda.HoraUltimoCambioEstado,
                     Items = platos
                 };

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
 
@@ -27,13 +28,22 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
 
         public async Task<Comanda?> EjecutarAsync(int comandaId, int estadoId)
         {
-            var resultado = await _comandaRepositorio.ModificarEstadoComandaAsync(comandaId, estadoId);
-            if (resultado == null) throw new KeyNotFoundException("No se encontró una comanda activa para esa mesa.");
             Comanda comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
-            var mozoId = await _mesaRepositorio.ObtenerMozoIdsPorMesaAsync(comanda.MesaId);
-            await _comandaNotificador.NotificarEstadoModificadoAsync(comanda, mozoId);
 
-            return comanda;
+            if (comanda.Estado == EstadoComanda.Finalizada || comanda.Estado == EstadoComanda.Abierta) throw new ArgumentException("La comanda se encuentra en un estado que no puede ser cambiado desde esta acción");
+            if (estadoId == (int)EstadoComanda.EnPreparacion && comanda.Estado != EstadoComanda.Nueva) throw new ArgumentException("La comanda se encuentra en un estado en el que no puede pasar a 'En preparación'");
+
+
+            Comanda resultado = await _comandaRepositorio.ModificarEstadoComandaAsync(comandaId, estadoId);
+
+            Comanda comandaModificada = await _comandaRepositorio.ObtenerComandaPorIdAsync(resultado.Id);
+            if (comandaModificada == null) throw new KeyNotFoundException("No se encontró una comanda activa para esa mesa.");
+            var mozoId = await _mesaRepositorio.ObtenerMozoIdsPorMesaAsync(comandaModificada.MesaId);
+            await _comandaNotificador.NotificarEstadoModificadoAsync(comandaModificada, mozoId);
+
+            comandaModificada.Items = comandaModificada.Items.Where(i => i.Articulo is Plato).ToList();
+
+            return comandaModificada;
         }
     }
 }

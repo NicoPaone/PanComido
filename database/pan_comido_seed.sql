@@ -25,7 +25,7 @@ INSERT INTO restriccion (descripcion) VALUES
     ('Vegano'), ('Vegetariano'), ('Sin TACC');
 
 INSERT INTO categoria_llamado (descripcion) VALUES
-    ('Hielo'), ('Sal'), ('General'), ('Servilleta'), ('Condimentos'), ('Panera'), ('Pago');
+    ('Hielo'), ('Sal'), ('General'), ('Servilleta'), ('Condimentos'), ('Panera'), ('Pago'), ('Cocina'), ('Gerente');
 
 INSERT INTO configuracion_articulo (descripcion) VALUES
     ('Es vendible'), ('Visible en carta');
