@@ -17,6 +17,7 @@ namespace PanComido.Presentacion.Mappers
             {
                 Id = comanda.Id,
                 MesaId = comanda.MesaId,
+                NumeroDeMesa = comanda.NumeroDeMesa,
                 CantComensales = comanda.CantComensales,
                 Estado = comanda.Estado.ToString(),
                 HoraInicio = comanda.HoraInicio.ToString("dd/MM/yyyy HH:mm"),
