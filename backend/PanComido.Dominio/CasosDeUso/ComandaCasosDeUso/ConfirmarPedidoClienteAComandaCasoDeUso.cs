@@ -113,7 +113,7 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
                 comanda.Items.Add(item);
             }
             
-            if (comanda.Estado != EstadoComanda.EnPreparacion)
+            if (comanda.Estado != EstadoComanda.EnPreparacion && comanda.Estado != EstadoComanda.Nueva)
             {
                 comanda.Estado = EstadoComanda.Nueva;
                 comanda.HoraUltimoCambioEstado = DateTime.Now;
