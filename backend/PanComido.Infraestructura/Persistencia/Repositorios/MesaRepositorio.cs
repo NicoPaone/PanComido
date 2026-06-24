@@ -22,7 +22,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         private IQueryable<EF.Mesa> BaseQuery(int restauranteId)
         {
             return _ctx.Mesas
-               .Where(m => m.Grilla.RestauranteId == restauranteId);
+               .Where(m => m.Grilla.RestauranteId == restauranteId && m.Activo);
         }
         public async Task<DOM.MesaConPosiciones?> ObtenerPorIdAsync(int id, int restauranteId)
         {
@@ -222,7 +222,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             var idsRecibidos = mesasActualizar.Select(m => m.Id).ToList();
 
             var idsMesasParaEliminar = await _ctx.Mesas
-                .Where(m => m.Grilla.RestauranteId == restauranteId && !idsRecibidos.Contains(m.Id))
+                .Where(m => m.Grilla.RestauranteId == restauranteId && !idsRecibidos.Contains(m.Id) && m.Activo)
                 .Select(m => m.Id)
                 .ToListAsync();
 
@@ -238,11 +238,25 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     throw new InvalidOperationException("No se puede guardar el mapa: se intentó eliminar una mesa que tiene una comanda activa.");
                 }
 
+                var tieneMozosAsignados = await _ctx.Mesas
+                    .Where(m => idsMesasParaEliminar.Contains(m.Id))
+                    .AnyAsync(m => m.Mozos.Any());
+
+                if (tieneMozosAsignados)
+                {
+                    throw new InvalidOperationException("No se puede guardar el mapa: se intentó eliminar una mesa que tiene mozos asignados. Desasigná a los mozos antes de eliminarla.");
+                }
+
                 var mesasParaEliminar = await _ctx.Mesas
                     .Where(m => idsMesasParaEliminar.Contains(m.Id))
                     .ToListAsync();
 
-                _ctx.Mesas.RemoveRange(mesasParaEliminar);
+                foreach(var mesaParaEliminar in mesasParaEliminar)
+                {
+                    mesaParaEliminar.Activo = false;
+                }
+                
+                _ctx.Mesas.UpdateRange(mesasParaEliminar);
             }
 
             await _ctx.SaveChangesAsync();
