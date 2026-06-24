@@ -233,6 +233,7 @@ CREATE TABLE mesa (
     posicion_y_inicio   INTEGER NOT NULL,
     posicion_y_fin      INTEGER NOT NULL,
     numero              INTEGER NOT NULL,
+    activo              BOOLEAN NOT NULL DEFAULT TRUE,
     codigo_invitacion   TEXT,
     cant_personas_max   INTEGER NOT NULL,
     tipo_elemento       INTEGER NOT NULL DEFAULT 1,
