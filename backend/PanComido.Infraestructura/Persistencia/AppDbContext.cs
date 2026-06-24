@@ -465,6 +465,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("mesa_pkey");
 
+            entity.Property(e => e.Activo).HasDefaultValue(true);
             entity.Property(e => e.TipoElemento).HasDefaultValue(1);
 
             entity.HasOne(d => d.DimensionMesa).WithMany(p => p.Mesas)

@@ -18,7 +18,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 Id = efLlamado.Id,
                 MozoId = efLlamado.MozoId,
                 MesaId = efLlamado.MesaId,
-                NumeroDeMesa = efLlamado.Mesa.Numero,
+                NumeroDeMesa = efLlamado.Mesa?.Numero,
                 GerenteId = efLlamado.GerenteId,
                 CategoriaLlamadoId = efLlamado.CategoriaLlamadoId,
                 CategoriaDescripcion = efLlamado.CategoriaLlamado.Descripcion,
