@@ -114,6 +114,10 @@ namespace PanComido.Presentacion.Controllers
         {
             var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, idMesa, request.CantidadComensales.Value);
 
+                var mesaDto = _mapper.aDto(mesaConPosiciones);
+                await _hubContext.Clients.Group($"Gerente_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
+                await _hubContext.Clients.Group($"Mozos_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
+
                 return StatusCode(201,
                     new OcuparMesaComensalResponseDto
                     {
@@ -134,10 +138,14 @@ namespace PanComido.Presentacion.Controllers
 
             var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, idMesa, request.CantidadComensales.Value);
 
+                var mesaDto = _mapper.aDto(mesaConPosiciones);
+                await _hubContext.Clients.Group($"Gerente_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
+                await _hubContext.Clients.Group($"Mozos_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
+
                 return StatusCode(201,
                     new OcuparMesaResponseDto
                     {
-                        Mesa = _mapper.aDto(mesaConPosiciones),
+                        Mesa = mesaDto,
                         IdComandaGenerada = mesaConPosiciones.idComanda.Value
                     });
             }
@@ -172,6 +180,15 @@ namespace PanComido.Presentacion.Controllers
 
                 await _asignarMozosMesaCasoDeUso.EjecutarAsync(restauranteId, id, mozosIds);
 
+                var mesas = await _listarMesas.EjecutarAsync(restauranteId);
+                var mesaActualizada = mesas.FirstOrDefault(m => m.Id == id);
+                if (mesaActualizada != null)
+                {
+                    var mesaDto = _mapper.aDto(mesaActualizada);
+                    await _hubContext.Clients.Group($"Gerente_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
+                    await _hubContext.Clients.Group($"Mozos_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
+                }
+
                 return Ok(new { mensaje = "Mozos asignados correctamente." });
             }
 
@@ -182,6 +199,15 @@ namespace PanComido.Presentacion.Controllers
                 int restauranteId = HttpContext.ObtenerRestauranteId();
 
                 await _desasignarMozoMesaCasoDeUso.EjecutarAsync(restauranteId, id, mozoId);
+
+                var mesas = await _listarMesas.EjecutarAsync(restauranteId);
+                var mesaActualizada = mesas.FirstOrDefault(m => m.Id == id);
+                if (mesaActualizada != null)
+                {
+                    var mesaDto = _mapper.aDto(mesaActualizada);
+                    await _hubContext.Clients.Group($"Gerente_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
+                    await _hubContext.Clients.Group($"Mozos_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
+                }
 
                 return Ok(new { mensaje = "Mozo desasignado correctamente." });
             }

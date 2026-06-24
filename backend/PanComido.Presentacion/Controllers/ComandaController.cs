@@ -24,6 +24,7 @@ namespace PanComido.Presentacion.Controllers
         private readonly MarcarItemsEntregadosCasoDeUso _marcarItemsEntregadosCasoDeUso;
         private readonly LlamarMozoComandaCasoDeUso _llamarMozoCasoDeUso;
         private readonly ObtenerDatosInvitadoBienvenidaAComandaCasoDeUso _obtenerDatosInvitadoBienvenidaAComandaCasoDeUso;
+        private readonly ObtenerComandaActivaPorMesaCasoDeUso _obtenerComandaActivaPorMesaCasoDeUso;
 
         private readonly IComandaRepositorio _comandaRepositorio;
 
@@ -38,6 +39,7 @@ namespace PanComido.Presentacion.Controllers
             MarcarItemsEntregadosCasoDeUso marcarItemsEntregadosCasoDeUso,
             LlamarMozoComandaCasoDeUso llamarMozoCasoDeUso,
             ObtenerDatosInvitadoBienvenidaAComandaCasoDeUso obtenerDatosInvitadoBienvenidaAComandaCasoDeUso,
+            ObtenerComandaActivaPorMesaCasoDeUso obtenerComandaActivaPorMesaCasoDeUso,
             ComandaMapper mapper,
             IComandaRepositorio comandaRepositorio)
         {
@@ -48,6 +50,7 @@ namespace PanComido.Presentacion.Controllers
             _modificarEstadoComandaCasoDeUso = modificar;
             _marcarItemsEntregadosCasoDeUso = marcarItemsEntregadosCasoDeUso;
             _obtenerDatosInvitadoBienvenidaAComandaCasoDeUso = obtenerDatosInvitadoBienvenidaAComandaCasoDeUso;
+            _obtenerComandaActivaPorMesaCasoDeUso = obtenerComandaActivaPorMesaCasoDeUso;
             _comandaRepositorio = comandaRepositorio;
 
             _mapper = mapper;
@@ -65,7 +68,22 @@ namespace PanComido.Presentacion.Controllers
             var comandas = await _listarComandasActivasCocinaCasoDeUso.Ejecutar(restauranteId);
             var comandasDto = _mapper.ComandaResponseDtoList(comandas);
             return Ok(comandasDto);
+        }
 
+        [HttpGet("mesa/{mesaId}/activa")]
+        [Authorize(Roles = "Gerente, Mozo")]
+        [ProducesResponseType(typeof(ComandaResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<ComandaResponseDto>> ObtenerComandaActivaPorMesa(int mesaId)
+        {
+            var comanda = await _obtenerComandaActivaPorMesaCasoDeUso.EjecutarAsync(mesaId);
+            if (comanda == null)
+            {
+                return NotFound(new { mensaje = $"No se encontró una comanda activa para la mesa {mesaId}." });
+            }
+            var comandaDto = _mapper.ComandaResponseDto(comanda);
+            return Ok(comandaDto);
         }
         [HttpPut("activas/{comandaId}/{estadoId}")]
         [Authorize(Roles = "Cocina")]

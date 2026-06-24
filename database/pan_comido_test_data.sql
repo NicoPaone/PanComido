@@ -88,11 +88,11 @@ INSERT INTO grilla (id, restaurante_id, cant_columnas, cant_filas) VALUES
 
 INSERT INTO mesa (id, grilla_id, estado_mesa_id, dimension_mesa_id, posicion_x_inicio, posicion_x_fin, posicion_y_inicio, posicion_y_fin, numero, codigo_invitacion, cant_personas_max) VALUES
     (1,  1, 1, 1, 30,   120,  30,  120,  1,  NULL, 4),
-    (2,  1, 3, 1, 30,   120,  165, 255,  2,  NULL, 4),
+    (2,  1, 1, 1, 30,   120,  165, 255,  2,  NULL, 4),
     (3,  1, 2, 1, 30,   120,  300, 390,  3,  NULL, 4),
     (4,  1, 2, 1, 30,   120,  435, 525,  4,  NULL, 4),
-    (5,  1, 3, 1, 30,   120,  570, 660,  5,  NULL, 4),
-    (6,  1, 3, 1, 165,  255,  30,  120,  6,  NULL, 4),
+    (5,  1, 1, 1, 30,   120,  570, 660,  5,  NULL, 4),
+    (6,  1, 1, 1, 165,  255,  30,  120,  6,  NULL, 4),
     (7,  1, 1, 1, 165,  255,  165, 255,  7,  NULL, 4),
     (8,  1, 1, 1, 165,  255,  300, 390,  8,  NULL, 4),
     (9,  1, 1, 1, 165,  255,  435, 525,  9,  NULL, 4),

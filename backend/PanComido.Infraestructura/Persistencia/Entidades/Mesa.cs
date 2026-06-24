@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -51,6 +51,9 @@ public partial class Mesa
 
     [Column("texto_objeto")]
     public string? TextoObjeto { get; set; }
+
+    [Column("activo")]
+    public bool Activo { get; set; } = true;
 
     [InverseProperty("Mesa")]
     public virtual ICollection<Comandum> Comanda { get; set; } = new List<Comandum>();

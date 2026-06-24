@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Presentacion.DTOs.Articulo;
 using PanComido.Presentacion.DTOs.Cliente;
@@ -45,6 +45,7 @@ namespace PanComido.Presentacion.Mappers
                     {
                         Id = ac.Articulo.Id,
                         Nombre = ac.Articulo.Nombre,
+                        PrecioVentaFinal = ac.Articulo.PrecioVentaFinal
                     }
                 }).ToList()
             };
