@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.Dashboard;
+using PanComido.Presentacion.DTOs.Dashboard;
 using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.Mappers;
+using PanComido.Presentacion.Mappers.Dashboard;
 using PanComido.Presentacion.Sesion;
 using System;
 using System.Threading.Tasks;
@@ -69,6 +71,78 @@ namespace PanComido.Presentacion.Controllers
             var respuestaDto = Presentacion.Mappers.Dashboard.ResumenOperativoMapper.ParaDto(resumen);
 
             return Ok(respuestaDto);
+        }
+
+        [HttpGet("analisis-plato")]
+        [ProducesResponseType(typeof(PlatoAnalisisDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ObtenerAnalisisPlato(
+            [FromServices] ObtenerAnalisisPlatoCasoDeUso casoDeUso,
+            [FromServices] PlatoAnalisisMapper mapper,
+            [FromQuery] string nombre)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+            var resultado = await casoDeUso.EjecutarAsync(restauranteId, nombre);
+            if (resultado == null)
+            {
+                return NotFound("No se encontró el plato especificado.");
+            }
+            var dto = mapper.ParaDto(resultado);
+            return Ok(dto);
+        }
+
+        [HttpPost("analisis-plato/aplicar-descuento")]
+        [ProducesResponseType(typeof(AplicarDescuentoResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> AplicarDescuento(
+            [FromServices] AplicarDescuentoCasoDeUso casoDeUso,
+            [FromBody] AplicarDescuentoRequest request)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+            var resultado = await casoDeUso.EjecutarAsync(restauranteId, request.PlatoId, request.PorcentajeDescuento);
+            if (resultado == null)
+            {
+                return NotFound("Plato no encontrado.");
+            }
+            return Ok(new AplicarDescuentoResponse
+            {
+                Mensaje = resultado.Mensaje,
+                PlatoId = resultado.PlatoId,
+                PrecioNuevo = resultado.PrecioNuevo,
+                Costo = resultado.Costo,
+                MargenPctNuevo = resultado.MargenPctNuevo
+            });
+        }
+
+        [HttpPost("analisis-plato/agendar-recordatorio")]
+        [ProducesResponseType(typeof(AgendarRecordatorioResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> AgendarRecordatorio(
+            [FromServices] AgendarRecordatorioCasoDeUso casoDeUso,
+            [FromBody] AgendarRecordatorioRequest request)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+            var resultado = await casoDeUso.EjecutarAsync(restauranteId, request.PlatoId, request.AccionSugerida);
+            if (resultado == null)
+            {
+                return NotFound("Plato no encontrado.");
+            }
+            return Ok(new AgendarRecordatorioResponse
+            {
+                Mensaje = resultado.Mensaje,
+                AccionItem = new DashboardAccionItemDto
+                {
+                    Titulo = resultado.Titulo,
+                    Detalle = resultado.Detalle,
+                    Destino = resultado.Destino,
+                    Tono = resultado.Tono,
+                    Impacto = resultado.Impacto,
+                    Prioridad = resultado.Prioridad
+                }
+            });
         }
     }
 }

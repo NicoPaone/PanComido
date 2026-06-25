@@ -41,6 +41,7 @@ using PanComido.Presentacion;
 using PanComido.Presentacion.Filtros;
 using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
+using PanComido.Presentacion.Mappers.Dashboard;
 using PanComido.Presentacion.Servicios;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
@@ -166,6 +167,7 @@ builder.Services.AddScoped<RestauranteMapper>();
 builder.Services.AddScoped<TurnoLaboralMapper>();
 builder.Services.AddScoped<FilaVirtualMapper>();
 builder.Services.AddScoped<DashboardMapper>();
+builder.Services.AddScoped<PlatoAnalisisMapper>();
 builder.Services.AddScoped<FamiliaTipograficaMapper>();
 builder.Services.AddScoped<PorcentajesGananciaMapper>();
 builder.Services.AddScoped<ArticuloMapper>();
@@ -183,6 +185,7 @@ builder.Services.AddScoped<ICategoriaInsumoRepositorio, CategoriaInsumoRepositor
 builder.Services.AddScoped<IUnidadMedidaRepositorio, UnidadMedidaRepositorio>();
 builder.Services.AddScoped<IMesaRepositorio, MesaRepositorio>();
 builder.Services.AddScoped<IArticuloRepositorio, ArticuloRepositorio>();
+builder.Services.AddScoped<IPlatoAnalisisRepositorio, PlatoAnalisisRepositorio>();
 builder.Services.AddScoped<ILlamadoRepositorio, LlamadoRepositorio>();
 builder.Services.AddScoped<IMozoRepositorio, MozoRepositorio>();
 builder.Services.AddScoped<IFormularioPlatoRepositorio, FormularioPlatoRepositorio>();
@@ -245,9 +248,12 @@ builder.Services.AddScoped<ModificarProveedorCasoDeUso>();
 builder.Services.AddScoped<EliminarProveedorCasoDeuso>();
 builder.Services.AddScoped<ObtenerProveedorCasoDeUso>();
 builder.Services.AddScoped<ObtenerVencimientosYCriticidadDashboardCasoDeUso>();
-builder.Services.AddScoped<ObtenerRendimientoComercialCasoDeUso>();
-builder.Services.AddScoped<ObtenerResumenOperativoCasoDeUso>();
-builder.Services.AddScoped<ObtenerMetodosDePagoCasoDeUso>();
+        builder.Services.AddScoped<ObtenerRendimientoComercialCasoDeUso>();
+        builder.Services.AddScoped<ObtenerResumenOperativoCasoDeUso>();
+        builder.Services.AddScoped<ObtenerAnalisisPlatoCasoDeUso>();
+        builder.Services.AddScoped<AplicarDescuentoCasoDeUso>();
+        builder.Services.AddScoped<AgendarRecordatorioCasoDeUso>();
+        builder.Services.AddScoped<ObtenerMetodosDePagoCasoDeUso>();
 builder.Services.AddScoped<ActualizarMetodosDePagoCasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosDelLocalCasoDeUso>();
 builder.Services.AddScoped<ActualizarDatosDelLocalCasoDeUso>();
@@ -321,7 +327,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.UseExceptionHandler(o => { });
 
