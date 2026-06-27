@@ -31,6 +31,7 @@ namespace PanComido.Presentacion.DTOs.Dashboard
 
     public class DashboardAccionItemDto
     {
+        public int? Id { get; set; }
         public string Titulo { get; set; } = string.Empty;
         public string Detalle { get; set; } = string.Empty;
         public string Destino { get; set; } = "carta";

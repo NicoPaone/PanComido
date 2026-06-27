@@ -126,5 +126,34 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             await _ctx.Notificacions.AddAsync(notificacion);
             await _ctx.SaveChangesAsync();
         }
+
+        public async Task<List<DOM.Notificacion>> ObtenerRecordatoriosActivosAsync(int restauranteId)
+        {
+            var efNotificaciones = await _ctx.Notificacions
+                .Where(n => n.RestauranteId == restauranteId 
+                         && !n.Resuelta 
+                         && n.Descripcion.StartsWith("Revisión: "))
+                .ToListAsync();
+
+            return efNotificaciones.Select(n => new DOM.Notificacion
+            {
+                Id = n.Id,
+                RestauranteId = n.RestauranteId,
+                Fecha = n.Fecha,
+                Descripcion = n.Descripcion,
+                Resuelta = n.Resuelta
+            }).ToList();
+        }
+
+        public async Task ResolverNotificacionAsync(int restauranteId, int id)
+        {
+            var notificacion = await _ctx.Notificacions
+                .FirstOrDefaultAsync(n => n.RestauranteId == restauranteId && n.Id == id);
+            if (notificacion != null)
+            {
+                notificacion.Resuelta = true;
+                await _ctx.SaveChangesAsync();
+            }
+        }
     }
 }

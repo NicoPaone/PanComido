@@ -12,12 +12,17 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
     public class ObtenerResumenOperativoCasoDeUsoTest
     {
         private readonly Mock<IComandaRepositorio> _comandaRepoMock;
+        private readonly Mock<IPlatoAnalisisRepositorio> _platoAnalisisRepoMock;
         private readonly ObtenerResumenOperativoCasoDeUso _casoDeUso;
 
         public ObtenerResumenOperativoCasoDeUsoTest()
         {
             _comandaRepoMock = new Mock<IComandaRepositorio>();
-            _casoDeUso = new ObtenerResumenOperativoCasoDeUso(_comandaRepoMock.Object);
+            _platoAnalisisRepoMock = new Mock<IPlatoAnalisisRepositorio>();
+            _platoAnalisisRepoMock.Setup(r => r.ObtenerRecordatoriosActivosAsync(It.IsAny<int>()))
+                .ReturnsAsync(new List<Notificacion>());
+
+            _casoDeUso = new ObtenerResumenOperativoCasoDeUso(_comandaRepoMock.Object, _platoAnalisisRepoMock.Object);
         }
 
         [Fact]

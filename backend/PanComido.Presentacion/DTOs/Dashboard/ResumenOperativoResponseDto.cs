@@ -14,6 +14,7 @@ namespace PanComido.Presentacion.DTOs.Dashboard
         public string VariacionTicket { get; set; } = string.Empty;
 
         public List<VentaAgrupadaDto> Grafico { get; set; } = new List<VentaAgrupadaDto>();
+        public List<DashboardAccionItemDto> Recordatorios { get; set; } = new List<DashboardAccionItemDto>();
     }
 
     public class VentaAgrupadaDto

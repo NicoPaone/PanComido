@@ -9,10 +9,14 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
     public class ObtenerResumenOperativoCasoDeUso
     {
         private readonly IComandaRepositorio _comandaRepositorio;
+        private readonly IPlatoAnalisisRepositorio _platoAnalisisRepositorio;
 
-        public ObtenerResumenOperativoCasoDeUso(IComandaRepositorio comandaRepositorio)
+        public ObtenerResumenOperativoCasoDeUso(
+            IComandaRepositorio comandaRepositorio,
+            IPlatoAnalisisRepositorio platoAnalisisRepositorio)
         {
             _comandaRepositorio = comandaRepositorio;
+            _platoAnalisisRepositorio = platoAnalisisRepositorio;
         }
 
         public async Task<ResumenOperativo> EjecutarAsync(int restauranteId, DateTime desde, DateTime hasta)
@@ -50,6 +54,34 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
             int diasPeriodo = (int)Math.Ceiling(diferencia.TotalDays);
             int promedioDiarioPedidos = diasPeriodo > 0 ? totalesActuales.CantidadPedidos / diasPeriodo : totalesActuales.CantidadPedidos;
 
+            var recordatoriosActivos = await _platoAnalisisRepositorio.ObtenerRecordatoriosActivosAsync(restauranteId);
+            var listRecordatorios = new List<DashboardAccionItem>();
+
+            foreach (var item in recordatoriosActivos)
+            {
+                string desc = item.Descripcion;
+                string titulo = desc;
+                string detalle = "";
+                
+                int separatorIndex = desc.IndexOf(" - ");
+                if (separatorIndex >= 0)
+                {
+                    titulo = desc.Substring(0, separatorIndex);
+                    detalle = desc.Substring(separatorIndex + 3);
+                }
+
+                listRecordatorios.Add(new DashboardAccionItem
+                {
+                    Id = item.Id,
+                    Titulo = titulo,
+                    Detalle = detalle,
+                    Destino = "carta",
+                    Tono = "info",
+                    Impacto = "Reevaluar demanda",
+                    Prioridad = 4
+                });
+            }
+
             return new ResumenOperativo
             {
                 TotalVentas = totalesActuales.TotalFacturado,
@@ -61,7 +93,8 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                 VariacionPedidos = CalcularPorcentaje(totalesActuales.CantidadPedidos, totalesAnteriores.CantidadPedidos),
                 VariacionTicket = CalcularPorcentaje(ticketActual, ticketAnterior),
                 
-                Grafico = ventasAgrupadas
+                Grafico = ventasAgrupadas,
+                Recordatorios = listRecordatorios
             };
         }
 

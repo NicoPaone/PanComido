@@ -13,5 +13,7 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task<int> ObtenerVentasCategoriaEnRangoAsync(int restauranteId, int categoriaPlatoId, DateTime desde, DateTime hasta);
         Task<RendimientoPlato?> ObtenerPlatoLiderDeCategoriaAsync(int restauranteId, int categoriaPlatoId, DateTime desde, DateTime hasta);
         Task GuardarRecordatorioNotificacionAsync(int restauranteId, string descripcion);
+        Task<List<Notificacion>> ObtenerRecordatoriosActivosAsync(int restauranteId);
+        Task ResolverNotificacionAsync(int restauranteId, int id);
     }
 }

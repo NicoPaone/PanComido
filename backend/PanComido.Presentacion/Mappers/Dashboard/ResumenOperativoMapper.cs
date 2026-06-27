@@ -23,6 +23,17 @@ namespace PanComido.Presentacion.Mappers.Dashboard
                 {
                     Etiqueta = g.Etiqueta,
                     Total = $"$ {g.Total:N0}"
+                }).ToList(),
+
+                Recordatorios = dominio.Recordatorios.Select(r => new DashboardAccionItemDto
+                {
+                    Id = r.Id,
+                    Titulo = r.Titulo,
+                    Detalle = r.Detalle,
+                    Destino = r.Destino,
+                    Tono = r.Tono,
+                    Impacto = r.Impacto,
+                    Prioridad = r.Prioridad
                 }).ToList()
             };
         }

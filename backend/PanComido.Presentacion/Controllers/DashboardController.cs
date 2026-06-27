@@ -144,5 +144,17 @@ namespace PanComido.Presentacion.Controllers
                 }
             });
         }
+
+        [HttpPost("notificaciones/{id}/resolver")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ResolverNotificacion(
+            [FromServices] ResolverNotificacionCasoDeUso casoDeUso,
+            [FromRoute] int id)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+            await casoDeUso.EjecutarAsync(restauranteId, id);
+            return Ok();
+        }
     }
 }

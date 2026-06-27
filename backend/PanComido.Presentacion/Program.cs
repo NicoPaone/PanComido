@@ -253,6 +253,7 @@ builder.Services.AddScoped<ObtenerVencimientosYCriticidadDashboardCasoDeUso>();
         builder.Services.AddScoped<ObtenerAnalisisPlatoCasoDeUso>();
         builder.Services.AddScoped<AplicarDescuentoCasoDeUso>();
         builder.Services.AddScoped<AgendarRecordatorioCasoDeUso>();
+        builder.Services.AddScoped<ResolverNotificacionCasoDeUso>();
         builder.Services.AddScoped<ObtenerMetodosDePagoCasoDeUso>();
 builder.Services.AddScoped<ActualizarMetodosDePagoCasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosDelLocalCasoDeUso>();
