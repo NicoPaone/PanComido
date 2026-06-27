@@ -9,7 +9,7 @@ namespace PanComido.Dominio.Interfaces.Servicios
 {
     public interface ITiempoDePreparacionPlatoServicio
     {
-        int CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(int restauranteId);
-        int CalcularTiempoPreparacionDinamico(Plato plato);
+        Task<int> CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(int restauranteId);
+        Task<int> CalcularTiempoPreparacionDinamico(Plato plato);
     }
 }

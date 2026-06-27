@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Servicios;
@@ -22,7 +22,7 @@ namespace PanComido.Tests.Dominio.Servicios
         }
 
         [Fact]
-        public void CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas_Devuelve0_CuandoNoHayMesasOcupadas()
+        public async Task CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas_Devuelve0_CuandoNoHayMesasOcupadas()
         {
             // Preparar
             _mesaRepositorioMock.Setup(r => r.ObtenerTodasAsync(1))
@@ -39,14 +39,14 @@ namespace PanComido.Tests.Dominio.Servicios
                 .ReturnsAsync(new List<MesaConPosiciones>());
 
             // Ejecutar
-            var resultado = _servicio.CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(1);
+            var resultado = await _servicio.CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(1);
 
             // Verificar
             Assert.Equal(0, resultado);
         }
 
         [Fact]
-        public void CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas_Devuelve5_CuandoLaOcupacionEsMenorOIgualAl30Porciento()
+        public async Task CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas_Devuelve5_CuandoLaOcupacionEsMenorOIgualAl30Porciento()
         {
             // Preparar
             _mesaRepositorioMock.Setup(r => r.ObtenerTodasAsync(1))
@@ -68,14 +68,14 @@ namespace PanComido.Tests.Dominio.Servicios
                 });
 
             // Ejecutar
-            var resultado = _servicio.CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(1);
+            var resultado = await _servicio.CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(1);
 
             // Verificar
             Assert.Equal(5, resultado);
         }
 
         [Fact]
-        public void CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas_Devuelve10_CuandoLaOcupacionEsMenorOIgualAl50Porciento()
+        public async Task CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas_Devuelve10_CuandoLaOcupacionEsMenorOIgualAl50Porciento()
         {
             // Preparar
             _mesaRepositorioMock.Setup(r => r.ObtenerTodasAsync(1))
@@ -97,14 +97,14 @@ namespace PanComido.Tests.Dominio.Servicios
                 });
 
             // Ejecutar
-            var resultado = _servicio.CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(1);
+            var resultado = await _servicio.CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(1);
 
             // Verificar
             Assert.Equal(10, resultado);
         }
 
         [Fact]
-        public void CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas_Devuelve15_CuandoLaOcupacionEsMenorOIgualAl70Porciento()
+        public async Task CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas_Devuelve15_CuandoLaOcupacionEsMenorOIgualAl70Porciento()
         {
             // Preparar
             _mesaRepositorioMock.Setup(r => r.ObtenerTodasAsync(1))
@@ -127,14 +127,14 @@ namespace PanComido.Tests.Dominio.Servicios
                 });
 
             // Ejecutar
-            var resultado = _servicio.CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(1);
+            var resultado = await _servicio.CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(1);
 
             // Verificar
             Assert.Equal(15, resultado);
         }
 
         [Fact]
-        public void CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas_Devuelve20_CuandoLaOcupacionEsMayorAl70Porciento()
+        public async Task CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas_Devuelve20_CuandoLaOcupacionEsMayorAl70Porciento()
         {
             // Preparar
             _mesaRepositorioMock.Setup(r => r.ObtenerTodasAsync(1))
@@ -157,14 +157,14 @@ namespace PanComido.Tests.Dominio.Servicios
                 });
 
             // Ejecutar
-            var resultado = _servicio.CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(1);
+            var resultado = await _servicio.CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(1);
 
             // Verificar
             Assert.Equal(20, resultado);
         }
 
         [Fact]
-        public void CalcularTiempoPreparacionDinamico_SumaElTiempoBaseYElTiempoExtra()
+        public async Task CalcularTiempoPreparacionDinamico_SumaElTiempoBaseYElTiempoExtra()
         {
             // Preparar
             _mesaRepositorioMock.Setup(r => r.ObtenerTodasAsync(1))
@@ -192,7 +192,7 @@ namespace PanComido.Tests.Dominio.Servicios
             };
 
             // Ejecutar
-            var resultado = _servicio.CalcularTiempoPreparacionDinamico(plato);
+            var resultado = await _servicio.CalcularTiempoPreparacionDinamico(plato);
 
             // Verificar
             Assert.Equal(25, resultado);

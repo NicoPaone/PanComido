@@ -46,9 +46,6 @@ namespace PanComido.Infraestructura.ServiciosExternos.Gemini.Servicio
             string apiKey = _configuracion.ApiKey;
             string url = _configuracion.Url;
 
-            Console.WriteLine($"URL: '{url}'");
-            Console.WriteLine($"API KEY: '{apiKey}'");
-
             GeminiRequestDto requestDto = CrearRequest(prompt);
 
             var response = await _httpClient.PostAsJsonAsync($"{url}?key={apiKey}", requestDto);
