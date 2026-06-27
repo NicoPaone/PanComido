@@ -237,8 +237,6 @@ builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
 builder.Services.AddScoped<SolicitarPagoEfectivoCasoDeUso>();
 builder.Services.AddScoped<ConfirmarPagoEfectivoCasoDeUso>();
 builder.Services.AddScoped<ConfirmarPedidoClienteAComandaCasoDeUso>();
-builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
-builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
 builder.Services.AddScoped<ObtenerArticulosParaCrearCartaCasoDeUso>();
 builder.Services.AddScoped<ModificarArticuloCasoDeUso>();
 builder.Services.AddScoped<LlamarMozoComandaCasoDeUso>();
@@ -283,6 +281,7 @@ builder.Services.AddScoped<IGestionStockServicio, GestionStockServicio>();
 builder.Services.AddScoped<IVencimientosProximosInsumosServicio, VencimientosProximosInsumosServicio>();
 builder.Services.AddScoped<ITiempoDePreparacionPlatoServicio, TiempoDePreparacionPlatoServicio>();
 builder.Services.AddScoped<ICalcularTotalComandaServicio, CalcularTotalComandaServicio>();
+builder.Services.AddScoped<ICrearLlamadoServicio, CrearLlamadoServicio>();
 
 
 //Servicios externos

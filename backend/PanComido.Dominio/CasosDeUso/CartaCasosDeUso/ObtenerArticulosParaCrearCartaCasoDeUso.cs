@@ -28,7 +28,7 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
                 art.CostoCalculado = CalcularCostoDinamico(art);
                 if (art is Plato plato)
                 {
-                    plato.TiempoPreparacionEstimado = _tiempoDePreparacionPlatoServicio.CalcularTiempoPreparacionDinamico(plato);
+                    plato.TiempoPreparacionEstimado = await _tiempoDePreparacionPlatoServicio.CalcularTiempoPreparacionDinamico(plato);
                 }
             }
 

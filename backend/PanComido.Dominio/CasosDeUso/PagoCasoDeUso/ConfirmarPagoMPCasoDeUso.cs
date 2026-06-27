@@ -63,7 +63,11 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
             comanda.Estado = EstadoComanda.Finalizada;
             comanda.HoraFin = DateTime.Now;
             await _comandaRepositorio.ActualizarAsync(comanda);
-            await _comandaNotificador.NotificarComandaActualizadaAMesaAsync(comanda);
+
+            List<int> mozosId = new List<int>();
+            mozosId.Add(comanda.MozoId.Value);
+
+            await _comandaNotificador.NotificarEstadoModificadoAsync(comanda, mozosId);
             return pagoAConfirmar;
         }
     }

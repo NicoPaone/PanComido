@@ -3,28 +3,20 @@ using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
 {
     public class SolicitarPagoEfectivoCasoDeUso
     {
         private readonly IComandaRepositorio _comandaRepositorio;
-        private readonly ILlamadoRepositorio _llamadoRepositorio;
-        private readonly ILlamadoNotificador _llamadoNotificador;
+        private readonly ICrearLlamadoServicio _crearLlamadoServicio;
         private readonly ILogger<SolicitarPagoEfectivoCasoDeUso> _logger;
 
 
-        public SolicitarPagoEfectivoCasoDeUso(IComandaRepositorio comandaRepositorio, ILlamadoRepositorio llamadoRepositorio,
-            ILlamadoNotificador llamadoNotificador, ILogger<SolicitarPagoEfectivoCasoDeUso> logger)
+        public SolicitarPagoEfectivoCasoDeUso(IComandaRepositorio comandaRepositorio, ICrearLlamadoServicio crearLlamadoServicio, ILogger<SolicitarPagoEfectivoCasoDeUso> logger)
         {
             _comandaRepositorio = comandaRepositorio;
-            _llamadoRepositorio = llamadoRepositorio;
-            _llamadoNotificador = llamadoNotificador;
+            _crearLlamadoServicio = crearLlamadoServicio;
             _logger = logger;
         }
 
@@ -43,19 +35,10 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
                 throw new ArgumentException("La comanda no está esperando pago.");
             }
 
-            Llamado llamado = new Llamado
-            {
-                MozoId = comanda.MozoId,
-                MesaId = comanda.MesaId,
-                CategoriaLlamadoId = 7,
-                Descripcion = "El comensal ha solicitado el pago en efectivo.",
-                Resuelto = false
-            };
+            Llamado llamadoGuardado = await _crearLlamadoServicio.CrearYNotificarAsync(comanda.MozoId, comanda.MesaId, comanda.NumeroDeMesa, CategoriaLlamado.Pago, "El comensal ha solicitado el pago en efectivo.");
 
-            Llamado llamadoCreado = await _llamadoRepositorio.crearLlamadoAsync(llamado);
-            await _llamadoNotificador.NotificarLlamadoAsync(llamadoCreado);
             _logger.LogInformation("Pago efectivo solicitado. ComandaId: {ComandaId}, MesaId: {MesaId}, MozoId: {MozoId}", comandaId, comanda.MesaId, comanda.MozoId);
-            return llamadoCreado;
+            return llamadoGuardado;
         }
     }
 }

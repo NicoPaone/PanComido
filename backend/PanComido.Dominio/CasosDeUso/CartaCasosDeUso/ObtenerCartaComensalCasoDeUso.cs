@@ -41,7 +41,7 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
                 if (_disponibilidadServicio.VerificarDisponibilidad(articulo, stockDeInsumosActual))
                 {
                     if (articulo is Plato plato)
-                        plato.TiempoPreparacionEstimado = _tiempoDePreparacionPlatoServicio.CalcularTiempoPreparacionDinamico(plato);
+                        plato.TiempoPreparacionEstimado = await _tiempoDePreparacionPlatoServicio.CalcularTiempoPreparacionDinamico(plato);
                     
                     articulosDisponiblesEnCarta.Add(articulo);
                 }

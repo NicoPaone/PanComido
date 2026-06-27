@@ -18,21 +18,24 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
         private readonly IComandaRepositorio _comandaRepositorio;
         private readonly ILlamadoRepositorio _llamadoRepositorio;
         private readonly ICalcularTotalComandaServicio _calcularTotalComandaServicio;
+        private readonly IComandaNotificador _comandaNotificador;
         private readonly ILogger<ConfirmarPagoEfectivoCasoDeUso> _logger;
 
-        public ConfirmarPagoEfectivoCasoDeUso(IPagoRepositorio pagoRepositorio, IComandaRepositorio comandaRepositorio, ILlamadoRepositorio llamadoRepositorio, ICalcularTotalComandaServicio calcularTotalComandaServicio, ILogger<ConfirmarPagoEfectivoCasoDeUso> logger)
+        public ConfirmarPagoEfectivoCasoDeUso(IPagoRepositorio pagoRepositorio, IComandaRepositorio comandaRepositorio, ILlamadoRepositorio llamadoRepositorio, ICalcularTotalComandaServicio calcularTotalComandaServicio,
+            IComandaNotificador comandaNotificador, ILogger<ConfirmarPagoEfectivoCasoDeUso> logger)
         {
             _pagoRepositorio = pagoRepositorio;
             _comandaRepositorio = comandaRepositorio;
             _llamadoRepositorio = llamadoRepositorio;
             _calcularTotalComandaServicio = calcularTotalComandaServicio;
+            _comandaNotificador = comandaNotificador;
             _logger = logger;
         }
 
         public async Task<Pago> EjecutarAsync(int comandaId, int restauranteId)
         {
             var comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
-            if (comanda == null) throw new KeyNotFoundException("Comanda no encontrada");
+            if (comanda == null || comanda.RestauranteId != restauranteId) throw new KeyNotFoundException("Comanda no encontrada");
             if (comanda.Estado != EstadoComanda.EnEspera)
             {
                 _logger.LogWarning("Intento de confirmar pago efectivo en estado inválido. ComandaId: {ComandaId}, Estado: {Estado}", comandaId, comanda.Estado);
@@ -62,7 +65,12 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
             comanda.HoraFin = DateTime.Now;
             await _comandaRepositorio.ActualizarAsync(comanda);
 
-            await _llamadoRepositorio.ResolverLlamadoPorMesaYCategoriaAsync(comanda.MesaId, 7);
+            List<int> mozosId = new List<int>();
+            mozosId.Add(comanda.MozoId.Value);
+
+            await _comandaNotificador.NotificarEstadoModificadoAsync(comanda, mozosId);
+
+            await _llamadoRepositorio.ResolverLlamadoPorMesaYCategoriaAsync(comanda.MesaId, (int)CategoriaLlamado.Pago);
 
             _logger.LogInformation("Pago efectivo confirmado. ComandaId: {ComandaId}, Total: {Total}", comandaId, totalComanda);
             return pagoCreado;
