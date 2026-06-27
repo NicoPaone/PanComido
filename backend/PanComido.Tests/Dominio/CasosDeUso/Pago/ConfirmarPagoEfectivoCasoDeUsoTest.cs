@@ -14,6 +14,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
         private readonly Mock<ILlamadoRepositorio> _llamadoMockRepo;
         private readonly Mock<IComandaRepositorio> _comandaMockRepo;
         private readonly Mock<ICalcularTotalComandaServicio> _calcularTotalMockServicio;
+        private readonly Mock<IComandaNotificador> _comandaNotificadorMock;
         private readonly Mock<ILogger<ConfirmarPagoEfectivoCasoDeUso>> _loggerMock;
 
         public ConfirmarPagoEfectivoCasoDeUsoTest()
@@ -22,6 +23,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
             _llamadoMockRepo = new Mock<ILlamadoRepositorio>();
             _comandaMockRepo = new Mock<IComandaRepositorio>();
             _calcularTotalMockServicio = new Mock<ICalcularTotalComandaServicio>();
+            _comandaNotificadorMock = new Mock<IComandaNotificador>();
             _loggerMock = new Mock<ILogger<ConfirmarPagoEfectivoCasoDeUso>>();
         }
 
@@ -31,6 +33,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
                 _comandaMockRepo.Object,
                 _llamadoMockRepo.Object,
                 _calcularTotalMockServicio.Object,
+                _comandaNotificadorMock.Object,
                 _loggerMock.Object);
 
         [Fact]
@@ -42,7 +45,9 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
             var comanda = new DOM.Comanda
             {
                 Id = comandaId,
+                RestauranteId = restauranteId,
                 MesaId = 1,
+                MozoId = 1,
                 Estado = EstadoComanda.EnEspera,
                 Items = new List<DOM.ArticuloComanda>
                 {
@@ -85,10 +90,15 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
                 .Setup(r => r.ResolverLlamadoPorMesaYCategoriaAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(Task.CompletedTask);
 
+            _comandaNotificadorMock
+                .Setup(n => n.NotificarEstadoModificadoAsync(It.IsAny<DOM.Comanda>(), It.IsAny<List<int>>()))
+                .Returns(Task.CompletedTask);
+
             var resultado = await CrearCasoDeUso().EjecutarAsync(comandaId, restauranteId);
             Assert.NotNull(resultado);
             Assert.Equal(1000, resultado.Total);
             _pagoMockRepo.Verify(r => r.CrearPagoAsync(It.IsAny<DOM.Pago>()), Times.Once);
+            _comandaNotificadorMock.Verify(n => n.NotificarEstadoModificadoAsync(It.IsAny<DOM.Comanda>(), It.IsAny<List<int>>()), Times.Once);
         }
 
         [Fact]
@@ -115,6 +125,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
                 .ReturnsAsync(new DOM.Comanda
                 {
                     Id = comandaId,
+                    RestauranteId = restauranteId,
                     Estado = EstadoComanda.EnPreparacion
                 });
 
@@ -130,6 +141,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
             var comanda = new DOM.Comanda
             {
                 Id = comandaId,
+                RestauranteId = restauranteId,
                 MesaId = 1,
                 Estado = EstadoComanda.EnEspera
             };
@@ -154,6 +166,23 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
                 .ReturnsAsync(pagoExistente);
 
             await Assert.ThrowsAsync<InvalidOperationException>(() => CrearCasoDeUso().EjecutarAsync(comandaId, restauranteId));
+        }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoLaComandaEsDeOtroRestaurante_LanzaKeyNotFoundException()
+        {
+            int comandaId = 1;
+            int restauranteId = 1;
+
+            _comandaMockRepo
+                .Setup(r => r.ObtenerComandaPorIdAsync(comandaId))
+                .ReturnsAsync(new DOM.Comanda
+                {
+                    Id = comandaId,
+                    RestauranteId = 99
+                });
+
+            await Assert.ThrowsAsync<KeyNotFoundException>(() => CrearCasoDeUso().EjecutarAsync(comandaId, restauranteId));
         }
     }
 }
