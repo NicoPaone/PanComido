@@ -18,10 +18,10 @@ namespace PanComido.Dominio.Servicios
             _mesaRepositorio = mesaRepositorio;
         }
 
-        public int CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(int restauranteId)
+        public async Task<int> CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(int restauranteId)
         {
-            int cantidadMesas = _mesaRepositorio.ObtenerTodasAsync(restauranteId).Result.Count;
-            int mesasOcupadas = _mesaRepositorio.ObtenerOcupadasAsync(restauranteId).Result.Count;
+            int cantidadMesas = (await _mesaRepositorio.ObtenerTodasAsync(restauranteId)).Count;
+            int mesasOcupadas = (await _mesaRepositorio.ObtenerOcupadasAsync(restauranteId)).Count;
 
             if (mesasOcupadas == 0)
             {
@@ -45,9 +45,9 @@ namespace PanComido.Dominio.Servicios
             }
         }
 
-        public int CalcularTiempoPreparacionDinamico(Plato plato)
+        public async Task<int> CalcularTiempoPreparacionDinamico(Plato plato)
         {
-            return plato.TiempoPreparacionBase + CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(plato.RestauranteId);
+            return plato.TiempoPreparacionBase + await CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(plato.RestauranteId);
         }
     }
 }

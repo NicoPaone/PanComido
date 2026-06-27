@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using PanComido.Dominio.CasosDeUso.CartaCasosDeUso;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
@@ -113,7 +113,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Carta
             _dispoServicioMock.Setup(s => s.VerificarDisponibilidad(cocaCola, stockActual)).Returns(true);
 
             
-            _tiempoServicioMock.Setup(s => s.CalcularTiempoPreparacionDinamico(hamburguesa)).Returns(15);
+            _tiempoServicioMock.Setup(s => s.CalcularTiempoPreparacionDinamico(hamburguesa)).ReturnsAsync(15);
 
             // 2. Ejecutar
             List<Articulo> resultado = await casoDeUso.EjecutarAsync(restauranteId);
