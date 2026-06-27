@@ -15,26 +15,23 @@ namespace PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso
     public class LlamarMozoCasoDeUso
     {
         private readonly IMozoRepositorio _mozoRepositorio;
-        private readonly ILlamadoRepositorio _llamadoRepositorio;
-        private readonly ILlamadoNotificador _llamadoNotificador;
         private readonly IMesaRepositorio _mesaRepositorio;
+        private readonly ICrearLlamadoServicio _crearLlamadoServicio;
         private readonly ILogger<LlamarMozoCasoDeUso> _logger;
 
         public LlamarMozoCasoDeUso(
             IMozoRepositorio mozoRepositorio,
-            ILlamadoRepositorio llamadoRepositorio,
-            ILlamadoNotificador llamadoNotificador,
             IMesaRepositorio mesaRepositorio,
+            ICrearLlamadoServicio crearLlamadoServicio,
             ILogger<LlamarMozoCasoDeUso> logger)
         {
             _mozoRepositorio = mozoRepositorio;
-            _llamadoRepositorio = llamadoRepositorio;
-            _llamadoNotificador = llamadoNotificador;
             _mesaRepositorio = mesaRepositorio;
+            _crearLlamadoServicio = crearLlamadoServicio;
             _logger = logger;
         }
 
-        public async Task<DOM.Llamado> EjecutarAsync(int restauranteId, int mesaId, int categoriaLlamadoId, string? descripcion)
+        public async Task<DOM.Llamado> EjecutarAsync(int restauranteId, int mesaId, CategoriaLlamado categoriaLlamadoId, string? descripcion)
         {
             int mozoId = await _mozoRepositorio.ObtenerMozoAsignadoAMesaAsync(mesaId);
             var mesaObtenidaId = await _mesaRepositorio.ObtenerPorIdAsync(mesaId, restauranteId);
@@ -50,20 +47,7 @@ namespace PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso
                 throw new KeyNotFoundException("No se encontro la mesa.");
             }
 
-            //pasarlo a un servicio, en el pago se hace uno similar, agregar enum de categoria llamado
-            var llamado = new DOM.Llamado
-            {
-                MozoId = mozoId,
-                MesaId = mesaId,
-                NumeroDeMesa = mesaObtenidaId.Numero,
-                CategoriaLlamadoId = categoriaLlamadoId,
-                Descripcion = descripcion,
-                Resuelto = false
-            };
-
-            var llamadoGuardado = await _llamadoRepositorio.crearLlamadoAsync(llamado);
-
-            await _llamadoNotificador.NotificarLlamadoAsync(llamadoGuardado);
+              DOM.Llamado llamadoGuardado = await _crearLlamadoServicio.CrearYNotificarAsync(mozoId, mesaId, mesaObtenidaId.Numero, categoriaLlamadoId, descripcion);
 
             _logger.LogInformation("Llamado creado. LlamadoId: {LlamadoId}, MesaId: {MesaId}, MozoId: {MozoId}, CategoriaId: {CategoriaId}", llamadoGuardado.Id, mesaId, mozoId, categoriaLlamadoId);
             return llamadoGuardado;

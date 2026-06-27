@@ -38,7 +38,6 @@ namespace PanComido.Presentacion.Controllers
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<LlamadoResponseDto>> CrearLlamado([FromBody] LlamarMozoRequestDto request)
         {
-           
             var llamadoGuardado = await _llamarMozoCasoDeUSo.EjecutarAsync(request.restauranteId, request.MesaId, request.CategoriaLlamadoId, request.Descripcion);
 
             var dto = _llamadoMapper.aDto(llamadoGuardado);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
 using PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
 using DOM = PanComido.Dominio.Entidades;
@@ -10,26 +11,23 @@ namespace PanComido.Tests.Dominio.CasosDeUso.LlamadoMozo
     public class LlamarMozoCasoDeUsoTest
     {
         private readonly Mock<IMozoRepositorio> _mozoRepoMock;
-        private readonly Mock<ILlamadoRepositorio> _llamadoRepoMock;
-        private readonly Mock<ILlamadoNotificador> _llamadoNotificadorMock;
         private readonly Mock<IMesaRepositorio> _mesaRepoMock;
+        private readonly Mock<ICrearLlamadoServicio> _crearLlamadoServicioMock;
         private readonly Mock<ILogger<LlamarMozoCasoDeUso>> _loggerMock;
 
         public LlamarMozoCasoDeUsoTest()
         {
             _mozoRepoMock = new Mock<IMozoRepositorio>();
-            _llamadoRepoMock = new Mock<ILlamadoRepositorio>();
-            _llamadoNotificadorMock = new Mock<ILlamadoNotificador>();
             _mesaRepoMock = new Mock<IMesaRepositorio>();
+            _crearLlamadoServicioMock = new Mock<ICrearLlamadoServicio>();
             _loggerMock = new Mock<ILogger<LlamarMozoCasoDeUso>>();
         }
 
         private LlamarMozoCasoDeUso CrearCasoDeUso() =>
             new LlamarMozoCasoDeUso(
                 _mozoRepoMock.Object,
-                _llamadoRepoMock.Object,
-                _llamadoNotificadorMock.Object,
                 _mesaRepoMock.Object,
+                _crearLlamadoServicioMock.Object,
                 _loggerMock.Object);
 
         [Fact]
@@ -37,7 +35,6 @@ namespace PanComido.Tests.Dominio.CasosDeUso.LlamadoMozo
         {
             int restauranteId = 1;
             int mesaId = 1;
-            int categoriaLlamadoId = 2;
             string descripcion = "Necesito sal";
 
             var llamadoGuardado = new DOM.Llamado { Id = 1, MozoId = 1, MesaId = mesaId };
@@ -50,18 +47,14 @@ namespace PanComido.Tests.Dominio.CasosDeUso.LlamadoMozo
                 .Setup(r => r.ObtenerPorIdAsync(mesaId, restauranteId))
                 .ReturnsAsync(new DOM.MesaConPosiciones { Id = mesaId });
 
-            _llamadoRepoMock
-                .Setup(r => r.crearLlamadoAsync(It.IsAny<DOM.Llamado>()))
+            _crearLlamadoServicioMock
+                .Setup(s => s.CrearYNotificarAsync(It.IsAny<int?>(), mesaId, It.IsAny<int>(), CategoriaLlamado.Sal, descripcion))
                 .ReturnsAsync(llamadoGuardado);
 
-            _llamadoNotificadorMock
-                .Setup(r => r.NotificarLlamadoAsync(It.IsAny<DOM.Llamado>()))
-                .Returns(Task.CompletedTask);
-
-            var resultado = await CrearCasoDeUso().EjecutarAsync(restauranteId, mesaId, categoriaLlamadoId, descripcion);
+            var resultado = await CrearCasoDeUso().EjecutarAsync(restauranteId, mesaId, CategoriaLlamado.Sal, descripcion);
 
             Assert.NotNull(resultado);
-            _llamadoRepoMock.Verify(r => r.crearLlamadoAsync(It.IsAny<DOM.Llamado>()), Times.Once);
+            _crearLlamadoServicioMock.Verify(s => s.CrearYNotificarAsync(It.IsAny<int?>(), mesaId, It.IsAny<int>(), CategoriaLlamado.Sal, descripcion), Times.Once);
         }
 
         [Fact]
@@ -78,7 +71,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.LlamadoMozo
                 .Setup(r => r.ObtenerPorIdAsync(mesaId, restauranteId))
                 .ReturnsAsync(new DOM.MesaConPosiciones { Id = mesaId });
 
-            await Assert.ThrowsAsync<KeyNotFoundException>(() => CrearCasoDeUso().EjecutarAsync(restauranteId, mesaId, 1, ""));
+            await Assert.ThrowsAsync<KeyNotFoundException>(() => CrearCasoDeUso().EjecutarAsync(restauranteId, mesaId, CategoriaLlamado.General, null));
         }
 
         [Fact]
@@ -95,7 +88,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.LlamadoMozo
                 .Setup(r => r.ObtenerPorIdAsync(mesaId, restauranteId))
                 .ReturnsAsync((DOM.MesaConPosiciones?)null);
 
-            await Assert.ThrowsAsync<KeyNotFoundException>(() => CrearCasoDeUso().EjecutarAsync(restauranteId, mesaId, 4, ""));
+            await Assert.ThrowsAsync<KeyNotFoundException>(() => CrearCasoDeUso().EjecutarAsync(restauranteId, mesaId, CategoriaLlamado.General, null));
         }
     }
 }

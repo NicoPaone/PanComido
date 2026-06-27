@@ -52,26 +52,33 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
         public async Task<List<DOM.Insumo>> ObtenerInsumosProximosAVencerAsync(int restauranteId)
         {
-            var efData = await BaseQuery(restauranteId)
+            // 1. Agregamos el Include de los Lotes y quitamos el .Select()
+            var efLista = await BaseQuery(restauranteId)
+                .Include(a => a.Insumo)
+                    .ThenInclude(i => i.Lotes)
                 .Where(a => a.Insumo != null && a.Insumo.Lotes.Any(l => l.FechaVencimiento != null))
-                .Select(a => new
-                {
-                    Articulo = a,
-                    ProximoVencimiento = a.Insumo.Lotes.Where(l => l.FechaVencimiento != null).Min(l => l.FechaVencimiento)
-                })
-                .Where(x => x.ProximoVencimiento != null)
-                .OrderBy(x => x.ProximoVencimiento)
                 .ToListAsync();
 
             var domLista = new List<DOM.Insumo>();
-            foreach (var item in efData)
+
+            // 2. Procesamos el vencimiento más cercano en memoria (C#)
+            foreach (var articulo in efLista)
             {
-                var domInsumo = (DOM.Insumo)_mapper.paraDominio(item.Articulo);
-                domInsumo.Vencimiento = item.ProximoVencimiento;
-                domLista.Add(domInsumo);
+                var proximoVencimiento = articulo.Insumo.Lotes
+                    .Where(l => l.FechaVencimiento != null)
+                    .Min(l => l.FechaVencimiento);
+
+                if (proximoVencimiento != null)
+                {
+                    // Como ya incluimos los Lotes arriba, el mapper ahora sí sumará el StockActual
+                    var domInsumo = (DOM.Insumo)_mapper.paraDominio(articulo);
+                    domInsumo.Vencimiento = proximoVencimiento;
+                    domLista.Add(domInsumo);
+                }
             }
 
-            return domLista;
+            // 3. Ordenamos por vencimiento y retornamos
+            return domLista.OrderBy(x => x.Vencimiento).ToList();
         }
 
         public async Task<List<DOM.Insumo>> ObtenerInsumosDelProveedorAsync(int proveedorId, int restauranteId)
