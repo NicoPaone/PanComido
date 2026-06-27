@@ -87,16 +87,15 @@ namespace PanComido.Presentacion.Controllers
             _logger.LogInformation("Webhook MP recibido. Tipo: {Type}", notificacion.Type);
             if (notificacion?.Type != "payment") return Ok();
 
+            long paymentId = long.Parse(notificacion.Data.Id);
             try
             {
-                long paymentId = long.Parse(notificacion.Data.Id);
                 await _confirmarPagoMPCasoDeUso.EjecutarAsync(paymentId);
                 _logger.LogInformation("Webhook MP procesado. PaymentId: {PaymentId}", paymentId);
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
-                _logger.LogError(ex, "Error procesando webhook de MP. PaymentId del body: {Id}", notificacion.Data?.Id);
-
+                _logger.LogWarning(ex, "Pago ya confirmado, se ignora reintento. PaymentId: {PaymentId}", paymentId);
             }
             return Ok();
         }

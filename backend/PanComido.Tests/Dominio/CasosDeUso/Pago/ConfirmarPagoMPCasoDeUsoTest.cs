@@ -54,7 +54,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
                 EstadoPago = EstadoPago.Pendiente
             };
 
-            var comanda = new DOM.Comanda { Id = 1, Estado = EstadoComanda.EnEspera };
+            var comanda = new DOM.Comanda { Id = 1, MozoId = 1, Estado = EstadoComanda.EnEspera };
 
             _mercadoPagoMockServicio
                 .Setup(s => s.ConsultarPagoAsync(paymentId))
@@ -77,7 +77,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
                 .Returns(Task.CompletedTask);
 
             _comandaNotificadorMock
-                .Setup(n => n.NotificarComandaActualizadaAMesaAsync(It.IsAny<DOM.Comanda>()))
+                .Setup(n => n.NotificarEstadoModificadoAsync(It.IsAny<DOM.Comanda>(), It.IsAny<List<int>>()))
                 .Returns(Task.CompletedTask);
 
             var resultado = await CrearCasoDeUso().EjecutarAsync(paymentId);
@@ -86,7 +86,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
             Assert.Equal(EstadoComanda.Finalizada, comanda.Estado);
             _pagoMockRepo.Verify(r => r.ConfirmarPagoAsync(externalReference), Times.Once);
             _comandaMockRepo.Verify(r => r.ActualizarAsync(It.IsAny<DOM.Comanda>()), Times.Once);
-            _comandaNotificadorMock.Verify(n => n.NotificarComandaActualizadaAMesaAsync(It.IsAny<DOM.Comanda>()), Times.Once);
+            _comandaNotificadorMock.Verify(n => n.NotificarEstadoModificadoAsync(It.IsAny<DOM.Comanda>(), It.IsAny<List<int>>()), Times.Once);
         }
 
         [Fact]

@@ -11,23 +11,20 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
     public class SolicitarPagoEfectivoCasoDeUsoTest
     {
         private readonly Mock<IComandaRepositorio> _comandaMockRepo;
-        private readonly Mock<ILlamadoRepositorio> _llamadoMockRepo;
-        private readonly Mock<ILlamadoNotificador> _llamadoNotificadorMock;
+        private readonly Mock<ICrearLlamadoServicio> _crearLlamadoServicioMock;
         private readonly Mock<ILogger<SolicitarPagoEfectivoCasoDeUso>> _loggerMock;
 
         public SolicitarPagoEfectivoCasoDeUsoTest()
         {
             _comandaMockRepo = new Mock<IComandaRepositorio>();
-            _llamadoMockRepo = new Mock<ILlamadoRepositorio>();
-            _llamadoNotificadorMock = new Mock<ILlamadoNotificador>();
+            _crearLlamadoServicioMock = new Mock<ICrearLlamadoServicio>();
             _loggerMock = new Mock<ILogger<SolicitarPagoEfectivoCasoDeUso>>();
         }
 
         private SolicitarPagoEfectivoCasoDeUso CrearCasoDeUso() =>
             new SolicitarPagoEfectivoCasoDeUso(
                 _comandaMockRepo.Object,
-                _llamadoMockRepo.Object,
-                _llamadoNotificadorMock.Object,
+                _crearLlamadoServicioMock.Object,
                 _loggerMock.Object);
 
         [Fact]
@@ -41,6 +38,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
                 Id = comandaId,
                 RestauranteId = restauranteId,
                 MesaId = 1,
+                NumeroDeMesa = 5,
                 MozoId = 1,
                 Estado = EstadoComanda.EnEspera
             };
@@ -50,25 +48,21 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
                 Id = 1,
                 MozoId = 1,
                 MesaId = 1,
-                CategoriaLlamadoId = 7
+                CategoriaLlamadoId = (int)CategoriaLlamado.Pago
             };
 
             _comandaMockRepo
                 .Setup(r => r.ObtenerComandaPorIdAsync(comandaId))
                 .ReturnsAsync(comanda);
 
-            _llamadoMockRepo
-                .Setup(r => r.crearLlamadoAsync(It.IsAny<DOM.Llamado>()))
+            _crearLlamadoServicioMock
+                .Setup(s => s.CrearYNotificarAsync(comanda.MozoId, comanda.MesaId, comanda.NumeroDeMesa, CategoriaLlamado.Pago, It.IsAny<string>()))
                 .ReturnsAsync(llamadoCreado);
-
-            _llamadoNotificadorMock
-                .Setup(r => r.NotificarLlamadoAsync(It.IsAny<DOM.Llamado>()))
-                .Returns(Task.CompletedTask);
 
             var resultado = await CrearCasoDeUso().EjecutarAsync(comandaId, restauranteId);
             Assert.NotNull(resultado);
-            Assert.Equal(7, resultado.CategoriaLlamadoId);
-            _llamadoMockRepo.Verify(r => r.crearLlamadoAsync(It.IsAny<DOM.Llamado>()), Times.Once);
+            Assert.Equal((int)CategoriaLlamado.Pago, resultado.CategoriaLlamadoId);
+            _crearLlamadoServicioMock.Verify(s => s.CrearYNotificarAsync(comanda.MozoId, comanda.MesaId, comanda.NumeroDeMesa, CategoriaLlamado.Pago, It.IsAny<string>()), Times.Once);
         }
 
         [Fact]
