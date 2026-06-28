@@ -67,7 +67,6 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
 
             return await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
         }
-
         private async Task<Comanda> ObtenerYValidarComandaAsync(int comandaId)
         {
             Comanda comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
