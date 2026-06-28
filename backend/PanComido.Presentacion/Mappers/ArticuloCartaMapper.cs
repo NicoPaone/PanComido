@@ -22,6 +22,7 @@ namespace PanComido.Presentacion.Mappers
                 PrecioVentaFinal = articulo.PrecioVentaFinal ?? 0,
                 VisibleEnCarta = articulo.EsVisibleEnCarta,
 
+                Destacado = esPlato ? plato.Destacado : false,
                 TipoArticulo = esPlato ? "Plato" : "Bebida",
                 Costo = articulo.CostoCalculado,
                 Categoria = esPlato
