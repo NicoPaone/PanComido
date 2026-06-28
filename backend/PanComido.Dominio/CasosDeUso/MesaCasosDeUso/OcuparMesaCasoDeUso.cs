@@ -28,6 +28,20 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
         {
             _logger.LogInformation("Iniciando ocupación de la mesa {MesaId} en el restaurante {RestauranteId} para {CantComensales} comensales.", mesaId, restauranteId, cantComensales);
 
+            MesaConPosiciones mesa = await ObtenerYValidarMesaAsync(restauranteId, mesaId, cantComensales);
+
+            mesa.EstadoMesa = EstadoMesa.Ocupada;
+            await _mesaRepositorio.ActualizarEstadoAsync(mesaId, EstadoMesa.Ocupada);
+
+            mesa.idComanda = await GenerarComandaParaMesaOcupadaAsync(mesaId, restauranteId, cantComensales);
+
+            _logger.LogInformation("Mesa {MesaId} ocupada exitosamente. Se creó la nueva comanda {ComandaId} para {CantComensales} comensales.", mesaId, mesa.idComanda, cantComensales);
+            
+            return mesa;
+        }
+
+        private async Task<MesaConPosiciones> ObtenerYValidarMesaAsync(int restauranteId, int mesaId, int cantComensales)
+        {
             MesaConPosiciones mesa = await _mesaRepositorio.ObtenerPorIdAsync(mesaId, restauranteId);
 
             if (mesa == null)
@@ -48,26 +62,22 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
                 throw new InvalidOperationException("La cantidad de comensales excede la capacidad máxima de la mesa.");
             }
 
-            mesa.EstadoMesa = EstadoMesa.Ocupada;
-            await _mesaRepositorio.ActualizarEstadoAsync(mesaId,EstadoMesa.Ocupada);
+            return mesa;
+        }
 
-
+        private async Task<int> GenerarComandaParaMesaOcupadaAsync(int mesaId, int restauranteId, int cantComensales)
+        {
             Comanda nuevaComanda = new Comanda
             {
-                MesaId = mesa.Id,
+                MesaId = mesaId,
                 RestauranteId = restauranteId,
                 Estado = EstadoComanda.Abierta,
                 CantComensales = cantComensales,
                 HoraInicio = DateTime.Now
             };
 
-            int idComanda = await _comandaRepositorio.CrearAsync(nuevaComanda);
-
-            mesa.idComanda = idComanda;
-
-            _logger.LogInformation("Mesa {MesaId} ocupada exitosamente. Se creó la nueva comanda {ComandaId} para {CantComensales} comensales.", mesaId, idComanda, cantComensales);
-            return mesa;
-
+            return await _comandaRepositorio.CrearAsync(nuevaComanda);
         }
+
     }
 }
