@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
+using PanComido.Dominio.Constantes;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Presentacion.DTOs;
@@ -60,7 +61,7 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Crear([FromBody] CrearInsumoRequestDto request)
+        public async Task<IActionResult> Crear([FromForm] CrearInsumoRequestDto request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -70,12 +71,19 @@ namespace PanComido.Presentacion.Controllers
 
             Insumo insumoDominio = _mapper.aDominio(request);
 
+            Stream? stream = request.Imagen?.OpenReadStream();
+            string? nombreArchivo = request.Imagen?.FileName;
+
             Insumo insumoCreado = await _crearInsumoCasoDeUso.EjecutarAsync(
                 restauranteId,
                 insumoDominio,
                 request.CantidadInicial,
                 request.BodegaId,
-                request.FechaVencimiento
+                request.FechaVencimiento,
+                stream,
+                nombreArchivo,
+                // TODO: HACER UNO ESPECIFICO PARA INSUMOS
+                RutasCloudinary.MenuPlatos
             );
 
             return StatusCode(201, new {

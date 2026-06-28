@@ -4,6 +4,7 @@ using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +20,7 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
         private readonly ICategoriaInsumoRepositorio _categoriaInsumoRepositorio;
 
         private readonly IEstadoStockInsumoServicio _estadoStockInsumoServicio;
+        private readonly IImagenServicio _imagenServicio;
 
         private readonly ILogger<CrearInsumoCasoDeUso> _logger;
 
@@ -28,6 +30,7 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
             IUnidadMedidaRepositorio unidadMedidaRepositorio,
             ICategoriaInsumoRepositorio categoriaInsumoRepositorio,
             IEstadoStockInsumoServicio estadoStockInsumoServicio,
+            IImagenServicio imagenServicio,
             ILogger<CrearInsumoCasoDeUso> logger)
         {
             _insumoRepositorio = insumoRepositorio;
@@ -36,6 +39,7 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
             _categoriaInsumoRepositorio = categoriaInsumoRepositorio;
             _loteRepositorio = loteRepositorio;
             _estadoStockInsumoServicio = estadoStockInsumoServicio;
+            _imagenServicio = imagenServicio;
             _logger = logger;
         }
 
@@ -44,7 +48,10 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
             Insumo insumo,
             int cantidadInicial,
             int idBodega,
-            DateOnly fechaVencimiento)
+            DateOnly fechaVencimiento,
+            Stream stream, 
+            string nombreImagen,
+            string carpetaCloudinary)
         {
             _logger.LogInformation("Iniciando creación del insumo '{NombreInsumo}' para el restaurante {RestauranteId}. Cantidad inicial: {CantidadInicial}, Bodega destino: {BodegaId}", insumo.Nombre, restauranteId, cantidadInicial, idBodega);
 
@@ -59,6 +66,8 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
             insumo.RestauranteId = restauranteId;
             insumo.Tipo = categoria.TipoAplica;
             insumo.Lotes = new List<Lote> { loteInicial };
+
+            insumo.UrlImagen = await SubirYObtenerUrlDeImagen(stream, nombreImagen, carpetaCloudinary);
 
             Insumo insumoCreado = await _insumoRepositorio.CrearAsync(insumo);
 
@@ -126,7 +135,18 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
                 FechaVencimiento = fechaVencimiento
             };
         }
+        private async Task<string> SubirYObtenerUrlDeImagen(Stream stream, string nombreImagen, string carpetaCloudinary)
+        {
+            string? urlImagen = null;
 
+            if (stream != null && !string.IsNullOrEmpty(nombreImagen))
+            {
+                urlImagen = await _imagenServicio
+                   .SubirImagenAsync(stream, nombreImagen, carpetaCloudinary);
+            }
+
+            return urlImagen;
+        }
         private void CompletarDatosDeRespuesta(Insumo insumoCreado, CategoriaInsumo categoria, UnidadMedida unidadMedida, Lote loteInicial)
         {
             insumoCreado.Categoria = categoria.Descripcion;
