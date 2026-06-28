@@ -27,22 +27,20 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
 
             var (desdeAnterior, hastaAnterior) = CalcularPeriodoAnterior(desde, hastaAjustado);
 
-            var totalesActualesTask = _comandaRepositorio.ObtenerTotalesPeriodoAsync(restauranteId, desde, hastaAjustado);
-            var ventasAgrupadasTask = _comandaRepositorio.ObtenerVentasAgrupadasAsync(restauranteId, desde, hastaAjustado, tipoAgrupacion);
-            var totalesAnterioresTask = _comandaRepositorio.ObtenerTotalesPeriodoAsync(restauranteId, desdeAnterior, hastaAnterior);
-            var recordatoriosActivosTask = _platoAnalisisRepositorio.ObtenerRecordatoriosActivosAsync(restauranteId);
-            var estadisticasMozosTask = _comandaRepositorio.ObtenerEstadisticasMozosAsync(restauranteId, desde, hastaAjustado);
-
-            await Task.WhenAll(totalesActualesTask, ventasAgrupadasTask, totalesAnterioresTask, recordatoriosActivosTask, estadisticasMozosTask);
+            var totalesActuales = await _comandaRepositorio.ObtenerTotalesPeriodoAsync(restauranteId, desde, hastaAjustado);
+            var ventasAgrupadas = await _comandaRepositorio.ObtenerVentasAgrupadasAsync(restauranteId, desde, hastaAjustado, tipoAgrupacion);
+            var totalesAnteriores = await _comandaRepositorio.ObtenerTotalesPeriodoAsync(restauranteId, desdeAnterior, hastaAnterior);
+            var recordatoriosActivos = await _platoAnalisisRepositorio.ObtenerRecordatoriosActivosAsync(restauranteId);
+            var estadisticasMozos = await _comandaRepositorio.ObtenerEstadisticasMozosAsync(restauranteId, desde, hastaAjustado);
 
             return EnsamblarResumenOperativo(
-                await totalesActualesTask,
-                await totalesAnterioresTask,
-                await ventasAgrupadasTask,
+                totalesActuales,
+                totalesAnteriores,
+                ventasAgrupadas,
                 desde,
                 hastaAjustado,
-                await recordatoriosActivosTask,
-                await estadisticasMozosTask);
+                recordatoriosActivos,
+                estadisticasMozos);
         }
 
         private TipoAgrupacionTiempo DeterminarTipoAgrupacion(DateTime desde, DateTime hasta)
