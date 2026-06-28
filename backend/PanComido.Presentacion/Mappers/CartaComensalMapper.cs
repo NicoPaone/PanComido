@@ -23,6 +23,7 @@ namespace PanComido.Presentacion.Mappers
                 dto.TiempoPreparacionBase = plato.TiempoPreparacionBase;
                 dto.TiempoPreparacionEstimado = plato.TiempoPreparacionEstimado;
                 
+                dto.CategoriaPlato = plato.Categoria;
                 dto.TipoPlato = plato.TipoPlato;
                 dto.Restricciones = plato.Restricciones?.Select(r => r.Descripcion).ToList() ?? new List<string>();
             }
