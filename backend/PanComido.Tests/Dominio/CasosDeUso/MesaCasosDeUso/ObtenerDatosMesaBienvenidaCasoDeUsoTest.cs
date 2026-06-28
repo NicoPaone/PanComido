@@ -18,31 +18,37 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
             _mesaMockRepo = new Mock<IMesaRepositorio>();
         }
 
-        //[Fact]
-        //public async Task EjecutarAsync_CuandoTodoEsValido_DevuelveBienvenidaMesaDatos()
-        //{
-        //    int restauranteId = 1;
-        //    int mesaId = 1;
+        [Fact]
+        public async Task EjecutarAsync_CuandoTodoEsValido_DevuelveBienvenidaMesaDatos()
+        {
+            // 1. Preparar
+            int restauranteId = 1;
+            int mesaId = 1;
 
-        //    var restauranteMock = new Restaurante { Id = restauranteId };
-        //    var mesaMock = new MesaConPosiciones { Id = mesaId, EstadoMesa = EstadoMesa.Disponible };
+            var restauranteMock = new Restaurante { Id = restauranteId };
+            var mesaMock = new MesaConPosiciones { Id = mesaId, EstadoMesa = EstadoMesa.Disponible };
 
-        //    _restauranteMockRepo
-        //        .Setup(r => r.ObtenerDatosDelLocalAsync(restauranteId))
-        //        .ReturnsAsync(restauranteMock);
+            _restauranteMockRepo
+                .Setup(r => r.ObtenerDatosDelLocalAsync(restauranteId))
+                .ReturnsAsync(restauranteMock);
 
-        //    _mesaMockRepo
-        //        .Setup(r => r.ObtenerPorIdAsync(mesaId, restauranteId))
-        //        .ReturnsAsync(mesaMock);
+            _mesaMockRepo
+                .Setup(r => r.ObtenerPorIdAsync(mesaId, restauranteId))
+                .ReturnsAsync(mesaMock);
 
-        //    var casoDeUso = new ObtenerDatosMesaBienvenidaCasoDeUso(_restauranteMockRepo.Object, _mesaMockRepo.Object, new Mock<ILogger<ObtenerDatosMesaBienvenidaCasoDeUso>>().Object);
+            var casoDeUso = new ObtenerDatosMesaBienvenidaCasoDeUso(
+                _restauranteMockRepo.Object, 
+                _mesaMockRepo.Object, 
+                new Mock<ILogger<ObtenerDatosMesaBienvenidaCasoDeUso>>().Object);
 
-        //    var resultado = await casoDeUso.EjecutarAsync(mesaId, restauranteId);
+            // 2. Ejecutar
+            var resultado = await casoDeUso.EjecutarAsync(mesaId, restauranteId);
 
-        //    Assert.NotNull(resultado);
-        //    Assert.Equal(restauranteMock, resultado.RestauranteDatos);
-        //    Assert.Equal(mesaMock, resultado.Mesa);
-        //}
+            // 3. Verificar
+            Assert.NotNull(resultado);
+            Assert.Equal(restauranteId, resultado.RestauranteId);
+            Assert.Equal(mesaMock, resultado.Mesa);
+        }
 
         [Fact]
         public async Task EjecutarAsync_CuandoRestauranteNoExiste_LanzaKeyNotFoundException()

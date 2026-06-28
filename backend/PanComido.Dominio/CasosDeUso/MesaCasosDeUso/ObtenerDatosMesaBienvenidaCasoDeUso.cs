@@ -26,6 +26,19 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
 
         public async Task<BienvenidaMesaDatos> EjecutarAsync(int mesaId, int restauranteId)
         {
+            await ValidarExistenciaRestauranteAsync(restauranteId);
+
+            MesaConPosiciones mesa = await ObtenerYValidarMesaAsync(mesaId, restauranteId);
+
+            return new BienvenidaMesaDatos
+            {
+                Mesa = mesa,
+                RestauranteId = restauranteId
+            };
+        }
+
+        private async Task ValidarExistenciaRestauranteAsync(int restauranteId)
+        {
             Restaurante restauranteDatos = await _restauranteRepositorio.ObtenerDatosDelLocalAsync(restauranteId);
 
             if (restauranteDatos == null)
@@ -33,7 +46,10 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
                 _logger.LogWarning("Intento de escaneo de QR para un restaurante inexistente. RestauranteId: {RestauranteId}", restauranteId);
                 throw new KeyNotFoundException("Restaurante no encontrado");
             }
+        }
 
+        private async Task<MesaConPosiciones> ObtenerYValidarMesaAsync(int mesaId, int restauranteId)
+        {
             MesaConPosiciones mesa = await _mesaRepositorio.ObtenerPorIdAsync(mesaId, restauranteId);
 
             if (mesa == null)
@@ -54,11 +70,8 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
                 throw new InvalidOperationException("La mesa ya está ocupada, puede pedirle al comensal anfitrion el QR de invitacion");
             }
 
-            return new BienvenidaMesaDatos
-            {
-                Mesa = mesa,
-                RestauranteId = restauranteId
-            };
+            return mesa;
         }
+
     }
 }
