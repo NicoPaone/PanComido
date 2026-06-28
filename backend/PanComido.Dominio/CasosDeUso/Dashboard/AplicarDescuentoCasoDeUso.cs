@@ -1,6 +1,7 @@
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Repositorios.IA;
+using PanComido.Dominio.Interfaces.Servicios;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,16 +12,16 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
     {
         private readonly IArticuloRepositorio _articuloRepositorio;
         private readonly ISugerenciaIARepositorio _sugerenciaIARepositorio;
-        private readonly IPlatoAnalisisRepositorio _platoAnalisisRepositorio;
+        private readonly ICalculadorCostoPlatoServicio _calculadorCostoPlatoServicio;
 
         public AplicarDescuentoCasoDeUso(
             IArticuloRepositorio articuloRepositorio,
             ISugerenciaIARepositorio sugerenciaIARepositorio,
-            IPlatoAnalisisRepositorio platoAnalisisRepositorio)
+            ICalculadorCostoPlatoServicio calculadorCostoPlatoServicio)
         {
             _articuloRepositorio = articuloRepositorio;
             _sugerenciaIARepositorio = sugerenciaIARepositorio;
-            _platoAnalisisRepositorio = platoAnalisisRepositorio;
+            _calculadorCostoPlatoServicio = calculadorCostoPlatoServicio;
         }
 
         public async Task<AplicarDescuentoResultado?> EjecutarAsync(int restauranteId, int platoId, decimal porcentajeDescuento)
@@ -32,7 +33,6 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                 return null;
             }
 
-            // 1. Modificar precio en base de datos
             decimal precioOriginal = plato.PrecioVentaFinal ?? 0m;
             decimal descuento = precioOriginal * (porcentajeDescuento / 100);
             decimal precioNuevo = precioOriginal - descuento;
@@ -40,18 +40,8 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
             plato.PrecioVentaFinal = precioNuevo;
             await _articuloRepositorio.ActualizarAsync(plato);
 
-            // 2. Calcular costo dinámico de ingredientes
-            decimal costoPreparacion = 0;
-            if (plato.Ingredientes != null)
-            {
-                foreach (var item in plato.Ingredientes)
-                {
-                    decimal ultimoPrecioCompra = await _platoAnalisisRepositorio.ObtenerUltimoPrecioCompraInsumoAsync(item.InsumoId);
-                    costoPreparacion += item.Cantidad * (ultimoPrecioCompra > 0 ? ultimoPrecioCompra : 0);
-                }
-            }
+            decimal costoPreparacion = await _calculadorCostoPlatoServicio.CalcularCostoAsync(plato);
 
-            // 3. Actualizar estado de sugerencia en IA
             var sugerenciaIa = await _sugerenciaIARepositorio.ObtenerSugerenciaIAAsync(restauranteId);
             if (sugerenciaIa != null && sugerenciaIa.PlatosAnalisis != null)
             {
@@ -67,7 +57,6 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                 }
             }
 
-            // 4. Calcular nuevo margen
             decimal nuevoMargen = precioNuevo > 0 ? ((precioNuevo - costoPreparacion) / precioNuevo) * 100 : 0m;
 
             return new AplicarDescuentoResultado

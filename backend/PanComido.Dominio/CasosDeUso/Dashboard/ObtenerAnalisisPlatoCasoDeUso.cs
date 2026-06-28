@@ -2,6 +2,7 @@ using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.IA;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Repositorios.IA;
+using PanComido.Dominio.Interfaces.Servicios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +14,19 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
     {
         private readonly IPlatoAnalisisRepositorio _platoAnalisisRepositorio;
         private readonly ISugerenciaIARepositorio _sugerenciaIARepositorio;
+        private readonly ICalculadorCostoPlatoServicio _calculadorCostoPlatoServicio;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
         public ObtenerAnalisisPlatoCasoDeUso(
             IPlatoAnalisisRepositorio platoAnalisisRepositorio,
-            ISugerenciaIARepositorio sugerenciaIARepositorio)
+            ISugerenciaIARepositorio sugerenciaIARepositorio,
+            ICalculadorCostoPlatoServicio calculadorCostoPlatoServicio,
+            IDateTimeProvider dateTimeProvider)
         {
             _platoAnalisisRepositorio = platoAnalisisRepositorio;
             _sugerenciaIARepositorio = sugerenciaIARepositorio;
+            _calculadorCostoPlatoServicio = calculadorCostoPlatoServicio;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<PlatoAnalisisResultado?> EjecutarAsync(int restauranteId, string nombrePlato)
@@ -31,21 +38,11 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                 return null;
             }
 
-            // 1. Costo dinámico
-            decimal costoPreparacion = 0;
-            if (plato.Ingredientes != null)
-            {
-                foreach (var item in plato.Ingredientes)
-                {
-                    decimal ultimoPrecioCompra = await _platoAnalisisRepositorio.ObtenerUltimoPrecioCompraInsumoAsync(item.InsumoId);
-                    costoPreparacion += item.Cantidad * (ultimoPrecioCompra > 0 ? ultimoPrecioCompra : 0);
-                }
-            }
+            decimal costoPreparacion = await _calculadorCostoPlatoServicio.CalcularCostoAsync(plato);
 
-            // 2. Ventas del periodo y variación vs mes anterior
-            DateTime hoy = DateTime.Now;
-            DateTime desde30 = DateTime.Today.AddDays(-30);
-            DateTime desde60 = DateTime.Today.AddDays(-60);
+            DateTime hoy = _dateTimeProvider.ObtenerAhora();
+            DateTime desde30 = _dateTimeProvider.ObtenerHoy().AddDays(-30);
+            DateTime desde60 = _dateTimeProvider.ObtenerHoy().AddDays(-60);
 
             int ventasPeriodo = await _platoAnalisisRepositorio.ObtenerVentasArticuloEnRangoAsync(restauranteId, plato.Id, desde30, hoy);
             int ventasPeriodoAnterior = await _platoAnalisisRepositorio.ObtenerVentasArticuloEnRangoAsync(restauranteId, plato.Id, desde60, desde30);
@@ -62,7 +59,6 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                 volumenVar = $"{signo}{varPct:N0}% vs mes anterior";
             }
 
-            // 3. Participación en su categoría
             int totalVentasCategoria = await _platoAnalisisRepositorio.ObtenerVentasCategoriaEnRangoAsync(restauranteId, plato.CategoriaPlatoId, desde30, hoy);
             string participacion = "0%";
             if (totalVentasCategoria > 0)
@@ -71,7 +67,6 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                 participacion = $"{partPct:N1}%";
             }
 
-            // 4. Comparativa con líder de la categoría
             var lider = await _platoAnalisisRepositorio.ObtenerPlatoLiderDeCategoriaAsync(restauranteId, plato.CategoriaPlatoId, desde30, hoy);
             RendimientoPlato comparativaLider = lider ?? new RendimientoPlato
             {
@@ -80,23 +75,15 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                 FacturacionTotal = 0
             };
 
-            // 5. Tendencia (ventas semanales de las últimas 7 semanas)
-            var tendencia = new List<int>();
-            for (int i = 6; i >= 0; i--)
-            {
-                DateTime desdeSemana = DateTime.Today.AddDays(-7 * (i + 1));
-                DateTime hastaSemana = DateTime.Today.AddDays(-7 * i);
-                int ventasSemana = await _platoAnalisisRepositorio.ObtenerVentasArticuloEnRangoAsync(restauranteId, plato.Id, desdeSemana, hastaSemana);
-                tendencia.Add(ventasSemana);
-            }
+            DateTime desdeSemana = _dateTimeProvider.ObtenerHoy().AddDays(-49);
+            var tendencia = await _platoAnalisisRepositorio.ObtenerVentasSemanalesArticuloAsync(restauranteId, plato.Id, desdeSemana, _dateTimeProvider.ObtenerHoy());
 
-            // 6. Sugerencias e IA
             var sugerenciaIa = await _sugerenciaIARepositorio.ObtenerSugerenciaIAAsync(restauranteId);
             if (sugerenciaIa == null)
             {
                 sugerenciaIa = new SugerenciaIA
                 {
-                    FechaSugerencia = DateTime.Now,
+                    FechaSugerencia = _dateTimeProvider.ObtenerAhora(),
                     PlatosAnalisis = new List<PlatoAnalisisIa>()
                 };
             }
@@ -108,7 +95,6 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
             var analisisPlato = sugerenciaIa.PlatosAnalisis.FirstOrDefault(p => p.PlatoId == plato.Id);
             if (analisisPlato == null)
             {
-                // Inicializar sugerencias por defecto si no existen
                 analisisPlato = new PlatoAnalisisIa
                 {
                     PlatoId = plato.Id,

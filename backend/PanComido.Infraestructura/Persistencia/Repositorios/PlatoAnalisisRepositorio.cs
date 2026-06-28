@@ -58,6 +58,55 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<Dictionary<int, decimal>> ObtenerUltimosPreciosCompraInsumosAsync(List<int> insumoIds)
+        {
+            if (insumoIds == null || !insumoIds.Any())
+            {
+                return new Dictionary<int, decimal>();
+            }
+
+            var listado = await _ctx.PedidoInsumos
+                .Where(pi => insumoIds.Contains(pi.InsumoId))
+                .Select(pi => new
+                {
+                    pi.InsumoId,
+                    pi.PrecioCompra,
+                    Fecha = pi.Pedido.Fecha
+                })
+                .ToListAsync();
+
+            return listado
+                .GroupBy(x => x.InsumoId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.OrderByDescending(x => x.Fecha).First().PrecioCompra
+                );
+        }
+
+        public async Task<List<int>> ObtenerVentasSemanalesArticuloAsync(int restauranteId, int articuloId, DateTime desde, DateTime hasta)
+        {
+            var ventas = await _ctx.ArticuloComanda
+                .Where(ac => ac.ArticuloId == articuloId
+                          && ac.Comanda.RestauranteId == restauranteId
+                          && ac.Comanda.HoraInicio >= desde
+                          && ac.Comanda.HoraInicio <= hasta
+                          && ac.Comanda.Pagos.Any())
+                .Select(ac => new { ac.Cantidad, ac.Comanda.HoraInicio })
+                .ToListAsync();
+
+            var tendencia = new List<int>();
+            for (int i = 6; i >= 0; i--)
+            {
+                DateTime desdeSemana = hasta.AddDays(-7 * (i + 1));
+                DateTime hastaSemana = hasta.AddDays(-7 * i);
+                int total = ventas
+                    .Where(v => v.HoraInicio >= desdeSemana && v.HoraInicio <= hastaSemana)
+                    .Sum(v => v.Cantidad);
+                tendencia.Add(total);
+            }
+            return tendencia;
+        }
+
         public async Task<int> ObtenerVentasArticuloEnRangoAsync(int restauranteId, int articuloId, DateTime desde, DateTime hasta)
         {
             return await _ctx.ArticuloComanda

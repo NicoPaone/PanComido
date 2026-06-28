@@ -32,11 +32,9 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                 return null;
             }
 
-            // 1. Agendar recordatorio (notificación)
             string descripcion = $"Revisión: {plato.Nombre} - Medir impacto de: {accionSugerida}";
             await _platoAnalisisRepositorio.GuardarRecordatorioNotificacionAsync(restauranteId, descripcion);
 
-            // 2. Modificar el estado de la sugerencia a aplicada
             var sugerenciaIa = await _sugerenciaIARepositorio.ObtenerSugerenciaIAAsync(restauranteId);
             if (sugerenciaIa != null && sugerenciaIa.PlatosAnalisis != null)
             {
@@ -48,7 +46,6 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                     
                     if (sug == null)
                     {
-                        // Fallback: buscar por tipo si la acción no coincide exactamente
                         sug = analisisPlato.Sugerencias.FirstOrDefault(s => s.Tipo == "combo");
                     }
 
@@ -77,7 +74,6 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
     {
         public string Mensaje { get; set; } = string.Empty;
         public string Titulo { get; set; } = string.Empty;
-        public string Detail { get; set; } = string.Empty; // Detalle mapped to Detail to keep consistency or we can use Detalle
         public string Detalle { get; set; } = string.Empty;
         public string Destino { get; set; } = "carta";
         public string Tono { get; set; } = "info";

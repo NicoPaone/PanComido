@@ -1,32 +1,34 @@
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Interfaces.Servicios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PanComido.Dominio.CasosDeUso.Dashboard
 {
-    public  class ObtenerVencimientosYCriticidadDashboardCasoDeUso
+    public class ObtenerVencimientosYCriticidadDashboardCasoDeUso
     {
         private readonly IInsumoRepositorio _insumoRepositorio;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-
-        public ObtenerVencimientosYCriticidadDashboardCasoDeUso(IInsumoRepositorio insumoRepositorio)
+        public ObtenerVencimientosYCriticidadDashboardCasoDeUso(
+            IInsumoRepositorio insumoRepositorio,
+            IDateTimeProvider dateTimeProvider)
         {
             _insumoRepositorio = insumoRepositorio;
+            _dateTimeProvider = dateTimeProvider;
         }
-
 
         public async Task<List<Insumo>> EjecutarAsync(int restauranteId)
         {
             var insumos = await _insumoRepositorio.ObtenerInsumosProximosAVencerAsync(restauranteId);
-            var hoy = DateOnly.FromDateTime(DateTime.Now);
+            var hoy = DateOnly.FromDateTime(_dateTimeProvider.ObtenerAhora());
 
             var insumosFiltrados = insumos
-                .Where(i => i.Vencimiento.HasValue && (i.Vencimiento.Value.DayNumber - hoy.DayNumber) <= 7)
+                .Where(i => i.Vencimiento.HasValue && (i.Vencimiento.Value.DayNumber - hoy.DayNumber) <= 10)
                 .ToList();
 
             foreach (var insumo in insumosFiltrados)
@@ -47,8 +49,5 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
 
             return null;
         }
-
-
-
     }
 }

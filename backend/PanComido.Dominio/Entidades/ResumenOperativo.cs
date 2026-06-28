@@ -16,6 +16,16 @@ namespace PanComido.Dominio.Entidades
 
         public List<VentaAgrupada> Grafico { get; set; } = new List<VentaAgrupada>();
         public List<DashboardAccionItem> Recordatorios { get; set; } = new List<DashboardAccionItem>();
+        public List<EstadisticaMozo> Mozos { get; set; } = new List<EstadisticaMozo>();
+    }
+
+    public class EstadisticaMozo
+    {
+        public string Nombre { get; set; } = string.Empty;
+        public int MesasAtendidas { get; set; }
+        public decimal FacturacionTotal { get; set; }
+        public string TiempoPromedioAtencion { get; set; } = string.Empty;
+        public string Estado { get; set; } = string.Empty;
     }
 
     public class DashboardAccionItem

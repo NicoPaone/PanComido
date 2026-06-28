@@ -24,5 +24,6 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task<List<RendimientoPlato>> ObtenerTopPlatosMenosVendidosAsync(int restauranteId, DateTime fechaDesde, DateTime fechaHasta, int limite = 5);
         Task<TotalesPeriodo> ObtenerTotalesPeriodoAsync(int restauranteId, DateTime desde, DateTime hasta);
         Task<List<VentaAgrupada>> ObtenerVentasAgrupadasAsync(int restauranteId, DateTime desde, DateTime hasta, TipoAgrupacionTiempo tipoAgrupacion);
+        Task<List<EstadisticaMozo>> ObtenerEstadisticasMozosAsync(int restauranteId, DateTime desde, DateTime hasta);
     }
 }

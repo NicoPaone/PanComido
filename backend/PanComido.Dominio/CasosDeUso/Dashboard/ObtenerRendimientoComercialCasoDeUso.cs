@@ -2,8 +2,6 @@ using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PanComido.Dominio.CasosDeUso.Dashboard
@@ -22,13 +20,15 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
             DateTime desdeAjustado = DateTime.SpecifyKind(desde, DateTimeKind.Unspecified);
             DateTime hastaAjustado = DateTime.SpecifyKind(hasta.Date.AddDays(1).AddTicks(-1), DateTimeKind.Unspecified);
 
-            var masVendidos = await _comandaRepositorio.ObtenerTopPlatosMasVendidosAsync(restauranteId, desdeAjustado, hastaAjustado, 5);
-            var menosVendidos = await _comandaRepositorio.ObtenerTopPlatosMenosVendidosAsync(restauranteId, desdeAjustado, hastaAjustado, 5);
+            var masVendidosTask = _comandaRepositorio.ObtenerTopPlatosMasVendidosAsync(restauranteId, desdeAjustado, hastaAjustado, 5);
+            var menosVendidosTask = _comandaRepositorio.ObtenerTopPlatosMenosVendidosAsync(restauranteId, desdeAjustado, hastaAjustado, 5);
+
+            await Task.WhenAll(masVendidosTask, menosVendidosTask);
 
             return new ResumenRendimientoComercial
             {
-                MasVendidos = masVendidos,
-                MenosVendidos = menosVendidos
+                MasVendidos = await masVendidosTask,
+                MenosVendidos = await menosVendidosTask
             };
         }
     }

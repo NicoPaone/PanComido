@@ -25,15 +25,24 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
             DateTime hastaAjustado = hasta.Date.AddDays(1).AddTicks(-1);
             TipoAgrupacionTiempo tipoAgrupacion = DeterminarTipoAgrupacion(desde, hastaAjustado);
 
-            var totalesActuales = await _comandaRepositorio.ObtenerTotalesPeriodoAsync(restauranteId, desde, hastaAjustado);
-            var ventasAgrupadas = await _comandaRepositorio.ObtenerVentasAgrupadasAsync(restauranteId, desde, hastaAjustado, tipoAgrupacion);
-
             var (desdeAnterior, hastaAnterior) = CalcularPeriodoAnterior(desde, hastaAjustado);
-            var totalesAnteriores = await _comandaRepositorio.ObtenerTotalesPeriodoAsync(restauranteId, desdeAnterior, hastaAnterior);
 
-            var recordatoriosActivos = await _platoAnalisisRepositorio.ObtenerRecordatoriosActivosAsync(restauranteId);
+            var totalesActualesTask = _comandaRepositorio.ObtenerTotalesPeriodoAsync(restauranteId, desde, hastaAjustado);
+            var ventasAgrupadasTask = _comandaRepositorio.ObtenerVentasAgrupadasAsync(restauranteId, desde, hastaAjustado, tipoAgrupacion);
+            var totalesAnterioresTask = _comandaRepositorio.ObtenerTotalesPeriodoAsync(restauranteId, desdeAnterior, hastaAnterior);
+            var recordatoriosActivosTask = _platoAnalisisRepositorio.ObtenerRecordatoriosActivosAsync(restauranteId);
+            var estadisticasMozosTask = _comandaRepositorio.ObtenerEstadisticasMozosAsync(restauranteId, desde, hastaAjustado);
 
-            return EnsamblarResumenOperativo(totalesActuales, totalesAnteriores, ventasAgrupadas, desde, hastaAjustado, recordatoriosActivos);
+            await Task.WhenAll(totalesActualesTask, ventasAgrupadasTask, totalesAnterioresTask, recordatoriosActivosTask, estadisticasMozosTask);
+
+            return EnsamblarResumenOperativo(
+                await totalesActualesTask,
+                await totalesAnterioresTask,
+                await ventasAgrupadasTask,
+                desde,
+                hastaAjustado,
+                await recordatoriosActivosTask,
+                await estadisticasMozosTask);
         }
 
         private TipoAgrupacionTiempo DeterminarTipoAgrupacion(DateTime desde, DateTime hasta)
@@ -51,12 +60,13 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
         }
 
         private ResumenOperativo EnsamblarResumenOperativo(
-            TotalesPeriodo actuales, 
-            TotalesPeriodo anteriores, 
-            List<VentaAgrupada> grafico, 
-            DateTime desde, 
+            TotalesPeriodo actuales,
+            TotalesPeriodo anteriores,
+            List<VentaAgrupada> grafico,
+            DateTime desde,
             DateTime hasta,
-            List<Notificacion> recordatoriosActivos)
+            List<Notificacion> recordatoriosActivos,
+            List<EstadisticaMozo> mozos)
         {
             decimal ticketActual = CalcularTicketPromedio(actuales);
             decimal ticketAnterior = CalcularTicketPromedio(anteriores);
@@ -69,7 +79,7 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                 string desc = item.Descripcion;
                 string titulo = desc;
                 string detalle = "";
-                
+
                 int separatorIndex = desc.IndexOf(" - ");
                 if (separatorIndex >= 0)
                 {
@@ -95,13 +105,14 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                 TotalPedidos = actuales.CantidadPedidos,
                 TicketPromedio = ticketActual,
                 PromedioDiarioPedidos = promedioDiarioPedidos,
-                
+
                 VariacionVentas = CalcularPorcentaje(actuales.TotalFacturado, anteriores.TotalFacturado),
                 VariacionPedidos = CalcularPorcentaje(actuales.CantidadPedidos, anteriores.CantidadPedidos),
                 VariacionTicket = CalcularPorcentaje(ticketActual, ticketAnterior),
-                
+
                 Grafico = grafico,
-                Recordatorios = listRecordatorios
+                Recordatorios = listRecordatorios,
+                Mozos = mozos
             };
         }
 

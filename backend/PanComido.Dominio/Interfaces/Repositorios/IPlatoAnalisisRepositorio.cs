@@ -11,6 +11,8 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task<decimal> ObtenerUltimoPrecioCompraInsumoAsync(int insumoId);
         Task<int> ObtenerVentasArticuloEnRangoAsync(int restauranteId, int articuloId, DateTime desde, DateTime hasta);
         Task<int> ObtenerVentasCategoriaEnRangoAsync(int restauranteId, int categoriaPlatoId, DateTime desde, DateTime hasta);
+        Task<Dictionary<int, decimal>> ObtenerUltimosPreciosCompraInsumosAsync(List<int> insumoIds);
+        Task<List<int>> ObtenerVentasSemanalesArticuloAsync(int restauranteId, int articuloId, DateTime desde, DateTime hasta);
         Task<RendimientoPlato?> ObtenerPlatoLiderDeCategoriaAsync(int restauranteId, int categoriaPlatoId, DateTime desde, DateTime hasta);
         Task GuardarRecordatorioNotificacionAsync(int restauranteId, string descripcion);
         Task<List<Notificacion>> ObtenerRecordatoriosActivosAsync(int restauranteId);

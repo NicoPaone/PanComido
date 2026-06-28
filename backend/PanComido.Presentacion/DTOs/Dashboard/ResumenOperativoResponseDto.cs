@@ -15,6 +15,16 @@ namespace PanComido.Presentacion.DTOs.Dashboard
 
         public List<VentaAgrupadaDto> Grafico { get; set; } = new List<VentaAgrupadaDto>();
         public List<DashboardAccionItemDto> Recordatorios { get; set; } = new List<DashboardAccionItemDto>();
+        public List<EstadisticaMozoDto> Mozos { get; set; } = new List<EstadisticaMozoDto>();
+    }
+
+    public class EstadisticaMozoDto
+    {
+        public string Nombre { get; set; } = string.Empty;
+        public int MesasAtendidas { get; set; }
+        public decimal FacturacionTotal { get; set; }
+        public string TiempoPromedioAtencion { get; set; } = string.Empty;
+        public string Estado { get; set; } = string.Empty;
     }
 
     public class VentaAgrupadaDto

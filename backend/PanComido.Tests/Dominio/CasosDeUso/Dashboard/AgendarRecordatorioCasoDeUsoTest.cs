@@ -31,7 +31,6 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
         [Fact]
         public async Task EjecutarAsync_DebeGuardarNotificacionYMarcarSugerenciaComoAplicada()
         {
-            // Preparar
             int restauranteId = 1;
             int platoId = 10;
             string accionSugerida = "Combo de Papas con Gaseosa";
@@ -62,10 +61,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
             _sugerenciaIaRepoMock.Setup(r => r.ObtenerSugerenciaIAAsync(restauranteId))
                 .ReturnsAsync(sugerenciaIa);
 
-            // Ejecutar
             var resultado = await _casoDeUso.EjecutarAsync(restauranteId, platoId, accionSugerida);
 
-            // Verificar
             Assert.NotNull(resultado);
             Assert.Equal("Recordatorio guardado en el módulo de tareas administrativas.", resultado.Mensaje);
             Assert.Equal("Revisión: Papas Fritas", resultado.Titulo);

@@ -292,6 +292,64 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 }).ToList();
             }
         }
+
+        public async Task<List<DOM.EstadisticaMozo>> ObtenerEstadisticasMozosAsync(int restauranteId, DateTime desde, DateTime hasta)
+        {
+            var mozos = await _ctx.Mozos
+                .Include(m => m.IdEmpleadoNavigation)
+                .Where(m => m.IdEmpleadoNavigation.RestauranteId == restauranteId)
+                .ToListAsync();
+
+            var statsList = new List<DOM.EstadisticaMozo>();
+
+            foreach (var mozo in mozos)
+            {
+                var comandasDelMozo = await _ctx.Comanda
+                    .Include(c => c.Pagos)
+                    .Where(c => c.RestauranteId == restauranteId
+                             && c.HoraInicio >= desde
+                             && c.HoraInicio <= hasta
+                             && _ctx.Mozos
+                                 .Where(m => m.IdEmpleado == mozo.IdEmpleado)
+                                 .SelectMany(m => m.Mesas)
+                                 .Any(mesa => mesa.Id == c.MesaId))
+                    .ToListAsync();
+
+                int mesasAtendidas = comandasDelMozo.Select(c => c.MesaId).Distinct().Count();
+                decimal facturacionTotal = comandasDelMozo.Sum(c => c.Pagos.Sum(p => p.Total));
+
+                var comandasFinalizadas = comandasDelMozo.Where(c => c.HoraFin.HasValue).ToList();
+                string tiempoPromedioAtencion = "30m";
+                if (comandasFinalizadas.Any())
+                {
+                    double avgMinutes = comandasFinalizadas.Average(c => (c.HoraFin.Value - c.HoraInicio).TotalMinutes);
+                    tiempoPromedioAtencion = $"{Math.Round(avgMinutes)}m";
+                }
+
+                int activas = comandasDelMozo.Count(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada 
+                                                      && c.EstadoComandaId != (int)EstadoComanda.Abierta);
+                string estado = "Baja carga";
+                if (activas > 4)
+                {
+                    estado = "Sobrecargado";
+                }
+                else if (activas >= 2)
+                {
+                    estado = "Optimo";
+                }
+
+                statsList.Add(new DOM.EstadisticaMozo
+                {
+                    Nombre = mozo.IdEmpleadoNavigation.Nombre,
+                    MesasAtendidas = mesasAtendidas,
+                    FacturacionTotal = facturacionTotal,
+                    TiempoPromedioAtencion = tiempoPromedioAtencion,
+                    Estado = estado
+                });
+            }
+
+            return statsList;
+        }
     }
 
 }

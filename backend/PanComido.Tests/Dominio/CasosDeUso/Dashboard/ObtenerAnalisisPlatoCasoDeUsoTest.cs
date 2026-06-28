@@ -4,6 +4,7 @@ using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.IA;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Repositorios.IA;
+using PanComido.Dominio.Interfaces.Servicios;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,35 +16,39 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
     {
         private readonly Mock<IPlatoAnalisisRepositorio> _platoAnalisisRepoMock;
         private readonly Mock<ISugerenciaIARepositorio> _sugerenciaIaRepoMock;
+        private readonly Mock<ICalculadorCostoPlatoServicio> _calculadorCostoMock;
+        private readonly Mock<IDateTimeProvider> _dateTimeProviderMock;
         private readonly ObtenerAnalisisPlatoCasoDeUso _casoDeUso;
 
         public ObtenerAnalisisPlatoCasoDeUsoTest()
         {
             _platoAnalisisRepoMock = new Mock<IPlatoAnalisisRepositorio>();
             _sugerenciaIaRepoMock = new Mock<ISugerenciaIARepositorio>();
-            _casoDeUso = new ObtenerAnalisisPlatoCasoDeUso(_platoAnalisisRepoMock.Object, _sugerenciaIaRepoMock.Object);
+            _calculadorCostoMock = new Mock<ICalculadorCostoPlatoServicio>();
+            _dateTimeProviderMock = new Mock<IDateTimeProvider>();
+            _casoDeUso = new ObtenerAnalisisPlatoCasoDeUso(
+                _platoAnalisisRepoMock.Object, 
+                _sugerenciaIaRepoMock.Object,
+                _calculadorCostoMock.Object,
+                _dateTimeProviderMock.Object);
         }
 
         [Fact]
         public async Task EjecutarAsync_DebeRetornarNull_CuandoNoExistePlato()
         {
-            // Preparar
             int restauranteId = 1;
             string nombrePlato = "NoExiste";
             _platoAnalisisRepoMock.Setup(r => r.ObtenerArticuloConPlatoYIngredientesPorNombreAsync(restauranteId, nombrePlato))
                 .ReturnsAsync((Articulo?)null);
 
-            // Ejecutar
             var resultado = await _casoDeUso.EjecutarAsync(restauranteId, nombrePlato);
 
-            // Verificar
             Assert.Null(resultado);
         }
 
         [Fact]
         public async Task EjecutarAsync_DebeCalcularMetricasYSugerenciasCorrectamente()
         {
-            // Preparar
             int restauranteId = 1;
             string nombrePlato = "Papas Fritas";
             var plato = new Plato
@@ -58,11 +63,15 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
                 }
             };
 
+            var fechaReferencia = new DateTime(2023, 1, 1);
+            _dateTimeProviderMock.Setup(d => d.ObtenerAhora()).Returns(fechaReferencia);
+            _dateTimeProviderMock.Setup(d => d.ObtenerHoy()).Returns(fechaReferencia.Date);
+
             _platoAnalisisRepoMock.Setup(r => r.ObtenerArticuloConPlatoYIngredientesPorNombreAsync(restauranteId, nombrePlato))
                 .ReturnsAsync(plato);
 
-            _platoAnalisisRepoMock.Setup(r => r.ObtenerUltimoPrecioCompraInsumoAsync(101))
-                .ReturnsAsync(2000m); // Costo: 0.5 * 2000 = 1000m
+            _calculadorCostoMock.Setup(c => c.CalcularCostoAsync(plato))
+                .ReturnsAsync(1000m);
 
             _platoAnalisisRepoMock.Setup(r => r.ObtenerVentasArticuloEnRangoAsync(restauranteId, plato.Id, It.IsAny<DateTime>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(15);
@@ -73,13 +82,14 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
             _platoAnalisisRepoMock.Setup(r => r.ObtenerPlatoLiderDeCategoriaAsync(restauranteId, plato.CategoriaPlatoId, It.IsAny<DateTime>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(new RendimientoPlato { PlatoId = 20, Nombre = "Papas Rusticas", UnidadesVendidas = 45, FacturacionTotal = 202500m });
 
+            _platoAnalisisRepoMock.Setup(r => r.ObtenerVentasSemanalesArticuloAsync(restauranteId, plato.Id, It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .ReturnsAsync(new List<int> { 0, 1, 2, 3, 4, 5, 6 });
+
             _sugerenciaIaRepoMock.Setup(r => r.ObtenerSugerenciaIAAsync(restauranteId))
                 .ReturnsAsync((SugerenciaIA?)null);
 
-            // Ejecutar
             var resultado = await _casoDeUso.EjecutarAsync(restauranteId, nombrePlato);
 
-            // Verificar
             Assert.NotNull(resultado);
             Assert.Equal(plato, resultado.Articulo);
             Assert.Equal(1000m, resultado.CostoPreparacion);
