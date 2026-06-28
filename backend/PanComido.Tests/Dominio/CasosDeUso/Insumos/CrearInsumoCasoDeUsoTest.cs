@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Moq;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.Entidades;
@@ -11,6 +11,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.IO;
+
 namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
 {
     public class CrearInsumoCasoDeUsoTest
@@ -21,6 +23,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
         private readonly Mock<IUnidadMedidaRepositorio> _unidadMedidaRepoMock;
         private readonly Mock<ICategoriaInsumoRepositorio> _categoriaRepoMock;
         private readonly Mock<IEstadoStockInsumoServicio> _estadoStockServicioMock;
+        private readonly Mock<IImagenServicio> _imagenServicioMock;
         private readonly Mock<ILogger<CrearInsumoCasoDeUso>> _loggerMock;
 
         public CrearInsumoCasoDeUsoTest()
@@ -31,6 +34,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
             _unidadMedidaRepoMock = new Mock<IUnidadMedidaRepositorio>();
             _categoriaRepoMock = new Mock<ICategoriaInsumoRepositorio>();
             _estadoStockServicioMock = new Mock<IEstadoStockInsumoServicio>();
+            _imagenServicioMock = new Mock<IImagenServicio>();
             _loggerMock = new Mock<ILogger<CrearInsumoCasoDeUso>>();
         }
 
@@ -43,6 +47,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
                 _unidadMedidaRepoMock.Object,
                 _categoriaRepoMock.Object,
                 _estadoStockServicioMock.Object,
+                _imagenServicioMock.Object,
                 _loggerMock.Object);
         }
 
@@ -70,7 +75,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
             _estadoStockServicioMock.Setup(s => s.CalcularEstadoStock(cantidadInicial, insumo.StockMinimo)).Returns(EstadoStock.Normal);
 
             // 2. Ejecutar
-            await casoDeUso.EjecutarAsync(restauranteId, insumo, cantidadInicial, bodegaId, fechaVencimientoFutura);
+            await casoDeUso.EjecutarAsync(restauranteId, insumo, cantidadInicial, bodegaId, fechaVencimientoFutura, Stream.Null, "", "");
 
             // 3. Verificar
 
@@ -107,7 +112,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
 
             // 2. Ejecutar y 3.Verificar que lanza la excepcion
             ArgumentException excepcion = await Assert.ThrowsAsync<ArgumentException>(() =>
-                casoDeUso.EjecutarAsync(restauranteId, insumo, cantidadInicial, bodegaId, DateOnly.FromDateTime(DateTime.UtcNow).AddDays(5)));
+                casoDeUso.EjecutarAsync(restauranteId, insumo, cantidadInicial, bodegaId, DateOnly.FromDateTime(DateTime.UtcNow).AddDays(5), Stream.Null, "", ""));
 
             Assert.Equal("La categoría de insumo seleccionada no existe en el sistema.", excepcion.Message);
 
@@ -134,7 +139,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
 
             // 2. Ejecutar y 3.Verificar que lanza la excepcion
             ArgumentException excepcion = await Assert.ThrowsAsync<ArgumentException>(() =>
-                casoDeUso.EjecutarAsync(restauranteId, insumo, cantidadInicial, bodegaId, DateOnly.FromDateTime(DateTime.UtcNow).AddDays(5)));
+                casoDeUso.EjecutarAsync(restauranteId, insumo, cantidadInicial, bodegaId, DateOnly.FromDateTime(DateTime.UtcNow).AddDays(5), Stream.Null, "", ""));
 
             Assert.Equal("La unidad de medida seleccionada no existe en el sistema.", excepcion.Message);
 
@@ -159,7 +164,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
 
             // 2. Ejecutar y 3.Verificar que lanza la excepcion
             ArgumentException excepcion = await Assert.ThrowsAsync<ArgumentException>(() =>
-                casoDeUso.EjecutarAsync(restauranteId, insumo, cantidadInicial, bodegaIdFalsa, DateOnly.FromDateTime(DateTime.UtcNow).AddDays(5)));
+                casoDeUso.EjecutarAsync(restauranteId, insumo, cantidadInicial, bodegaIdFalsa, DateOnly.FromDateTime(DateTime.UtcNow).AddDays(5), Stream.Null, "", ""));
 
             Assert.Equal("La bodega destino especificada no es valida o no existe.", excepcion.Message);
 
@@ -181,7 +186,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
 
             // 2. Ejecutar y 3.Verificar que lanza la excepcion
             ArgumentException excepcion = await Assert.ThrowsAsync<ArgumentException>(() =>
-                casoDeUso.EjecutarAsync(restauranteId, insumo, cantidadInicial, bodegaId, DateOnly.FromDateTime(DateTime.UtcNow).AddDays(5)));
+                casoDeUso.EjecutarAsync(restauranteId, insumo, cantidadInicial, bodegaId, DateOnly.FromDateTime(DateTime.UtcNow).AddDays(5), Stream.Null, "", ""));
 
             Assert.Equal("La cantidad inicial (20) no puede ser menor al stock mínimo configurado (50).", excepcion.Message);
 
@@ -203,7 +208,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
 
             // 2. Ejecutar y 3.Verificar que lanza la excepcion
             ArgumentException excepcion = await Assert.ThrowsAsync<ArgumentException>(() =>
-                casoDeUso.EjecutarAsync(restauranteId, insumo, cantidadInicial, bodegaId, fechaInvalida));
+                casoDeUso.EjecutarAsync(restauranteId, insumo, cantidadInicial, bodegaId, fechaInvalida, Stream.Null, "", ""));
 
             Assert.Equal("La fecha de vencimiento debe ser una fecha futura.", excepcion.Message);
 
