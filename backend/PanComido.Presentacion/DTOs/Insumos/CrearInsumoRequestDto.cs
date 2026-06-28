@@ -31,5 +31,8 @@ namespace PanComido.Presentacion.DTOs.Insumos
 
         [Required(ErrorMessage = "La fecha de vencimiento es obligatoria.")]
         public DateOnly FechaVencimiento { get; set; }
+
+        [DataType(DataType.Upload)]
+        public IFormFile? Imagen { get; set; }
     }
 }
