@@ -32,6 +32,21 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
         public async Task<BienvenidaDatosInvitadoComanda> EjecutarAsync(int comandaId)
         {
 
+            Comanda comanda = await ObtenerYValidarComandaAInvitar(comandaId);
+
+            MesaConPosiciones mesa = await _mesaRepositorio.ObtenerPorIdAsync(comanda.MesaId, comanda.RestauranteId);
+
+            return new BienvenidaDatosInvitadoComanda
+            {
+                IdComanda = comanda.Id,
+                CantComensales = comanda.CantComensales,
+                Mesa = mesa,
+                RestauranteId = comanda.RestauranteId
+            };
+        }
+
+        private async Task<Comanda> ObtenerYValidarComandaAInvitar(int comandaId)
+        {
             Comanda comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
 
             if (comanda == null)
@@ -45,17 +60,8 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
                 _logger.LogWarning("Intento de ingreso como invitado a una mesa con comanda ya finalizada. ComandaId: {ComandaId}", comandaId);
                 throw new InvalidOperationException("Esta mesa ya ha finalizado su pedido.");
             }
-                
 
-            MesaConPosiciones mesa = await _mesaRepositorio.ObtenerPorIdAsync(comanda.MesaId, comanda.RestauranteId);
-
-            return new BienvenidaDatosInvitadoComanda
-            {
-                IdComanda = comanda.Id,
-                CantComensales = comanda.CantComensales,
-                Mesa = mesa,
-                RestauranteId = comanda.RestauranteId
-            };
+            return comanda;
         }
     }
 }

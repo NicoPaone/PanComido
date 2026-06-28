@@ -1,6 +1,7 @@
 using Moq;
 using PanComido.Dominio.CasosDeUso.Dashboard;
 using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using System;
 using System.Collections.Generic;
@@ -53,7 +54,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
                     restauranteId, 
                     desde, 
                     It.IsAny<DateTime>(), 
-                    It.IsAny<string>()))
+                    It.IsAny<TipoAgrupacionTiempo>()))
                 .ReturnsAsync(ventasAgrupadas);
 
             // Ejecutar
@@ -90,7 +91,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
                 .ReturnsAsync(totalesActuales)
                 .ReturnsAsync(totalesAnteriores);
 
-            _comandaRepoMock.Setup(r => r.ObtenerVentasAgrupadasAsync(restauranteId, It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>()))
+            _comandaRepoMock.Setup(r => r.ObtenerVentasAgrupadasAsync(restauranteId, It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<TipoAgrupacionTiempo>()))
                 .ReturnsAsync(new List<VentaAgrupada>());
 
             // Ejecutar

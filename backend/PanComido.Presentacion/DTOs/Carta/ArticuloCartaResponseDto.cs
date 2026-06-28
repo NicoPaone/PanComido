@@ -8,6 +8,7 @@ namespace PanComido.Presentacion.DTOs.Carta
         public decimal PrecioVentaFinal { get; set; }
         public decimal Costo { get; set; }
         public bool VisibleEnCarta { get; set; }
+        public bool Destacado { get; set; }
         public string TipoArticulo { get; set; }
         public string Categoria { get; set; }
 
