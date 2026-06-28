@@ -1,11 +1,5 @@
 using PanComido.Dominio.Entidades;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +23,6 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task<List<RendimientoPlato>> ObtenerTopPlatosMasVendidosAsync(int restauranteId, DateTime fechaDesde, DateTime fechaHasta, int limite = 5);
         Task<List<RendimientoPlato>> ObtenerTopPlatosMenosVendidosAsync(int restauranteId, DateTime fechaDesde, DateTime fechaHasta, int limite = 5);
         Task<TotalesPeriodo> ObtenerTotalesPeriodoAsync(int restauranteId, DateTime desde, DateTime hasta);
-        Task<List<VentaAgrupada>> ObtenerVentasAgrupadasAsync(int restauranteId, DateTime desde, DateTime hasta, string tipoAgrupacion);
+        Task<List<VentaAgrupada>> ObtenerVentasAgrupadasAsync(int restauranteId, DateTime desde, DateTime hasta, TipoAgrupacionTiempo tipoAgrupacion);
     }
 }

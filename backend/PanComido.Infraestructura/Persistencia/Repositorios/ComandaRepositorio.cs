@@ -228,7 +228,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             return result ?? new DOM.TotalesPeriodo { CantidadPedidos = 0, TotalFacturado = 0 };
         }
 
-        public async Task<List<DOM.VentaAgrupada>> ObtenerVentasAgrupadasAsync(int restauranteId, DateTime desde, DateTime hasta, string tipoAgrupacion)
+        public async Task<List<DOM.VentaAgrupada>> ObtenerVentasAgrupadasAsync(int restauranteId, DateTime desde, DateTime hasta, TipoAgrupacionTiempo tipoAgrupacion)
         {
             var query = _ctx.Comanda
                 .Where(c => c.RestauranteId == restauranteId
@@ -236,7 +236,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                          && c.HoraInicio <= hasta
                          && c.Pagos.Any());
 
-            if (tipoAgrupacion == "Hora")
+            if (tipoAgrupacion == TipoAgrupacionTiempo.Hora)
             {
                 var resultDb = await query
                     .GroupBy(c => c.HoraInicio.Hour)
@@ -254,7 +254,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     Total = x.Total
                 }).ToList();
             }
-            else if (tipoAgrupacion == "Dia")
+            else if (tipoAgrupacion == TipoAgrupacionTiempo.Dia)
             {
                 var resultDb = await query
                     .GroupBy(c => c.HoraInicio.Date)
