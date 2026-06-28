@@ -20,58 +20,79 @@ namespace PanComido.Dominio.Servicios
 
         public async Task DescontarStockPorArticulosAsync(int restauranteId, List<ArticuloComanda> articulosSolicitados)
         {
+            Dictionary<int, decimal> insumosARestar = CalcularInsumosARestar(articulosSolicitados);
+
+            if (insumosARestar.Any())
+                await DescontarPorLotesSegunFIFOAsync(restauranteId, insumosARestar);
+        }
+
+        private Dictionary<int, decimal> CalcularInsumosARestar(List<ArticuloComanda> articulosSolicitados)
+        {
             Dictionary<int, decimal> insumosARestar = new();
 
-            foreach (var itemComanda in articulosSolicitados)
+            foreach (var itemDeComanda in articulosSolicitados)
             {
-                if (itemComanda.Articulo is Plato plato)
-                {
-                    foreach (var itemReceta in plato.Ingredientes)
-                    {
-                        bool ingredienteExcluidoPorElCliente = itemComanda.IngredientesExcluidosIds.Contains(itemReceta.InsumoId);
-                        if (!ingredienteExcluidoPorElCliente)
-                            AcumularInsumoARestar(insumosARestar, itemReceta.InsumoId, itemReceta.Cantidad * itemComanda.Cantidad);
-                    }
-                }
-                else if (itemComanda.Articulo is Insumo bebida)
-                    AcumularInsumoARestar(insumosARestar, bebida.Id, itemComanda.Cantidad);
+                if (itemDeComanda.Articulo is Plato plato)
+                    CalcularInsumosDePlato(plato, itemDeComanda, insumosARestar);
+                else
+                    CalcularInsumoDirecto(itemDeComanda.Articulo, itemDeComanda, insumosARestar);
             }
 
-            List<Lote> lotesModificados = new();
+            return insumosARestar;
+        }
 
-            // FIFO: Descontar de los lotes ordenados por vencimiento
+        private void CalcularInsumosDePlato(Plato plato, ArticuloComanda itemDeComanda, Dictionary<int, decimal> insumosARestar)
+        {
+            foreach (var ingrediente in plato.Ingredientes)
+            {
+                bool ingredienteExcluido = itemDeComanda.IngredientesExcluidosIds.Contains(ingrediente.InsumoId);
+
+                if (!ingredienteExcluido)
+                {
+                    decimal cantidadTotalARestar = ingrediente.Cantidad * itemDeComanda.Cantidad;
+                    AcumularInsumoARestar(insumosARestar, ingrediente.InsumoId, cantidadTotalARestar);
+                }
+            }
+        }
+
+        private void CalcularInsumoDirecto(Articulo articulo, ArticuloComanda itemDeComanda, Dictionary<int, decimal> insumosARestar)
+        {
+            AcumularInsumoARestar(insumosARestar, articulo.Id, itemDeComanda.Cantidad);
+        }
+
+
+        private void AcumularInsumoARestar(Dictionary<int, decimal> insumosARestar, int insumoId, decimal cantidadASumar)
+        {
+            if (!insumosARestar.ContainsKey(insumoId))
+            {
+                insumosARestar[insumoId] = 0;
+            }
+
+            insumosARestar[insumoId] += cantidadASumar;
+        }
+
+        private async Task DescontarPorLotesSegunFIFOAsync(int restauranteId, Dictionary<int, decimal> insumosARestar)
+        {
+            List<Lote> lotesModificados = new();
             foreach (var kvp in insumosARestar)
             {
                 int insumoId = kvp.Key;
                 decimal cantidadPorDescontar = kvp.Value;
-
                 List<Lote> lotesDisponibles = await _loteRepositorio.ObtenerLotesPorFechaVencimientoAscendenteAsync(restauranteId, insumoId);
-
                 foreach (var lote in lotesDisponibles)
                 {
                     if (cantidadPorDescontar <= 0)
                         break;
-
                     decimal aDescontarDeEsteLote = Math.Min(cantidadPorDescontar, lote.Cantidad);
-
                     lote.Cantidad -= aDescontarDeEsteLote;
                     cantidadPorDescontar -= aDescontarDeEsteLote;
-
                     lotesModificados.Add(lote);
                 }
             }
-
             if (lotesModificados.Any())
-                await _loteRepositorio.ActualizarLotesAsync(lotesModificados);
-        }
-        private void AcumularInsumoARestar(Dictionary<int, decimal> diccionario, int insumoId, decimal cantidadASumar)
-        {
-            if (!diccionario.ContainsKey(insumoId))
             {
-                diccionario[insumoId] = 0;
+                await _loteRepositorio.ActualizarLotesAsync(lotesModificados);
             }
-
-            diccionario[insumoId] += cantidadASumar;
         }
     }
 
