@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Infraestructura.Persistencia.Mappers;
 using System;
@@ -96,17 +97,17 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             efArticulo.PrecioVentaFinal = platoDominio.PrecioVentaFinal;
             efArticulo.UrlImagen = platoDominio.UrlImagen;
 
-            var configVisible = await _ctx.ConfiguracionArticulos.FindAsync(2);
+            var configVisible = await _ctx.ConfiguracionArticulos.FindAsync((int)ConfiguracionArticuloEnum.VisibleEnCarta);
             if (platoDominio.EsVisibleEnCarta)
             {
-                if (!efArticulo.ConfiguracionArticulos.Any(c => c.Id == 2) && configVisible != null)
+                if (!efArticulo.ConfiguracionArticulos.Any(c => c.Id == (int)ConfiguracionArticuloEnum.VisibleEnCarta) && configVisible != null)
                 {
                     efArticulo.ConfiguracionArticulos.Add(configVisible);
                 }
             }
             else
             {
-                var cfg = efArticulo.ConfiguracionArticulos.FirstOrDefault(c => c.Id == 2);
+                var cfg = efArticulo.ConfiguracionArticulos.FirstOrDefault(c => c.Id == (int)ConfiguracionArticuloEnum.VisibleEnCarta);
                 if (cfg != null)
                 {
                     efArticulo.ConfiguracionArticulos.Remove(cfg);

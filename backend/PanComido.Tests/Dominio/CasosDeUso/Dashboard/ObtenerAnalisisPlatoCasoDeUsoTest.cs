@@ -94,7 +94,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
             Assert.Equal(plato, resultado.Articulo);
             Assert.Equal(1000m, resultado.CostoPreparacion);
             Assert.Equal(15, resultado.VentasPeriodo);
-            Assert.Equal("15.0%", resultado.Participacion);
+            Assert.Equal("15,0%", resultado.Participacion);
             Assert.Equal("Papas Rusticas", resultado.ComparativaLider.Nombre);
             Assert.Equal(7, resultado.Tendencia.Count);
             Assert.NotNull(resultado.AnalisisIa);
