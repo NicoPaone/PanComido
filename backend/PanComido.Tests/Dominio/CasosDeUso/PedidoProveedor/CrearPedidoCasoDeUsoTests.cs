@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using DOM = PanComido.Dominio.Entidades;
 
@@ -68,7 +69,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
 
             Assert.NotNull(resultado);
             Assert.Equal(100, resultado.Id);
-            Assert.Equal("Pendiente", resultado.Estado);
+            Assert.Equal(EstadoPedido.Pendiente, resultado.Estado);
             _pedidoRepoMock.Verify(r => r.CrearPedidoAsync(It.IsAny<DOM.Pedido>()), Times.Once);
         }
 

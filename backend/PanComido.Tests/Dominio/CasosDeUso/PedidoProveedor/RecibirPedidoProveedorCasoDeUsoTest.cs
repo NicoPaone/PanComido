@@ -1,5 +1,6 @@
 ﻿using Moq;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using DOM = PanComido.Dominio.Entidades;
 
@@ -38,7 +39,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
 
             _pedidoRepoMock
                 .Setup(r => r.ObtenerPedidoPorIdAsync(pedidoId))
-                .ReturnsAsync(new DOM.Pedido { Id = pedidoId, Estado = "Enviado" });
+                .ReturnsAsync(new DOM.Pedido { Id = pedidoId, Estado = EstadoPedido.Enviado });
 
             _bodegaRepoMock
                 .Setup(r => r.ExisteBodegaEnRestauranteAsync(restauranteId, 1))
@@ -111,7 +112,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
 
             _pedidoRepoMock
                 .Setup(r => r.ObtenerPedidoPorIdAsync(pedidoId))
-                .ReturnsAsync(new DOM.Pedido { Id = pedidoId, Estado = "Pendiente" });
+                .ReturnsAsync(new DOM.Pedido { Id = pedidoId, Estado = EstadoPedido.Pendiente });
 
             var casoDeUso = new RecibirPedidoProveedorCasoDeUso(
                  _pedidoRepoMock.Object,
@@ -141,7 +142,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
 
             _pedidoRepoMock
                 .Setup(r => r.ObtenerPedidoPorIdAsync(pedidoId))
-                .ReturnsAsync(new DOM.Pedido { Id = pedidoId, Estado = "Enviado" });
+                .ReturnsAsync(new DOM.Pedido { Id = pedidoId, Estado = EstadoPedido.Enviado });
 
             var casoDeUso = new RecibirPedidoProveedorCasoDeUso(
                  _pedidoRepoMock.Object,
@@ -171,7 +172,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
 
             _pedidoRepoMock
                 .Setup(r => r.ObtenerPedidoPorIdAsync(pedidoId))
-                .ReturnsAsync(new DOM.Pedido { Id = pedidoId, Estado = "Enviado" });
+                .ReturnsAsync(new DOM.Pedido { Id = pedidoId, Estado = EstadoPedido.Enviado });
 
             var casoDeUso = new RecibirPedidoProveedorCasoDeUso(
                  _pedidoRepoMock.Object,
@@ -200,7 +201,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
 
             _pedidoRepoMock
                 .Setup(r => r.ObtenerPedidoPorIdAsync(pedidoId))
-                .ReturnsAsync(new DOM.Pedido { Id = pedidoId, Estado = "Enviado" });
+                .ReturnsAsync(new DOM.Pedido { Id = pedidoId, Estado = EstadoPedido.Enviado });
 
             _bodegaRepoMock
                 .Setup(r => r.ExisteBodegaEnRestauranteAsync(restauranteId, 1))

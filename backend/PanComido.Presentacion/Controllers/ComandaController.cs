@@ -6,7 +6,6 @@ using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Presentacion.DTOs.Cliente;
 using PanComido.Presentacion.DTOs.Comanda;
 using PanComido.Presentacion.DTOs.ErrorResponse;
-using PanComido.Presentacion.DTOs.MetodoDePago;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Sesion;
 

@@ -1,13 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DOM = PanComido.Dominio.Entidades;
 
 namespace PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso

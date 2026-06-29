@@ -1,11 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
 {
@@ -47,7 +44,7 @@ namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
                 throw new ArgumentException("Hay insumos que no pertenecen al proveedor");
 
             pedido.Fecha = DateOnly.FromDateTime(DateTime.Now);
-            pedido.Estado = "Pendiente";
+            pedido.Estado = EstadoPedido.Pendiente;
 
             Pedido pedidoCreado = await _pedidoRepositorio.CrearPedidoAsync(pedido);
             _logger.LogInformation("Pedido creado. PedidoId: {PedidoId}, ProveedorId: {ProveedorId}, RestauranteId: {RestauranteId}, Items: {CantidadItems}", pedidoCreado.Id, pedidoCreado.ProveedorId, restauranteId, pedidoCreado.ItemsInsumo.Count);

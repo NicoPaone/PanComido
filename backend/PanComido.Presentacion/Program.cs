@@ -275,6 +275,7 @@ builder.Services.AddScoped<IVencimientosProximosInsumosServicio, VencimientosPro
 builder.Services.AddScoped<ITiempoDePreparacionPlatoServicio, TiempoDePreparacionPlatoServicio>();
 builder.Services.AddScoped<ICalcularTotalComandaServicio, CalcularTotalComandaServicio>();
 builder.Services.AddScoped<ICrearLlamadoServicio, CrearLlamadoServicio>();
+builder.Services.AddScoped<IRegistrarPagoServicio,  RegistrarPagoServicio>();
 
 
 //Servicios externos

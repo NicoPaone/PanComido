@@ -15,6 +15,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
         private readonly Mock<ICalcularTotalComandaServicio> _calcularTotalMockServicio;
         private readonly Mock<IRestauranteRepositorio> _restauranteMockRepo;
         private readonly Mock<IPagoRepositorio> _pagoMockRepo;
+        private readonly Mock<IRegistrarPagoServicio> _registrarPagoMockServicio;
 
         public CrearPreferenciaMPCasoDeUsoTest()
         {
@@ -23,6 +24,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
             _calcularTotalMockServicio = new Mock<ICalcularTotalComandaServicio>();
             _restauranteMockRepo = new Mock<IRestauranteRepositorio>();
             _pagoMockRepo = new Mock<IPagoRepositorio>();
+            _registrarPagoMockServicio = new Mock<IRegistrarPagoServicio>();
         }
 
         private CrearPreferenciaMPCasoDeUso CrearCasoDeUso() =>
@@ -31,7 +33,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
                 _mercadoPagoMockServicio.Object,
                 _calcularTotalMockServicio.Object,
                 _restauranteMockRepo.Object,
-                _pagoMockRepo.Object);
+                _pagoMockRepo.Object,
+                _registrarPagoMockServicio.Object);
 
         [Fact]
         public async Task EjecutarAsync_CuandoTodoEsValido_RetornaInitPoint()
@@ -72,14 +75,14 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
                 .Setup(s => s.CrearPreferenciaAsync("Comanda-1", 1000m, "Pago a El Buen Sabor"))
                 .ReturnsAsync("https://mp.com/init-point");
 
-            _pagoMockRepo
-                .Setup(r => r.CrearPagoAsync(It.IsAny<DOM.Pago>()))
+            _registrarPagoMockServicio
+                .Setup(s => s.RegistrarAsync(It.IsAny<int>(), It.IsAny<decimal>(), It.IsAny<MetodoPago>(), It.IsAny<EstadoPago>(), It.IsAny<string>()))
                 .ReturnsAsync(new DOM.Pago());
 
             var resultado = await CrearCasoDeUso().EjecutarAsync(comandaId, restauranteId);
 
             Assert.Equal("https://mp.com/init-point", resultado);
-            _pagoMockRepo.Verify(r => r.CrearPagoAsync(It.IsAny<DOM.Pago>()), Times.Once);
+            _registrarPagoMockServicio.Verify(s => s.RegistrarAsync(It.IsAny<int>(), It.IsAny<decimal>(), It.IsAny<MetodoPago>(), It.IsAny<EstadoPago>(), It.IsAny<string>()), Times.Once);
             _mercadoPagoMockServicio.Verify(s => s.CrearPreferenciaAsync("Comanda-1", 1000m, "Pago a El Buen Sabor"), Times.Once);
         }
 

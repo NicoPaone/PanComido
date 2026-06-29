@@ -1,11 +1,7 @@
 ﻿using DOM = PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades.Enums;
 
 namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
 {
@@ -26,7 +22,7 @@ namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
         {
             DOM.Pedido pedidoExistente = await _pedidoRepositorio.ObtenerPedidoPorIdAsync(pedidoId);
             if (pedidoExistente == null) throw new KeyNotFoundException("Pedido no encontrado");
-            if (pedidoExistente.Estado != "Enviado") throw new InvalidOperationException("Solo se pueden recibir pedidos en estado Enviado");
+            if (pedidoExistente.Estado != EstadoPedido.Enviado) throw new InvalidOperationException("Solo se pueden recibir pedidos en estado Enviado");
 
             var sugerencias = new List<RecepcionItemSugerido>();
 

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso;
-using PanComido.Presentacion.DTOs.Comanda;
 using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.DTOs.Llamado;
 using PanComido.Presentacion.Mappers;
