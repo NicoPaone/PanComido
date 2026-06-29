@@ -31,6 +31,9 @@ public partial class Pago
     [Column("total")]
     public decimal Total { get; set; }
 
+    [Column("fecha_hora", TypeName = "timestamp without time zone")]
+    public DateTime FechaHora { get; set; }
+
     [ForeignKey("CierreId")]
     [InverseProperty("Pagos")]
     public virtual Cierre? Cierre { get; set; }

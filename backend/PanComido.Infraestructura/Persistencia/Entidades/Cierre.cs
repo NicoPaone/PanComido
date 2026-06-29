@@ -37,6 +37,9 @@ public partial class Cierre
     [Column("total_mercado_pago")]
     public decimal TotalMercadoPago { get; set; }
 
+    [Column("fecha")]
+    public DateOnly Fecha { get; set; }
+
     [InverseProperty("Cierre")]
     public virtual ICollection<Pago> Pagos { get; set; } = new List<Pago>();
 

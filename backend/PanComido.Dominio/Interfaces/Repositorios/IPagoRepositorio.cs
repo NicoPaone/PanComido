@@ -14,5 +14,8 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task<Pago?> ObtenerPagoPorComandaIdAsync(int comandaId);
         Task<Pago?> ConfirmarPagoAsync(string externalReference);
         Task<Pago?> RechazarPagoAsync(string externalReference);
+        Task<List<Pago>> ObtenerPagosParaCierreAsync(int restauranteId,
+                                                    DateTime horarioApertura,
+                                                    DateTime horarioCierre);
     }
 }

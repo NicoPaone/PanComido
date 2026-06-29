@@ -67,5 +67,33 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
             return efPago == null ? null : _pagoEntityMapper.paraDominio(efPago);
         }
+
+        /*public async Task<List<DOM.Pago>> ObtenerPagosPorFechaAsync(DateTime fecha, int restauranteId)
+        {
+            var pagos = await _ctx.Pagos
+                            .Include(p => p.Comanda)
+                            .Where(p => p.Comanda.RestauranteId == restauranteId &&
+                                        p.FechaHora.Date == fecha.Date)
+                            .ToListAsync();
+            return pagos.Select(p => _pagoEntityMapper.paraDominio(p)).ToList();
+        }*/
+
+        public async Task<List<DOM.Pago>> ObtenerPagosParaCierreAsync(int restauranteId,
+                                                                        DateTime inicio,
+                                                                        DateTime fin)
+        {
+            var pagos = await _ctx.Pagos
+                                    .Include(p => p.Comanda)
+                                    .Where(p =>
+                                        p.CierreId == null &&
+                                        p.Comanda.RestauranteId == restauranteId &&
+                                        p.FechaHora >= inicio &&
+                                        p.FechaHora < fin)
+                                    .ToListAsync();
+
+            return pagos
+                .Select(p => _pagoEntityMapper.paraDominio(p))
+                .ToList();
+        }
     }
 }

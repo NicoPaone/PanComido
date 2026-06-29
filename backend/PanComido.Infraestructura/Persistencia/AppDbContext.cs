@@ -240,6 +240,8 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("cierre_pkey");
 
+            entity.Property(e => e.Fecha).HasDefaultValueSql("CURRENT_DATE");
+
             entity.HasOne(d => d.Restaurante).WithMany(p => p.Cierres)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("cierre_restaurante_id_fkey");
@@ -547,6 +549,8 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<Pago>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("pago_pkey");
+
+            entity.Property(e => e.FechaHora).HasDefaultValueSql("now()");
 
             entity.HasOne(d => d.Cierre).WithMany(p => p.Pagos).HasConstraintName("pago_cierre_id_fkey");
 
