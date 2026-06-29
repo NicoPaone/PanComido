@@ -139,6 +139,18 @@ namespace PanComido.Presentacion.Controllers
             return Ok(dtos);
         }
 
+        [HttpGet("metodos-pago/{restauranteId}/comensal")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(List<MetodoDePagoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<List<MetodoDePagoResponseDto>>> ObtenerMetodosDePagoParaComensal(int restauranteId)
+        {
+            var metodosDePago = await _obtenerMetodosDePagoCasoDeUso.EjecutarAsync(restauranteId);
+            var dtos = _metodoDePagoMapper.aListaDto(metodosDePago);
+            return Ok(dtos);
+        }
+
+
         [HttpPut("habilitar-metodos-pago")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
