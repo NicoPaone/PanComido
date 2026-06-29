@@ -35,12 +35,10 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<DOM.Comanda?> ModificarEstadoComandaAsync(int comandaId, int estadoId)
         {
 
-            Console.WriteLine("modificar en repoo");
             var efComanda = await _ctx.Comanda
                .FirstOrDefaultAsync(m => m.Id == comandaId
                && m.EstadoComandaId != (int)EstadoComanda.Finalizada
                && m.EstadoComandaId != (int)EstadoComanda.Abierta);
-            Console.WriteLine("El objeto: " + efComanda);
 
             if (efComanda == null)
                 return null;
@@ -95,10 +93,10 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             return _ctx.Comanda
                 .Include(c => c.EstadoComanda)
-                .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.ConfiguracionArticulos.Any(ca => ca.Id == 1)))
+                .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.ConfiguracionArticulos.Any(ca => ca.Id == (int)ConfiguracionArticuloEnum.Vendible)))
                     .ThenInclude(ac => ac.Articulo)
                         .ThenInclude(a => a.Plato)
-                .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.ConfiguracionArticulos.Any(ca => ca.Id == 1)))
+                .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.ConfiguracionArticulos.Any(ca => ca.Id == (int)ConfiguracionArticuloEnum.Vendible)))
                     .ThenInclude(ac => ac.Articulo)
                         .ThenInclude(a => a.Insumo)
                 .Include(c => c.ArticuloComanda)

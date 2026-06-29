@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Infraestructura.Persistencia.Mappers;
 using System;
@@ -52,10 +53,10 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     _ctx.Entry(articuloDB.Insumo).CurrentValues.SetValues(efArticuloNuevo.Insumo);
                 }
 
-                var configVisible = await _ctx.Set<EF.ConfiguracionArticulo>().FindAsync(2);
+                var configVisible = await _ctx.Set<EF.ConfiguracionArticulo>().FindAsync((int)ConfiguracionArticuloEnum.VisibleEnCarta);
                 if (configVisible != null)
                 {
-                    var yaEraVisible = articuloDB.ConfiguracionArticulos.Any(c => c.Id == 2);
+                    var yaEraVisible = articuloDB.ConfiguracionArticulos.Any(c => c.Id == (int)ConfiguracionArticuloEnum.VisibleEnCarta);
 
                     if (articulo.EsVisibleEnCarta && !yaEraVisible)
                     {
@@ -63,7 +64,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     }
                     else if (!articulo.EsVisibleEnCarta && yaEraVisible)
                     {
-                        var configARemover = articuloDB.ConfiguracionArticulos.First(c => c.Id == 2);
+                        var configARemover = articuloDB.ConfiguracionArticulos.First(c => c.Id == (int)ConfiguracionArticuloEnum.VisibleEnCarta);
                         articuloDB.ConfiguracionArticulos.Remove(configARemover);
                     }
                 }
@@ -89,7 +90,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             .Include(a => a.Plato)
                 .ThenInclude(p => p.Restriccions)
             .Where(a => a.RestauranteId == restauranteId
-                     && a.ConfiguracionArticulos.Any(c => c.Id == 2)) 
+                     && a.ConfiguracionArticulos.Any(c => c.Id == (int)ConfiguracionArticuloEnum.VisibleEnCarta)) 
             .ToListAsync();
 
             return articulosEnCarta.Select(a => _mapper.paraDominio(a)).ToList();
@@ -141,7 +142,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     .ThenInclude(p => p.Restriccions) 
                 .Where(a => a.RestauranteId == restauranteId 
                          && !a.Eliminado 
-                         && (a.Plato != null || (a.Insumo != null && a.Insumo.CategoriaInsumo.TipoAplica == 2)))
+                         && (a.Plato != null || (a.Insumo != null && a.Insumo.CategoriaInsumo.TipoAplica == (int)TipoInsumo.Bebida)))
                 .ToListAsync();
 
             return efArticulos.Select(a => _mapper.paraDominio(a)).ToList();
