@@ -25,7 +25,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
             var pedidoExistente = new DOM.Pedido
             {
                 Id = pedidoId,
-                Estado = EstadoPedido.Enviado,
+                Estado = EstadoPedidoProveedor.Enviado,
                 ItemsInsumo = new List<DOM.PedidoInsumo>
                 {
                     new DOM.PedidoInsumo
@@ -84,7 +84,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
             var pedidoExistente = new DOM.Pedido
             {
                 Id = pedidoId,
-                Estado = EstadoPedido.Pendiente,
+                Estado = EstadoPedidoProveedor.Pendiente,
                 ItemsInsumo = new List<DOM.PedidoInsumo>
                 {
                     new DOM.PedidoInsumo

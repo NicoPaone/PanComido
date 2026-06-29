@@ -62,8 +62,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
                 .Setup(r => r.ObtenerPedidosPorProveedorAsync(2))
                 .ReturnsAsync(new List<DOM.Pedido>
                 {
-                    new DOM.Pedido { Id = 10, Fecha = new DateOnly(2026, 5, 27), Estado = EstadoPedido.Recibido },
-                    new DOM.Pedido { Id = 11, Fecha = new DateOnly(2026, 5, 10), Estado = EstadoPedido.Pendiente }
+                    new DOM.Pedido { Id = 10, Fecha = new DateOnly(2026, 5, 27), Estado = EstadoPedidoProveedor.Recibido },
+                    new DOM.Pedido { Id = 11, Fecha = new DateOnly(2026, 5, 10), Estado = EstadoPedidoProveedor.Pendiente }
                 });
 
             var casoDeUso = new ObtenerHistorialPedidosCasoDeUso(
@@ -74,9 +74,9 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
             Assert.NotNull(resultado);
             Assert.Equal(2, resultado.Count);
             Assert.Equal(10, resultado[0].Id);
-            Assert.Equal(EstadoPedido.Recibido, resultado[0].Estado);
+            Assert.Equal(EstadoPedidoProveedor.Recibido, resultado[0].Estado);
             Assert.Equal(11, resultado[1].Id);
-            Assert.Equal(EstadoPedido.Pendiente, resultado[1].Estado);
+            Assert.Equal(EstadoPedidoProveedor.Pendiente, resultado[1].Estado);
         }
     }
 }

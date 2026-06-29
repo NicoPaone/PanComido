@@ -21,7 +21,7 @@ namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
         {
             DOM.Pedido pedidoExistente = await _pedidoRepositorio.ObtenerPedidoPorIdAsync(pedidoId);
             if (pedidoExistente == null) throw new KeyNotFoundException("Pedido no encontrado");
-            if (pedidoExistente.Estado != EstadoPedido.Pendiente) throw new InvalidOperationException("Solo se pueden confirmar pedidos en estado Pendiente");
+            if (pedidoExistente.Estado != EstadoPedidoProveedor.Pendiente) throw new InvalidOperationException("Solo se pueden confirmar pedidos en estado Pendiente");
             if (itemsNuevos == null || itemsNuevos.Count == 0) throw new ArgumentException("El pedido debe contener al menos un item");
 
             DOM.Pedido pedidoConfirmado = await _pedidoRepositorio.EnviarPedidoAsync(pedidoId, itemsNuevos);

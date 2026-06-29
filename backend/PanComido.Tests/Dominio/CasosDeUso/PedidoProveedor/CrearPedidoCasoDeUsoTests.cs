@@ -69,7 +69,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
 
             Assert.NotNull(resultado);
             Assert.Equal(100, resultado.Id);
-            Assert.Equal(EstadoPedido.Pendiente, resultado.Estado);
+            Assert.Equal(EstadoPedidoProveedor.Pendiente, resultado.Estado);
             _pedidoRepoMock.Verify(r => r.CrearPedidoAsync(It.IsAny<DOM.Pedido>()), Times.Once);
         }
 

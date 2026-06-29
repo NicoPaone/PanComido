@@ -44,7 +44,7 @@ namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
                 throw new ArgumentException("Hay insumos que no pertenecen al proveedor");
 
             pedido.Fecha = DateOnly.FromDateTime(DateTime.Now);
-            pedido.Estado = EstadoPedido.Pendiente;
+            pedido.Estado = EstadoPedidoProveedor.Pendiente;
 
             Pedido pedidoCreado = await _pedidoRepositorio.CrearPedidoAsync(pedido);
             _logger.LogInformation("Pedido creado. PedidoId: {PedidoId}, ProveedorId: {ProveedorId}, RestauranteId: {RestauranteId}, Items: {CantidadItems}", pedidoCreado.Id, pedidoCreado.ProveedorId, restauranteId, pedidoCreado.ItemsInsumo.Count);

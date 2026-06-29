@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PanComido.Dominio.Entidades.Enums
 {
-    public enum EstadoPedido
+    public enum EstadoPedidoProveedor
     {
         Pendiente = 1,
         Enviado = 2,

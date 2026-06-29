@@ -15,7 +15,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 ProveedorNombre = efPedido.Proveedor.Nombre,
                 ProveedorTelefono = efPedido.Proveedor.NumeroTelefonoWsp,
                 Fecha = efPedido.Fecha,
-                Estado = (EstadoPedido)efPedido.EstadoPedidoId,
+                Estado = (EstadoPedidoProveedor)efPedido.EstadoPedidoId,
                 ItemsInsumo = efPedido.PedidoInsumos.Select(pi => new DOM.PedidoInsumo
                 {
                     InsumoId = pi.InsumoId,

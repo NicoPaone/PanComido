@@ -23,8 +23,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
 
             var pedidos = new List<DOM.Pedido>
             {
-                new DOM.Pedido { Id = 1, ProveedorId = proveedorId, Estado = EstadoPedido.Recibido },
-                new DOM.Pedido { Id = 2, ProveedorId = proveedorId, Estado = EstadoPedido.Enviado }
+                new DOM.Pedido { Id = 1, ProveedorId = proveedorId, Estado = EstadoPedidoProveedor.Recibido },
+                new DOM.Pedido { Id = 2, ProveedorId = proveedorId, Estado = EstadoPedidoProveedor.Enviado }
             };
 
             _proveedorRepoMock

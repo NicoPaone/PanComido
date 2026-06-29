@@ -22,7 +22,7 @@ namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
         {
             DOM.Pedido pedidoExistente = await _pedidoRepositorio.ObtenerPedidoPorIdAsync(pedidoId);
             if (pedidoExistente == null) throw new KeyNotFoundException("Pedido no encontrado");
-            if (pedidoExistente.Estado != EstadoPedido.Enviado) throw new InvalidOperationException("Solo se pueden recibir pedidos en estado Enviado");
+            if (pedidoExistente.Estado != EstadoPedidoProveedor.Enviado) throw new InvalidOperationException("Solo se pueden recibir pedidos en estado Enviado");
 
             var sugerencias = new List<RecepcionItemSugerido>();
 

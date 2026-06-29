@@ -25,7 +25,7 @@ namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
         {
             DOM.Pedido pedido = await _pedidoRepositorio.ObtenerPedidoPorIdAsync(pedidoId);
             if (pedido == null) throw new KeyNotFoundException("Pedido no encontrado");
-            if (pedido.Estado != EstadoPedido.Enviado) throw new InvalidOperationException("Solo se pueden recibir pedidos en estado Enviado");
+            if (pedido.Estado != EstadoPedidoProveedor.Enviado) throw new InvalidOperationException("Solo se pueden recibir pedidos en estado Enviado");
 
             await ValidarLotesAsync(lotesAGuardar, restauranteId);
             await _loteRepositorio.CrearLotesAsync(lotesAGuardar);
