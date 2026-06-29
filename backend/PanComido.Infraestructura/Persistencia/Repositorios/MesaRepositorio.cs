@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Infraestructura.Persistencia.Entidades;
 using PanComido.Infraestructura.Persistencia.Mappers;
@@ -231,7 +232,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 var tieneComandasActivas = await _ctx.Mesas
                     .Where(m => idsMesasParaEliminar.Contains(m.Id))
                     .SelectMany(m => m.Comanda)
-                    .AnyAsync(c => c.EstadoComandaId != 4);
+                    .AnyAsync(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada);
 
                 if (tieneComandasActivas)
                 {

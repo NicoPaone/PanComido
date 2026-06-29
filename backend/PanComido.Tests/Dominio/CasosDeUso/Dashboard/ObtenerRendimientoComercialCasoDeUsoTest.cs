@@ -23,7 +23,6 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
         [Fact]
         public async Task EjecutarAsync_DebeLlamarAlRepositorioYRetornarResumenRendimiento()
         {
-            // Preparar
             int restauranteId = 1;
             var desde = new DateTime(2023, 1, 1);
             var hasta = new DateTime(2023, 1, 31);
@@ -45,10 +44,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
                     5))
                 .ReturnsAsync(platosMenosVendidos);
 
-            // Ejecutar
             var resultado = await _casoDeUso.EjecutarAsync(restauranteId, desde, hasta);
 
-            // Verificar
             Assert.NotNull(resultado);
             Assert.Equal(platosMasVendidos, resultado.MasVendidos);
             Assert.Equal(platosMenosVendidos, resultado.MenosVendidos);

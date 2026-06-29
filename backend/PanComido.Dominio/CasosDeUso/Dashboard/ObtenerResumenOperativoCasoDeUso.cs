@@ -10,10 +10,14 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
     public class ObtenerResumenOperativoCasoDeUso
     {
         private readonly IComandaRepositorio _comandaRepositorio;
+        private readonly IPlatoAnalisisRepositorio _platoAnalisisRepositorio;
 
-        public ObtenerResumenOperativoCasoDeUso(IComandaRepositorio comandaRepositorio)
+        public ObtenerResumenOperativoCasoDeUso(
+            IComandaRepositorio comandaRepositorio,
+            IPlatoAnalisisRepositorio platoAnalisisRepositorio)
         {
             _comandaRepositorio = comandaRepositorio;
+            _platoAnalisisRepositorio = platoAnalisisRepositorio;
         }
 
         public async Task<ResumenOperativo> EjecutarAsync(int restauranteId, DateTime desde, DateTime hasta)
@@ -21,13 +25,22 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
             DateTime hastaAjustado = hasta.Date.AddDays(1).AddTicks(-1);
             TipoAgrupacionTiempo tipoAgrupacion = DeterminarTipoAgrupacion(desde, hastaAjustado);
 
+            var (desdeAnterior, hastaAnterior) = CalcularPeriodoAnterior(desde, hastaAjustado);
+
             var totalesActuales = await _comandaRepositorio.ObtenerTotalesPeriodoAsync(restauranteId, desde, hastaAjustado);
             var ventasAgrupadas = await _comandaRepositorio.ObtenerVentasAgrupadasAsync(restauranteId, desde, hastaAjustado, tipoAgrupacion);
-
-            var (desdeAnterior, hastaAnterior) = CalcularPeriodoAnterior(desde, hastaAjustado);
             var totalesAnteriores = await _comandaRepositorio.ObtenerTotalesPeriodoAsync(restauranteId, desdeAnterior, hastaAnterior);
+            var recordatoriosActivos = await _platoAnalisisRepositorio.ObtenerRecordatoriosActivosAsync(restauranteId);
+            var estadisticasMozos = await _comandaRepositorio.ObtenerEstadisticasMozosAsync(restauranteId, desde, hastaAjustado);
 
-            return EnsamblarResumenOperativo(totalesActuales, totalesAnteriores, ventasAgrupadas, desde, hastaAjustado);
+            return EnsamblarResumenOperativo(
+                totalesActuales,
+                totalesAnteriores,
+                ventasAgrupadas,
+                desde,
+                hastaAjustado,
+                recordatoriosActivos,
+                estadisticasMozos);
         }
 
         private TipoAgrupacionTiempo DeterminarTipoAgrupacion(DateTime desde, DateTime hasta)
@@ -45,15 +58,44 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
         }
 
         private ResumenOperativo EnsamblarResumenOperativo(
-            TotalesPeriodo actuales, 
-            TotalesPeriodo anteriores, 
-            List<VentaAgrupada> grafico, 
-            DateTime desde, 
-            DateTime hasta)
+            TotalesPeriodo actuales,
+            TotalesPeriodo anteriores,
+            List<VentaAgrupada> grafico,
+            DateTime desde,
+            DateTime hasta,
+            List<Notificacion> recordatoriosActivos,
+            List<EstadisticaMozo> mozos)
         {
             decimal ticketActual = CalcularTicketPromedio(actuales);
             decimal ticketAnterior = CalcularTicketPromedio(anteriores);
             int promedioDiarioPedidos = CalcularPromedioDiarioPedidos(actuales.CantidadPedidos, desde, hasta);
+
+            var listRecordatorios = new List<DashboardAccionItem>();
+
+            foreach (var item in recordatoriosActivos)
+            {
+                string desc = item.Descripcion;
+                string titulo = desc;
+                string detalle = "";
+
+                int separatorIndex = desc.IndexOf(" - ");
+                if (separatorIndex >= 0)
+                {
+                    titulo = desc.Substring(0, separatorIndex);
+                    detalle = desc.Substring(separatorIndex + 3);
+                }
+
+                listRecordatorios.Add(new DashboardAccionItem
+                {
+                    Id = item.Id,
+                    Titulo = titulo,
+                    Detalle = detalle,
+                    Destino = "carta",
+                    Tono = "info",
+                    Impacto = "Reevaluar demanda",
+                    Prioridad = 4
+                });
+            }
 
             return new ResumenOperativo
             {
@@ -61,12 +103,14 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                 TotalPedidos = actuales.CantidadPedidos,
                 TicketPromedio = ticketActual,
                 PromedioDiarioPedidos = promedioDiarioPedidos,
-                
+
                 VariacionVentas = CalcularPorcentaje(actuales.TotalFacturado, anteriores.TotalFacturado),
                 VariacionPedidos = CalcularPorcentaje(actuales.CantidadPedidos, anteriores.CantidadPedidos),
                 VariacionTicket = CalcularPorcentaje(ticketActual, ticketAnterior),
-                
-                Grafico = grafico
+
+                Grafico = grafico,
+                Recordatorios = listRecordatorios,
+                Mozos = mozos
             };
         }
 

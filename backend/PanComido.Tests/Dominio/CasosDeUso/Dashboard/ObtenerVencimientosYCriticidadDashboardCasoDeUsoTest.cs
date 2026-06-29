@@ -3,6 +3,7 @@ using PanComido.Dominio.CasosDeUso.Dashboard;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Interfaces.Servicios;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,36 +14,38 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
     public class ObtenerVencimientosYCriticidadDashboardCasoDeUsoTest
     {
         private readonly Mock<IInsumoRepositorio> _insumoRepoMock;
+        private readonly Mock<IDateTimeProvider> _dateTimeProviderMock;
         private readonly ObtenerVencimientosYCriticidadDashboardCasoDeUso _casoDeUso;
 
         public ObtenerVencimientosYCriticidadDashboardCasoDeUsoTest()
         {
             _insumoRepoMock = new Mock<IInsumoRepositorio>();
-            _casoDeUso = new ObtenerVencimientosYCriticidadDashboardCasoDeUso(_insumoRepoMock.Object);
+            _dateTimeProviderMock = new Mock<IDateTimeProvider>();
+            _casoDeUso = new ObtenerVencimientosYCriticidadDashboardCasoDeUso(_insumoRepoMock.Object, _dateTimeProviderMock.Object);
         }
 
         [Fact]
-        public async Task EjecutarAsync_SoloRetornaInsumosQueVencenEnSieteDiasOMenos()
+        public async Task EjecutarAsync_SoloRetornaInsumosQueVencenEnDiezDiasOMenos()
         {
-            // Preparar
             int restauranteId = 1;
-            var hoy = DateOnly.FromDateTime(DateTime.Now);
+            var fechaReferencia = new DateTime(2023, 1, 1);
+            _dateTimeProviderMock.Setup(d => d.ObtenerAhora()).Returns(fechaReferencia);
+
+            var hoy = DateOnly.FromDateTime(fechaReferencia);
             
             var insumos = new List<Insumo>
             {
-                new Insumo { Id = 1, Nombre = "Insumo 1", Vencimiento = hoy.AddDays(1) }, // Entra (1 dia)
-                new Insumo { Id = 2, Nombre = "Insumo 2", Vencimiento = hoy.AddDays(7) }, // Entra (7 dias)
-                new Insumo { Id = 3, Nombre = "Insumo 3", Vencimiento = hoy.AddDays(8) }, // No entra (8 dias)
-                new Insumo { Id = 4, Nombre = "Insumo 4", Vencimiento = null }            // No entra (sin vencimiento)
+                new Insumo { Id = 1, Nombre = "Insumo 1", Vencimiento = hoy.AddDays(1) },
+                new Insumo { Id = 2, Nombre = "Insumo 2", Vencimiento = hoy.AddDays(10) },
+                new Insumo { Id = 3, Nombre = "Insumo 3", Vencimiento = hoy.AddDays(11) },
+                new Insumo { Id = 4, Nombre = "Insumo 4", Vencimiento = null }
             };
 
             _insumoRepoMock.Setup(r => r.ObtenerInsumosProximosAVencerAsync(restauranteId))
                 .ReturnsAsync(insumos);
 
-            // Ejecutar
             var resultado = await _casoDeUso.EjecutarAsync(restauranteId);
 
-            // Verificar
             Assert.NotNull(resultado);
             Assert.Equal(2, resultado.Count);
             Assert.Contains(resultado, i => i.Id == 1);
@@ -52,24 +55,24 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
         [Fact]
         public async Task EjecutarAsync_AsignaCriticidadAltaParaVencimientosMenoresADosDias()
         {
-            // Preparar
             int restauranteId = 1;
-            var hoy = DateOnly.FromDateTime(DateTime.Now);
+            var fechaReferencia = new DateTime(2023, 1, 1);
+            _dateTimeProviderMock.Setup(d => d.ObtenerAhora()).Returns(fechaReferencia);
+
+            var hoy = DateOnly.FromDateTime(fechaReferencia);
             
             var insumos = new List<Insumo>
             {
                 new Insumo { Id = 1, Nombre = "Insumo Alta", Vencimiento = hoy.AddDays(1) }, 
                 new Insumo { Id = 2, Nombre = "Insumo Media", Vencimiento = hoy.AddDays(4) }, 
-                new Insumo { Id = 3, Nombre = "Insumo Baja", Vencimiento = hoy.AddDays(6) }  
+                new Insumo { Id = 3, Nombre = "Insumo Baja", Vencimiento = hoy.AddDays(9) }  
             };
 
             _insumoRepoMock.Setup(r => r.ObtenerInsumosProximosAVencerAsync(restauranteId))
                 .ReturnsAsync(insumos);
 
-            // Ejecutar
             var resultado = await _casoDeUso.EjecutarAsync(restauranteId);
 
-            // Verificar
             Assert.Equal(3, resultado.Count);
             
             var insumoAlta = resultado.Find(i => i.Id == 1);

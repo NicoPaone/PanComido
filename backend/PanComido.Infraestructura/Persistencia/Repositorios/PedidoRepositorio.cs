@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PanComido.Infraestructura.Persistencia.Mappers;
 using EF = PanComido.Infraestructura.Persistencia.Entidades;
+using PanComido.Dominio.Entidades.Enums;
 
 namespace PanComido.Infraestructura.Persistencia.Repositorios
 {
@@ -40,11 +41,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             _ctx.PedidoInsumos.AddRange(nuevosItems);
 
             //cambiar estado a enviado
-            int estadoEnviadoId = await _ctx.EstadoPedidos
-                .Where(e => e.Descripcion == "Enviado")
-                .Select(e => e.Id)
-                .FirstAsync();
-            efPedido.EstadoPedidoId = estadoEnviadoId;
+            efPedido.EstadoPedidoId = (int)EstadoPedido.Enviado;
 
             await _ctx.SaveChangesAsync();
 
@@ -53,12 +50,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
         public async Task<DOM.Pedido> CrearPedidoAsync(DOM.Pedido pedido)
         {
-            int estadoPendienteId = await _ctx.EstadoPedidos
-                .Where(e => e.Descripcion == "Pendiente")
-                .Select(e => e.Id)
-                .FirstAsync();
-
-            EF.Pedido efPedido = _mapper.paraEntidad(pedido, estadoPendienteId);
+            EF.Pedido efPedido = _mapper.paraEntidad(pedido, (int)EstadoPedido.Pendiente);
 
             _ctx.Pedidos.Add(efPedido);
             await _ctx.SaveChangesAsync();
@@ -146,11 +138,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                  .Include(p => p.PedidoInsumos)
                  .FirstOrDefaultAsync(p => p.Id == pedidoId);
 
-            int estadoEnviadoId = await _ctx.EstadoPedidos
-                .Where(e => e.Descripcion == "Recibido")
-                .Select(e => e.Id)
-                .FirstAsync();
-            efPedido.EstadoPedidoId = estadoEnviadoId;
+            efPedido.EstadoPedidoId = (int)EstadoPedido.Recibido;
             await _ctx.SaveChangesAsync();
         }
 
@@ -162,7 +150,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .Include(pi => pi.Pedido)
                     .ThenInclude(p => p.Proveedor)
                 .Where(pi => pi.Pedido.ProveedorId == proveedorId && !pi.Pedido.Proveedor.Eliminado)
-                .Where(pi => pi.Pedido.EstadoPedido.Descripcion == "Pendiente" || pi.Pedido.EstadoPedido.Descripcion == "Enviado")
+                .Where(pi => pi.Pedido.EstadoPedidoId == (int)EstadoPedido.Pendiente || pi.Pedido.EstadoPedidoId == (int)EstadoPedido.Enviado)
                 .Select(pi => pi.InsumoId)
                 .Distinct()
                 .ToListAsync();
