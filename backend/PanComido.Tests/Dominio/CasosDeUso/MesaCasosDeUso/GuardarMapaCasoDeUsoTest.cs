@@ -25,6 +25,10 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
             };
 
             _mesaMockRepo
+                .Setup(r => r.ObtenerIdsMesasActivasAsync(restauranteId))
+                .ReturnsAsync(new List<int>());
+
+            _mesaMockRepo
                 .Setup(r => r.GuardarMapaMasivoAsync(restauranteId, mesas))
                 .Returns(Task.CompletedTask);
 
@@ -49,7 +53,63 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
 
             var excepcion = await Assert.ThrowsAsync<InvalidOperationException>(() => casoDeUso.EjecutarAsync(restauranteId, mesas));
             Assert.Contains("están superpuestas", excepcion.Message);
-            
+
+            _mesaMockRepo.Verify(r => r.GuardarMapaMasivoAsync(It.IsAny<int>(), It.IsAny<List<MesaMapaDominio>>()), Times.Never());
+        }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoHayMesaAEliminarConComandaActiva_LanzaInvalidOperationException()
+        {
+            int restauranteId = 1;
+            var mesas = new List<MesaMapaDominio>
+            {
+                new MesaMapaDominio { Id = 1, Numero = 1, PosicionXInicio = 0, PosicionXFin = 10, PosicionYInicio = 0, PosicionYFin = 10 }
+            };
+
+            _mesaMockRepo
+                .Setup(r => r.ObtenerIdsMesasActivasAsync(restauranteId))
+                .ReturnsAsync(new List<int> { 1, 2 });
+
+            _mesaMockRepo
+                .Setup(r => r.TieneComandasActivasAsync(It.IsAny<List<int>>()))
+                .ReturnsAsync(true);
+
+            var casoDeUso = new GuardarMapaCasoDeUso(_mesaMockRepo.Object);
+
+            var excepcion = await Assert.ThrowsAsync<InvalidOperationException>(
+                () => casoDeUso.EjecutarAsync(restauranteId, mesas));
+
+            Assert.Contains("comanda activa", excepcion.Message);
+            _mesaMockRepo.Verify(r => r.GuardarMapaMasivoAsync(It.IsAny<int>(), It.IsAny<List<MesaMapaDominio>>()), Times.Never());
+        }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoHayMesaAEliminarConMozosAsignados_LanzaInvalidOperationException()
+        {
+            int restauranteId = 1;
+            var mesas = new List<MesaMapaDominio>
+            {
+                new MesaMapaDominio { Id = 1, Numero = 1, PosicionXInicio = 0, PosicionXFin = 10, PosicionYInicio = 0, PosicionYFin = 10 }
+            };
+
+            _mesaMockRepo
+                .Setup(r => r.ObtenerIdsMesasActivasAsync(restauranteId))
+                .ReturnsAsync(new List<int> { 1, 2 });
+
+            _mesaMockRepo
+                .Setup(r => r.TieneComandasActivasAsync(It.IsAny<List<int>>()))
+                .ReturnsAsync(false);
+
+            _mesaMockRepo
+                .Setup(r => r.TieneMozosAsignadosAsync(It.IsAny<List<int>>()))
+                .ReturnsAsync(true);
+
+            var casoDeUso = new GuardarMapaCasoDeUso(_mesaMockRepo.Object);
+
+            var excepcion = await Assert.ThrowsAsync<InvalidOperationException>(
+                () => casoDeUso.EjecutarAsync(restauranteId, mesas));
+
+            Assert.Contains("mozos asignados", excepcion.Message);
             _mesaMockRepo.Verify(r => r.GuardarMapaMasivoAsync(It.IsAny<int>(), It.IsAny<List<MesaMapaDominio>>()), Times.Never());
         }
     }

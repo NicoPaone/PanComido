@@ -1,10 +1,5 @@
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PanComido.Dominio.Interfaces.Repositorios
 {
@@ -21,5 +16,8 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task DesasignarMozoAsync(int restauranteId, int mesaId, int mozoId);
         Task GuardarMapaMasivoAsync(int restauranteId, List<MesaMapaDominio> mesas);
         Task<List<Empleado>> ObtenerTodosLosMozosAsync(int restauranteId);
+        Task<List<int>> ObtenerIdsMesasActivasAsync(int restauranteId);
+        Task<bool> TieneComandasActivasAsync(List<int> mesaIds);
+        Task<bool> TieneMozosAsignadosAsync(List<int> mesaIds);
     }
 }
