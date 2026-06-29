@@ -1,5 +1,6 @@
 ﻿using Moq;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using DOM = PanComido.Dominio.Entidades;
 
@@ -22,8 +23,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
 
             var pedidos = new List<DOM.Pedido>
             {
-                new DOM.Pedido { Id = 1, ProveedorId = proveedorId, Estado = "Recibido" },
-                new DOM.Pedido { Id = 2, ProveedorId = proveedorId, Estado = "Enviado" }
+                new DOM.Pedido { Id = 1, ProveedorId = proveedorId, Estado = EstadoPedidoProveedor.Recibido },
+                new DOM.Pedido { Id = 2, ProveedorId = proveedorId, Estado = EstadoPedidoProveedor.Enviado }
             };
 
             _proveedorRepoMock

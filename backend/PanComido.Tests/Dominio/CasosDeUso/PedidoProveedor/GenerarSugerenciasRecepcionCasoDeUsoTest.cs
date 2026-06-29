@@ -1,7 +1,7 @@
 ﻿using Moq;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
-using PanComido.Infraestructura.Persistencia.Entidades;
 using DOM = PanComido.Dominio.Entidades;
 
 namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
@@ -25,7 +25,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
             var pedidoExistente = new DOM.Pedido
             {
                 Id = pedidoId,
-                Estado = "Enviado",
+                Estado = EstadoPedidoProveedor.Enviado,
                 ItemsInsumo = new List<DOM.PedidoInsumo>
                 {
                     new DOM.PedidoInsumo
@@ -84,7 +84,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
             var pedidoExistente = new DOM.Pedido
             {
                 Id = pedidoId,
-                Estado = "Pendiente",
+                Estado = EstadoPedidoProveedor.Pendiente,
                 ItemsInsumo = new List<DOM.PedidoInsumo>
                 {
                     new DOM.PedidoInsumo
