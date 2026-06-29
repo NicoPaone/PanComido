@@ -24,6 +24,13 @@ namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
                 throw new ArgumentException("El plato que intenta modificar no existe o no pertenece al restaurante.");
             }
 
+            var idsNuevos = platoModificado.Ingredientes.Select(i => i.InsumoId).ToList();
+
+            var insumosAEliminar = platoExistente.Ingredientes
+                .Where(i => !idsNuevos.Contains(i.InsumoId))
+                .Select(i => i.InsumoId)
+                .ToList();
+
             platoExistente.Nombre = platoModificado.Nombre;
             platoExistente.Descripcion = platoModificado.Descripcion;
             platoExistente.PrecioVentaFinal = platoModificado.PrecioVentaFinal;
@@ -36,7 +43,7 @@ namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
             platoExistente.Restricciones = platoModificado.Restricciones;
             platoExistente.Ingredientes = platoModificado.Ingredientes;
 
-            await _platoRepositorio.ActualizarAsync(platoExistente);
+            await _platoRepositorio.ActualizarAsync(platoExistente, insumosAEliminar);
         }
     }
 }
