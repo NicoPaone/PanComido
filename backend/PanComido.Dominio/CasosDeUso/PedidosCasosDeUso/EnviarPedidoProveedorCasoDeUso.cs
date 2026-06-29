@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using DOM = PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Entidades.Enums;
+using System.Text;
 
 namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
 {
