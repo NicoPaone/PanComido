@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PanComido.Dominio.Entidades.Enums;
 using DOM = PanComido.Dominio.Entidades;
 using EF = PanComido.Infraestructura.Persistencia.Entidades;
 
@@ -19,7 +15,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 ProveedorNombre = efPedido.Proveedor.Nombre,
                 ProveedorTelefono = efPedido.Proveedor.NumeroTelefonoWsp,
                 Fecha = efPedido.Fecha,
-                Estado = efPedido.EstadoPedido.Descripcion,
+                Estado = (EstadoPedidoProveedor)efPedido.EstadoPedidoId,
                 ItemsInsumo = efPedido.PedidoInsumos.Select(pi => new DOM.PedidoInsumo
                 {
                     InsumoId = pi.InsumoId,

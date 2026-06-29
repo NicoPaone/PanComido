@@ -1,14 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
 {
@@ -19,16 +14,19 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
         private readonly ILlamadoRepositorio _llamadoRepositorio;
         private readonly ICalcularTotalComandaServicio _calcularTotalComandaServicio;
         private readonly IComandaNotificador _comandaNotificador;
+        private readonly IRegistrarPagoServicio _registrarPagoServicio;
         private readonly ILogger<ConfirmarPagoEfectivoCasoDeUso> _logger;
 
         public ConfirmarPagoEfectivoCasoDeUso(IPagoRepositorio pagoRepositorio, IComandaRepositorio comandaRepositorio, ILlamadoRepositorio llamadoRepositorio, ICalcularTotalComandaServicio calcularTotalComandaServicio,
-            IComandaNotificador comandaNotificador, ILogger<ConfirmarPagoEfectivoCasoDeUso> logger)
+            IComandaNotificador comandaNotificador,
+            IRegistrarPagoServicio registrarPagoServicio, ILogger<ConfirmarPagoEfectivoCasoDeUso> logger)
         {
             _pagoRepositorio = pagoRepositorio;
             _comandaRepositorio = comandaRepositorio;
             _llamadoRepositorio = llamadoRepositorio;
             _calcularTotalComandaServicio = calcularTotalComandaServicio;
             _comandaNotificador = comandaNotificador;
+            _registrarPagoServicio = registrarPagoServicio;
             _logger = logger;
         }
 
@@ -36,44 +34,42 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
         {
             var comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
             if (comanda == null || comanda.RestauranteId != restauranteId) throw new KeyNotFoundException("Comanda no encontrada");
+            await VerificarEstadoComandaYPagoAsync(comanda);
+
+            decimal total = _calcularTotalComandaServicio.CalcularTotal(comanda);
+            Pago pagoCreado = await _registrarPagoServicio.RegistrarAsync(comanda.Id, total, MetodoPago.Efectivo,
+            EstadoPago.Confirmado);
+            await FinalizarComandaYNotificarAsync(comanda);
+
+            _logger.LogInformation("Pago efectivo confirmado. ComandaId: {ComandaId}, Total: {Total}", comandaId, pagoCreado.Total);
+            return pagoCreado;
+        }
+
+        private async Task VerificarEstadoComandaYPagoAsync(Comanda comanda)
+        {
             if (comanda.Estado != EstadoComanda.EnEspera)
             {
-                _logger.LogWarning("Intento de confirmar pago efectivo en estado inválido. ComandaId: {ComandaId}, Estado: {Estado}", comandaId, comanda.Estado);
+                _logger.LogWarning("Intento de confirmar pago efectivo en estado inválido. ComandaId: {ComandaId}, Estado: {Estado}", comanda.Id, comanda.Estado);
                 throw new ArgumentException("La comanda no está esperando pago.");
             }
 
-            decimal totalComanda = _calcularTotalComandaServicio.CalcularTotal(comanda);
-
-            Pago pagoExistente = await _pagoRepositorio.ObtenerPagoPorComandaIdAsync(comandaId);
+            Pago pagoExistente = await _pagoRepositorio.ObtenerPagoPorComandaIdAsync(comanda.Id);
             if (pagoExistente != null && pagoExistente.EstadoPago == EstadoPago.Confirmado)
             {
-                _logger.LogWarning("Intento de confirmar pago ya confirmado (idempotencia). ComandaId: {ComandaId}", comandaId);
+                _logger.LogWarning("Intento de confirmar pago ya confirmado (idempotencia). ComandaId: {ComandaId}", comanda.Id);
                 throw new InvalidOperationException("El pago ya fue confirmado");
             }
+        }
 
-            Pago pago = new Pago
-            {
-                MetodoDePago = MetodoPago.Efectivo,
-                Total = totalComanda,
-                ComandaId = comandaId,
-                EstadoPago = EstadoPago.Confirmado
-            };
-
-            Pago pagoCreado = await _pagoRepositorio.CrearPagoAsync(pago);
-
+        private async Task FinalizarComandaYNotificarAsync(Comanda comanda)
+        {
             comanda.Estado = EstadoComanda.Finalizada;
             comanda.HoraFin = DateTime.Now;
             await _comandaRepositorio.ActualizarAsync(comanda);
 
-            List<int> mozosId = new List<int>();
-            mozosId.Add(comanda.MozoId.Value);
-
-            await _comandaNotificador.NotificarEstadoModificadoAsync(comanda, mozosId);
+            await _comandaNotificador.NotificarEstadoModificadoAsync(comanda, new List<int> { comanda.MozoId.Value });
 
             await _llamadoRepositorio.ResolverLlamadoPorMesaYCategoriaAsync(comanda.MesaId, (int)CategoriaLlamado.Pago);
-
-            _logger.LogInformation("Pago efectivo confirmado. ComandaId: {ComandaId}, Total: {Total}", comandaId, totalComanda);
-            return pagoCreado;
         }
     }
 }

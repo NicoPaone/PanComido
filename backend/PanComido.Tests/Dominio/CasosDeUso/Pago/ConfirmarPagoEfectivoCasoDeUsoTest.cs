@@ -15,6 +15,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
         private readonly Mock<IComandaRepositorio> _comandaMockRepo;
         private readonly Mock<ICalcularTotalComandaServicio> _calcularTotalMockServicio;
         private readonly Mock<IComandaNotificador> _comandaNotificadorMock;
+        private readonly Mock<IRegistrarPagoServicio> _registrarPagoMockServicio;
         private readonly Mock<ILogger<ConfirmarPagoEfectivoCasoDeUso>> _loggerMock;
 
         public ConfirmarPagoEfectivoCasoDeUsoTest()
@@ -24,6 +25,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
             _comandaMockRepo = new Mock<IComandaRepositorio>();
             _calcularTotalMockServicio = new Mock<ICalcularTotalComandaServicio>();
             _comandaNotificadorMock = new Mock<IComandaNotificador>();
+            _registrarPagoMockServicio = new Mock<IRegistrarPagoServicio>();
             _loggerMock = new Mock<ILogger<ConfirmarPagoEfectivoCasoDeUso>>();
         }
 
@@ -34,6 +36,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
                 _llamadoMockRepo.Object,
                 _calcularTotalMockServicio.Object,
                 _comandaNotificadorMock.Object,
+                _registrarPagoMockServicio.Object,
                 _loggerMock.Object);
 
         [Fact]
@@ -78,8 +81,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
                 .Setup(r => r.ObtenerPagoPorComandaIdAsync(comandaId))
                 .ReturnsAsync((DOM.Pago?)null);
 
-            _pagoMockRepo
-                .Setup(r => r.CrearPagoAsync(It.IsAny<DOM.Pago>()))
+            _registrarPagoMockServicio
+                .Setup(s => s.RegistrarAsync(It.IsAny<int>(), It.IsAny<decimal>(), It.IsAny<MetodoPago>(), It.IsAny<EstadoPago>(), null))
                 .ReturnsAsync(pagoCreado);
 
             _comandaMockRepo
@@ -97,7 +100,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
             var resultado = await CrearCasoDeUso().EjecutarAsync(comandaId, restauranteId);
             Assert.NotNull(resultado);
             Assert.Equal(1000, resultado.Total);
-            _pagoMockRepo.Verify(r => r.CrearPagoAsync(It.IsAny<DOM.Pago>()), Times.Once);
+            _registrarPagoMockServicio.Verify(s => s.RegistrarAsync(It.IsAny<int>(), It.IsAny<decimal>(), It.IsAny<MetodoPago>(), It.IsAny<EstadoPago>(), null), Times.Once);
             _comandaNotificadorMock.Verify(n => n.NotificarEstadoModificadoAsync(It.IsAny<DOM.Comanda>(), It.IsAny<List<int>>()), Times.Once);
         }
 

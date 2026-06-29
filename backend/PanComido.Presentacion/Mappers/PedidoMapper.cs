@@ -14,7 +14,7 @@ namespace PanComido.Presentacion.Mappers
             {
                 Id = pedido.Id,
                 Fecha = pedido.Fecha.ToString("dd/MM/yyyy"),
-                Estado = pedido.Estado,
+                Estado = pedido.Estado.ToString(),
                 ItemsInsumo = pedido.ItemsInsumo.Select(item => new PedidoInsumoResponseDto
                 {
                     InsumoId = item.InsumoId,
@@ -36,7 +36,7 @@ namespace PanComido.Presentacion.Mappers
             {
                 Id = pedido.Id,
                 Fecha = pedido.Fecha.ToString("dd/MM/yyyy"),
-                Estado = pedido.Estado,
+                Estado = pedido.Estado.ToString(),
                 ProveedorId = pedido.ProveedorId,
                 ProveedorNombre = pedido.ProveedorNombre,
                 ProveedorTelefono = pedido.ProveedorTelefono,
