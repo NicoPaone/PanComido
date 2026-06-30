@@ -165,47 +165,6 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             await _ctx.SaveChangesAsync();
         }
 
-        private IQueryable<DOM.RendimientoPlato> BaseQueryRendimiento(int restauranteId, DateTime fechaDesde, DateTime fechaHasta)
-        {
-            return _ctx.Articulos
-                .Where(a => a.RestauranteId == restauranteId && a.Plato != null)
-                .Select(a => new DOM.RendimientoPlato
-                {
-                    PlatoId = a.Id,
-                    Nombre = a.Nombre,
-                    UnidadesVendidas = _ctx.ArticuloComanda
-                        .Where(ac => ac.ArticuloId == a.Id 
-                                  && ac.Comanda.RestauranteId == restauranteId
-                                  && ac.Comanda.HoraInicio >= fechaDesde
-                                  && ac.Comanda.HoraInicio <= fechaHasta
-                                  && ac.Comanda.Pagos.Any())
-                        .Sum(ac => (int?)ac.Cantidad) ?? 0,
-                    FacturacionTotal = _ctx.ArticuloComanda
-                        .Where(ac => ac.ArticuloId == a.Id 
-                                  && ac.Comanda.RestauranteId == restauranteId
-                                  && ac.Comanda.HoraInicio >= fechaDesde
-                                  && ac.Comanda.HoraInicio <= fechaHasta
-                                  && ac.Comanda.Pagos.Any())
-                        .Sum(ac => (decimal?)(ac.Cantidad * a.PrecioVentaFinal)) ?? 0m
-                });
-        }
-
-        public async Task<List<DOM.RendimientoPlato>> ObtenerTopPlatosMasVendidosAsync(int restauranteId, DateTime fechaDesde, DateTime fechaHasta, int limite = 5)
-        {
-            return await BaseQueryRendimiento(restauranteId, fechaDesde, fechaHasta)
-                .OrderByDescending(p => p.UnidadesVendidas)
-                .Take(limite)
-                .ToListAsync();
-        }
-
-        public async Task<List<DOM.RendimientoPlato>> ObtenerTopPlatosMenosVendidosAsync(int restauranteId, DateTime fechaDesde, DateTime fechaHasta, int limite = 5)
-        {
-            return await BaseQueryRendimiento(restauranteId, fechaDesde, fechaHasta)
-                .OrderBy(p => p.UnidadesVendidas)
-                .Take(limite)
-                .ToListAsync();
-        }
-
         public async Task<DOM.TotalesPeriodo> ObtenerTotalesPeriodoAsync(int restauranteId, DateTime desde, DateTime hasta)
         {
             var query = _ctx.Comanda
