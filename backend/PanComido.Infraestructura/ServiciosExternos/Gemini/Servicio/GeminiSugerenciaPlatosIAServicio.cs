@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.IA;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios.IA;
@@ -206,5 +206,101 @@ namespace PanComido.Infraestructura.ServiciosExternos.Gemini.Servicio
 
             return prompt.ToString();
         }
+
+        public async Task<PlatoAnalisisIa> AnalizarPlatoRendimientoAsync(
+            Plato plato, 
+            decimal costoPreparacion, 
+            int ventasPeriodo, 
+            string volumenVar, 
+            string participacion, 
+            RendimientoPlato comparativaLider, 
+            List<int> tendencia)
+        {
+            StringBuilder prompt = new();
+            prompt.AppendLine("Eres un consultor de negocios culinarios y experto en optimización de menús para restaurantes.");
+            prompt.AppendLine("Analiza el siguiente plato que tiene bajo rendimiento de ventas:");
+            prompt.AppendLine();
+            prompt.AppendLine("PLATO:");
+            prompt.AppendLine($"- Nombre: {plato.Nombre}");
+            prompt.AppendLine($"- Descripción: {plato.Descripcion}");
+            prompt.AppendLine($"- Precio de venta: ${plato.PrecioVentaFinal ?? 0}");
+            prompt.AppendLine($"- Costo de preparación: ${costoPreparacion} (Margen de ganancia: ${(plato.PrecioVentaFinal ?? 0) - costoPreparacion})");
+
+            prompt.AppendLine();
+            prompt.AppendLine("MÉTRICAS DE RENDIMIENTO (ÚLTIMOS 30 DÍAS):");
+            prompt.AppendLine($"- Ventas del periodo: {ventasPeriodo} unidades.");
+            prompt.AppendLine($"- Variación: {volumenVar}");
+            prompt.AppendLine($"- Participación en su categoría: {participacion}");
+            prompt.AppendLine($"- Comparativa con el líder de la categoría ({comparativaLider.Nombre}): El líder vende {comparativaLider.UnidadesVendidas} unidades.");
+            prompt.AppendLine($"- Tendencia de ventas semanales (últimas 7 semanas): {string.Join(", ", tendencia)}");
+            prompt.AppendLine();
+            prompt.AppendLine("TAREA:");
+            prompt.AppendLine("1. Genera un Diagnóstico preciso (máximo 2 líneas) de por qué se vende poco (analiza si es por precio alto, bajo margen, popularidad frente al líder o tendencia a la baja).");
+            prompt.AppendLine("2. Genera exactamente 2 Sugerencias de acción reales (ej. 'descuento', 'combo', 'precio', 'receta') con su impacto estimado (Alto, Medio, Bajo) y dificultad (baja, media, alta).");
+            prompt.AppendLine();
+            prompt.AppendLine("REGLAS OBLIGATORIAS:");
+            prompt.AppendLine("- Los tipos de sugerencia válidos son únicamente: 'descuento', 'combo', 'precio', 'receta'.");
+            prompt.AppendLine("- Responder exclusivamente con JSON válido, sin explicaciones ni formato markdown (no incluir ```json ni ```).");
+            prompt.AppendLine();
+            prompt.AppendLine("JSON SCHEMA:");
+            prompt.AppendLine("""
+            {
+                "diagnostico": "string",
+                "alerta": "critica|media|informativa",
+                "sugerencias": [
+                {
+                    "id": 1,
+                    "tipo": "descuento|combo|precio|receta",
+                    "accion": "string con la propuesta concreta",
+                    "impacto": "Impacto Alto/Medio/Bajo (+X u./mes)",
+                    "dificultad": "baja|media|alta",
+                    "esAplicable": true
+                }
+                ]
+            }
+            """);
+
+            string apiKey = _configuracion.ApiKey;
+            string url = _configuracion.Url;
+
+            GeminiRequestDto requestDto = CrearRequest(prompt.ToString());
+
+            var response = await _httpClient.PostAsJsonAsync($"{url}?key={apiKey}", requestDto);
+            response.EnsureSuccessStatusCode();
+
+            string jsonRespuesta = await response.Content.ReadAsStringAsync();
+            GeminiApiResponseDto? respuestaGemini = JsonSerializer.Deserialize<GeminiApiResponseDto>(jsonRespuesta);
+
+            if (respuestaGemini == null)
+            {
+                throw new Exception("No se pudo deserializar la respuesta de Gemini.");
+            }
+
+            string textoRespuesta = respuestaGemini?.Candidatos
+                                                    .FirstOrDefault()?
+                                                    .Contenido
+                                                    .Partes
+                                                    .FirstOrDefault()?
+                                                    .Texto
+                                                    ?? throw new Exception("Gemini no devolvió contenido.");
+
+            textoRespuesta = textoRespuesta.Trim();
+            if (textoRespuesta.StartsWith("```"))
+            {
+                int inicio = textoRespuesta.IndexOf('\n') + 1;
+                int fin = textoRespuesta.LastIndexOf("```");
+                textoRespuesta = textoRespuesta[inicio..fin].Trim();
+            }
+
+            PlatoAnalisisGeminiResponseDto? analisisDto = JsonSerializer.Deserialize<PlatoAnalisisGeminiResponseDto>(textoRespuesta);
+
+            if (analisisDto == null)
+            {
+                throw new Exception("No se pudo deserializar la respuesta de Gemini.");
+            }
+
+            return _mapper.ADominio(analisisDto);
+        }
     }
 }
+

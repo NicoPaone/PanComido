@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades.IA;
+using PanComido.Dominio.Entidades.IA;
 using PanComido.Infraestructura.ServiciosExternos.Gemini.DTOs.Response;
 using System;
 using System.Collections.Generic;
@@ -42,6 +42,25 @@ namespace PanComido.Infraestructura.ServiciosExternos.Gemini.Mappers
             };
         }
 
+        public PlatoAnalisisIa ADominio(PlatoAnalisisGeminiResponseDto dto)
+        {
+            return new PlatoAnalisisIa
+            {
+                Diagnostico = dto.Diagnostico,
+                Alerta = dto.Alerta,
+                Sugerencias = dto.Sugerencias.Select(s => new PlatoSugerenciaIa
+                {
+                    Id = s.Id,
+                    Tipo = s.Tipo,
+                    Accion = s.Accion,
+                    Impacto = s.Impacto,
+                    Dificultad = s.Dificultad,
+                    EsAplicable = s.EsAplicable,
+                    Aplicada = false
+                }).ToList()
+            };
+        }
     }
 }
+
 

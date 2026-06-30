@@ -68,7 +68,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
             Assert.Equal("Revisión: Papas Fritas", resultado.Titulo);
             Assert.True(sugerenciaIa.PlatosAnalisis[0].Sugerencias[0].Aplicada);
 
-            _platoAnalisisRepoMock.Verify(r => r.GuardarRecordatorioNotificacionAsync(restauranteId, "Revisión: Papas Fritas - Medir impacto de: Combo de Papas con Gaseosa"), Times.Once);
+            _platoAnalisisRepoMock.Verify(r => r.GuardarRecordatorioNotificacionAsync(restauranteId, It.Is<string>(s => s.Contains("Revisión: Papas Fritas") && s.Contains("Combo de Papas con Gaseosa"))), Times.Once);
             _sugerenciaIaRepoMock.Verify(r => r.GuardarSugerenciaIAAsync(restauranteId, sugerenciaIa), Times.Once);
         }
     }

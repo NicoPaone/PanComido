@@ -181,6 +181,7 @@ builder.Services.AddScoped<IBodegaRepositorio, BodegaRepositorio>();
 builder.Services.AddScoped<IProveedorRepositorio, ProveedorRepositorio>();
 builder.Services.AddScoped<IPedidoRepositorio, PedidoRepositorio>();
 builder.Services.AddScoped<IComandaRepositorio, ComandaRepositorio>();
+builder.Services.AddScoped<IDashboardRepositorio, DashboardRepositorio>();
 builder.Services.AddScoped<ICategoriaInsumoRepositorio, CategoriaInsumoRepositorio>();
 builder.Services.AddScoped<IUnidadMedidaRepositorio, UnidadMedidaRepositorio>();
 builder.Services.AddScoped<IMesaRepositorio, MesaRepositorio>();

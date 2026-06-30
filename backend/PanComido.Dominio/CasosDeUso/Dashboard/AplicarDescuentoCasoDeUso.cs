@@ -48,7 +48,9 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                 var analisisPlato = sugerenciaIa.PlatosAnalisis.FirstOrDefault(p => p.PlatoId == platoId);
                 if (analisisPlato != null)
                 {
-                    var sugDescuento = analisisPlato.Sugerencias.FirstOrDefault(s => s.Tipo == "descuento");
+                    var sugDescuento = analisisPlato.Sugerencias
+                        .FirstOrDefault(s => s.Tipo.Equals(PanComido.Dominio.Entidades.Enums.TipoSugerencia.Descuento.ToString(), StringComparison.OrdinalIgnoreCase)
+                                          || s.Tipo.Equals("descuento", StringComparison.OrdinalIgnoreCase));
                     if (sugDescuento != null)
                     {
                         sugDescuento.Aplicada = true;

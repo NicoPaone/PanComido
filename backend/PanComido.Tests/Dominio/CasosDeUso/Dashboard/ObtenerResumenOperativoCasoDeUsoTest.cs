@@ -12,18 +12,20 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
 {
     public class ObtenerResumenOperativoCasoDeUsoTest
     {
-        private readonly Mock<IComandaRepositorio> _comandaRepoMock;
+        private readonly Mock<IDashboardRepositorio> _dashboardRepoMock;
         private readonly Mock<IPlatoAnalisisRepositorio> _platoAnalisisRepoMock;
         private readonly ObtenerResumenOperativoCasoDeUso _casoDeUso;
 
         public ObtenerResumenOperativoCasoDeUsoTest()
         {
-            _comandaRepoMock = new Mock<IComandaRepositorio>();
+            _dashboardRepoMock = new Mock<IDashboardRepositorio>();
             _platoAnalisisRepoMock = new Mock<IPlatoAnalisisRepositorio>();
             _platoAnalisisRepoMock.Setup(r => r.ObtenerRecordatoriosActivosAsync(It.IsAny<int>()))
                 .ReturnsAsync(new List<Notificacion>());
+            _dashboardRepoMock.Setup(r => r.ObtenerEstadisticasMozosRawAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .ReturnsAsync(new List<EstadisticaMozoRaw>());
 
-            _casoDeUso = new ObtenerResumenOperativoCasoDeUso(_comandaRepoMock.Object, _platoAnalisisRepoMock.Object);
+            _casoDeUso = new ObtenerResumenOperativoCasoDeUso(_dashboardRepoMock.Object, _platoAnalisisRepoMock.Object);
         }
 
         [Fact]
@@ -37,19 +39,19 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
             var totalesAnteriores = new TotalesPeriodo { TotalFacturado = 5000, CantidadPedidos = 50 };
             var ventasAgrupadas = new List<VentaAgrupada> { new VentaAgrupada { Etiqueta = "Dia 1", Total = 1000 } };
 
-            _comandaRepoMock.Setup(r => r.ObtenerTotalesPeriodoAsync(
+            _dashboardRepoMock.Setup(r => r.ObtenerTotalesPeriodoAsync(
                     restauranteId, 
                     desde, 
                     It.IsAny<DateTime>()))
                 .ReturnsAsync(totalesActuales);
 
-            _comandaRepoMock.Setup(r => r.ObtenerTotalesPeriodoAsync(
+            _dashboardRepoMock.Setup(r => r.ObtenerTotalesPeriodoAsync(
                     restauranteId, 
                     It.Is<DateTime>(d => d < desde), 
                     It.Is<DateTime>(d => d < hasta)))
                 .ReturnsAsync(totalesAnteriores);
 
-            _comandaRepoMock.Setup(r => r.ObtenerVentasAgrupadasAsync(
+            _dashboardRepoMock.Setup(r => r.ObtenerVentasAgrupadasAsync(
                     restauranteId, 
                     desde, 
                     It.IsAny<DateTime>(), 
@@ -80,11 +82,11 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
             var totalesActuales = new TotalesPeriodo { TotalFacturado = 10000, CantidadPedidos = 100 };
             var totalesAnteriores = new TotalesPeriodo { TotalFacturado = 0, CantidadPedidos = 0 };
 
-            _comandaRepoMock.SetupSequence(r => r.ObtenerTotalesPeriodoAsync(restauranteId, It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            _dashboardRepoMock.SetupSequence(r => r.ObtenerTotalesPeriodoAsync(restauranteId, It.IsAny<DateTime>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(totalesActuales)
                 .ReturnsAsync(totalesAnteriores);
 
-            _comandaRepoMock.Setup(r => r.ObtenerVentasAgrupadasAsync(restauranteId, It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<TipoAgrupacionTiempo>()))
+            _dashboardRepoMock.Setup(r => r.ObtenerVentasAgrupadasAsync(restauranteId, It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<TipoAgrupacionTiempo>()))
                 .ReturnsAsync(new List<VentaAgrupada>());
 
             var resultado = await _casoDeUso.EjecutarAsync(restauranteId, desde, hasta);
@@ -95,3 +97,4 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
         }
     }
 }
+

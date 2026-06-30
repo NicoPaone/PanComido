@@ -32,8 +32,15 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                 return null;
             }
 
-            string descripcion = $"Revisión: {plato.Nombre} - Medir impacto de: {accionSugerida}";
-            await _platoAnalisisRepositorio.GuardarRecordatorioNotificacionAsync(restauranteId, descripcion);
+            string jsonDesc = System.Text.Json.JsonSerializer.Serialize(new
+            {
+                titulo = $"Revisión: {plato.Nombre}",
+                detalle = $"Medir impacto de: {accionSugerida}"
+            }, new System.Text.Json.JsonSerializerOptions
+            {
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            });
+            await _platoAnalisisRepositorio.GuardarRecordatorioNotificacionAsync(restauranteId, jsonDesc);
 
             var sugerenciaIa = await _sugerenciaIARepositorio.ObtenerSugerenciaIAAsync(restauranteId);
             if (sugerenciaIa != null && sugerenciaIa.PlatosAnalisis != null)
@@ -62,8 +69,8 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                 Mensaje = "Recordatorio guardado en el módulo de tareas administrativas.",
                 Titulo = $"Revisión: {plato.Nombre}",
                 Detalle = $"Medir impacto de: {accionSugerida}",
-                Destino = "carta",
-                Tono = "info",
+                Destino = PanComido.Dominio.Entidades.Enums.NotificacionDestino.Carta.ToString().ToLower(),
+                Tono = PanComido.Dominio.Entidades.Enums.NotificacionTono.Info.ToString().ToLower(),
                 Impacto = "Reevaluar demanda",
                 Prioridad = 4
             };
@@ -81,3 +88,4 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
         public int Prioridad { get; set; } = 4;
     }
 }
+

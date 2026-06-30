@@ -3,6 +3,7 @@ using PanComido.Dominio.Entidades.IA;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Repositorios.IA;
 using PanComido.Dominio.Interfaces.Servicios;
+using PanComido.Dominio.Interfaces.Servicios.IA;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,18 +17,22 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
         private readonly ISugerenciaIARepositorio _sugerenciaIARepositorio;
         private readonly ICalculadorCostoPlatoServicio _calculadorCostoPlatoServicio;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly ISugerenciaPlatosIAServicio _sugerenciaPlatosIAServicio;
 
         public ObtenerAnalisisPlatoCasoDeUso(
             IPlatoAnalisisRepositorio platoAnalisisRepositorio,
             ISugerenciaIARepositorio sugerenciaIARepositorio,
             ICalculadorCostoPlatoServicio calculadorCostoPlatoServicio,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider,
+            ISugerenciaPlatosIAServicio sugerenciaPlatosIAServicio)
         {
             _platoAnalisisRepositorio = platoAnalisisRepositorio;
             _sugerenciaIARepositorio = sugerenciaIARepositorio;
             _calculadorCostoPlatoServicio = calculadorCostoPlatoServicio;
             _dateTimeProvider = dateTimeProvider;
+            _sugerenciaPlatosIAServicio = sugerenciaPlatosIAServicio;
         }
+
 
         public async Task<PlatoAnalisisResultado?> EjecutarAsync(int restauranteId, string nombrePlato)
         {
@@ -95,36 +100,33 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
             var analisisPlato = sugerenciaIa.PlatosAnalisis.FirstOrDefault(p => p.PlatoId == plato.Id);
             if (analisisPlato == null)
             {
-                analisisPlato = new PlatoAnalisisIa
+                if (ventasPeriodo > 0)
                 {
-                    PlatoId = plato.Id,
-                    Nombre = plato.Nombre,
-                    Diagnostico = $"El precio actual de {plato.Nombre} está afectando su rotación debido al incremento en el costo de los insumos primarios.",
-                    Alerta = "critica",
-                    Sugerencias = new List<PlatoSugerenciaIa>
+                    try
                     {
-                        new PlatoSugerenciaIa
-                        {
-                            Id = 1,
-                            Tipo = "descuento",
-                            Accion = $"Aplicar descuento promocional del 10% por 1 semana a {plato.Nombre}.",
-                            Impacto = "Impacto Medio (+10 u./mes)",
-                            Dificultad = "baja",
-                            EsAplicable = true,
-                            Aplicada = false
-                        },
-                        new PlatoSugerenciaIa
-                        {
-                            Id = 2,
-                            Tipo = "combo",
-                            Accion = $"Ofrecer {plato.Nombre} en combo promocional con Bebida.",
-                            Impacto = "Impacto Alto (+20 u./mes)",
-                            Dificultad = "media",
-                            EsAplicable = true,
-                            Aplicada = false
-                        }
+                        analisisPlato = await _sugerenciaPlatosIAServicio.AnalizarPlatoRendimientoAsync(
+                            plato,
+                            costoPreparacion,
+                            ventasPeriodo,
+                            volumenVar,
+                            participacion,
+                            comparativaLider,
+                            tendencia
+                        );
+                        analisisPlato.PlatoId = plato.Id;
+                        analisisPlato.Nombre = plato.Nombre;
                     }
-                };
+                    catch (Exception)
+                    {
+                        analisisPlato = null;
+                    }
+                }
+
+                if (analisisPlato == null)
+                {
+                    analisisPlato = GenerarMockAnalisisPlato(plato);
+                }
+
                 sugerenciaIa.PlatosAnalisis.Add(analisisPlato);
                 await _sugerenciaIARepositorio.GuardarSugerenciaIAAsync(restauranteId, sugerenciaIa);
             }
@@ -141,7 +143,42 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                 AnalisisIa = analisisPlato
             };
         }
+
+        private PlatoAnalisisIa GenerarMockAnalisisPlato(Plato plato)
+        {
+            return new PlatoAnalisisIa
+            {
+                PlatoId = plato.Id,
+                Nombre = plato.Nombre,
+                Diagnostico = $"El precio actual de {plato.Nombre} está afectando su rotación debido al incremento en el costo de los insumos primarios.",
+                Alerta = PanComido.Dominio.Entidades.Enums.CriticidadAlerta.Critica.ToString().ToLower(),
+                Sugerencias = new List<PlatoSugerenciaIa>
+                {
+                    new PlatoSugerenciaIa
+                    {
+                        Id = 1,
+                        Tipo = PanComido.Dominio.Entidades.Enums.TipoSugerencia.Descuento.ToString().ToLower(),
+                        Accion = $"Aplicar descuento promocional del 10% por 1 semana a {plato.Nombre}.",
+                        Impacto = "Impacto Medio (+10 u./mes)",
+                        Dificultad = PanComido.Dominio.Entidades.Enums.DificultadSugerencia.Baja.ToString().ToLower(),
+                        EsAplicable = true,
+                        Aplicada = false
+                    },
+                    new PlatoSugerenciaIa
+                    {
+                        Id = 2,
+                        Tipo = PanComido.Dominio.Entidades.Enums.TipoSugerencia.Combo.ToString().ToLower(),
+                        Accion = $"Ofrecer {plato.Nombre} en combo promocional con Bebida.",
+                        Impacto = "Impacto Alto (+20 u./mes)",
+                        Dificultad = PanComido.Dominio.Entidades.Enums.DificultadSugerencia.Media.ToString().ToLower(),
+                        EsAplicable = true,
+                        Aplicada = false
+                    }
+                }
+            };
+        }
     }
+
 
     public class PlatoAnalisisResultado
     {
