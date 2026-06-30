@@ -18,5 +18,15 @@ namespace PanComido.Presentacion.Servicios
         {
             await _hubContext.Clients.Group($"Mozo_{llamado.MozoId}").SendAsync("LlamadoMozo", llamado);
         }
+
+        public async Task NotificarLlamadosResueltosAsync(int mesaId, List<Llamado> llamadosResueltos)
+        {
+            List<int> mozosId = llamadosResueltos.Where(l => l.MozoId.HasValue).Select(l => l.MozoId!.Value).Distinct().ToList();
+
+            foreach (int mozoId in mozosId)
+            {
+                await _hubContext.Clients.Group($"Mozo_{mozoId}").SendAsync("LlamadosResueltosAutomaticamente", new { mesaId, llamadoIds = llamadosResueltos.Select(l => l.Id).ToList() });
+            }
+        }
     }
 }

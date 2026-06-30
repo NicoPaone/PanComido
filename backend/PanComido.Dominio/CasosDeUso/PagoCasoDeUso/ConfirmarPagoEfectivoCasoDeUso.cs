@@ -14,11 +14,12 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
         private readonly ILlamadoRepositorio _llamadoRepositorio;
         private readonly ICalcularTotalComandaServicio _calcularTotalComandaServicio;
         private readonly IComandaNotificador _comandaNotificador;
+        private readonly ILlamadoNotificador _llamadoNotificador;
         private readonly IRegistrarPagoServicio _registrarPagoServicio;
         private readonly ILogger<ConfirmarPagoEfectivoCasoDeUso> _logger;
 
         public ConfirmarPagoEfectivoCasoDeUso(IPagoRepositorio pagoRepositorio, IComandaRepositorio comandaRepositorio, ILlamadoRepositorio llamadoRepositorio, ICalcularTotalComandaServicio calcularTotalComandaServicio,
-            IComandaNotificador comandaNotificador,
+            IComandaNotificador comandaNotificador, ILlamadoNotificador llamadoNotificador,
             IRegistrarPagoServicio registrarPagoServicio, ILogger<ConfirmarPagoEfectivoCasoDeUso> logger)
         {
             _pagoRepositorio = pagoRepositorio;
@@ -26,6 +27,7 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
             _llamadoRepositorio = llamadoRepositorio;
             _calcularTotalComandaServicio = calcularTotalComandaServicio;
             _comandaNotificador = comandaNotificador;
+            _llamadoNotificador = llamadoNotificador;
             _registrarPagoServicio = registrarPagoServicio;
             _logger = logger;
         }
@@ -69,7 +71,10 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
 
             await _comandaNotificador.NotificarEstadoModificadoAsync(comanda, new List<int> { comanda.MozoId.Value });
 
-            await _llamadoRepositorio.ResolverLlamadoPorMesaYCategoriaAsync(comanda.MesaId, (int)CategoriaLlamado.Pago);
+            Llamado? llamado = await _llamadoRepositorio.ResolverLlamadoPorMesaYCategoriaAsync(comanda.MesaId, (int)CategoriaLlamado.Pago);
+
+            if (llamado != null)
+                await _llamadoNotificador.NotificarLlamadosResueltosAsync(comanda.MesaId, new List<Llamado> { llamado });
         }
     }
 }

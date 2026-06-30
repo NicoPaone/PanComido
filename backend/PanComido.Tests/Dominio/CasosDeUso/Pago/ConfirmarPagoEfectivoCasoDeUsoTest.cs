@@ -15,6 +15,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
         private readonly Mock<IComandaRepositorio> _comandaMockRepo;
         private readonly Mock<ICalcularTotalComandaServicio> _calcularTotalMockServicio;
         private readonly Mock<IComandaNotificador> _comandaNotificadorMock;
+        private readonly Mock<ILlamadoNotificador> _llamadoNotificadorMock;
         private readonly Mock<IRegistrarPagoServicio> _registrarPagoMockServicio;
         private readonly Mock<ILogger<ConfirmarPagoEfectivoCasoDeUso>> _loggerMock;
 
@@ -25,6 +26,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
             _comandaMockRepo = new Mock<IComandaRepositorio>();
             _calcularTotalMockServicio = new Mock<ICalcularTotalComandaServicio>();
             _comandaNotificadorMock = new Mock<IComandaNotificador>();
+            _llamadoNotificadorMock = new Mock<ILlamadoNotificador>();
             _registrarPagoMockServicio = new Mock<IRegistrarPagoServicio>();
             _loggerMock = new Mock<ILogger<ConfirmarPagoEfectivoCasoDeUso>>();
         }
@@ -36,6 +38,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
                 _llamadoMockRepo.Object,
                 _calcularTotalMockServicio.Object,
                 _comandaNotificadorMock.Object,
+                _llamadoNotificadorMock.Object,
                 _registrarPagoMockServicio.Object,
                 _loggerMock.Object);
 
@@ -91,7 +94,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Pago
 
             _llamadoMockRepo
                 .Setup(r => r.ResolverLlamadoPorMesaYCategoriaAsync(It.IsAny<int>(), It.IsAny<int>()))
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync((DOM.Llamado?)null);
 
             _comandaNotificadorMock
                 .Setup(n => n.NotificarEstadoModificadoAsync(It.IsAny<DOM.Comanda>(), It.IsAny<List<int>>()))
