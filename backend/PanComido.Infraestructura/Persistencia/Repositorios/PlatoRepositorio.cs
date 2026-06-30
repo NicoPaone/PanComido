@@ -63,7 +63,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             return (DOM.Plato)_articuloMapper.paraDominio(efArticulo);
         }
 
-        public async Task ActualizarAsync(DOM.Plato platoDominio, List<int> insumosAEliminar)
+        public async Task ActualizarAsync(DOM.Plato platoDominio)
         {
             var efArticulo = await _ctx.Articulos
                 .Include(a => a.Plato)
@@ -81,11 +81,10 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             ActualizarDatosBasicos(efArticulo, platoDominio);
             await ActualizarConfiguracionVisibilidadAsync(efArticulo, platoDominio.EsVisibleEnCarta);
             await ActualizarRestriccionesAsync(efArticulo, platoDominio.Restricciones);
-            ActualizarIngredientes(efArticulo, platoDominio.Ingredientes, insumosAEliminar);
+            ActualizarIngredientes(efArticulo, platoDominio.Ingredientes);
 
             await _ctx.SaveChangesAsync();
         }
-
 
         public async Task EliminarAsync(int platoId, int restauranteId)
         {
@@ -94,7 +93,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
             if (efArticulo == null)
             {
-                throw new ArgumentException("El plato no existe o no pertenece al restaurante.");
+                throw new KeyNotFoundException("El plato no existe o no pertenece al restaurante.");
             }
 
             efArticulo.Eliminado = true;
@@ -153,18 +152,16 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             }
         }
 
-        private void ActualizarIngredientes(EF.Articulo efArticulo, List<DOM.PlatoIngrediente> ingredientesDominio, List<int> insumosAEliminar)
+        private void ActualizarIngredientes(EF.Articulo efArticulo, List<DOM.PlatoIngrediente> ingredientesDominio)
         {
-            if (insumosAEliminar != null && insumosAEliminar.Any())
-            {
-                var entidadesAEliminar = efArticulo.Plato.PlatoIngredientes
-                    .Where(pi => insumosAEliminar.Contains(pi.IngredienteId))
-                    .ToList();
+            var insumosNuevos = ingredientesDominio.Select(i => i.InsumoId).ToList();
+            var entidadesAEliminar = efArticulo.Plato.PlatoIngredientes
+                .Where(pi => !insumosNuevos.Contains(pi.IngredienteId))
+                .ToList();
 
-                foreach (var aEliminar in entidadesAEliminar)
-                {
-                    _ctx.Set<EF.PlatoIngrediente>().Remove(aEliminar);
-                }
+            foreach (var aEliminar in entidadesAEliminar)
+            {
+                _ctx.Set<EF.PlatoIngrediente>().Remove(aEliminar);
             }
 
             foreach (var ingDominio in ingredientesDominio)
@@ -186,6 +183,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 }
             }
         }
+
 
 
     }
