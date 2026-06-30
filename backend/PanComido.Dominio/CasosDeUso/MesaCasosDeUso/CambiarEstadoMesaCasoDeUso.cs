@@ -12,12 +12,14 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
         private readonly IMesaRepositorio _mesaRepositorio;
         private readonly ILlamadoNotificador _llamadoNotificador;
         private readonly ILlamadoRepositorio _llamadoRepositorio;
+        private readonly IMesaNotificador _mesaNotificador;
 
-        public CambiarEstadoMesaCasoDeUso(IMesaRepositorio mesaRepositorio, ILlamadoNotificador llamadoNotificador, ILlamadoRepositorio llamadoRepositorio)
+        public CambiarEstadoMesaCasoDeUso(IMesaRepositorio mesaRepositorio, ILlamadoNotificador llamadoNotificador, ILlamadoRepositorio llamadoRepositorio, IMesaNotificador mesaNotificador)
         {
             _mesaRepositorio = mesaRepositorio;
             _llamadoNotificador = llamadoNotificador;
             _llamadoRepositorio = llamadoRepositorio;
+            _mesaNotificador = mesaNotificador;
         }
 
         public async Task<MesaConPosiciones> EjecutarAsync(int restauranteId, int mesaId, EstadoMesa nuevoEstado)
@@ -29,12 +31,13 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
 
             mesa.EstadoMesa = nuevoEstado;
             await _mesaRepositorio.ActualizarEstadoAsync(mesaId, nuevoEstado);
-            if(mesa.EstadoMesa == EstadoMesa.Disponible)
+            if (mesa.EstadoMesa == EstadoMesa.Disponible)
             {
                 List<Llamado> llamadosResueltos = await _llamadoRepositorio.ResolverTodosLosPendientesPorMesaAsync(mesaId);
                 if (llamadosResueltos.Any())
                     await _llamadoNotificador.NotificarLlamadosResueltosAsync(mesaId, llamadosResueltos);
             }
+            await _mesaNotificador.NotificarMesaActualizadaAsync(mesa, restauranteId);
             return mesa;
         }
     }

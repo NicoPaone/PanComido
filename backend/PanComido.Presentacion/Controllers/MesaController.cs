@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
 using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Interfaces.Servicios;
 using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.DTOs.Mesas;
-using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Sesion;
 
@@ -29,7 +28,6 @@ namespace PanComido.Presentacion.Controllers
             private readonly AsignarMozosMesaCasoDeUso _asignarMozosMesaCasoDeUso;
             private readonly DesasignarMozoMesaCasoDeUso _desasignarMozoMesaCasoDeUso;
             private readonly ListarMozosParaMesaCasoDeUso _listarMozosParaMesaCasoDeUso;
-            private readonly IHubContext<PanComidoHub> _hubContext;
 
             private readonly MesaMapper _mapper;
             private readonly DatosBienvenidaMesaMapper _datosBienvenidaMesaMapper;
@@ -45,8 +43,7 @@ namespace PanComido.Presentacion.Controllers
               DesasignarMozoMesaCasoDeUso desasignarMozoMesaCasoDeUso,
               ListarMozosParaMesaCasoDeUso listarMozosParaMesaCasoDeUso,
               MesaMapper mapper,
-              DatosBienvenidaMesaMapper datosBienvenidaMesaMapper,
-              IHubContext<PanComidoHub> hubContext)
+              DatosBienvenidaMesaMapper datosBienvenidaMesaMapper)
             {
                 _ocuparMesaCasoDeUso = ocuparMesaCasoDeUso;
                 _listarMesas = listar;
@@ -56,8 +53,6 @@ namespace PanComido.Presentacion.Controllers
                 _asignarMozosMesaCasoDeUso = asignarMozosMesaCasoDeUso;
                 _desasignarMozoMesaCasoDeUso = desasignarMozoMesaCasoDeUso;
                 _listarMozosParaMesaCasoDeUso = listarMozosParaMesaCasoDeUso;
-                _hubContext = hubContext;
-
                 _mapper = mapper;
                 _datosBienvenidaMesaMapper = datosBienvenidaMesaMapper;
             }
@@ -114,10 +109,6 @@ namespace PanComido.Presentacion.Controllers
         {
             var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, idMesa, request.CantidadComensales.Value);
 
-                var mesaDto = _mapper.aDto(mesaConPosiciones);
-                await _hubContext.Clients.Group($"Gerente_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
-                await _hubContext.Clients.Group($"Mozos_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
-
                 return StatusCode(201,
                     new OcuparMesaComensalResponseDto
                     {
@@ -138,14 +129,10 @@ namespace PanComido.Presentacion.Controllers
 
             var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, idMesa, request.CantidadComensales.Value);
 
-                var mesaDto = _mapper.aDto(mesaConPosiciones);
-                await _hubContext.Clients.Group($"Gerente_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
-                await _hubContext.Clients.Group($"Mozos_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
-
                 return StatusCode(201,
                     new OcuparMesaResponseDto
                     {
-                        Mesa = mesaDto,
+                        Mesa = _mapper.aDto(mesaConPosiciones),
                         IdComandaGenerada = mesaConPosiciones.idComanda.Value
                     });
             }
@@ -164,12 +151,7 @@ namespace PanComido.Presentacion.Controllers
                 }
 
                 var mesaActualizada = await _cambiarEstadoMesaCasoDeUso.EjecutarAsync(restauranteId, id, estado);
-                var mesaDto = _mapper.aDto(mesaActualizada);
-
-                await _hubContext.Clients.Group($"Gerente_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
-                await _hubContext.Clients.Group($"Mozos_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
-
-                return Ok(mesaDto);
+                return Ok(_mapper.aDto(mesaActualizada));
             }
 
             [HttpPost("{id}/mozos")]
@@ -177,18 +159,7 @@ namespace PanComido.Presentacion.Controllers
             public async Task<IActionResult> AsignarMozos(int id, [FromBody] List<int> mozosIds)
             {
                 int restauranteId = HttpContext.ObtenerRestauranteId();
-
                 await _asignarMozosMesaCasoDeUso.EjecutarAsync(restauranteId, id, mozosIds);
-
-                var mesas = await _listarMesas.EjecutarAsync(restauranteId);
-                var mesaActualizada = mesas.FirstOrDefault(m => m.Id == id);
-                if (mesaActualizada != null)
-                {
-                    var mesaDto = _mapper.aDto(mesaActualizada);
-                    await _hubContext.Clients.Group($"Gerente_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
-                    await _hubContext.Clients.Group($"Mozos_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
-                }
-
                 return Ok(new { mensaje = "Mozos asignados correctamente." });
             }
 
@@ -197,18 +168,7 @@ namespace PanComido.Presentacion.Controllers
             public async Task<IActionResult> DesasignarMozo(int id, int mozoId)
             {
                 int restauranteId = HttpContext.ObtenerRestauranteId();
-
                 await _desasignarMozoMesaCasoDeUso.EjecutarAsync(restauranteId, id, mozoId);
-
-                var mesas = await _listarMesas.EjecutarAsync(restauranteId);
-                var mesaActualizada = mesas.FirstOrDefault(m => m.Id == id);
-                if (mesaActualizada != null)
-                {
-                    var mesaDto = _mapper.aDto(mesaActualizada);
-                    await _hubContext.Clients.Group($"Gerente_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
-                    await _hubContext.Clients.Group($"Mozos_{restauranteId}").SendAsync("MesaActualizada", mesaDto);
-                }
-
                 return Ok(new { mensaje = "Mozo desasignado correctamente." });
             }
         }

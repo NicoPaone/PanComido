@@ -92,48 +92,39 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .ToListAsync();
         }
 
-        public async Task AsignarMozosAsync(int restauranteId, int mesaId, List<int> mozosIds)
+        public async Task AsignarMozosAsync(int mesaId, List<int> mozosAAgregarIds, List<int> mozosAEliminarIds)
         {
             var mesa = await _ctx.Mesas
                 .Include(m => m.Mozos)
-                .FirstOrDefaultAsync(m => m.Id == mesaId && m.Grilla.RestauranteId == restauranteId);
-                
-            if (mesa == null) throw new Exception($"La mesa {mesaId} no existe en este restaurante.");
+                .FirstOrDefaultAsync(m => m.Id == mesaId);
 
-            var mozosExistentes = mesa.Mozos.Select(m => m.IdEmpleado).ToList();
-            var nuevosMozosIds = mozosIds.Except(mozosExistentes).ToList();
-            var mozosAEliminarIds = mozosExistentes.Except(mozosIds).ToList();
+            if (mesa == null) return;
 
             if (mozosAEliminarIds.Any())
             {
                 var mozosAEliminar = mesa.Mozos.Where(m => mozosAEliminarIds.Contains(m.IdEmpleado)).ToList();
                 foreach (var mozo in mozosAEliminar)
-                {
                     mesa.Mozos.Remove(mozo);
-                }
             }
 
-            if (nuevosMozosIds.Any())
+            if (mozosAAgregarIds.Any())
             {
-                var mozos = await _ctx.Mozos.Where(m => nuevosMozosIds.Contains(m.IdEmpleado)).ToListAsync();
-                if (mozos.Count != nuevosMozosIds.Count)
-                {
+                var mozos = await _ctx.Mozos.Where(m => mozosAAgregarIds.Contains(m.IdEmpleado)).ToListAsync();
+                if (mozos.Count != mozosAAgregarIds.Count)
                     throw new Exception("Uno o más IDs de mozo enviados no existen en la base de datos.");
-                }
                 foreach (var mozo in mozos)
-                {
                     mesa.Mozos.Add(mozo);
-                }
             }
+
             await _ctx.SaveChangesAsync();
         }
 
-        public async Task DesasignarMozoAsync(int restauranteId, int mesaId, int mozoId)
+        public async Task DesasignarMozoAsync(int mesaId, int mozoId)
         {
             var mesa = await _ctx.Mesas
                 .Include(m => m.Mozos)
-                .FirstOrDefaultAsync(m => m.Id == mesaId && m.Grilla.RestauranteId == restauranteId);
-                
+                .FirstOrDefaultAsync(m => m.Id == mesaId);
+
             if (mesa == null) return;
 
             var mozo = mesa.Mozos.FirstOrDefault(m => m.IdEmpleado == mozoId);

@@ -2,6 +2,7 @@
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Interfaces.Servicios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +15,14 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
     {
         private readonly IMesaRepositorio _mesaRepositorio;
         private readonly IComandaRepositorio _comandaRepositorio;
-
+        private readonly IMesaNotificador _mesaNotificador;
         private readonly ILogger<OcuparMesaCasoDeUso> _logger;
 
-        public OcuparMesaCasoDeUso(IMesaRepositorio mesaRepositorio, IComandaRepositorio comandaRepositorio, ILogger<OcuparMesaCasoDeUso> logger)
+        public OcuparMesaCasoDeUso(IMesaRepositorio mesaRepositorio, IComandaRepositorio comandaRepositorio, IMesaNotificador mesaNotificador, ILogger<OcuparMesaCasoDeUso> logger)
         {
             _mesaRepositorio = mesaRepositorio;
             _comandaRepositorio = comandaRepositorio;
+            _mesaNotificador = mesaNotificador;
             _logger = logger;
         }
 
@@ -34,6 +36,8 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
             await _mesaRepositorio.ActualizarEstadoAsync(mesaId, EstadoMesa.Ocupada);
 
             mesa.idComanda = await GenerarComandaParaMesaOcupadaAsync(mesaId, restauranteId, cantComensales);
+            
+            await _mesaNotificador.NotificarMesaActualizadaAsync(mesa, restauranteId);
 
             _logger.LogInformation("Mesa {MesaId} ocupada exitosamente. Se creó la nueva comanda {ComandaId} para {CantComensales} comensales.", mesaId, mesa.idComanda, cantComensales);
             

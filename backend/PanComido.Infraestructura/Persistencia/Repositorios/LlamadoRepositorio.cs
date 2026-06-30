@@ -95,7 +95,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             return _ctx.Llamados
                 .Include(l => l.CategoriaLlamado)
                 .Include(l => l.Mozo)
-                    .ThenInclude(m => m.Mesas);
+                    .ThenInclude(m => m!.Mesas);
         }
     }
 }
