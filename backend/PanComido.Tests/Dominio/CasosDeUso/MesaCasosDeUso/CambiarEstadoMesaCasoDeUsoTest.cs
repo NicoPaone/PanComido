@@ -12,12 +12,14 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
         private readonly Mock<IMesaRepositorio> _mesaMockRepo;
         private readonly Mock<ILlamadoNotificador> _llamadoNotificadorMock;
         private readonly Mock<ILlamadoRepositorio> _llamadoMockRepo;
+        private readonly Mock<IMesaNotificador> _mesaNotificadorMock;
 
         public CambiarEstadoMesaCasoDeUsoTest()
         {
             _mesaMockRepo = new Mock<IMesaRepositorio>();
             _llamadoNotificadorMock = new Mock<ILlamadoNotificador>();
             _llamadoMockRepo = new Mock<ILlamadoRepositorio>();
+            _mesaNotificadorMock = new Mock<IMesaNotificador>();
         }
 
         [Fact]
@@ -41,7 +43,11 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
                 .Setup(r => r.ActualizarEstadoAsync(mesaId, estadoNuevo))
                 .Returns(Task.CompletedTask);
 
-            var casoDeUso = new CambiarEstadoMesaCasoDeUso(_mesaMockRepo.Object, _llamadoNotificadorMock.Object, _llamadoMockRepo.Object);
+            _mesaNotificadorMock
+                .Setup(n => n.NotificarMesaActualizadaAsync(It.IsAny<MesaConPosiciones>(), restauranteId))
+                .Returns(Task.CompletedTask);
+
+            var casoDeUso = new CambiarEstadoMesaCasoDeUso(_mesaMockRepo.Object, _llamadoNotificadorMock.Object, _llamadoMockRepo.Object, _mesaNotificadorMock.Object);
 
             var resultado = await casoDeUso.EjecutarAsync(restauranteId, mesaId, estadoNuevo);
 
@@ -61,7 +67,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
                 .Setup(r => r.ObtenerPorIdAsync(mesaId, restauranteId))
                 .ReturnsAsync((MesaConPosiciones)null);
 
-            var casoDeUso = new CambiarEstadoMesaCasoDeUso(_mesaMockRepo.Object, _llamadoNotificadorMock.Object, _llamadoMockRepo.Object);
+            var casoDeUso = new CambiarEstadoMesaCasoDeUso(_mesaMockRepo.Object, _llamadoNotificadorMock.Object, _llamadoMockRepo.Object, _mesaNotificadorMock.Object);
 
             await Assert.ThrowsAsync<ArgumentException>(() => casoDeUso.EjecutarAsync(restauranteId, mesaId, EstadoMesa.Ocupada));
             

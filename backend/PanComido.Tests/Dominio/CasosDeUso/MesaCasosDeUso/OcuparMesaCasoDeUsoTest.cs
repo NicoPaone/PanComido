@@ -3,6 +3,7 @@ using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Interfaces.Servicios;
 using Microsoft.Extensions.Logging;
 
 namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
@@ -11,11 +12,13 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
     {
         private readonly Mock<IMesaRepositorio> _mesaMockRepo;
         private readonly Mock<IComandaRepositorio> _comandaMockRepo;
+        private readonly Mock<IMesaNotificador> _mesaNotificadorMock;
 
         public OcuparMesaCasoDeUsoTest()
         {
             _mesaMockRepo = new Mock<IMesaRepositorio>();
             _comandaMockRepo = new Mock<IComandaRepositorio>();
+            _mesaNotificadorMock = new Mock<IMesaNotificador>();
         }
 
         [Fact]
@@ -45,7 +48,11 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
                 .Setup(r => r.CrearAsync(It.IsAny<Comanda>()))
                 .ReturnsAsync(comandaNuevaId);
 
-            var casoDeUso = new OcuparMesaCasoDeUso(_mesaMockRepo.Object, _comandaMockRepo.Object, new Mock<ILogger<OcuparMesaCasoDeUso>>().Object);
+            _mesaNotificadorMock
+                .Setup(n => n.NotificarMesaActualizadaAsync(It.IsAny<MesaConPosiciones>(), restauranteId))
+                .Returns(Task.CompletedTask);
+
+            var casoDeUso = new OcuparMesaCasoDeUso(_mesaMockRepo.Object, _comandaMockRepo.Object, _mesaNotificadorMock.Object, new Mock<ILogger<OcuparMesaCasoDeUso>>().Object);
 
             var resultado = await casoDeUso.EjecutarAsync(restauranteId, mesaId, cantComensales);
 
@@ -67,7 +74,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
                 .Setup(r => r.ObtenerPorIdAsync(mesaId, restauranteId))
                 .ReturnsAsync((MesaConPosiciones)null);
 
-            var casoDeUso = new OcuparMesaCasoDeUso(_mesaMockRepo.Object, _comandaMockRepo.Object, new Mock<ILogger<OcuparMesaCasoDeUso>>().Object);
+            var casoDeUso = new OcuparMesaCasoDeUso(_mesaMockRepo.Object, _comandaMockRepo.Object, _mesaNotificadorMock.Object, new Mock<ILogger<OcuparMesaCasoDeUso>>().Object);
 
             await Assert.ThrowsAsync<ArgumentException>(() => casoDeUso.EjecutarAsync(restauranteId, mesaId, 2));
         }
@@ -82,7 +89,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
                 .Setup(r => r.ObtenerPorIdAsync(mesaId, restauranteId))
                 .ReturnsAsync(new MesaConPosiciones { EstadoMesa = EstadoMesa.Ocupada });
 
-            var casoDeUso = new OcuparMesaCasoDeUso(_mesaMockRepo.Object, _comandaMockRepo.Object, new Mock<ILogger<OcuparMesaCasoDeUso>>().Object);
+            var casoDeUso = new OcuparMesaCasoDeUso(_mesaMockRepo.Object, _comandaMockRepo.Object, _mesaNotificadorMock.Object, new Mock<ILogger<OcuparMesaCasoDeUso>>().Object);
 
             await Assert.ThrowsAsync<InvalidOperationException>(() => casoDeUso.EjecutarAsync(restauranteId, mesaId, 2));
         }
@@ -97,7 +104,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
                 .Setup(r => r.ObtenerPorIdAsync(mesaId, restauranteId))
                 .ReturnsAsync(new MesaConPosiciones { EstadoMesa = EstadoMesa.Disponible, CantPersonasMax = 2 });
 
-            var casoDeUso = new OcuparMesaCasoDeUso(_mesaMockRepo.Object, _comandaMockRepo.Object, new Mock<ILogger<OcuparMesaCasoDeUso>>().Object);
+            var casoDeUso = new OcuparMesaCasoDeUso(_mesaMockRepo.Object, _comandaMockRepo.Object, _mesaNotificadorMock.Object, new Mock<ILogger<OcuparMesaCasoDeUso>>().Object);
 
             await Assert.ThrowsAsync<InvalidOperationException>(() => casoDeUso.EjecutarAsync(restauranteId, mesaId, 5));
         }
