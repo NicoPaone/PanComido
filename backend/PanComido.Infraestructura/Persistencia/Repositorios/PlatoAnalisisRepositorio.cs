@@ -147,7 +147,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             var efNotificaciones = await _ctx.Notificacions
                 .Where(n => n.RestauranteId == restauranteId
                          && !n.Resuelta
-                         && n.Descripcion.StartsWith("Revisión: "))
+                         && (n.Descripcion.StartsWith("{\"titulo\":\"Revisión:") || n.Descripcion.StartsWith("Revisión: ")))
                 .ToListAsync();
 
             return efNotificaciones.Select(n => new DOM.Notificacion
