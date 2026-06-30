@@ -10,5 +10,6 @@ namespace PanComido.Dominio.Interfaces.Servicios
     public interface ILlamadoNotificador
     {
         Task NotificarLlamadoAsync(Llamado llamado);
+        Task NotificarLlamadosResueltosAsync(int mesaId, List<Llamado> llamadosResueltos);
     }
 }

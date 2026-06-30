@@ -28,12 +28,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             await _ctx.Llamados.AddAsync(efLlamado);
             await _ctx.SaveChangesAsync();
 
-            var completo = await _ctx.Llamados
+            var completo = await BaseQueryLlamado()
                 .AsNoTracking()
-                .Include(l => l.CategoriaLlamado)
                 .Include(l => l.Mesa)
-                .Include(l => l.Mozo)
-                    .ThenInclude(m => m.Mesas)
                 .FirstAsync(l => l.Id == efLlamado.Id);
 
             var dominioCompleto = _llamadoMapper.paraDominio(completo);
@@ -49,9 +46,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
         public async Task<List<DOM.Llamado>> ObtenerLlamadosPendientesPorMozoAsync(int mozoId)
         {
-            return await _ctx.Llamados
-                .Include(l => l.CategoriaLlamado)
-                .Include(l => l.Mozo).ThenInclude(m => m.Mesas)
+            return await BaseQueryLlamado()
                 .Where(l => l.MozoId == mozoId && !l.Resuelto)
                 .Select(l => _llamadoMapper.paraDominio(l))
                 .ToListAsync();
@@ -65,17 +60,42 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             await _ctx.SaveChangesAsync();
             return true;
         }
-        public async Task ResolverLlamadoPorMesaYCategoriaAsync(int mesaId, int categoriaLlamadoId)
+        public async Task<DOM.Llamado?> ResolverLlamadoPorMesaYCategoriaAsync(int mesaId, int categoriaLlamadoId)
         {
-            var efLlamado = await _ctx.Llamados
+            var efLlamado = await BaseQueryLlamado()
                 .FirstOrDefaultAsync(l => l.MesaId == mesaId
                                         && l.CategoriaLlamadoId == categoriaLlamadoId
                                         && !l.Resuelto);
 
-            if (efLlamado == null) return;
+            if (efLlamado == null) return null;
 
             efLlamado.Resuelto = true;
             await _ctx.SaveChangesAsync();
+            return _llamadoMapper.paraDominio(efLlamado);
+        }
+
+        public async Task<List<DOM.Llamado>> ResolverTodosLosPendientesPorMesaAsync(int mesaId)
+        {
+            var efLlamado = await BaseQueryLlamado()
+                   .Where(l => l.MesaId == mesaId && !l.Resuelto)
+                   .ToListAsync();
+
+            foreach(EF.Llamado llamado in efLlamado)
+            {
+                llamado.Resuelto = true;
+            }
+            await _ctx.SaveChangesAsync();
+
+            return efLlamado.Select(l => _llamadoMapper.paraDominio(l))
+                .ToList();
+        }
+
+        private IQueryable<EF.Llamado> BaseQueryLlamado()
+        {
+            return _ctx.Llamados
+                .Include(l => l.CategoriaLlamado)
+                .Include(l => l.Mozo)
+                    .ThenInclude(m => m.Mesas);
         }
     }
 }
