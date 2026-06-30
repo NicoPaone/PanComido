@@ -42,7 +42,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
             if (efComanda == null)
                 return null;
-            
+
             efComanda.EstadoComandaId = estadoId;
             efComanda.HoraUltimoCambioEstado = DateTime.Now;
 
@@ -52,61 +52,24 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         }
         public async Task<DOM.Comanda?> ObtenerComandaPorIdMesaAsync(int mesaId)
         {
-            var efComanda = await _ctx.Comanda
-            .Include(c => c.Mesa)
-            .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.Plato != null))
-                .ThenInclude(ac => ac.Articulo)
-                    .ThenInclude(a => a.Plato)
-            .Include(c => c.ArticuloComanda)
-                .ThenInclude(ac => ac.ArticuloComandaIngredienteExcluidos)
-                    .ThenInclude(ex => ex.Ingrediente)
-                        .ThenInclude(i => i.IdInsumoNavigation)
-                           .ThenInclude(ins => ins.IdArticuloNavigation)
-            .FirstOrDefaultAsync(m => m.MesaId == mesaId 
-                                   && m.EstadoComandaId != (int)EstadoComanda.Finalizada);
-
+            var efComanda = await BaseQueryCocina()
+                               .FirstOrDefaultAsync(m => m.MesaId == mesaId
+                               && m.EstadoComandaId != (int)EstadoComanda.Finalizada);
             return efComanda == null ? null : _mapper.ParaDominio(efComanda);
         }
 
         public async Task<List<Comanda>> ObtenerComandasActivasParaCocinaAsync(int restauranteId)
         {
-            var efList = await _ctx.Comanda
-               .Include(c => c.EstadoComanda)
-               .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.Plato != null))
-                   .ThenInclude(ac => ac.Articulo)
-                       .ThenInclude(a => a.Plato)
-               .Include(c => c.ArticuloComanda)
-                   .ThenInclude(ac => ac.ArticuloComandaIngredienteExcluidos)
-                      .ThenInclude(ex => ex.Ingrediente)
-                       .ThenInclude(i => i.IdInsumoNavigation)
-                           .ThenInclude(ins => ins.IdArticuloNavigation)
-               .Include(c => c.Mesa)
-               .Where(c => c.RestauranteId == restauranteId)
-               .Where(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada
-                           && c.EstadoComandaId != (int)EstadoComanda.Abierta)
-               .Where(c => c.ArticuloComanda.Any(ac => ac.Articulo.Plato != null))
-               .ToListAsync();
+            var efList = await BaseQueryCocina()
+                            .Where(c => c.RestauranteId == restauranteId
+                                     && c.EstadoComandaId != (int)EstadoComanda.Finalizada
+                                     && c.EstadoComandaId != (int)EstadoComanda.Abierta
+                                     && c.ArticuloComanda.Any(ac => ac.Articulo.Plato != null))
+                            .ToListAsync();
+
             return efList.Select(C => _mapper.ParaDominio(C)).ToList();
         }
 
-        private IQueryable<EF.Comandum> BaseQueryMozo()
-        {
-            return _ctx.Comanda
-                .Include(c => c.EstadoComanda)
-                .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.ConfiguracionArticulos.Any(ca => ca.Id == (int)ConfiguracionArticuloEnum.Vendible)))
-                    .ThenInclude(ac => ac.Articulo)
-                        .ThenInclude(a => a.Plato)
-                .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.ConfiguracionArticulos.Any(ca => ca.Id == (int)ConfiguracionArticuloEnum.Vendible)))
-                    .ThenInclude(ac => ac.Articulo)
-                        .ThenInclude(a => a.Insumo)
-                .Include(c => c.ArticuloComanda)
-                    .ThenInclude(ac => ac.ArticuloComandaIngredienteExcluidos)
-                      .ThenInclude(ex => ex.Ingrediente)
-                        .ThenInclude(i => i.IdInsumoNavigation)        
-                            .ThenInclude(ins => ins.IdArticuloNavigation)
-                .Include(c => c.Mesa)
-                    .ThenInclude(m => m.Mozos);
-        }
 
         public async Task<List<Comanda>> ObtenerComandasActivasPorMozoAsync(int restauranteId, int mozoId)
         {
@@ -283,7 +246,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     tiempoPromedioAtencion = $"{Math.Round(avgMinutes)}m";
                 }
 
-                int activas = comandasDelMozo.Count(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada 
+                int activas = comandasDelMozo.Count(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada
                                                       && c.EstadoComandaId != (int)EstadoComanda.Abierta);
                 string estado = "Baja carga";
                 if (activas > 4)
@@ -307,6 +270,41 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
             return statsList;
         }
+
+        private IQueryable<EF.Comandum> BaseQueryMozo()
+        {
+            return _ctx.Comanda
+                .Include(c => c.EstadoComanda)
+                .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.ConfiguracionArticulos.Any(ca => ca.Id == (int)ConfiguracionArticuloEnum.Vendible)))
+                    .ThenInclude(ac => ac.Articulo)
+                        .ThenInclude(a => a.Plato)
+                .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.ConfiguracionArticulos.Any(ca => ca.Id == (int)ConfiguracionArticuloEnum.Vendible)))
+                    .ThenInclude(ac => ac.Articulo)
+                        .ThenInclude(a => a.Insumo)
+                .Include(c => c.ArticuloComanda)
+                    .ThenInclude(ac => ac.ArticuloComandaIngredienteExcluidos)
+                      .ThenInclude(ex => ex.Ingrediente)
+                        .ThenInclude(i => i.IdInsumoNavigation)
+                            .ThenInclude(ins => ins.IdArticuloNavigation)
+                .Include(c => c.Mesa)
+                    .ThenInclude(m => m.Mozos);
+        }
+
+        private IQueryable<EF.Comandum> BaseQueryCocina()
+        {
+            return _ctx.Comanda
+                .Include(c => c.EstadoComanda)
+                .Include(c => c.Mesa)
+                .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.Plato != null))
+                    .ThenInclude(ac => ac.Articulo)
+                        .ThenInclude(a => a.Plato)
+                .Include(c => c.ArticuloComanda)
+                    .ThenInclude(ac => ac.ArticuloComandaIngredienteExcluidos)
+                        .ThenInclude(ex => ex.Ingrediente)
+                            .ThenInclude(i => i.IdInsumoNavigation)
+                                .ThenInclude(ins => ins.IdArticuloNavigation);
+        }
+
     }
 
 }
