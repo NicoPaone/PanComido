@@ -166,5 +166,66 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
             return statsList;
         }
+
+        public async Task<List<IngredienteExcluidoStat>> ObtenerIngredientesExcluidosStatsAsync(int restauranteId, DateTime desde, DateTime hasta)
+        {
+            // 1. Obtener todas las exclusiones en el rango
+            var exclusiones = await _ctx.ArticuloComandaIngredienteExcluidos
+                .Where(ace => ace.ArticuloComanda.Comanda.RestauranteId == restauranteId
+                           && ace.ArticuloComanda.Comanda.HoraInicio >= desde
+                           && ace.ArticuloComanda.Comanda.HoraInicio <= hasta)
+                .Select(ace => new
+                {
+                    ace.IngredienteId,
+                    NombreIngrediente = ace.Ingrediente.IdInsumoNavigation.IdArticuloNavigation.Nombre,
+                    PlatoId = ace.ArticuloComanda.ArticuloId,
+                    NombrePlato = ace.ArticuloComanda.Articulo.Nombre
+                })
+                .ToListAsync();
+
+            // 2. Obtener cantidad de pedidos por plato en el rango para calcular tasas
+            var pedidosPorPlato = await _ctx.ArticuloComanda
+                .Where(ac => ac.Comanda.RestauranteId == restauranteId
+                          && ac.Comanda.HoraInicio >= desde
+                          && ac.Comanda.HoraInicio <= hasta)
+                .GroupBy(ac => ac.ArticuloId)
+                .Select(g => new
+                {
+                    PlatoId = g.Key,
+                    TotalPedidos = g.Sum(ac => ac.Cantidad)
+                })
+                .ToDictionaryAsync(x => x.PlatoId, x => x.TotalPedidos);
+
+            // 3. Procesar en memoria
+            var result = exclusiones
+                .GroupBy(e => e.IngredienteId)
+                .Select(g =>
+                {
+                    var count = g.Count();
+                    var platoMasExcluidoGroup = g.GroupBy(x => new { x.PlatoId, x.NombrePlato })
+                                                 .OrderByDescending(pg => pg.Count())
+                                                 .FirstOrDefault();
+
+                    var nombrePlato = platoMasExcluidoGroup?.Key.NombrePlato ?? string.Empty;
+                    var idPlato = platoMasExcluidoGroup?.Key.PlatoId ?? 0;
+                    var exclusionesPlato = platoMasExcluidoGroup?.Count() ?? 0;
+                    var totalPedidosPlato = pedidosPorPlato.TryGetValue(idPlato, out var tp) ? tp : 0;
+
+                    return new IngredienteExcluidoStat
+                    {
+                        IngredienteId = g.Key,
+                        NombreIngrediente = g.First().NombreIngrediente,
+                        CantidadExclusiones = count,
+                        PlatoMasExcluido = nombrePlato,
+                        ExclusionesEnPlatoMasExcluido = exclusionesPlato,
+                        TotalPedidosPlatoMasExcluido = totalPedidosPlato
+                    };
+                })
+                .OrderByDescending(x => x.CantidadExclusiones)
+                .Take(5)
+                .ToList();
+
+            return result;
+        }
     }
 }

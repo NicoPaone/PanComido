@@ -347,14 +347,24 @@ INSERT INTO cierre (id, restaurante_id, turno_laboral_id, diferencia, sobrante, 
 INSERT INTO comanda (id, mesa_id, restaurante_id, estado_comanda_id, cant_comensales, hora_inicio, hora_fin) VALUES
     (1, 3, 1, 2, 3, NOW() - INTERVAL '25 minutes', NULL),
     (2, 4, 1, 1, 5, NOW() - INTERVAL '5 minutes',  NULL),
-    (3, 1, 1, 3, 2, NOW() - INTERVAL '3 hours',     NOW() - INTERVAL '2 hours');
+    (3, 1, 1, 3, 2, NOW() - INTERVAL '3 hours',     NOW() - INTERVAL '2 hours'),
+    (4, 2, 1, 3, 2, NOW() - INTERVAL '1 day', NOW() - INTERVAL '23 hours'),
+    (5, 5, 1, 3, 4, NOW() - INTERVAL '2 days', NOW() - INTERVAL '47 hours'),
+    (6, 1, 1, 3, 1, NOW() - INTERVAL '2 days', NOW() - INTERVAL '47 hours'),
+    (7, 3, 1, 3, 3, NOW() - INTERVAL '3 days', NOW() - INTERVAL '70 hours'),
+    (8, 4, 1, 3, 2, NOW() - INTERVAL '4 days', NOW() - INTERVAL '94 hours');
 
 -- ============================================================
 -- PAGOS (deben ir DESPUÉS de comanda: pago.comanda_id la referencia)
 -- ============================================================
 
 INSERT INTO pago (id, comanda_id, cierre_id, metodo_pago_id, estado_pago_id, external_reference, total) VALUES
-    (1, 3, 1, 1, 2, NULL, 28500.00);
+    (1, 3, 1, 1, 2, NULL, 28500.00),
+    (2, 4, 1, 1, 2, NULL, 11000.00),
+    (3, 5, 1, 2, 2, NULL, 22000.00),
+    (4, 6, 1, 1, 2, NULL, 5500.00),
+    (5, 7, 1, 1, 2, NULL, 16500.00),
+    (6, 8, 1, 2, 2, NULL, 11000.00);
 
 INSERT INTO articulo_comanda (id, comanda_id, articulo_id, cantidad, entregado, observaciones_generales, nombre_comensal) VALUES
     (1,  1, 1,  1, FALSE, NULL,                       'Lucas'), -- Era: 'Sin orégano'
@@ -370,7 +380,13 @@ INSERT INTO articulo_comanda (id, comanda_id, articulo_id, cantidad, entregado, 
     (11, 2, 13, 2, FALSE, NULL,                       'Julia'),
     (12, 3, 2,  1, TRUE,  NULL,                       'Martin'),
     (13, 3, 11, 1, TRUE,  NULL,                       'Martin'), -- Era: 'Sin pimienta'
-    (14, 3, 16, 2, TRUE,  NULL,                       'Nicole');
+    (14, 3, 16, 2, TRUE,  NULL,                       'Nicole'),
+    (15, 4, 4,  2, TRUE,  NULL,                       'Esteban'),
+    (16, 5, 4,  2, TRUE,  NULL,                       'Gabriela'),
+    (17, 5, 1,  2, TRUE,  NULL,                       'Juana'),
+    (18, 6, 4,  1, TRUE,  NULL,                       'Roberto'),
+    (19, 7, 4,  3, TRUE,  NULL,                       'Florencia'),
+    (20, 8, 4,  2, TRUE,  NULL,                       'Clara');
 
 -- ============================================================
 -- INGREDIENTES EXCLUIDOS (Relación N:N)
@@ -381,7 +397,12 @@ INSERT INTO articulo_comanda_ingrediente_excluido (articulo_comanda_id, ingredie
     (1, 36), -- A la Pizza Muzzarella (ID 1) se le saca el Orégano (Insumo 36)
     (6, 37), -- A la Milanesa Napolitana (ID 6) se le saca el Jamón cocido (Insumo 37)
     (7, 30), -- A las Hamburguesas (ID 7) se les saca la Cebolla (Insumo 30)
-    (13, 25); -- Al Wok de Pollo (ID 13) se le saca la Pimienta (Insumo 25)
+    (13, 25), -- Al Wok de Pollo (ID 13) se le saca la Pimienta (Insumo 25)
+    (15, 30), -- Esteban excluye Cebolla (30) de la Hamburguesa Clásica (15)
+    (16, 30), -- Gabriela excluye Cebolla (30) de la Hamburguesa Clásica (16)
+    (17, 36), -- Juana excluye Orégano (36) de la Pizza Muzzarella (17)
+    (18, 30), -- Roberto excluye Cebolla (30) de la Hamburguesa Clásica (18)
+    (19, 30); -- Florencia excluye Cebolla (30) de la Hamburguesa Clásica (19)
 
 -- ============================================================
 -- LLAMADOS

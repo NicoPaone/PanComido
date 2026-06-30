@@ -79,5 +79,27 @@ namespace PanComido.Presentacion.Mappers
 
             return dto;
         }
+
+        public List<IngredienteExcluidoStatDto> aListaIngredientesExcluidosDto(List<IngredienteExcluidoStat> stats)
+        {
+            return stats.Select(s => {
+                decimal tasa = 0m;
+                if (s.TotalPedidosPlatoMasExcluido > 0)
+                {
+                    tasa = ((decimal)s.ExclusionesEnPlatoMasExcluido / s.TotalPedidosPlatoMasExcluido) * 100m;
+                }
+
+                return new IngredienteExcluidoStatDto
+                {
+                    IngredienteId = s.IngredienteId,
+                    NombreIngrediente = s.NombreIngrediente,
+                    CantidadExclusiones = s.CantidadExclusiones,
+                    PlatoMasExcluido = s.PlatoMasExcluido,
+                    ExclusionesEnPlatoMasExcluido = s.ExclusionesEnPlatoMasExcluido,
+                    TotalPedidosPlatoMasExcluido = s.TotalPedidosPlatoMasExcluido,
+                    TasaExclusionPlatoMasExcluido = tasa > 0 ? $"{tasa:N1}%" : "0.0%"
+                };
+            }).ToList();
+        }
     }
 }

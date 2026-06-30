@@ -249,6 +249,7 @@ builder.Services.AddScoped<ObtenerProveedorCasoDeUso>();
 builder.Services.AddScoped<ObtenerVencimientosYCriticidadDashboardCasoDeUso>();
 builder.Services.AddScoped<ObtenerRendimientoComercialCasoDeUso>();
 builder.Services.AddScoped<ObtenerResumenOperativoCasoDeUso>();
+builder.Services.AddScoped<ObtenerIngredientesExcluidosStatsCasoDeUso>();
 builder.Services.AddScoped<ObtenerAnalisisPlatoCasoDeUso>();
 builder.Services.AddScoped<AplicarDescuentoCasoDeUso>();
 builder.Services.AddScoped<AgendarRecordatorioCasoDeUso>();

@@ -18,6 +18,7 @@ namespace PanComido.Presentacion.Controllers
         private readonly ObtenerVencimientosYCriticidadDashboardCasoDeUso _obtenerVencimientosCasoDeUso;
         private readonly ObtenerRendimientoComercialCasoDeUso _obtenerRendimientoCasoDeUso;
         private readonly ObtenerResumenOperativoCasoDeUso _obtenerResumenOperativoCasoDeUso;
+        private readonly ObtenerIngredientesExcluidosStatsCasoDeUso _obtenerIngredientesExcluidosStatsCasoDeUso;
         private readonly ObtenerAnalisisPlatoCasoDeUso _obtenerAnalisisPlatoCasoDeUso;
         private readonly AplicarDescuentoCasoDeUso _aplicarDescuentoCasoDeUso;
         private readonly AgendarRecordatorioCasoDeUso _agendarRecordatorioCasoDeUso;
@@ -29,6 +30,7 @@ namespace PanComido.Presentacion.Controllers
             ObtenerVencimientosYCriticidadDashboardCasoDeUso obtenerVencimientosCasoDeUso,
             ObtenerRendimientoComercialCasoDeUso obtenerRendimientoCasoDeUso,
             ObtenerResumenOperativoCasoDeUso obtenerResumenOperativoCasoDeUso,
+            ObtenerIngredientesExcluidosStatsCasoDeUso obtenerIngredientesExcluidosStatsCasoDeUso,
             ObtenerAnalisisPlatoCasoDeUso obtenerAnalisisPlatoCasoDeUso,
             AplicarDescuentoCasoDeUso aplicarDescuentoCasoDeUso,
             AgendarRecordatorioCasoDeUso agendarRecordatorioCasoDeUso,
@@ -39,6 +41,7 @@ namespace PanComido.Presentacion.Controllers
             _obtenerVencimientosCasoDeUso = obtenerVencimientosCasoDeUso;
             _obtenerRendimientoCasoDeUso = obtenerRendimientoCasoDeUso;
             _obtenerResumenOperativoCasoDeUso = obtenerResumenOperativoCasoDeUso;
+            _obtenerIngredientesExcluidosStatsCasoDeUso = obtenerIngredientesExcluidosStatsCasoDeUso;
             _obtenerAnalisisPlatoCasoDeUso = obtenerAnalisisPlatoCasoDeUso;
             _aplicarDescuentoCasoDeUso = aplicarDescuentoCasoDeUso;
             _agendarRecordatorioCasoDeUso = agendarRecordatorioCasoDeUso;
@@ -81,6 +84,19 @@ namespace PanComido.Presentacion.Controllers
             int restauranteId = HttpContext.ObtenerRestauranteId();
             var resumen = await _obtenerResumenOperativoCasoDeUso.EjecutarAsync(restauranteId, desde, hasta);
             var respuestaDto = Presentacion.Mappers.Dashboard.ResumenOperativoMapper.ParaDto(resumen);
+            return Ok(respuestaDto);
+        }
+
+        [HttpGet("ingredientes-excluidos")]
+        [ProducesResponseType(typeof(List<IngredienteExcluidoStatDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ObtenerIngredientesExcluidos(
+            [FromQuery] DateTime desde,
+            [FromQuery] DateTime hasta)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+            var stats = await _obtenerIngredientesExcluidosStatsCasoDeUso.EjecutarAsync(restauranteId, desde, hasta);
+            var respuestaDto = _mapper.aListaIngredientesExcluidosDto(stats);
             return Ok(respuestaDto);
         }
 
