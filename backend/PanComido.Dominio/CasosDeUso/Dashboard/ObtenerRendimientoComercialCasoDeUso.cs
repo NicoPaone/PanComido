@@ -8,11 +8,11 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
 {
     public class ObtenerRendimientoComercialCasoDeUso
     {
-        private readonly IComandaRepositorio _comandaRepositorio;
+        private readonly IPlatoAnalisisRepositorio _platoAnalisisRepositorio;
 
-        public ObtenerRendimientoComercialCasoDeUso(IComandaRepositorio comandaRepositorio)
+        public ObtenerRendimientoComercialCasoDeUso(IPlatoAnalisisRepositorio platoAnalisisRepositorio)
         {
-            _comandaRepositorio = comandaRepositorio;
+            _platoAnalisisRepositorio = platoAnalisisRepositorio;
         }
 
         public async Task<ResumenRendimientoComercial> EjecutarAsync(int restauranteId, DateTime desde, DateTime hasta)
@@ -20,8 +20,8 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
             DateTime desdeAjustado = DateTime.SpecifyKind(desde, DateTimeKind.Unspecified);
             DateTime hastaAjustado = DateTime.SpecifyKind(hasta.Date.AddDays(1).AddTicks(-1), DateTimeKind.Unspecified);
 
-            var masVendidos = await _comandaRepositorio.ObtenerTopPlatosMasVendidosAsync(restauranteId, desdeAjustado, hastaAjustado, 5);
-            var menosVendidos = await _comandaRepositorio.ObtenerTopPlatosMenosVendidosAsync(restauranteId, desdeAjustado, hastaAjustado, 5);
+            var masVendidos = await _platoAnalisisRepositorio.ObtenerTopPlatosMasVendidosAsync(restauranteId, desdeAjustado, hastaAjustado, 5);
+            var menosVendidos = await _platoAnalisisRepositorio.ObtenerTopPlatosMenosVendidosAsync(restauranteId, desdeAjustado, hastaAjustado, 5);
 
             return new ResumenRendimientoComercial
             {

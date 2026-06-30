@@ -37,7 +37,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Platos
             Assert.Equal("El plato que intenta modificar no existe o no pertenece al restaurante.", excepcion.Message);
             
             // Verificamos que el repositorio nunca intentó guardar en BD
-            _platoRepoMock.Verify(r => r.ActualizarAsync(It.IsAny<Plato>(), It.IsAny<List<int>>()), Times.Never);
+            _platoRepoMock.Verify(r => r.ActualizarAsync(It.IsAny<Plato>()), Times.Never);
         }
 
         [Fact]
@@ -60,7 +60,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Platos
             Assert.Equal(500, platoExistenteDb.PrecioVentaFinal);
             
             // Verificamos que se llamó al método de guardar exactamente una vez
-            _platoRepoMock.Verify(r => r.ActualizarAsync(platoExistenteDb, It.IsAny<List<int>>()), Times.Once);
+            _platoRepoMock.Verify(r => r.ActualizarAsync(platoExistenteDb), Times.Once);
         }
     }
 }

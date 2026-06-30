@@ -40,8 +40,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .Include(a => a.Plato)
                     .ThenInclude(p => p.Restriccions)
                 .Include(a => a.ConfiguracionArticulos)
-                .FirstOrDefaultAsync(a => a.Nombre.ToLower() == nombre.ToLower() 
-                                       && a.RestauranteId == restauranteId 
+                .FirstOrDefaultAsync(a => a.Nombre.ToLower() == nombre.ToLower()
+                                       && a.RestauranteId == restauranteId
                                        && !a.Eliminado);
 
             if (efArticulo == null) return null;
@@ -86,11 +86,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<List<int>> ObtenerVentasSemanalesArticuloAsync(int restauranteId, int articuloId, DateTime desde, DateTime hasta)
         {
             var ventas = await _ctx.ArticuloComanda
-                .Where(ac => ac.ArticuloId == articuloId
-                          && ac.Comanda.RestauranteId == restauranteId
-                          && ac.Comanda.HoraInicio >= desde
-                          && ac.Comanda.HoraInicio <= hasta
-                          && ac.Comanda.Pagos.Any())
+                .Where(ac => ac.ArticuloId == articuloId)
+                .FiltrarPagadasEnRango(restauranteId, desde, hasta)
                 .Select(ac => new { ac.Cantidad, ac.Comanda.HoraInicio })
                 .ToListAsync();
 
@@ -110,56 +107,25 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<int> ObtenerVentasArticuloEnRangoAsync(int restauranteId, int articuloId, DateTime desde, DateTime hasta)
         {
             return await _ctx.ArticuloComanda
-                .Where(ac => ac.ArticuloId == articuloId
-                          && ac.Comanda.RestauranteId == restauranteId
-                          && ac.Comanda.HoraInicio >= desde
-                          && ac.Comanda.HoraInicio <= hasta
-                          && ac.Comanda.Pagos.Any())
-                .SumAsync(ac => (int?)ac.Cantidad) ?? 0;
+                    .Where(ac => ac.ArticuloId == articuloId)
+                    .FiltrarPagadasEnRango(restauranteId, desde, hasta)
+                    .SumAsync(ac => (int?)ac.Cantidad) ?? 0;
         }
 
         public async Task<int> ObtenerVentasCategoriaEnRangoAsync(int restauranteId, int categoriaPlatoId, DateTime desde, DateTime hasta)
         {
             return await _ctx.ArticuloComanda
-                .Where(ac => ac.Articulo.RestauranteId == restauranteId
-                          && ac.Articulo.Plato != null
-                          && ac.Articulo.Plato.CategoriaPlatoId == categoriaPlatoId
-                          && ac.Comanda.HoraInicio >= desde
-                          && ac.Comanda.HoraInicio <= hasta
-                          && ac.Comanda.Pagos.Any())
-                .SumAsync(ac => (int?)ac.Cantidad) ?? 0;
+                    .Where(ac => ac.Articulo.Plato != null && ac.Articulo.Plato.CategoriaPlatoId == categoriaPlatoId)
+                    .FiltrarPagadasEnRango(restauranteId, desde, hasta)
+                    .SumAsync(ac => (int?)ac.Cantidad) ?? 0;
         }
 
         public async Task<DOM.RendimientoPlato?> ObtenerPlatoLiderDeCategoriaAsync(int restauranteId, int categoriaPlatoId, DateTime desde, DateTime hasta)
         {
-            var query = _ctx.Articulos
-                .Where(a => a.RestauranteId == restauranteId 
-                         && a.Plato != null 
-                         && a.Plato.CategoriaPlatoId == categoriaPlatoId 
-                         && !a.Eliminado)
-                .Select(a => new DOM.RendimientoPlato
-                {
-                    PlatoId = a.Id,
-                    Nombre = a.Nombre,
-                    UnidadesVendidas = _ctx.ArticuloComanda
-                        .Where(ac => ac.ArticuloId == a.Id 
-                                  && ac.Comanda.RestauranteId == restauranteId
-                                  && ac.Comanda.HoraInicio >= desde
-                                  && ac.Comanda.HoraInicio <= hasta
-                                  && ac.Comanda.Pagos.Any())
-                        .Sum(ac => (int?)ac.Cantidad) ?? 0,
-                    FacturacionTotal = _ctx.ArticuloComanda
-                        .Where(ac => ac.ArticuloId == a.Id 
-                                  && ac.Comanda.RestauranteId == restauranteId
-                                  && ac.Comanda.HoraInicio >= desde
-                                  && ac.Comanda.HoraInicio <= hasta
-                                  && ac.Comanda.Pagos.Any())
-                        .Sum(ac => (decimal?)(ac.Cantidad * (a.PrecioVentaFinal ?? 0m))) ?? 0m
-                });
-
-            return await query
-                .OrderByDescending(p => p.UnidadesVendidas)
-                .FirstOrDefaultAsync();
+            return await BaseQueryRendimiento(restauranteId, desde, hasta)
+                    .Where(p => _ctx.Articulos.Where(a => a.Plato.CategoriaPlatoId == categoriaPlatoId).Select(a => a.Id).Contains(p.PlatoId))
+                    .OrderByDescending(p => p.UnidadesVendidas)
+                    .FirstOrDefaultAsync();
         }
 
         public async Task GuardarRecordatorioNotificacionAsync(int restauranteId, string descripcion)
@@ -179,8 +145,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<List<DOM.Notificacion>> ObtenerRecordatoriosActivosAsync(int restauranteId)
         {
             var efNotificaciones = await _ctx.Notificacions
-                .Where(n => n.RestauranteId == restauranteId 
-                         && !n.Resuelta 
+                .Where(n => n.RestauranteId == restauranteId
+                         && !n.Resuelta
                          && n.Descripcion.StartsWith("Revisión: "))
                 .ToListAsync();
 
@@ -204,5 +170,47 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 await _ctx.SaveChangesAsync();
             }
         }
+
+        public async Task<List<DOM.RendimientoPlato>> ObtenerTopPlatosMasVendidosAsync(int restauranteId, DateTime desde, DateTime hasta, int limite = 5)
+        {
+            return await BaseQueryRendimiento(restauranteId, desde, hasta)
+                .OrderByDescending(p => p.UnidadesVendidas)
+                .Take(limite)
+                .ToListAsync();
+        }
+        public async Task<List<DOM.RendimientoPlato>> ObtenerTopPlatosMenosVendidosAsync(int restauranteId, DateTime desde, DateTime hasta, int limite = 5)
+        {
+            return await BaseQueryRendimiento(restauranteId, desde, hasta)
+                .OrderBy(p => p.UnidadesVendidas)
+                .Take(limite)
+                .ToListAsync();
+        }
+
+        private IQueryable<DOM.RendimientoPlato> BaseQueryRendimiento(int restauranteId, DateTime desde, DateTime hasta)
+        {
+            return _ctx.Articulos
+                .Where(a => a.RestauranteId == restauranteId && a.Plato != null && !a.Eliminado)
+                .Select(a => new DOM.RendimientoPlato
+                {
+                    PlatoId = a.Id,
+                    Nombre = a.Nombre,
+                    UnidadesVendidas = _ctx.ArticuloComanda
+                        .Where(ac => ac.ArticuloId == a.Id
+                                  && ac.Comanda.RestauranteId == restauranteId
+                                  && ac.Comanda.HoraInicio >= desde
+                                  && ac.Comanda.HoraInicio <= hasta
+                                  && ac.Comanda.Pagos.Any())
+                        .Sum(ac => (int?)ac.Cantidad) ?? 0,
+                    FacturacionTotal = _ctx.ArticuloComanda
+                        .Where(ac => ac.ArticuloId == a.Id
+                                  && ac.Comanda.RestauranteId == restauranteId
+                                  && ac.Comanda.HoraInicio >= desde
+                                  && ac.Comanda.HoraInicio <= hasta
+                                  && ac.Comanda.Pagos.Any())
+                        .Sum(ac => (decimal?)(ac.Cantidad * (a.PrecioVentaFinal ?? 0m))) ?? 0m
+                });
+        }
+
+
     }
 }
