@@ -374,6 +374,17 @@ CREATE TABLE metodo_de_pago_restaurante (
     PRIMARY KEY (restaurante_id, metodo_de_pago_id)
 );
 
+-- Datos bancarios que el gerente carga para que el comensal transfiera.
+-- 1:1 con restaurante (se pisa con UPDATE, no se guarda historial).
+CREATE TABLE datos_transferencia (
+    id                  SERIAL PRIMARY KEY,
+    restaurante_id      INTEGER NOT NULL UNIQUE REFERENCES restaurante(id),
+    alias               TEXT NOT NULL,
+    cbu                 TEXT,
+    numero_cuenta       TEXT NOT NULL,
+    titular_cuenta      TEXT NOT NULL
+);
+
 CREATE TABLE cierre (
     id                      SERIAL PRIMARY KEY,
     restaurante_id          INTEGER NOT NULL REFERENCES restaurante(id),
