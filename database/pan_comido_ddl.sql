@@ -383,7 +383,8 @@ CREATE TABLE cierre (
     total_efectivo          DECIMAL NOT NULL DEFAULT 0,
     total_tarjeta           DECIMAL NOT NULL DEFAULT 0,
     total_transferencia     DECIMAL NOT NULL DEFAULT 0,
-    total_mercado_pago      DECIMAL NOT NULL DEFAULT 0
+    total_mercado_pago      DECIMAL NOT NULL DEFAULT 0,
+	fecha 					DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
 -- NOTA: la tabla `pago` se crea más abajo (sección 10), DESPUÉS de `comanda`,
@@ -411,7 +412,8 @@ CREATE TABLE pago (
     metodo_pago_id      INTEGER NOT NULL REFERENCES metodo_de_pago(id),
     estado_pago_id      INTEGER NOT NULL REFERENCES estado_pago(id),
     external_reference  TEXT,
-    total               DECIMAL NOT NULL
+    total               DECIMAL NOT NULL,
+	fecha_hora 			TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE articulo_comanda (
