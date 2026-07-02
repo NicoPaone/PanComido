@@ -5,13 +5,10 @@ using PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 using PanComido.Dominio.Constantes;
-using PanComido.Presentacion.DTOs;
 using PanComido.Presentacion.DTOs.ErrorResponse;
-using PanComido.Presentacion.DTOs.Mesas;
 using PanComido.Presentacion.DTOs.Plato;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Sesion;
-using System.Threading.Tasks;
 
 namespace PanComido.Presentacion.Controllers
 {
@@ -24,14 +21,8 @@ namespace PanComido.Presentacion.Controllers
 
         private readonly ObtenerDatosParaFormularioCrearPlato _obtenerDatosCasoDeUso;
         private readonly FormularioParaCrearPlatoMapper _mapper;
-
         private readonly CrearPlatoCasoDeUso _crearPlatoCasoDeUso;
         private readonly PlatoMapper _platoMapper;
-
-
-
-
-
         private readonly ModificarPlatoCasoDeUso _modificarPlatoCasoDeUso;
         private readonly ObtenerPlatoPorIdCasoDeUso _obtenerPlatoPorIdCasoDeUso;
         private readonly EliminarPlatoCasoDeUso _eliminarPlatoCasoDeUso;
@@ -55,8 +46,8 @@ namespace PanComido.Presentacion.Controllers
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObtenerPlatoPorId(int id)
         {
-            int restauranteId = 1; 
-            
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+
             if (HttpContext.Items.TryGetValue("restauranteId", out var idSesion))
             {
                 restauranteId = (int)idSesion;

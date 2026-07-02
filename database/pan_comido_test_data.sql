@@ -33,26 +33,25 @@ INSERT INTO turno_laboral (id, restaurante_id, horario_laboral_inicio, horario_l
 -- ============================================================
 
 INSERT INTO empleado (id, restaurante_id, nombre, email, contrasena, estado, eliminado) VALUES
-    (1, 1, 'Carlos López',    'carlos@pancomido.com',  '$2a$11$TvlzR3N0Blm.Hqvq.4P2XeDWEEnmS1H98.ADGEvXFouUbRXWSzIrO',  'activo',   FALSE),
-    (2, 1, 'Cocina',          'cocina@pancomido.com',  '$2a$11$TvlzR3N0Blm.Hqvq.4P2XeDWEEnmS1H98.ADGEvXFouUbRXWSzIrO',  'activo',   FALSE),
-    (3, 1, 'Ana Rodríguez',   'ana@pancomido.com',     '$2a$11$TvlzR3N0Blm.Hqvq.4P2XeDWEEnmS1H98.ADGEvXFouUbRXWSzIrO',    'activo',   FALSE),
-    (4, 1, 'Pedro Martínez',  'pedro@pancomido.com',   '$2a$11$TvlzR3N0Blm.Hqvq.4P2XeDWEEnmS1H98.ADGEvXFouUbRXWSzIrO',    'activo',   FALSE),
-    (5, 1, 'Laura Fernández', 'laura@pancomido.com',   '$2a$11$TvlzR3N0Blm.Hqvq.4P2XeDWEEnmS1H98.ADGEvXFouUbRXWSzIrO',    'activo',   FALSE),
-    (6, 1, 'Diego Sánchez',   'diego@pancomido.com',   '$2a$11$TvlzR3N0Blm.Hqvq.4P2XeDWEEnmS1H98.ADGEvXFouUbRXWSzIrO', 'inactivo', TRUE);
+(1, 1, 'Carlos López',    'carlos@pancomido.com',  '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',  'activo',   FALSE),
+    (2, 1, 'Cocina',          'cocina@pancomido.com',  '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',  'activo',   FALSE),
+    (3, 1, 'Ana Rodríguez',   'ana@pancomido.com',     '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',    'activo',   FALSE),
+    (4, 1, 'Pedro Martínez',  'pedro@pancomido.com',   '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',    'activo',   FALSE),
+    (5, 1, 'Laura Fernández', 'laura@pancomido.com',   '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',    'activo',   FALSE),
+    (6, 1, 'Diego Sánchez',   'diego@pancomido.com',   '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42', 'inactivo', TRUE);
 
 SELECT setval('empleado_id_seq', (SELECT MAX(id) FROM empleado));
 
 INSERT INTO empleado (restaurante_id, nombre, email, contrasena, estado)
-VALUES (1, 'Lucia Gerente', 'lucia@pancomido.com', '$2a$11$TvlzR3N0Blm.Hqvq.4P2XeDWEEnmS1H98.ADGEvXFouUbRXWSzIrO', 'activo');
+VALUES (1, 'Lucia Gerente', 'lucia@pancomido.com', '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42', 'activo');
 INSERT INTO gerente (id_empleado) VALUES (currval('empleado_id_seq'));
 
 INSERT INTO empleado (restaurante_id, nombre, email, contrasena, estado)
-VALUES (1, 'Martin Mozo', 'martin@pancomido.com', '$2a$11$TvlzR3N0Blm.Hqvq.4P2XeDWEEnmS1H98.ADGEvXFouUbRXWSzIrO', 'activo');
+VALUES (1, 'Martin Mozo', 'martin@pancomido.com', '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42', 'activo');
 INSERT INTO mozo (id_empleado, activo) VALUES (currval('empleado_id_seq'), true);
 
 INSERT INTO empleado (restaurante_id, nombre, email, contrasena, estado)
-VALUES (1, 'Sofia Cocina', 'sofia@pancomido.com', '$2a$11$TvlzR3N0Blm.Hqvq.4P2XeDWEEnmS1H98.ADGEvXFouUbRXWSzIrO', 'activo');
-INSERT INTO cocina (id_empleado) VALUES (currval('empleado_id_seq'));
+VALUES (1, 'Sofia Cocina', 'sofia@pancomido.com', '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42', 'activo');INSERT INTO cocina (id_empleado) VALUES (currval('empleado_id_seq'));
 
 INSERT INTO gerente (id_empleado) VALUES (1);
 INSERT INTO cocina (id_empleado) VALUES (2);
