@@ -40,6 +40,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Empleado> Empleados { get; set; }
 
+    public virtual DbSet<EncuestaSatisfaccion> EncuestaSatisfaccions { get; set; }
+
     public virtual DbSet<EstadoComandum> EstadoComanda { get; set; }
 
     public virtual DbSet<EstadoMesa> EstadoMesas { get; set; }
@@ -321,6 +323,15 @@ public partial class AppDbContext : DbContext
                         j.IndexerProperty<int>("EmpleadoId").HasColumnName("empleado_id");
                         j.IndexerProperty<int>("TurnoLaboralId").HasColumnName("turno_laboral_id");
                     });
+        });
+
+        modelBuilder.Entity<EncuestaSatisfaccion>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("encuesta_satisfaccion_pkey");
+
+            entity.Property(e => e.Fecha).HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasOne(d => d.Comanda).WithMany(p => p.EncuestaSatisfaccions).HasConstraintName("encuesta_satisfaccion_comanda_id_fkey");
         });
 
         modelBuilder.Entity<EstadoComandum>(entity =>
