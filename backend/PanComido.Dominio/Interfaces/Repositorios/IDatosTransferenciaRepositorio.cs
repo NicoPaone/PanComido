@@ -1,6 +1,4 @@
-﻿
-
-using PanComido.Dominio.Entidades;
+﻿using PanComido.Dominio.Entidades;
 
 namespace PanComido.Dominio.Interfaces.Repositorios
 {

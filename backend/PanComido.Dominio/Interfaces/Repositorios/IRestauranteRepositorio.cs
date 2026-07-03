@@ -9,7 +9,7 @@ namespace PanComido.Dominio.Interfaces.Repositorios
 {
     public interface IRestauranteRepositorio
     {
-        Task<Restaurante> ObtenerDatosDelLocalAsync(int restauranteId);
+        Task<Restaurante?> ObtenerDatosDelLocalAsync(int restauranteId);
         Task ActualizarDatosDelLocalAsync(int restauranteId, Restaurante datosActualizados);
     }
 }

@@ -36,7 +36,8 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
             decimal totalComanda = _calcularTotalComandaServicio.CalcularTotal(comanda);
 
             string externalReference = $"Comanda-{comandaId}";
-            Restaurante restaurante = await _restauranteRepositorio.ObtenerDatosDelLocalAsync(restauranteId);
+            Restaurante? restaurante = await _restauranteRepositorio.ObtenerDatosDelLocalAsync(restauranteId);
+            if (restaurante == null) throw new KeyNotFoundException("Restaurante no encontrado");
 
             Pago pagoExistente = await _pagoRepositorio.ObtenerPagoPorComandaIdAsync(comandaId);
             if (pagoExistente != null && pagoExistente.EstadoPago == EstadoPago.Confirmado) throw new InvalidOperationException("El pago ya fue confirmado");
