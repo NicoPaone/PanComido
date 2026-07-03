@@ -39,7 +39,7 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
 
         private async Task ValidarExistenciaRestauranteAsync(int restauranteId)
         {
-            Restaurante restauranteDatos = await _restauranteRepositorio.ObtenerDatosDelLocalAsync(restauranteId);
+            Restaurante? restauranteDatos = await _restauranteRepositorio.ObtenerDatosDelLocalAsync(restauranteId);
 
             if (restauranteDatos == null)
             {

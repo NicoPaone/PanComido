@@ -33,7 +33,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Configuracion
         }
 
         [Fact]
-        public async Task EjecutarAsync_CuandoNoExisteRestaurante_DevuelveNull()
+        public async Task EjecutarAsync_CuandoNoExisteRestaurante_LanzaKeyNotFoundException()
         {
             int restauranteId = 1;
 
@@ -43,9 +43,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Configuracion
 
             var casoDeUso = new ObtenerDatosDelLocalCasoDeUso(_restauranteRepoMock.Object);
 
-            var resultado = await casoDeUso.EjecutarAsync(restauranteId);
-
-            Assert.Null(resultado);
+            await Assert.ThrowsAsync<KeyNotFoundException>(() => casoDeUso.EjecutarAsync(restauranteId));
         }
     }
 }

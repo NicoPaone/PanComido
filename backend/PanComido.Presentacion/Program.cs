@@ -143,6 +143,7 @@ builder.Services.AddScoped<FilaVirtualEntityMapper>();
 builder.Services.AddScoped<FamiliaTipograficaEntityMapper>();
 builder.Services.AddScoped<PorcentajesCategoriaEntityMapper>();
 builder.Services.AddScoped<PagoEntityMapper>();
+builder.Services.AddScoped<DatosTransferenciaEntityMapper>();
 
 
 
@@ -175,6 +176,7 @@ builder.Services.AddScoped<ArticuloMapper>();
 builder.Services.AddScoped<PagoMapper>();
 builder.Services.AddScoped<DatosBienvenidaMesaMapper>();
 builder.Services.AddScoped<EncuestaMapper>();
+builder.Services.AddScoped<DatosTransferenciaMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -200,6 +202,7 @@ builder.Services.AddScoped<ITurnoLaboralRepositorio, TurnoLaboralRepositorio>();
 builder.Services.AddScoped<IFilaVirtualRepositorio, FilaVirtualRepositorio>();
 builder.Services.AddScoped<IFamiliaTipograficaRepositorio, FamiliaTipograficaRepositorio>();
 builder.Services.AddScoped<IPorcentajesCategoriaRepositorio, PorcentajesGananciaRepositorio>();
+builder.Services.AddScoped<IDatosTransferenciaRepositorio, DatosTransferenciaRepositorio>();
 builder.Services.AddScoped<IEncuestaSatisfaccionRepositorio, EncuestaSatisfaccionRepositorio>();
 
 
@@ -238,8 +241,8 @@ builder.Services.AddScoped<ResolverLlamadoCasoDeUso>();
 builder.Services.AddScoped<ListarComandasActivasMozoCasoDeUso>();
 builder.Services.AddScoped<ObtenerDetalleArticuloCasoDeUso>();
 builder.Services.AddScoped<MarcarItemsEntregadosCasoDeUso>();
-builder.Services.AddScoped<SolicitarPagoEfectivoCasoDeUso>();
-builder.Services.AddScoped<ConfirmarPagoEfectivoCasoDeUso>();
+builder.Services.AddScoped<SolicitarPagoCasoDeUso>();
+builder.Services.AddScoped<ConfirmarPagoCasoDeUso>();
 builder.Services.AddScoped<ConfirmarPedidoClienteAComandaCasoDeUso>();
 builder.Services.AddScoped<ObtenerArticulosParaCrearCartaCasoDeUso>();
 builder.Services.AddScoped<ModificarArticuloCasoDeUso>();
@@ -276,6 +279,9 @@ builder.Services.AddScoped<ObtenerDatosInvitadoBienvenidaAComandaCasoDeUso>();
 builder.Services.AddScoped<AsignarMozosMesaCasoDeUso>();
 builder.Services.AddScoped<DesasignarMozoMesaCasoDeUso>();
 builder.Services.AddScoped<ListarMozosParaMesaCasoDeUso>();
+builder.Services.AddScoped<ObtenerDatosTransferenciaCasoDeUso>();
+builder.Services.AddScoped<ActualizarDatosTransferenciaCasoDeUso>();
+
 builder.Services.AddScoped<CrearEncuestaSatisfaccionCasoDeUso>();
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
@@ -289,6 +295,7 @@ builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 builder.Services.AddScoped<ICalcularTotalComandaServicio, CalcularTotalComandaServicio>();
 builder.Services.AddScoped<ICrearLlamadoServicio, CrearLlamadoServicio>();
 builder.Services.AddScoped<IRegistrarPagoServicio,  RegistrarPagoServicio>();
+builder.Services.AddScoped<IVerificarMetodoPagoHabilitadoServicio, VerificarMetodoPagoHabilitadoServicio>();
 
 
 //Servicios externos

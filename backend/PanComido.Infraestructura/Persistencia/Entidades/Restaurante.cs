@@ -49,6 +49,9 @@ public partial class Restaurante
     [InverseProperty("Restaurante")]
     public virtual ICollection<Comandum> Comanda { get; set; } = new List<Comandum>();
 
+    [InverseProperty("Restaurante")]
+    public virtual DatosTransferencium? DatosTransferencium { get; set; }
+
     [ForeignKey("DireccionId")]
     [InverseProperty("Restaurantes")]
     public virtual Ubicacion Direccion { get; set; } = null!;

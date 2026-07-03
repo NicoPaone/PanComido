@@ -36,6 +36,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<ConfiguracionArticulo> ConfiguracionArticulos { get; set; }
 
+    public virtual DbSet<DatosTransferencium> DatosTransferencia { get; set; }
+
     public virtual DbSet<DimensionMesa> DimensionMesas { get; set; }
 
     public virtual DbSet<Empleado> Empleados { get; set; }
@@ -287,6 +289,15 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<ConfiguracionArticulo>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("configuracion_articulo_pkey");
+        });
+
+        modelBuilder.Entity<DatosTransferencium>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("datos_transferencia_pkey");
+
+            entity.HasOne(d => d.Restaurante).WithOne(p => p.DatosTransferencium)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("datos_transferencia_restaurante_id_fkey");
         });
 
         modelBuilder.Entity<DimensionMesa>(entity =>

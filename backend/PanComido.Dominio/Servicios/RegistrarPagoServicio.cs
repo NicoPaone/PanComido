@@ -21,7 +21,8 @@ namespace PanComido.Dominio.Servicios
                 Total = total,
                 MetodoDePago = metodo,
                 EstadoPago = estado,
-                ExternalReference = externalReference
+                ExternalReference = externalReference,
+                FechaHora = DateTime.Now
             };
             return await _pagoRepositorio.CrearPagoAsync(pago);
         }

@@ -3,11 +3,16 @@ using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
 {
-    public class ConfirmarPagoEfectivoCasoDeUso
+
+    public class ConfirmarPagoCasoDeUso
     {
         private readonly IPagoRepositorio _pagoRepositorio;
         private readonly IComandaRepositorio _comandaRepositorio;
@@ -16,11 +21,12 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
         private readonly IComandaNotificador _comandaNotificador;
         private readonly ILlamadoNotificador _llamadoNotificador;
         private readonly IRegistrarPagoServicio _registrarPagoServicio;
-        private readonly ILogger<ConfirmarPagoEfectivoCasoDeUso> _logger;
+        private readonly IVerificarMetodoPagoHabilitadoServicio _verificarMetodoPagoHabilitadoServicio;
+        private readonly ILogger<ConfirmarPagoCasoDeUso> _logger;
 
-        public ConfirmarPagoEfectivoCasoDeUso(IPagoRepositorio pagoRepositorio, IComandaRepositorio comandaRepositorio, ILlamadoRepositorio llamadoRepositorio, ICalcularTotalComandaServicio calcularTotalComandaServicio,
-            IComandaNotificador comandaNotificador, ILlamadoNotificador llamadoNotificador,
-            IRegistrarPagoServicio registrarPagoServicio, ILogger<ConfirmarPagoEfectivoCasoDeUso> logger)
+        public ConfirmarPagoCasoDeUso(IPagoRepositorio pagoRepositorio, IComandaRepositorio comandaRepositorio, ILlamadoRepositorio llamadoRepositorio, ICalcularTotalComandaServicio calcularTotalComandaServicio,
+IComandaNotificador comandaNotificador, ILlamadoNotificador llamadoNotificador,
+IRegistrarPagoServicio registrarPagoServicio, IVerificarMetodoPagoHabilitadoServicio verificarMetodoPagoHabilitadoServicio, ILogger<ConfirmarPagoCasoDeUso> logger)
         {
             _pagoRepositorio = pagoRepositorio;
             _comandaRepositorio = comandaRepositorio;
@@ -29,21 +35,27 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
             _comandaNotificador = comandaNotificador;
             _llamadoNotificador = llamadoNotificador;
             _registrarPagoServicio = registrarPagoServicio;
+            _verificarMetodoPagoHabilitadoServicio = verificarMetodoPagoHabilitadoServicio;
             _logger = logger;
         }
 
-        public async Task<Pago> EjecutarAsync(int comandaId, int restauranteId)
+        public async Task<Pago> EjecutarAsync(int comandaId, int restauranteId, MetodoPago metodoPago)
         {
+            if (metodoPago == MetodoPago.MercadoPago)
+                throw new ArgumentException("El pago con Mercado Pago se confirma mediante webhook, no manualmente.");
+
             var comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
-            if (comanda == null || comanda.RestauranteId != restauranteId) throw new KeyNotFoundException("Comanda no encontrada");
+            if (comanda == null || comanda.RestauranteId != restauranteId) throw new
+        KeyNotFoundException("Comanda no encontrada");
             await VerificarEstadoComandaYPagoAsync(comanda);
+            await VerificarMetodoHabilitadoAsync(restauranteId, metodoPago);
 
             decimal total = _calcularTotalComandaServicio.CalcularTotal(comanda);
-            Pago pagoCreado = await _registrarPagoServicio.RegistrarAsync(comanda.Id, total, MetodoPago.Efectivo,
-            EstadoPago.Confirmado);
+            Pago pagoCreado = await _registrarPagoServicio.RegistrarAsync(comanda.Id, total,
+        metodoPago, EstadoPago.Confirmado);
             await FinalizarComandaYNotificarAsync(comanda);
 
-            _logger.LogInformation("Pago efectivo confirmado. ComandaId: {ComandaId}, Total: {Total}", comandaId, pagoCreado.Total);
+            _logger.LogInformation("Pago confirmado. ComandaId: {ComandaId}, Metodo: { Metodo}, Total: { Total}", comandaId, metodoPago, pagoCreado.Total);
             return pagoCreado;
         }
 
@@ -63,6 +75,16 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
             }
         }
 
+        private async Task VerificarMetodoHabilitadoAsync(int restauranteId, MetodoPago metodoPago)
+        {
+            bool metodoHabilitado = await _verificarMetodoPagoHabilitadoServicio.EstaHabilitadoAsync(restauranteId, metodoPago);
+            if (!metodoHabilitado)
+            {
+                _logger.LogWarning("Intento de confirmar pago con un método no habilitado. RestauranteId: {RestauranteId}, Metodo: {Metodo}", restauranteId, metodoPago);
+                throw new ArgumentException("El método de pago no está habilitado para este restaurante.");
+            }
+        }
+
         private async Task FinalizarComandaYNotificarAsync(Comanda comanda)
         {
             comanda.Estado = EstadoComanda.Finalizada;
@@ -76,5 +98,8 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
             if (llamado != null)
                 await _llamadoNotificador.NotificarLlamadosResueltosAsync(comanda.MesaId, new List<Llamado> { llamado });
         }
+
     }
+
+
 }

@@ -11,6 +11,6 @@ namespace PanComido.Dominio.Entidades
         public string? ExternalReference { get; set; }
         public decimal Total { get; set; }
         public EstadoPago EstadoPago { get; set; }
-        //public DateTime FechaHoraPago { get; set; }
+        public DateTime FechaHora { get; set; }
     }
 }
