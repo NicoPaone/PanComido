@@ -12,6 +12,7 @@ using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso;
 using PanComido.Dominio.CasosDeUso.CrearPlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.Dashboard;
+using PanComido.Dominio.CasosDeUso.EncuestaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
@@ -173,6 +174,7 @@ builder.Services.AddScoped<PorcentajesGananciaMapper>();
 builder.Services.AddScoped<ArticuloMapper>();
 builder.Services.AddScoped<PagoMapper>();
 builder.Services.AddScoped<DatosBienvenidaMesaMapper>();
+builder.Services.AddScoped<EncuestaMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -198,6 +200,7 @@ builder.Services.AddScoped<ITurnoLaboralRepositorio, TurnoLaboralRepositorio>();
 builder.Services.AddScoped<IFilaVirtualRepositorio, FilaVirtualRepositorio>();
 builder.Services.AddScoped<IFamiliaTipograficaRepositorio, FamiliaTipograficaRepositorio>();
 builder.Services.AddScoped<IPorcentajesCategoriaRepositorio, PorcentajesGananciaRepositorio>();
+builder.Services.AddScoped<IEncuestaSatisfaccionRepositorio, EncuestaSatisfaccionRepositorio>();
 
 
 // Casos de uso
@@ -268,13 +271,12 @@ builder.Services.AddScoped<ObtenerPorcentajesCasoDeUso>();
 builder.Services.AddScoped<ActualizarPorcentajesCasoDeUso>();
 builder.Services.AddScoped<CrearPreferenciaMPCasoDeUso>();
 builder.Services.AddScoped<ConfirmarPagoMPCasoDeUso>();
-
-
 builder.Services.AddScoped<GenerarSugerenciasPlatoIACasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosInvitadoBienvenidaAComandaCasoDeUso>();
 builder.Services.AddScoped<AsignarMozosMesaCasoDeUso>();
 builder.Services.AddScoped<DesasignarMozoMesaCasoDeUso>();
 builder.Services.AddScoped<ListarMozosParaMesaCasoDeUso>();
+builder.Services.AddScoped<CrearEncuestaSatisfaccionCasoDeUso>();
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
 builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticuloServicio>();
