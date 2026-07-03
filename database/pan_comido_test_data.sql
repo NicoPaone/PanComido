@@ -14,8 +14,8 @@ BEGIN;
 INSERT INTO ubicacion (id, direccion, ciudad, codigo_postal) VALUES
     (1, 'Av. Corrientes 1234', 'CABA', '1043');
 
-INSERT INTO restaurante (id, direccion_id, familia_tipografica_id, nombre, imagen, color_principal, color_secundario) VALUES
-    (1, 1, 7, 'Pan Comido', '/img/logo-pan-comido.png', '#FBAC28', '#C5172E');
+INSERT INTO restaurante (id, direccion_id, familia_tipografica_id, nombre, imagen, color_principal, color_secundario, link_resena_google_maps) VALUES
+    (1, 1, 7, 'Pan Comido', '/img/logo-pan-comido.png', '#FBAC28', '#C5172E', 'https://search.google.com/local/writereview?placeid=ChIJNZc0EjjIvJUR1ZS_W7XWAgA');
 
 INSERT INTO carta (id, restaurante_id) VALUES
     (1, 1);

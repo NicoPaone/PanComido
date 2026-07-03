@@ -11,5 +11,6 @@
         public Ubicacion Ubicacion { get; set; }
         public int? FamiliaTipograficaId { get; set; }
         public FamiliaTipografica? FamiliaTipografica { get; set; }
+        public string? LinkResenaGoogleMaps { get; set; }
     }
 }

@@ -18,7 +18,8 @@ namespace PanComido.Presentacion.Mappers
                 FamiliaTipograficaId = restaurante.FamiliaTipograficaId,
                 FamiliaCategoria = restaurante.FamiliaTipografica?.Categoria,
                 TipografiaTitulo = restaurante.FamiliaTipografica?.TipografiaTitulo,
-                TipografiaCuerpo = restaurante.FamiliaTipografica?.TipografiaCuerpo
+                TipografiaCuerpo = restaurante.FamiliaTipografica?.TipografiaCuerpo,
+                LinkResenaGoogleMaps = restaurante.LinkResenaGoogleMaps
             };
         }
 
@@ -29,7 +30,8 @@ namespace PanComido.Presentacion.Mappers
                 Nombre = restauranteRequest.Nombre,
                 ColorPrincipal = restauranteRequest.ColorPrincipal,
                 ColorSecundario = restauranteRequest.ColorSecundario,
-                FamiliaTipograficaId = restauranteRequest.FamiliaTipograficaId
+                FamiliaTipograficaId = restauranteRequest.FamiliaTipograficaId,
+                LinkResenaGoogleMaps = restauranteRequest.LinkResenaGoogleMaps
             };
         }
     }

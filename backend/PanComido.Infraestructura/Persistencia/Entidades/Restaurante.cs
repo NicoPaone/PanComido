@@ -31,6 +31,9 @@ public partial class Restaurante
     [Column("color_secundario")]
     public string? ColorSecundario { get; set; }
 
+    [Column("link_resena_google_maps")]
+    public string? LinkResenaGoogleMaps { get; set; }
+
     [InverseProperty("Restaurante")]
     public virtual ICollection<Articulo> Articulos { get; set; } = new List<Articulo>();
 

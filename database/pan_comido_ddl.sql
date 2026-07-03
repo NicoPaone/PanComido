@@ -107,7 +107,8 @@ CREATE TABLE restaurante (
     nombre                  TEXT NOT NULL,
     imagen                  TEXT,
     color_principal         TEXT,
-    color_secundario        TEXT
+    color_secundario        TEXT,
+    link_resena_google_maps TEXT
 );
 
 CREATE TABLE carta (
@@ -445,7 +446,19 @@ CREATE TABLE articulo_comanda_ingrediente_excluido (
 );
 
 -- ============================================================
--- 11. PROVEEDORES Y PEDIDOS
+-- 11. ENCUESTA
+-- ============================================================
+CREATE TABLE encuesta_satisfaccion (
+    id SERIAL PRIMARY KEY,
+    comanda_id INTEGER NOT NULL REFERENCES comanda(id) ON DELETE CASCADE,
+    puntuacion_lugar INTEGER NOT NULL CHECK (puntuacion_lugar >= 1 AND puntuacion_lugar <= 5),
+    puntuacion_comida INTEGER NOT NULL CHECK (puntuacion_comida >= 1 AND puntuacion_comida <= 5),
+    puntuacion_mozo INTEGER NOT NULL CHECK (puntuacion_mozo >= 1 AND puntuacion_mozo <= 5),
+    fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================================================
+-- 12. PROVEEDORES Y PEDIDOS
 -- ============================================================
 
 CREATE TABLE pedido (

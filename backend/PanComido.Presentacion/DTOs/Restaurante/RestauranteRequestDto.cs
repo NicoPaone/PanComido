@@ -6,5 +6,6 @@ namespace PanComido.Presentacion.DTOs.Restaurante
         public string ColorPrincipal { get; set; }
         public string ColorSecundario { get; set; }
         public int? FamiliaTipograficaId { get; set; }
+        public string? LinkResenaGoogleMaps { get; set; }
     }
 }

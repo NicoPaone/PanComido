@@ -29,7 +29,8 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                     Categoria = efRestaurante.FamiliaTipografica.Categoria,
                     TipografiaTitulo = efRestaurante.FamiliaTipografica.TipografiaTitulo,
                     TipografiaCuerpo = efRestaurante.FamiliaTipografica.TipografiaCuerpo
-                }
+                },
+                LinkResenaGoogleMaps = efRestaurante.LinkResenaGoogleMaps
             };
         }
 
@@ -40,6 +41,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             efRestoDatosExistentes.ColorPrincipal = restauranteDatosNuevos.ColorPrincipal;
             efRestoDatosExistentes.ColorSecundario = restauranteDatosNuevos.ColorSecundario;
             efRestoDatosExistentes.FamiliaTipograficaId = restauranteDatosNuevos.FamiliaTipograficaId;
+            efRestoDatosExistentes.LinkResenaGoogleMaps = restauranteDatosNuevos.LinkResenaGoogleMaps;
         }
     }
 }
