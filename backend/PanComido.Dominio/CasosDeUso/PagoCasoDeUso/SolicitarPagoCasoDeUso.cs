@@ -34,11 +34,11 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
                 _logger.LogWarning("Comanda no encontrada para solicitud de pago. ComandaId: {ComandaId}, RestauranteId: {RestauranteId}", comandaId, restauranteId);
                 throw new KeyNotFoundException("Comanda no encontrada para el restaurante especificado.");
             }
-            if (comanda.Estado != EstadoComanda.EnEspera)
-            {
-                _logger.LogWarning("Intento de solicitar pago en estado inválido. ComandaId: {ComandaId}, Estado: {Estado}", comandaId, comanda.Estado);
-                throw new ArgumentException("La comanda no está esperando pago.");
-            }
+            //if (comanda.Estado != EstadoComanda.EnEspera)
+            //{
+            //    _logger.LogWarning("Intento de solicitar pago en estado inválido. ComandaId: {ComandaId}, Estado: {Estado}", comandaId, comanda.Estado);
+            //    throw new ArgumentException("La comanda no está esperando pago.");
+            //}
 
             bool metodoHabilitado = await _verificarMetodoPagoHabilitadoServicio.EstaHabilitadoAsync(restauranteId, metodoPago);
             if (!metodoHabilitado)

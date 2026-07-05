@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades.Enums;
+using PanComido.Dominio.Entidades.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,6 @@ namespace PanComido.Dominio.Entidades
         // propiedades para hacer alta
         public int CategoriaId { get; set; }
         public int UnidadDeMedidaId { get; set; }
-        public int RestauranteId { get; set; }
 
         // propiedades calculadas
         public DateOnly? Vencimiento { get; set; }
