@@ -5,6 +5,8 @@ namespace PanComido.Dominio.Entidades.Enums
         Descuento = 1,
         Combo = 2,
         Precio = 3,
-        Receta = 4
+        Receta = 4,
+        Destacar = 5,
+        Sugerencia = 6
     }
 }

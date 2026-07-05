@@ -9,6 +9,7 @@ namespace PanComido.Dominio.Entidades.IA
     public class SugerenciaIA
     {
         public DateTime FechaSugerencia { get; set; }
+        public DateTime? FechaUltimoAnalisisIA { get; set; }
         public List<PlatoSugeridoIA> PlatosSugeridos { get; set; } = new List<PlatoSugeridoIA>();
         public List<PlatoAnalisisIa> PlatosAnalisis { get; set; } = new List<PlatoAnalisisIa>();
     }

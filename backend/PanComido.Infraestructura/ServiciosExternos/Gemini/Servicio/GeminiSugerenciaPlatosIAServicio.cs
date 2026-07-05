@@ -235,11 +235,14 @@ namespace PanComido.Infraestructura.ServiciosExternos.Gemini.Servicio
             prompt.AppendLine($"- Tendencia de ventas semanales (últimas 7 semanas): {string.Join(", ", tendencia)}");
             prompt.AppendLine();
             prompt.AppendLine("TAREA:");
-            prompt.AppendLine("1. Genera un Diagnóstico preciso (máximo 2 líneas) de por qué se vende poco (analiza si es por precio alto, bajo margen, popularidad frente al líder o tendencia a la baja).");
-            prompt.AppendLine("2. Genera exactamente 2 Sugerencias de acción reales (ej. 'descuento', 'combo', 'precio', 'receta') con su impacto estimado (Alto, Medio, Bajo) y dificultad (baja, media, alta).");
+            prompt.AppendLine("1. Genera un Diagnóstico preciso (máximo 2 líneas) de por qué se vende poco (analiza si es por precio alto, bajo margen, popularidad frente al líder, tendencia a la baja o falta de visibilidad).");
+            prompt.AppendLine("2. Genera exactamente 2 Sugerencias de acción reales de los siguientes tipos permitidos: 'descuento', 'destacar', 'sugerencia', 'precio', 'receta' con su impacto estimado (Alto, Medio, Bajo) y dificultad (baja, media, alta).");
             prompt.AppendLine();
             prompt.AppendLine("REGLAS OBLIGATORIAS:");
-            prompt.AppendLine("- Los tipos de sugerencia válidos son únicamente: 'descuento', 'combo', 'precio', 'receta'.");
+            prompt.AppendLine("- Los tipos de sugerencia válidos son únicamente: 'descuento', 'destacar', 'sugerencia', 'precio', 'receta'.");
+            prompt.AppendLine("- Si el diagnóstico indica que el plato tiene baja venta debido a falta de visibilidad o popularidad, debes sugerir el tipo 'destacar' (para que el gerente destaque el plato en el menú).");
+            prompt.AppendLine("- Si el plato se ve afectado por un precio de venta alto, debes sugerir el tipo 'descuento', proponiendo una rebaja estratégica que mantenga un buen margen de ganancia.");
+            prompt.AppendLine("- Si el plato es relativamente nuevo en la carta (o se infiere que es nuevo por ventas iniciales muy bajas o nulas), debes sugerir el tipo 'sugerencia' (marcarlo como Recomendación del Chef para incentivar a probarlo).");
             prompt.AppendLine("- Responder exclusivamente con JSON válido, sin explicaciones ni formato markdown (no incluir ```json ni ```).");
             prompt.AppendLine();
             prompt.AppendLine("JSON SCHEMA:");
@@ -250,7 +253,7 @@ namespace PanComido.Infraestructura.ServiciosExternos.Gemini.Servicio
                 "sugerencias": [
                 {
                     "id": 1,
-                    "tipo": "descuento|combo|precio|receta",
+                    "tipo": "descuento|destacar|sugerencia|precio|receta",
                     "accion": "string con la propuesta concreta",
                     "impacto": "Impacto Alto/Medio/Bajo (+X u./mes)",
                     "dificultad": "baja|media|alta",

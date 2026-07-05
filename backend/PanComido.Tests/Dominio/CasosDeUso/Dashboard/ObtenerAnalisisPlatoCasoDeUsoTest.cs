@@ -248,6 +248,118 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
             Assert.Single(resultado.AnalisisIa.Sugerencias);
             Assert.Equal("Subir precio 5%", resultado.AnalisisIa.Sugerencias[0].Accion);
         }
+
+        [Fact]
+        public async Task EjecutarAsync_DebeUsarCache_CuandoElPlatoYaFueAnalizadoHoy()
+        {
+            int restauranteId = 1;
+            string nombrePlato = "Sushi Roll";
+            var plato = new Plato
+            {
+                Id = 13,
+                Nombre = nombrePlato,
+                PrecioVentaFinal = 6000,
+                CategoriaPlatoId = 2
+            };
+
+            var fechaReferencia = new DateTime(2023, 1, 1);
+            _dateTimeProviderMock.Setup(d => d.ObtenerAhora()).Returns(fechaReferencia);
+            _dateTimeProviderMock.Setup(d => d.ObtenerHoy()).Returns(fechaReferencia.Date);
+
+            _platoAnalisisRepoMock.Setup(r => r.ObtenerArticuloConPlatoYIngredientesPorNombreAsync(restauranteId, nombrePlato))
+                .ReturnsAsync(plato);
+
+            _calculadorCostoMock.Setup(c => c.CalcularCostoAsync(plato)).ReturnsAsync(2000m);
+
+            _platoAnalisisRepoMock.Setup(r => r.ObtenerVentasArticuloEnRangoAsync(restauranteId, plato.Id, It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .ReturnsAsync(20);
+
+            // Ya fue analizado hoy (está en PlatosAnalisis)
+            var sugerenciaExistente = new SugerenciaIA
+            {
+                FechaSugerencia = fechaReferencia,
+                PlatosAnalisis = new List<PlatoAnalisisIa>
+                {
+                    new PlatoAnalisisIa { PlatoId = plato.Id, Nombre = plato.Nombre, Diagnostico = "Diagnóstico Cacheado" }
+                }
+            };
+
+            _sugerenciaIaRepoMock.Setup(r => r.ObtenerSugerenciaIAAsync(restauranteId))
+                .ReturnsAsync(sugerenciaExistente);
+
+            var resultado = await _casoDeUso.EjecutarAsync(restauranteId, nombrePlato);
+
+            Assert.NotNull(resultado);
+            Assert.NotNull(resultado.AnalisisIa);
+            Assert.Equal("Diagnóstico Cacheado", resultado.AnalisisIa.Diagnostico);
+            
+            _sugerenciaPlatosIAServicioMock.Verify(s => s.AnalizarPlatoRendimientoAsync(
+                It.IsAny<Plato>(), It.IsAny<decimal>(), It.IsAny<int>(), It.IsAny<string>(), 
+                It.IsAny<string>(), It.IsAny<RendimientoPlato>(), It.IsAny<List<int>>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task EjecutarAsync_DebeResetearPlatosAnalisisYPermitirIA_CuandoEsOtroDia()
+        {
+            int restauranteId = 1;
+            string nombrePlato = "Sushi Roll";
+            var plato = new Plato
+            {
+                Id = 13,
+                Nombre = nombrePlato,
+                PrecioVentaFinal = 6000,
+                CategoriaPlatoId = 2
+            };
+
+            var fechaAyer = new DateTime(2022, 12, 31);
+            var fechaHoy = new DateTime(2023, 1, 1);
+            _dateTimeProviderMock.Setup(d => d.ObtenerAhora()).Returns(fechaHoy);
+            _dateTimeProviderMock.Setup(d => d.ObtenerHoy()).Returns(fechaHoy.Date);
+
+            _platoAnalisisRepoMock.Setup(r => r.ObtenerArticuloConPlatoYIngredientesPorNombreAsync(restauranteId, nombrePlato))
+                .ReturnsAsync(plato);
+
+            _calculadorCostoMock.Setup(c => c.CalcularCostoAsync(plato)).ReturnsAsync(2000m);
+
+            _platoAnalisisRepoMock.Setup(r => r.ObtenerVentasArticuloEnRangoAsync(restauranteId, plato.Id, It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .ReturnsAsync(20);
+
+            // Sugerencia vieja (de ayer) con plato analizado ayer
+            var sugerenciaExistente = new SugerenciaIA
+            {
+                FechaSugerencia = fechaAyer,
+                PlatosAnalisis = new List<PlatoAnalisisIa>
+                {
+                    new PlatoAnalisisIa { PlatoId = plato.Id, Nombre = plato.Nombre, Diagnostico = "Ayer" }
+                }
+            };
+
+            _sugerenciaIaRepoMock.Setup(r => r.ObtenerSugerenciaIAAsync(restauranteId))
+                .ReturnsAsync(sugerenciaExistente);
+
+            var analisisRealIa = new PlatoAnalisisIa
+            {
+                Diagnostico = "Diagnóstico hoy",
+                Alerta = "moderada",
+                Sugerencias = new List<PlatoSugerenciaIa>()
+            };
+
+            _sugerenciaPlatosIAServicioMock.Setup(s => s.AnalizarPlatoRendimientoAsync(
+                It.IsAny<Plato>(), It.IsAny<decimal>(), It.IsAny<int>(), It.IsAny<string>(), 
+                It.IsAny<string>(), It.IsAny<RendimientoPlato>(), It.IsAny<List<int>>()))
+                .ReturnsAsync(analisisRealIa);
+
+            var resultado = await _casoDeUso.EjecutarAsync(restauranteId, nombrePlato);
+
+            Assert.NotNull(resultado);
+            Assert.NotNull(resultado.AnalisisIa);
+            // Debe resetear el plato de ayer y permitir la llamada hoy
+            Assert.Equal("Diagnóstico hoy", resultado.AnalisisIa.Diagnostico);
+            
+            _sugerenciaPlatosIAServicioMock.Verify(s => s.AnalizarPlatoRendimientoAsync(
+                It.IsAny<Plato>(), It.IsAny<decimal>(), It.IsAny<int>(), It.IsAny<string>(), 
+                It.IsAny<string>(), It.IsAny<RendimientoPlato>(), It.IsAny<List<int>>()), Times.Once);
+        }
     }
 }
 

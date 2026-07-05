@@ -33,7 +33,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
         {
             int restauranteId = 1;
             int platoId = 10;
-            string accionSugerida = "Combo de Papas con Gaseosa";
+            string accionSugerida = "Destacar Papas Fritas";
             var plato = new Plato
             {
                 Id = platoId,
@@ -52,7 +52,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
                         PlatoId = platoId,
                         Sugerencias = new List<PlatoSugerenciaIa>
                         {
-                            new PlatoSugerenciaIa { Id = 2, Tipo = "combo", Accion = "Combo de Papas con Gaseosa", Aplicada = false }
+                            new PlatoSugerenciaIa { Id = 2, Tipo = "destacar", Accion = "Destacar Papas Fritas", Aplicada = false }
                         }
                     }
                 }
@@ -68,7 +68,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
             Assert.Equal("Revisión: Papas Fritas", resultado.Titulo);
             Assert.True(sugerenciaIa.PlatosAnalisis[0].Sugerencias[0].Aplicada);
 
-            _platoAnalisisRepoMock.Verify(r => r.GuardarRecordatorioNotificacionAsync(restauranteId, It.Is<string>(s => s.Contains("Revisión: Papas Fritas") && s.Contains("Combo de Papas con Gaseosa"))), Times.Once);
+            _platoAnalisisRepoMock.Verify(r => r.GuardarRecordatorioNotificacionAsync(restauranteId, It.Is<string>(s => s.Contains("Revisión: Papas Fritas") && s.Contains("Destacar Papas Fritas"))), Times.Once);
             _sugerenciaIaRepoMock.Verify(r => r.GuardarSugerenciaIAAsync(restauranteId, sugerenciaIa), Times.Once);
         }
     }

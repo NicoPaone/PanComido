@@ -53,7 +53,7 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                     
                     if (sug == null)
                     {
-                        sug = analisisPlato.Sugerencias.FirstOrDefault(s => s.Tipo == "combo");
+                        sug = analisisPlato.Sugerencias.FirstOrDefault(s => s.Tipo == "destacar" || s.Tipo == "sugerencia");
                     }
 
                     if (sug != null)
