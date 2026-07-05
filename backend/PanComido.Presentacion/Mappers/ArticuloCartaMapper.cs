@@ -32,6 +32,7 @@ namespace PanComido.Presentacion.Mappers
                         : "Sin categoria"),
                 TiempoPreparacionBase = esPlato ? plato.TiempoPreparacionBase : default,
                 TiempoPreparacionEstimado = esPlato ? plato.TiempoPreparacionEstimado : default,
+                EsPrecioManual = articulo.EsPrecioManual,
 
                 Restricciones = esPlato 
                     ? plato.Restricciones.Select(r => r.Descripcion).ToList() 

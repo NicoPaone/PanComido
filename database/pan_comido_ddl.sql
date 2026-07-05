@@ -296,7 +296,8 @@ CREATE TABLE articulo (
     precio_ganancia         DECIMAL,
     precio_promocional      DECIMAL,
     url_imagen              TEXT,
-    eliminado               BOOLEAN NOT NULL DEFAULT FALSE
+    eliminado               BOOLEAN NOT NULL DEFAULT FALSE,
+    es_precio_manual        BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE articulo_configuracion_articulo (

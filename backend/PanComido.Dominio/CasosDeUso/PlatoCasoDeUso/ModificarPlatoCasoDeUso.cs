@@ -1,8 +1,5 @@
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
 {
@@ -35,6 +32,7 @@ namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
 
             platoExistente.Restricciones = platoModificado.Restricciones;
             platoExistente.Ingredientes = platoModificado.Ingredientes;
+            platoExistente.EsPrecioManual = platoModificado.EsPrecioManual;
 
             await _platoRepositorio.ActualizarAsync(platoExistente);
         }

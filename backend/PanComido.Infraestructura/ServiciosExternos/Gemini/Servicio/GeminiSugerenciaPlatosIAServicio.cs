@@ -60,6 +60,10 @@ namespace PanComido.Infraestructura.ServiciosExternos.Gemini.Servicio
                 throw new Exception("No se pudo deserializar la respuesta de Gemini.");
             }
 
+            string jsonRespuestaTest = await response.Content.ReadAsStringAsync();
+
+            Console.WriteLine(jsonRespuestaTest);
+
             string textoRespuesta = respuestaGemini?.Candidatos
                                                     .FirstOrDefault()?
                                                     .Contenido
@@ -94,16 +98,24 @@ namespace PanComido.Infraestructura.ServiciosExternos.Gemini.Servicio
                 Contenidos =
                 [
                     new GeminiContenidoDto
+            {
+                Partes =
+                [
+                    new GeminiParteDto
                     {
-                        Partes =
-                        [
-                            new GeminiParteDto
-                            {
-                                Texto = prompt
-                            }
-                        ]
+                        Texto = prompt
                     }
                 ]
+            }
+                ],
+
+                GenerationConfig = new GeminiGenerationConfigDto
+                {
+                    ThinkingConfig = new GeminiThinkingConfigDto
+                    {
+                        ThinkingBudget = 512
+                    }
+                }
             };
         }
 

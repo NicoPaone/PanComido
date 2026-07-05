@@ -125,6 +125,7 @@ public partial class AppDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("articulo_pkey");
 
             entity.Property(e => e.Eliminado).HasDefaultValue(false);
+            entity.Property(e => e.EsPrecioManual).HasDefaultValue(true);
 
             entity.HasOne(d => d.Carta).WithMany(p => p.Articulos).HasConstraintName("articulo_carta_id_fkey");
 
