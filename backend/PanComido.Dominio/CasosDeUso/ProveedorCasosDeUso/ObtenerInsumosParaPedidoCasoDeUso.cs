@@ -43,7 +43,7 @@ namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
                 if (insumoEnPedidoPendiente.Contains(insumo.Id)) continue;
 
                 decimal stockActualInsumo = await _loteRepositorio.ObtenerStockTotalDeInsumo(insumo.Id);
-                var estadoStock = _estadoStockInsumoServicio.CalcularEstadoStock(stockActualInsumo, insumo.StockMinimo);
+                var estadoStock = _estadoStockInsumoServicio.CalcularEstadoStock(stockActualInsumo, insumo.StockMinimo, insumo.StockRecomendado);
 
                 decimal cantidadSugerida;
                 if (estadoStock == EstadoStock.Critico) cantidadSugerida = insumo.StockMinimo * 2;

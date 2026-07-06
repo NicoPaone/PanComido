@@ -78,7 +78,7 @@ namespace PanComido.Dominio.CasosDeUso.BodegaCasosDeUso
                 Vencimiento = vencimientos.GetValueOrDefault(keyDictionary, null)
             };
 
-            nuevoInsumo.EstadoStock = _estadoStockInsumoServicio.CalcularEstadoStock(nuevoInsumo.StockActual, nuevoInsumo.StockMinimo);
+            nuevoInsumo.EstadoStock = _estadoStockInsumoServicio.CalcularEstadoStock(nuevoInsumo.StockActual, nuevoInsumo.StockMinimo, nuevoInsumo.StockRecomendado);
             return nuevoInsumo;
         }
     }

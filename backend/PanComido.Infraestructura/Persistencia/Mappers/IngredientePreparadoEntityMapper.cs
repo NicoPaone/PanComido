@@ -27,8 +27,9 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                
                 Nombre = articulo?.Nombre ?? "Sin nombre",
                 StockMinimo = insumo?.StockMinimo ?? 0,
+                StockRecomendado = insumo?.StockRecomendado ?? 0,
 
-               
+
                 unidadMedida = unidadMedida?.Nombre ?? ""
             };
         }

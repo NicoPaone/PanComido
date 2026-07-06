@@ -35,7 +35,7 @@ namespace PanComido.Dominio.CasosDeUso.AvisosCasosDeUso
                 insumo.StockActual = await _loteRepositorio.ObtenerStockTotalDeInsumo(insumo.Id);
                 insumo.Vencimiento = await _loteRepositorio.ObtenerFechaDeVencimientoMasProximaDeInsumo(insumo.Id);
 
-                if (_estadoStockInsumoServicio.CalcularEstadoStock(insumo.StockActual, insumo.StockMinimo) == EstadoStock.Critico)
+                if (_estadoStockInsumoServicio.CalcularEstadoStock(insumo.StockActual, insumo.StockMinimo, insumo.StockRecomendado) == EstadoStock.Critico)
                 {
                     insumo.EstadoStock = EstadoStock.Critico;
                     insumosConStockCritico.Add(insumo);

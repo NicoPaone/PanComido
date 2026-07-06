@@ -22,6 +22,9 @@ public partial class Insumo
     [Column("stock_minimo")]
     public decimal StockMinimo { get; set; }
 
+    [Column("stock_recomendado")]
+    public decimal StockRecomendado { get; set; }
+
     [ForeignKey("CategoriaInsumoId")]
     [InverseProperty("Insumos")]
     public virtual CategoriaInsumo CategoriaInsumo { get; set; } = null!;
