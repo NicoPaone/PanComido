@@ -12,6 +12,8 @@ namespace PanComido.Presentacion.DTOs.Insumos
         [Range(0, double.MaxValue, ErrorMessage = "El precio no puede ser negativo.")]
         public decimal? PrecioVentaFinal { get; set; }
 
+        public bool EsPrecioManual { get; set; }
+
         [Range(0, double.MaxValue, ErrorMessage = "El stock mínimo no puede ser negativo.")]
         public decimal StockMinimo { get; set; }
         [Range(0, double.MaxValue, ErrorMessage = "El stock recomendado no puede ser negativo.")]

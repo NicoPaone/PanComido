@@ -39,6 +39,7 @@ namespace PanComido.Presentacion.Mappers
                 Nombre = request.Nombre,
                 Descripcion = request.Descripcion,
                 PrecioVentaFinal = request.PrecioVentaFinal,
+                EsPrecioManual = request.EsPrecioManual,
                 StockMinimo = request.StockMinimo,
                 StockRecomendado = request.StockRecomendado,
                 CategoriaId = request.CategoriaId,

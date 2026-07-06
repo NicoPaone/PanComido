@@ -14,6 +14,7 @@ namespace PanComido.Presentacion.DTOs.Plato
 
         [Required]
         public int TiempoPreparacionBase { get; set; }
+        public bool EsPrecioManual { get; set; }
 
         [Required]
         public int TipoPlatoId { get; set; }

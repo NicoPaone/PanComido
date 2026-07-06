@@ -42,6 +42,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             articuloBase.PrecioPromocional = efArticulo.PrecioPromocional;
             articuloBase.UrlImagen = efArticulo.UrlImagen;
             articuloBase.EsVisibleEnCarta = efArticulo.ConfiguracionArticulos?.Any(c => c.Id == 2) ?? false;
+            articuloBase.EsPrecioManual = efArticulo.EsPrecioManual;
             return articuloBase;
         }
 
@@ -58,7 +59,8 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 PrecioVentaFinal = articuloDominio.PrecioVentaFinal,
                 PrecioGanancia = articuloDominio.PrecioGanancia,
                 PrecioPromocional = articuloDominio.PrecioPromocional,
-                UrlImagen = articuloDominio.UrlImagen
+                UrlImagen = articuloDominio.UrlImagen,
+                EsPrecioManual = articuloDominio.EsPrecioManual
             };
             if (articuloDominio is DOM.Insumo insumoDominio)
             {
