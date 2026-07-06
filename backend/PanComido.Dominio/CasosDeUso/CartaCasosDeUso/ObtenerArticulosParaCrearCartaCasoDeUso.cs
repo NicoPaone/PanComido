@@ -1,4 +1,5 @@
 using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
 using System.Collections.Generic;
@@ -39,8 +40,7 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
         {
             if (articulo is Insumo bebida)
             {
-                var ultimoPedido = bebida.PedidoInsumos?.LastOrDefault();
-                return ultimoPedido?.PrecioCompra ?? 0;
+                return ObtenerUltimoPrecioCompraRecibido(bebida);
             }
 
             if (articulo is Plato plato && plato.Ingredientes != null)
@@ -49,9 +49,7 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
 
                 foreach (var ingredienteReceta in plato.Ingredientes)
                 {
-                    var ultimoPedido = ingredienteReceta.Insumo?.PedidoInsumos?.LastOrDefault();
-                    var precioCompraInsumo = ultimoPedido?.PrecioCompra ?? 0;
-
+                    decimal precioCompraInsumo = ObtenerUltimoPrecioCompraRecibido(ingredienteReceta.Insumo);
                     costoPlato += precioCompraInsumo * ingredienteReceta.Cantidad;
                 }
 
@@ -59,6 +57,16 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
             }
 
             return 0;
+        }
+
+        private decimal ObtenerUltimoPrecioCompraRecibido(Insumo insumo)
+        {
+            var ultimoPedidoRecibido = insumo?.PedidoInsumos
+                ?.Where(pi => pi.Estado == EstadoPedido.Recibido)
+                .OrderByDescending(pi => pi.Fecha)
+                .FirstOrDefault();
+
+            return ultimoPedidoRecibido?.PrecioCompra ?? 0;
         }
     }
 }

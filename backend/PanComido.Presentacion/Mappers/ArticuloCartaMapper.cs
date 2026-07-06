@@ -31,6 +31,7 @@ namespace PanComido.Presentacion.Mappers
                         ? (insumo.Categoria ?? "Sin categoria")
                         : "Sin categoria"),
                 CategoriaPlatoId = esPlato ? plato.CategoriaPlatoId : null,
+                CategoriaInsumoId = esInsumo ? insumo.CategoriaId : null,
                 TiempoPreparacionBase = esPlato ? plato.TiempoPreparacionBase : default,
                 TiempoPreparacionEstimado = esPlato ? plato.TiempoPreparacionEstimado : default,
                 EsPrecioManual = articulo.EsPrecioManual,
