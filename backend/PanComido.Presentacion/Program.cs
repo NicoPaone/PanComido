@@ -22,6 +22,7 @@ using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
+using PanComido.Dominio.CasosDeUso.ReporteCasosDeUso;
 using PanComido.Dominio.CasosDeUso.UnidadMedidaCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Repositorios.IA;
@@ -47,7 +48,9 @@ using PanComido.Presentacion.Mappers.Dashboard;
 using PanComido.Presentacion.Servicios;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using QuestPDF.Infrastructure;
 
+QuestPDF.Settings.License = LicenseType.Community;
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var builder = WebApplication.CreateBuilder(args);
 
@@ -290,6 +293,11 @@ builder.Services.AddScoped<ListarEmpleadosCasoDeUso>();
 builder.Services.AddScoped<CrearEmpleadoCasoDeUso>();
 builder.Services.AddScoped<ModificarEmpleadoCasoDeUso>();
 builder.Services.AddScoped<EliminarEmpleadoCasoDeUso>();
+
+builder.Services.AddScoped<GenerarReporteDashboardPdfCasoDeUso>();
+builder.Services.AddScoped<GenerarReportePersonalPdfCasoDeUso>();
+builder.Services.AddScoped<GenerarReporteVentasPdfCasoDeUso>();
+
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
 builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticuloServicio>();
@@ -303,6 +311,7 @@ builder.Services.AddScoped<ICalcularTotalComandaServicio, CalcularTotalComandaSe
 builder.Services.AddScoped<ICrearLlamadoServicio, CrearLlamadoServicio>();
 builder.Services.AddScoped<IRegistrarPagoServicio,  RegistrarPagoServicio>();
 builder.Services.AddScoped<IVerificarMetodoPagoHabilitadoServicio, VerificarMetodoPagoHabilitadoServicio>();
+builder.Services.AddScoped<IPdfGeneradorServicio, QuestPdfGeneradorServicio>();
 
 
 //Servicios externos
