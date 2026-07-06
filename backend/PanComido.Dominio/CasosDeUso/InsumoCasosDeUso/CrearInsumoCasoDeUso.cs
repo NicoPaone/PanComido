@@ -2,12 +2,6 @@
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
 {
@@ -153,7 +147,7 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
             insumoCreado.UnidadMedida = unidadMedida.Nombre;
             insumoCreado.Vencimiento = loteInicial.FechaVencimiento;
             insumoCreado.StockActual = loteInicial.Cantidad;
-            insumoCreado.EstadoStock = _estadoStockInsumoServicio.CalcularEstadoStock(insumoCreado.StockActual, insumoCreado.StockMinimo);
+            insumoCreado.EstadoStock = _estadoStockInsumoServicio.CalcularEstadoStock(insumoCreado.StockActual, insumoCreado.StockMinimo, insumoCreado.StockRecomendado);
         }
     }
 }

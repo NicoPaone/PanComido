@@ -72,7 +72,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
             _bodegaRepoMock.Setup(r => r.ExisteBodegaEnRestauranteAsync(restauranteId, bodegaId)).ReturnsAsync(true);
             _insumoRepoMock.Setup(r => r.CrearAsync(It.IsAny<Insumo>())).ReturnsAsync(insumo);
 
-            _estadoStockServicioMock.Setup(s => s.CalcularEstadoStock(cantidadInicial, insumo.StockMinimo)).Returns(EstadoStock.Normal);
+            _estadoStockServicioMock.Setup(s => s.CalcularEstadoStock(cantidadInicial, insumo.StockMinimo, It.IsAny<decimal>())).Returns(EstadoStock.Normal);
 
             // 2. Ejecutar
             await casoDeUso.EjecutarAsync(restauranteId, insumo, cantidadInicial, bodegaId, fechaVencimientoFutura, Stream.Null, "", "");

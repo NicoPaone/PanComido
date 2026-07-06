@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
@@ -51,8 +51,7 @@ IRegistrarPagoServicio registrarPagoServicio, IVerificarMetodoPagoHabilitadoServ
             await VerificarMetodoHabilitadoAsync(restauranteId, metodoPago);
 
             decimal total = _calcularTotalComandaServicio.CalcularTotal(comanda);
-            Pago pagoCreado = await _registrarPagoServicio.RegistrarAsync(comanda.Id, total,
-        metodoPago, EstadoPago.Confirmado);
+            Pago pagoCreado = await _registrarPagoServicio.RegistrarAsync(comanda.Id, total, metodoPago, EstadoPago.Confirmado);
             await FinalizarComandaYNotificarAsync(comanda);
 
             _logger.LogInformation("Pago confirmado. ComandaId: {ComandaId}, Metodo: { Metodo}, Total: { Total}", comandaId, metodoPago, pagoCreado.Total);

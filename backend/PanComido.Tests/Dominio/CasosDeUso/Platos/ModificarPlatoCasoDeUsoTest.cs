@@ -45,8 +45,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Platos
         {
             // Preparar
             int restauranteId = 1;
-            var platoModificado = new Plato { Id = 10, Nombre = "Plato Editado", PrecioVentaFinal = 500 };
-            var platoExistenteDb = new Plato { Id = 10, Nombre = "Plato Viejo", PrecioVentaFinal = 200 };
+            var platoModificado = new Plato { Id = 10, Nombre = "Plato Editado", PrecioVentaFinal = 500, EsPrecioManual = true };
+            var platoExistenteDb = new Plato { Id = 10, Nombre = "Plato Viejo", PrecioVentaFinal = 200, EsPrecioManual = false };
 
             // Simulamos que el plato existe en BD
             _platoRepoMock.Setup(r => r.ObtenerPorIdAsync(platoModificado.Id, restauranteId))
@@ -58,7 +58,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Platos
             // Verificar
             Assert.Equal("Plato Editado", platoExistenteDb.Nombre);
             Assert.Equal(500, platoExistenteDb.PrecioVentaFinal);
-            
+            Assert.True(platoExistenteDb.EsPrecioManual);
+
             // Verificamos que se llamó al método de guardar exactamente una vez
             _platoRepoMock.Verify(r => r.ActualizarAsync(platoExistenteDb), Times.Once);
         }

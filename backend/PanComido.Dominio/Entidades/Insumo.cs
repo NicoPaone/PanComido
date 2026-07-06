@@ -23,6 +23,8 @@ namespace PanComido.Dominio.Entidades
         // propiedades calculadas
         public DateOnly? Vencimiento { get; set; }
         public decimal StockActual { get; set; }
+        public decimal StockRecomendado { get; set; }
+
         public EstadoStock? EstadoStock { get; set; }
 
         public CriticidadVencimiento? CriticidadVencimiento { get; set; }

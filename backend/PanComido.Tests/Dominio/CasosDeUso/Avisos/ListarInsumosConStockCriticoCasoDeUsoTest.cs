@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
@@ -55,11 +55,11 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Avisos
                 .ReturnsAsync(DateOnly.FromDateTime(DateTime.Today.AddDays(10)));
 
             estadoStockMock
-                .Setup(s => s.CalcularEstadoStock(5, 10))
+                .Setup(s => s.CalcularEstadoStock(5, 10, It.IsAny<decimal>()))
                 .Returns(EstadoStock.Critico);
 
             estadoStockMock
-                .Setup(s => s.CalcularEstadoStock(20, 10))
+                .Setup(s => s.CalcularEstadoStock(20, 10, It.IsAny<decimal>()))
                 .Returns(EstadoStock.Normal);
 
             var casoDeUso = new ListarInsumosConStockCriticoCasoDeUso(
@@ -108,7 +108,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Avisos
                 .ReturnsAsync(DateOnly.FromDateTime(DateTime.Today.AddDays(15)));
 
             estadoStockMock
-                .Setup(s => s.CalcularEstadoStock(20, 10))
+                .Setup(s => s.CalcularEstadoStock(20, 10, It.IsAny<decimal>()))
                 .Returns(EstadoStock.Normal);
 
             var casoDeUso = new ListarInsumosConStockCriticoCasoDeUso(
@@ -160,7 +160,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Avisos
                 .ReturnsAsync(fechaVencimiento);
 
             estadoStockMock
-                .Setup(s => s.CalcularEstadoStock(3, 10))
+                .Setup(s => s.CalcularEstadoStock(3, 10, It.IsAny<decimal>()))
                 .Returns(EstadoStock.Critico);
 
             var casoDeUso = new ListarInsumosConStockCriticoCasoDeUso(

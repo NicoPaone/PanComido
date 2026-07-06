@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace PanComido.Infraestructura.ServiciosExternos.Gemini.DTOs.Request
 {
@@ -11,5 +6,20 @@ namespace PanComido.Infraestructura.ServiciosExternos.Gemini.DTOs.Request
     {
         [JsonPropertyName("contents")]
         public List<GeminiContenidoDto> Contenidos { get; set; } = new();
+
+        [JsonPropertyName("generationConfig")]
+        public GeminiGenerationConfigDto? GenerationConfig { get; set; }
+    }
+
+    public class GeminiGenerationConfigDto
+    {
+        [JsonPropertyName("thinkingConfig")]
+        public GeminiThinkingConfigDto? ThinkingConfig { get; set; }
+    }
+
+    public class GeminiThinkingConfigDto
+    {
+        [JsonPropertyName("thinkingBudget")]
+        public int ThinkingBudget { get; set; }
     }
 }

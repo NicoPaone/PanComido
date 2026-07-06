@@ -296,7 +296,8 @@ CREATE TABLE articulo (
     precio_ganancia         DECIMAL,
     precio_promocional      DECIMAL,
     url_imagen              TEXT,
-    eliminado               BOOLEAN NOT NULL DEFAULT FALSE
+    eliminado               BOOLEAN NOT NULL DEFAULT FALSE,
+    es_precio_manual        BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE articulo_configuracion_articulo (
@@ -318,7 +319,8 @@ CREATE TABLE insumo (
     id_articulo         INTEGER PRIMARY KEY REFERENCES articulo(id),
     categoria_insumo_id INTEGER NOT NULL REFERENCES categoria_insumo(id),
     unidad_medida_id    INTEGER NOT NULL REFERENCES unidad_medida(id),
-    stock_minimo        DECIMAL NOT NULL DEFAULT 0
+    stock_minimo        DECIMAL NOT NULL DEFAULT 0,
+    stock_recomendado   DECIMAL NOT NULL DEFAULT 0
 );
 
 CREATE TABLE ingrediente (

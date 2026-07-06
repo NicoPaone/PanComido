@@ -15,6 +15,7 @@ namespace PanComido.Presentacion.Mappers
                 UnidadMedida = insumo.UnidadMedida,
                 Vencimiento = insumo.Vencimiento?.ToString("dd/MM/yyyy"),
                 StockMinimo = insumo.StockMinimo,
+                StockRecomendado = insumo.StockRecomendado,
                 PrecioVentaFinal = insumo.PrecioVentaFinal ?? 0,
                 EstadoStock = insumo.EstadoStock?.ToString(),
                 Tipo = insumo.Tipo.ToString(),
@@ -38,7 +39,9 @@ namespace PanComido.Presentacion.Mappers
                 Nombre = request.Nombre,
                 Descripcion = request.Descripcion,
                 PrecioVentaFinal = request.PrecioVentaFinal,
+                EsPrecioManual = request.EsPrecioManual,
                 StockMinimo = request.StockMinimo,
+                StockRecomendado = request.StockRecomendado,
                 CategoriaId = request.CategoriaId,
                 UnidadDeMedidaId = request.UnidadDeMedidaId
             };
