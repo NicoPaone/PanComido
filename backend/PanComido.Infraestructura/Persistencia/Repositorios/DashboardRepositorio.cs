@@ -233,5 +233,26 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
             return result;
         }
+
+        public async Task<List<PanComido.Dominio.Entidades.EncuestaSatisfaccion>> ObtenerEncuestasPorPeriodoAsync(int restauranteId, DateTime desde, DateTime hasta)
+        {
+            var encuestas = await _ctx.EncuestaSatisfaccions
+                .Where(e => e.Comanda.RestauranteId == restauranteId
+                         && e.Fecha >= desde
+                         && e.Fecha <= hasta)
+                .Select(e => new PanComido.Dominio.Entidades.EncuestaSatisfaccion
+                {
+                    Id = e.Id,
+                    ComandaId = e.ComandaId,
+                    PuntuacionLugar = e.PuntuacionLugar,
+                    PuntuacionComida = e.PuntuacionComida,
+                    PuntuacionMozo = e.PuntuacionMozo,
+                    Fecha = e.Fecha
+                })
+                .ToListAsync();
+
+            return encuestas;
+        }
+
     }
 }
