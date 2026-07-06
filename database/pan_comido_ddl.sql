@@ -318,7 +318,8 @@ CREATE TABLE insumo (
     id_articulo         INTEGER PRIMARY KEY REFERENCES articulo(id),
     categoria_insumo_id INTEGER NOT NULL REFERENCES categoria_insumo(id),
     unidad_medida_id    INTEGER NOT NULL REFERENCES unidad_medida(id),
-    stock_minimo        DECIMAL NOT NULL DEFAULT 0
+    stock_minimo        DECIMAL NOT NULL DEFAULT 0,
+    stock_recomendado   DECIMAL NOT NULL DEFAULT 0
 );
 
 CREATE TABLE ingrediente (

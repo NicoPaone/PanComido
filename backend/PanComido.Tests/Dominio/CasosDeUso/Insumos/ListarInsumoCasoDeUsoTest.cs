@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using Xunit;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.Entidades;
@@ -60,7 +60,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
                 .ReturnsAsync(vencimientoFalso);
 
             _estadoServicioMock
-                .Setup(s => s.CalcularEstadoStock(stockActualFalso, stockMinimoFalso))
+                .Setup(s => s.CalcularEstadoStock(stockActualFalso, stockMinimoFalso, It.IsAny<decimal>()))
                 .Returns(EstadoStock.Normal);
 
             // instancio el caso de uso con sus dependencias mockeadas
@@ -74,7 +74,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
             var resultado = await casoDeUso.EjecutarAsync(restauranteId);
 
             // 3. Verificar
-            _estadoServicioMock.Verify(s => s.CalcularEstadoStock(stockActualFalso, stockMinimoFalso), Times.Once);
+            _estadoServicioMock.Verify(s => s.CalcularEstadoStock(stockActualFalso, stockMinimoFalso, It.IsAny<decimal>()), Times.Once);
 
             Assert.NotNull(resultado);
             Assert.Single(resultado);
@@ -114,7 +114,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
 
             // se verifica que si no hubo insumos, nunca se llamo ni al servicio ni al repositorio de lote para obtener su vencimiento o stock total
             _estadoServicioMock.Verify(s =>
-                s.CalcularEstadoStock(It.IsAny<decimal>(), It.IsAny<decimal>()), Times.Never);
+                s.CalcularEstadoStock(It.IsAny<decimal>(), It.IsAny<decimal>(), It.IsAny<decimal>()), Times.Never);
             _loteRepoMock.Verify(r => r.ObtenerStockTotalDeInsumo(It.IsAny<int>()), Times.Never);
             _loteRepoMock.Verify(r => r.ObtenerFechaDeVencimientoMasProximaDeInsumo(It.IsAny<int>()), Times.Never);
         }
@@ -148,12 +148,12 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
             // que el repo de lote y servicio devuelva data de cebolla
             _loteRepoMock.Setup(r => r.ObtenerStockTotalDeInsumo(idCebolla)).ReturnsAsync(stockCebolla);
             _loteRepoMock.Setup(r => r.ObtenerFechaDeVencimientoMasProximaDeInsumo(idCebolla)).ReturnsAsync(vtoCebolla);
-            _estadoServicioMock.Setup(s => s.CalcularEstadoStock(stockCebolla, minCebolla)).Returns(EstadoStock.Normal);
+            _estadoServicioMock.Setup(s => s.CalcularEstadoStock(stockCebolla, minCebolla, It.IsAny<decimal>())).Returns(EstadoStock.Normal);
 
             // que el repo de lote y servicio devuelva data de tomate
             _loteRepoMock.Setup(r => r.ObtenerStockTotalDeInsumo(idTomate)).ReturnsAsync(stockTomate);
             _loteRepoMock.Setup(r => r.ObtenerFechaDeVencimientoMasProximaDeInsumo(idTomate)).ReturnsAsync(vtoTomate);
-            _estadoServicioMock.Setup(s => s.CalcularEstadoStock(stockTomate, minTomate)).Returns(EstadoStock.Critico);
+            _estadoServicioMock.Setup(s => s.CalcularEstadoStock(stockTomate, minTomate, It.IsAny<decimal>())).Returns(EstadoStock.Critico);
 
             ListarInsumoCasoDeUso casoDeUso = new ListarInsumoCasoDeUso(
                 _insumoRepoMock.Object, _loteRepoMock.Object, _estadoServicioMock.Object);
@@ -202,7 +202,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
             _loteRepoMock.Setup(r => r.ObtenerFechaDeVencimientoMasProximaDeInsumo(insumoIdFalso)).ReturnsAsync(vencimientoVacio);
 
             
-            _estadoServicioMock.Setup(s => s.CalcularEstadoStock(stockVacio, stockMinimoFalso)).Returns(EstadoStock.Critico);
+            _estadoServicioMock.Setup(s => s.CalcularEstadoStock(stockVacio, stockMinimoFalso, It.IsAny<decimal>())).Returns(EstadoStock.Critico);
 
             ListarInsumoCasoDeUso casoDeUso = new ListarInsumoCasoDeUso(
                 _insumoRepoMock.Object, _loteRepoMock.Object, _estadoServicioMock.Object);
@@ -224,7 +224,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
 
             // validar que se llamo al servicio con valores de un insumo que no se le pudo encontrar lote, osea 0 de stock
             _estadoServicioMock.Verify(s =>
-                s.CalcularEstadoStock(0m, stockMinimoFalso), Times.Once);
+                s.CalcularEstadoStock(0m, stockMinimoFalso, It.IsAny<decimal>()), Times.Once);
         }
     }
 }

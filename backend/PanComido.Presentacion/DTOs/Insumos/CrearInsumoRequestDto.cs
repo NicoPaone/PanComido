@@ -14,6 +14,8 @@ namespace PanComido.Presentacion.DTOs.Insumos
 
         [Range(0, double.MaxValue, ErrorMessage = "El stock mínimo no puede ser negativo.")]
         public decimal StockMinimo { get; set; }
+        [Range(0, double.MaxValue, ErrorMessage = "El stock recomendado no puede ser negativo.")]
+        public decimal StockRecomendado { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar una categoría válida.")]
         public int CategoriaId { get; set; }

@@ -35,7 +35,7 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
 
 
                 insumo.EstadoStock = _estadoStockInsumoServicio
-                    .CalcularEstadoStock(insumo.StockActual, insumo.StockMinimo);
+                    .CalcularEstadoStock(insumo.StockActual, insumo.StockMinimo, insumo.StockRecomendado);
             }
 
             return insumos;

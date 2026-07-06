@@ -10,14 +10,12 @@ namespace PanComido.Dominio.Servicios
 {
     public class EstadoStockInsumoServicio : IEstadoStockInsumoServicio
     {
-        public EstadoStock CalcularEstadoStock(decimal stockActual, decimal stockMinimo)
+        public EstadoStock CalcularEstadoStock(decimal stockActual, decimal stockMinimo, decimal stockRecomendado)
         {
-            if (stockActual < stockMinimo)
-                return EstadoStock.Critico;
-            else if (stockActual < stockMinimo * 2)
-                return EstadoStock.Bajo;
-            else
-                return EstadoStock.Normal;
+            if (stockActual < stockMinimo) return EstadoStock.Critico;
+            else if (stockActual < stockRecomendado) return EstadoStock.Bajo;
+            else return EstadoStock.Normal;
         }
+
     }
 }

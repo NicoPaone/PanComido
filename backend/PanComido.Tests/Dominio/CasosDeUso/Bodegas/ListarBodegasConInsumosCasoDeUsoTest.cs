@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using PanComido.Dominio.CasosDeUso.BodegaCasosDeUso;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
@@ -45,7 +45,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Bodegas
             _loteRepoMock.Setup(r => r.ObtenerStocksPorBodega(restauranteId)).ReturnsAsync(stocksMap);
             _loteRepoMock.Setup(r => r.ObtenerVencimientosPorBodega(restauranteId)).ReturnsAsync(vencimientosMap);
 
-            _estadoServicioMock.Setup(s => s.CalcularEstadoStock(stockActual, stockMinimo)).Returns(EstadoStock.Normal);
+            _estadoServicioMock.Setup(s => s.CalcularEstadoStock(stockActual, stockMinimo, It.IsAny<decimal>())).Returns(EstadoStock.Normal);
 
             var casoDeUso = new ListarBodegasConInsumosCasoDeUso(_bodegaRepoMock.Object, _loteRepoMock.Object, _insumoRepoMock.Object, _estadoServicioMock.Object);
 
@@ -65,7 +65,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Bodegas
             Assert.Equal(vencimiento, insumoResultante.Vencimiento);
             Assert.Equal(EstadoStock.Normal, insumoResultante.EstadoStock);
 
-            _estadoServicioMock.Verify(s => s.CalcularEstadoStock(stockActual, stockMinimo), Times.Once);
+            _estadoServicioMock.Verify(s => s.CalcularEstadoStock(stockActual, stockMinimo, It.IsAny<decimal>()), Times.Once);
         }
 
         [Fact]
@@ -121,7 +121,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Bodegas
             // 3. Verificar
             Assert.NotNull(resultado);
             Assert.Empty(resultado);
-            _estadoServicioMock.Verify(s => s.CalcularEstadoStock(It.IsAny<decimal>(), It.IsAny<decimal>()), Times.Never);
+            _estadoServicioMock.Verify(s => s.CalcularEstadoStock(It.IsAny<decimal>(), It.IsAny<decimal>(), It.IsAny<decimal>()), Times.Never);
         }
 
         [Fact]
@@ -186,7 +186,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Bodegas
             _loteRepoMock.Setup(r => r.ObtenerStocksPorBodega(restauranteId)).ReturnsAsync(stocksMap);
             _loteRepoMock.Setup(r => r.ObtenerVencimientosPorBodega(restauranteId)).ReturnsAsync(vencimientosMap);
 
-            _estadoServicioMock.Setup(s => s.CalcularEstadoStock(0m, 5m)).Returns(EstadoStock.Critico);
+            _estadoServicioMock.Setup(s => s.CalcularEstadoStock(0m, 5m, It.IsAny<decimal>())).Returns(EstadoStock.Critico);
 
             var casoDeUso = new ListarBodegasConInsumosCasoDeUso(_bodegaRepoMock.Object, _loteRepoMock.Object, _insumoRepoMock.Object, _estadoServicioMock.Object);
 
