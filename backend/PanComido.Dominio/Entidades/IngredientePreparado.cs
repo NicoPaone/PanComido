@@ -14,6 +14,8 @@ namespace PanComido.Dominio.Entidades
         public string unidadMedida { get; set; }
         public decimal StockMinimo { get; set; }
         public decimal StockActual { get; set; }
+        public decimal StockRecomendado { get; set; }
+
         public DateOnly FechaVencimientoProxima { get; set; }
         public EstadoStock EstadoStock { get; set; }
 

@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
@@ -52,7 +52,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
                .ReturnsAsync(2);
 
             _estadoInsumoServicioMock
-                .Setup(r => r.CalcularEstadoStock(2, 10))
+                .Setup(r => r.CalcularEstadoStock(2, 10, It.IsAny<decimal>()))
                 .Returns(EstadoStock.Critico);
 
             _pedidoRepoMock
@@ -104,7 +104,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
                .ReturnsAsync(8);
 
             _estadoInsumoServicioMock
-                .Setup(r => r.CalcularEstadoStock(8, 10))
+                .Setup(r => r.CalcularEstadoStock(8, 10, It.IsAny<decimal>()))
                 .Returns(EstadoStock.Bajo);
 
             _pedidoRepoMock
@@ -156,7 +156,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
                .ReturnsAsync(30);
 
             _estadoInsumoServicioMock
-                .Setup(r => r.CalcularEstadoStock(30, 10))
+                .Setup(r => r.CalcularEstadoStock(30, 10, It.IsAny<decimal>()))
                 .Returns(EstadoStock.Normal);
 
             _pedidoRepoMock
@@ -199,7 +199,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
                 .Setup(r => r.ObtenerStockTotalDeInsumo(99))
                 .ReturnsAsync(2);
             _estadoInsumoServicioMock
-                .Setup(r => r.CalcularEstadoStock(2, 10))
+                .Setup(r => r.CalcularEstadoStock(2, 10, It.IsAny<decimal>()))
                 .Returns(EstadoStock.Critico);
 
             var casoDeUso = new ObtenerInsumosParaPedidoCasoDeUso(
