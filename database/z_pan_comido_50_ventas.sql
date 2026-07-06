@@ -19,11 +19,26 @@ DECLARE
 BEGIN
     -- Aseguramos que la semilla aleatoria sea variada
     FOR i IN 1..50 LOOP
-        -- 1. Generar una fecha aleatoria entre hoy y hace 90 días
-        v_fecha := NOW() - (random() * 90 || ' days')::interval;
+       -- Distribuimos las 50 ventas inteligentemente para tener datos en todos los filtros
+        IF i <= 5 THEN
+            -- 5 ventas en las últimas 24 horas (Filtro: Hoy)
+            v_fecha := NOW() - (random() * 1 || ' days')::interval;
+        ELSIF i <= 15 THEN
+            -- 10 ventas en los últimos 3 días (Filtro: 3 días)
+            v_fecha := NOW() - (random() * 3 || ' days')::interval;
+        ELSIF i <= 25 THEN
+            -- 10 ventas en los últimos 7 días (Filtro: 7 días)
+            v_fecha := NOW() - (random() * 7 || ' days')::interval;
+        ELSIF i <= 35 THEN
+            -- 10 ventas en los últimos 30 días (Filtro: 1 mes)
+            v_fecha := NOW() - (random() * 30 || ' days')::interval;
+        ELSE
+            -- 15 ventas perdidas en los últimos 90 días (Filtro: Histórico/Año)
+            v_fecha := NOW() - (random() * 90 || ' days')::interval;
+        END IF;
         
-        -- 2. Seleccionar una mesa aleatoria (del 1 al 31 que existen)
-        v_mesa_id := floor(random() * 31 + 1)::int;
+        -- 2. Seleccionar una mesa aleatoria solo entre las que tienen mozo (1 al 8)
+        v_mesa_id := floor(random() * 8 + 1)::int;
         
         -- 3. Insertar la Comanda vinculada al pago.
         -- estado_comanda_id = 4 (Finalizada)
@@ -84,21 +99,25 @@ DECLARE
     v_lugar INT;
     v_comida INT;
     v_mozo INT;
+    v_cant_encuestas INT;
+    v_k INT;
 BEGIN
-    -- Recorremos TODAS las comandas finalizadas (estado = 4)
+        -- Recorremos TODAS las comandas finalizadas (estado = 4)
     FOR rec IN SELECT id, hora_fin FROM comanda WHERE estado_comanda_id = 4 LOOP
         
-        -- Simulamos que el 60% de los clientes deja una encuesta (random > 0.4)
-        IF random() > 0.4 THEN
+        -- Generamos entre 0 y 3 encuestas aleatorias para esta misma comanda
+        -- (Si sale 0, significa que nadie en la mesa llenó la encuesta)
+        v_cant_encuestas := floor(random() * 4)::int; 
+        
+        FOR v_k IN 1..v_cant_encuestas LOOP
             
             -- Generamos puntuaciones aleatorias del 1 al 5.
-            -- Para que sea realista: Comida y Lugar suelen ser buenas (3 a 5), 
-            -- pero la atención del mozo la hacemos más variable (1 a 5).
             v_lugar := floor(random() * 3 + 3)::int; 
             v_comida := floor(random() * 3 + 3)::int;
             v_mozo := floor(random() * 5 + 1)::int;
             
-            -- La encuesta se responde unos minutos aleatorios después de la hora_fin de la comanda
+            -- Insertamos la encuesta. Como está dentro de este nuevo FOR, 
+            -- puede ejecutarse varias veces para el mismo rec.id
             INSERT INTO encuesta_satisfaccion (comanda_id, puntuacion_lugar, puntuacion_comida, puntuacion_mozo, fecha)
             VALUES (
                 rec.id, 
@@ -108,6 +127,6 @@ BEGIN
                 rec.hora_fin + (random() * 15 || ' minutes')::interval
             );
             
-        END IF;
+        END LOOP;
     END LOOP;
 END $$;
