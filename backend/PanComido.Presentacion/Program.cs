@@ -281,10 +281,15 @@ builder.Services.AddScoped<DesasignarMozoMesaCasoDeUso>();
 builder.Services.AddScoped<ListarMozosParaMesaCasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosTransferenciaCasoDeUso>();
 builder.Services.AddScoped<ActualizarDatosTransferenciaCasoDeUso>();
-
+builder.Services.AddScoped<ModificarInsumoCasoDeUso>();
+builder.Services.AddScoped<ObtenerInsumoPorIdCasoDeUso>();
+builder.Services.AddScoped<EliminarInsumoCasoDeUso>();
 builder.Services.AddScoped<CrearEncuestaSatisfaccionCasoDeUso>();
+
+
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
+builder.Services.AddScoped<IInsumoValidacionServicio, InsumoValidacionServicio>();
 builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticuloServicio>();
 builder.Services.AddScoped<ISugerenciaPlatosIAServicio, GeminiSugerenciaPlatosIAServicio >();
 builder.Services.AddScoped<IGestionStockServicio, GestionStockServicio>();

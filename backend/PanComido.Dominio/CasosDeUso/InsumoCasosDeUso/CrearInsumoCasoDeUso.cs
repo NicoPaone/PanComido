@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
 
@@ -10,8 +11,7 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
         private readonly IInsumoRepositorio _insumoRepositorio;
         private readonly ILoteRepositorio _loteRepositorio;
         private readonly IBodegaRepositorio _bodegaRepositorio;
-        private readonly IUnidadMedidaRepositorio _unidadMedidaRepositorio;
-        private readonly ICategoriaInsumoRepositorio _categoriaInsumoRepositorio;
+        private readonly IInsumoValidacionServicio _insumoValidacionServicio;
 
         private readonly IEstadoStockInsumoServicio _estadoStockInsumoServicio;
         private readonly IImagenServicio _imagenServicio;
@@ -21,16 +21,14 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
         public CrearInsumoCasoDeUso(IInsumoRepositorio insumoRepositorio,
             ILoteRepositorio loteRepositorio,
             IBodegaRepositorio bodegaRepositorio,
-            IUnidadMedidaRepositorio unidadMedidaRepositorio,
-            ICategoriaInsumoRepositorio categoriaInsumoRepositorio,
+            IInsumoValidacionServicio insumoValidacionServicio,
             IEstadoStockInsumoServicio estadoStockInsumoServicio,
             IImagenServicio imagenServicio,
             ILogger<CrearInsumoCasoDeUso> logger)
         {
             _insumoRepositorio = insumoRepositorio;
             _bodegaRepositorio = bodegaRepositorio;
-            _unidadMedidaRepositorio = unidadMedidaRepositorio;
-            _categoriaInsumoRepositorio = categoriaInsumoRepositorio;
+            _insumoValidacionServicio = insumoValidacionServicio;
             _loteRepositorio = loteRepositorio;
             _estadoStockInsumoServicio = estadoStockInsumoServicio;
             _imagenServicio = imagenServicio;
@@ -52,16 +50,19 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
             ValidarReglasDeNegocio(restauranteId, insumo, cantidadInicial, fechaVencimiento);
             await ValidarBodegaAsync(restauranteId, idBodega);
 
-            CategoriaInsumo categoria = await ObtenerYValidarCategoriaAsync(insumo.CategoriaId);
-            UnidadMedida unidadMedida = await ObtenerYValidarUnidadMedidaAsync(insumo.UnidadDeMedidaId);
+            CategoriaInsumo categoria = await _insumoValidacionServicio.ObtenerYValidarCategoriaAsync(insumo.CategoriaId);
+            UnidadMedida unidadMedida = await _insumoValidacionServicio.ObtenerYValidarUnidadMedidaAsync(insumo.UnidadDeMedidaId);
+            ValidarImagenSegunTipo(categoria.TipoAplica, stream, nombreImagen);
 
             Lote loteInicial = CrearLoteInicial(insumo.Nombre, cantidadInicial, idBodega, fechaVencimiento);
-            
+
             insumo.RestauranteId = restauranteId;
             insumo.Tipo = categoria.TipoAplica;
             insumo.Lotes = new List<Lote> { loteInicial };
 
-            insumo.UrlImagen = await SubirYObtenerUrlDeImagen(stream, nombreImagen, carpetaCloudinary);
+            insumo.UrlImagen = categoria.TipoAplica == TipoInsumo.Bebida
+                ? await SubirYObtenerUrlDeImagen(stream, nombreImagen, carpetaCloudinary)
+                : null;
 
             Insumo insumoCreado = await _insumoRepositorio.CrearAsync(insumo);
 
@@ -96,26 +97,15 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
             }
         }
 
-        private async Task<CategoriaInsumo> ObtenerYValidarCategoriaAsync(int categoriaId)
+        private void ValidarImagenSegunTipo(TipoInsumo tipo, Stream stream, string nombreImagen)
         {
-            CategoriaInsumo categoria = await _categoriaInsumoRepositorio.ObtenerPorIdAsync(categoriaId);
-            if (categoria == null)
-            {
-                _logger.LogWarning("Rechazo al crear insumo: La categoría con ID {CategoriaId} no existe.", categoriaId);
-                throw new ArgumentException("La categoría de insumo seleccionada no existe en el sistema.");
-            }
-            return categoria;
-        }
+            bool tieneImagen = stream != null && !string.IsNullOrEmpty(nombreImagen);
 
-        private async Task<UnidadMedida> ObtenerYValidarUnidadMedidaAsync(int unidadMedidaId)
-        {
-            UnidadMedida unidadMedida = await _unidadMedidaRepositorio.ObtenerPorIdAsync(unidadMedidaId);
-            if (unidadMedida == null)
+            if (tipo == TipoInsumo.Bebida && !tieneImagen)
             {
-                _logger.LogWarning("Rechazo al crear insumo: La unidad de medida con ID {UnidadMedidaId} no existe.", unidadMedidaId);
-                throw new ArgumentException("La unidad de medida seleccionada no existe en el sistema.");
+                _logger.LogWarning("Rechazo al crear insumo: las bebidas requieren una imagen.");
+                throw new ArgumentException("La imagen es obligatoria para las bebidas.");
             }
-            return unidadMedida;
         }
 
         private Lote CrearLoteInicial(string nombreInsumo, int cantidadInicial, int idBodega, DateOnly fechaVencimiento)

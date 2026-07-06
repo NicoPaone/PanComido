@@ -61,7 +61,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
             var domLista = new List<DOM.Insumo>();
 
-            // 2. Procesamos el vencimiento más cercano en memoria (C#)
+            // 2. Procesamos el vencimiento mï¿½s cercano en memoria (C#)
             foreach (var articulo in efLista)
             {
                 var proximoVencimiento = articulo.Insumo.Lotes
@@ -70,7 +70,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
                 if (proximoVencimiento != null)
                 {
-                    // Como ya incluimos los Lotes arriba, el mapper ahora sí sumará el StockActual
+                    // Como ya incluimos los Lotes arriba, el mapper ahora sï¿½ sumarï¿½ el StockActual
                     var domInsumo = (DOM.Insumo)_mapper.paraDominio(articulo);
                     domInsumo.Vencimiento = proximoVencimiento;
                     domLista.Add(domInsumo);
@@ -102,6 +102,59 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             insumoDominio.Id = efArticulo.Id;
 
             return insumoDominio;
+        }
+
+        public async Task<DOM.Insumo> ObtenerPorIdAsync(int insumoId, int restauranteId)
+        {
+            var efArticulo = await BaseQuery(restauranteId)
+                .Include(a => a.Insumo)
+                    .ThenInclude(i => i.Lotes)
+                .FirstOrDefaultAsync(a => a.Id == insumoId);
+
+            return efArticulo == null ? null : (DOM.Insumo)_mapper.paraDominio(efArticulo);
+        }
+
+        public async Task ActualizarAsync(DOM.Insumo insumoDominio)
+        {
+            var efArticulo = await BaseQuery(insumoDominio.RestauranteId)
+                .FirstOrDefaultAsync(a => a.Id == insumoDominio.Id);
+
+            if (efArticulo == null)
+            {
+                throw new InvalidOperationException("Insumo no encontrado para actualizar.");
+            }
+
+            ActualizarDatosBasicos(efArticulo, insumoDominio);
+
+            await _ctx.SaveChangesAsync();
+        }
+
+        public async Task EliminarAsync(int insumoId, int restauranteId)
+        {
+            var efArticulo = await _ctx.Articulos
+                .FirstOrDefaultAsync(a => a.Id == insumoId && a.RestauranteId == restauranteId && a.Insumo != null);
+
+            if (efArticulo == null)
+            {
+                throw new KeyNotFoundException("El insumo no existe o no pertenece al restaurante.");
+            }
+
+            efArticulo.Eliminado = true;
+            await _ctx.SaveChangesAsync();
+        }
+
+        private void ActualizarDatosBasicos(EF.Articulo efArticulo, DOM.Insumo insumoDominio)
+        {
+            efArticulo.Nombre = insumoDominio.Nombre;
+            efArticulo.Descripcion = insumoDominio.Descripcion;
+            efArticulo.PrecioVentaFinal = insumoDominio.PrecioVentaFinal;
+            efArticulo.UrlImagen = insumoDominio.UrlImagen;
+            efArticulo.EsPrecioManual = insumoDominio.EsPrecioManual;
+
+            efArticulo.Insumo.CategoriaInsumoId = insumoDominio.CategoriaId;
+            efArticulo.Insumo.UnidadMedidaId = insumoDominio.UnidadDeMedidaId;
+            efArticulo.Insumo.StockMinimo = insumoDominio.StockMinimo;
+            efArticulo.Insumo.StockRecomendado = insumoDominio.StockRecomendado;
         }
     }
 }

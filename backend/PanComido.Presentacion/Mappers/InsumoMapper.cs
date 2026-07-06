@@ -20,6 +20,7 @@ namespace PanComido.Presentacion.Mappers
                 EstadoStock = insumo.EstadoStock?.ToString(),
                 Tipo = insumo.Tipo.ToString(),
                 Categoria = insumo.Categoria,
+                EsPrecioManual = insumo.EsPrecioManual
             };
         }
         public List<InsumoResponseDto> aListaDto(
@@ -44,6 +45,41 @@ namespace PanComido.Presentacion.Mappers
                 StockRecomendado = request.StockRecomendado,
                 CategoriaId = request.CategoriaId,
                 UnidadDeMedidaId = request.UnidadDeMedidaId
+            };
+        }
+
+        public DOM.Insumo ModificarADominio(int id, ModificarInsumoRequestDto insumoRequest)
+        {
+            if (insumoRequest == null) return null;
+            return new DOM.Insumo
+            {
+                Id = id,
+                Nombre = insumoRequest.Nombre,
+                Descripcion = insumoRequest.Descripcion,
+                PrecioVentaFinal = insumoRequest.PrecioVentaFinal,
+                EsPrecioManual = insumoRequest.EsPrecioManual,
+                StockMinimo = insumoRequest.StockMinimo,
+                StockRecomendado = insumoRequest.StockRecomendado,
+                CategoriaId = insumoRequest.CategoriaId,
+                UnidadDeMedidaId = insumoRequest.UnidadDeMedidaId
+            };
+        }
+
+        public DetalleInsumoResponseDto aDetalleDto(DOM.Insumo insumo)
+        {
+            return new DetalleInsumoResponseDto
+            {
+                Id = insumo.Id,
+                Nombre = insumo.Nombre,
+                Descripcion = insumo.Descripcion,
+                PrecioVentaFinal = insumo.PrecioVentaFinal,
+                EsPrecioManual = insumo.EsPrecioManual,
+                StockMinimo = insumo.StockMinimo,
+                StockRecomendado = insumo.StockRecomendado,
+                CategoriaId = insumo.CategoriaId,
+                UnidadDeMedidaId = insumo.UnidadDeMedidaId,
+                UrlImagen = insumo.UrlImagen,
+                Tipo = insumo.Tipo.ToString()
             };
         }
     }
