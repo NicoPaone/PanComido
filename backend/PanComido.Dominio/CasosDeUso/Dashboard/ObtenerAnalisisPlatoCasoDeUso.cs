@@ -92,6 +92,12 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                     PlatosAnalisis = new List<PlatoAnalisisIa>()
                 };
             }
+            else if (sugerenciaIa.FechaSugerencia.Date != _dateTimeProvider.ObtenerHoy())
+            {
+                sugerenciaIa.FechaSugerencia = _dateTimeProvider.ObtenerAhora();
+                sugerenciaIa.PlatosAnalisis = new List<PlatoAnalisisIa>();
+            }
+
             if (sugerenciaIa.PlatosAnalisis == null)
             {
                 sugerenciaIa.PlatosAnalisis = new List<PlatoAnalisisIa>();
@@ -113,8 +119,11 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                             comparativaLider,
                             tendencia
                         );
-                        analisisPlato.PlatoId = plato.Id;
-                        analisisPlato.Nombre = plato.Nombre;
+                        if (analisisPlato != null)
+                        {
+                            analisisPlato.PlatoId = plato.Id;
+                            analisisPlato.Nombre = plato.Nombre;
+                        }
                     }
                     catch (Exception)
                     {
@@ -167,10 +176,10 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                     new PlatoSugerenciaIa
                     {
                         Id = 2,
-                        Tipo = PanComido.Dominio.Entidades.Enums.TipoSugerencia.Combo.ToString().ToLower(),
-                        Accion = $"Ofrecer {plato.Nombre} en combo promocional con Bebida.",
+                        Tipo = PanComido.Dominio.Entidades.Enums.TipoSugerencia.Destacar.ToString().ToLower(),
+                        Accion = $"Destacar {plato.Nombre} en el menú para darle mayor visibilidad.",
                         Impacto = "Impacto Alto (+20 u./mes)",
-                        Dificultad = PanComido.Dominio.Entidades.Enums.DificultadSugerencia.Media.ToString().ToLower(),
+                        Dificultad = PanComido.Dominio.Entidades.Enums.DificultadSugerencia.Baja.ToString().ToLower(),
                         EsAplicable = true,
                         Aplicada = false
                     }
