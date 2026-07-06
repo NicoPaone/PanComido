@@ -59,8 +59,7 @@ namespace PanComido.Presentacion.Controllers
         public async Task<IActionResult> ConfirmarPago(int comandaId, [FromBody] ConfirmarPagoRequestDto request)
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
-            var pagoConfirmado = await _confirmarPagoCasoDeUso.EjecutarAsync(comandaId,
-        restauranteId, request.MetodoPago);
+            var pagoConfirmado = await _confirmarPagoCasoDeUso.EjecutarAsync(comandaId, restauranteId, request.MetodoPago);
             var dto = _pagoMapper.aDto(pagoConfirmado);
             return Ok(dto);
         }
