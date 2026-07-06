@@ -17,6 +17,7 @@ using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.PagoCasoDeUso;
+using PanComido.Dominio.CasosDeUso.EmpleadoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
@@ -177,6 +178,7 @@ builder.Services.AddScoped<PagoMapper>();
 builder.Services.AddScoped<DatosBienvenidaMesaMapper>();
 builder.Services.AddScoped<EncuestaMapper>();
 builder.Services.AddScoped<DatosTransferenciaMapper>();
+builder.Services.AddScoped<EmpleadoMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -283,6 +285,11 @@ builder.Services.AddScoped<ObtenerDatosTransferenciaCasoDeUso>();
 builder.Services.AddScoped<ActualizarDatosTransferenciaCasoDeUso>();
 builder.Services.AddScoped<ObtenerResumenSatisfaccionCasoDeUso>();
 builder.Services.AddScoped<CrearEncuestaSatisfaccionCasoDeUso>();
+
+builder.Services.AddScoped<ListarEmpleadosCasoDeUso>();
+builder.Services.AddScoped<CrearEmpleadoCasoDeUso>();
+builder.Services.AddScoped<ModificarEmpleadoCasoDeUso>();
+builder.Services.AddScoped<EliminarEmpleadoCasoDeUso>();
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
 builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticuloServicio>();
