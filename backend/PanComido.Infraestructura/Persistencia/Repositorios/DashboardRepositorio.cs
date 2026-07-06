@@ -120,6 +120,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             // 2. Obtener todas las comandas y pagos del periodo en una sola consulta
             var comandasData = await _ctx.Comanda
                 .Include(c => c.Pagos)
+                .Include(c => c.EncuestaSatisfaccions)
                 .Where(c => c.RestauranteId == restauranteId
                          && c.HoraInicio >= desde
                          && c.HoraInicio <= hasta)
@@ -129,7 +130,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     c.HoraInicio,
                     c.HoraFin,
                     c.EstadoComandaId,
-                    TotalPago = c.Pagos.Sum(p => p.Total)
+                    TotalPago = c.Pagos.Sum(p => p.Total),
+                    PuntuacionesMozo = c.EncuestaSatisfaccions.Select(e => e.PuntuacionMozo).ToList()
                 })
                 .ToListAsync();
 
@@ -154,13 +156,17 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 int comandasActivas = comandasDelMozo.Count(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada
                                                               && c.EstadoComandaId != (int)EstadoComanda.Abierta);
 
+                var todasLasPuntuaciones = comandasDelMozo.SelectMany(c => c.PuntuacionesMozo).ToList();
+                double? avgEstrellas = todasLasPuntuaciones.Any() ? todasLasPuntuaciones.Average() : null;
+
                 statsList.Add(new EstadisticaMozoRaw
                 {
                     Nombre = mozo.Nombre,
                     MesasAtendidas = mesasAtendidas,
                     FacturacionTotal = facturacionTotal,
                     MinutosPromedioAtencion = avgMinutes,
-                    ComandasActivas = comandasActivas
+                    ComandasActivas = comandasActivas,
+                    PromedioEstrellas = avgEstrellas
                 });
             }
 
