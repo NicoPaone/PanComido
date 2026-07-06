@@ -32,6 +32,12 @@ namespace PanComido.Dominio.CasosDeUso.EmpleadoCasosDeUso
             if (string.IsNullOrWhiteSpace(empleado.Rol))
                 throw new ArgumentException("El rol del empleado no puede estar vacío.");
 
+            if (!EmpleadoConstantes.EsRolValido(empleado.Rol))
+                throw new ArgumentException("El rol del empleado no es válido.");
+
+            if (!string.IsNullOrWhiteSpace(empleado.Estado) && !EmpleadoConstantes.EsEstadoValido(empleado.Estado))
+                throw new ArgumentException("El estado del empleado no es válido.");
+
             // Validar si el email ya existe
             var empleadoExistente = await _repositorio.ObtenerPorEmailAsync(empleado.Email);
             if (empleadoExistente != null)
@@ -40,10 +46,15 @@ namespace PanComido.Dominio.CasosDeUso.EmpleadoCasosDeUso
             // Hashear la contraseña
             empleado.ContraseniaHash = _hasher.Hash(contraseniaPlana);
             empleado.RestauranteId = restauranteId;
+            empleado.Rol = EmpleadoConstantes.NormalizarRol(empleado.Rol);
             
             if (string.IsNullOrWhiteSpace(empleado.Estado))
             {
-                empleado.Estado = "activo";
+                empleado.Estado = EmpleadoConstantes.EstadoActivo;
+            }
+            else
+            {
+                empleado.Estado = EmpleadoConstantes.NormalizarEstado(empleado.Estado);
             }
 
             await _repositorio.CrearAsync(empleado, turnosIds);

@@ -680,9 +680,9 @@ namespace PanComido.Infraestructura.ServiciosExternos
         {
             return rol switch
             {
-                "Gerente" => Rojo,
-                "Mozo" => Mozo,
-                "Cocina" => Cocina,
+                EmpleadoConstantes.RolGerente => Rojo,
+                EmpleadoConstantes.RolMozo => Mozo,
+                EmpleadoConstantes.RolCocina => Cocina,
                 _ => GrisMedio
             };
         }
@@ -699,7 +699,7 @@ namespace PanComido.Infraestructura.ServiciosExternos
 
         private static bool EsActivo(string estado)
         {
-            return string.Equals(estado, "activo", StringComparison.OrdinalIgnoreCase);
+            return string.Equals(estado, EmpleadoConstantes.EstadoActivo, StringComparison.OrdinalIgnoreCase);
         }
 
         private static bool TieneTurnos(Empleado empleado)
@@ -787,9 +787,9 @@ namespace PanComido.Infraestructura.ServiciosExternos
         {
             return rol switch
             {
-                "Gerente" => 0,
-                "Mozo" => 1,
-                "Cocina" => 2,
+                EmpleadoConstantes.RolGerente => 0,
+                EmpleadoConstantes.RolMozo => 1,
+                EmpleadoConstantes.RolCocina => 2,
                 _ => 3
             };
         }

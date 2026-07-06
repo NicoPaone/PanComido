@@ -73,5 +73,50 @@ namespace PanComido.Tests.Dominio.CasosDeUso.EmpleadoCasosDeUso
             await Assert.ThrowsAsync<ArgumentException>(() =>
                 _casoDeUso.EjecutarAsync(restauranteId, empleado, "pass123", new List<int>()));
         }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoRolEsInvalido_LanzaArgumentException()
+        {
+            var empleado = new Empleado
+            {
+                Nombre = "Juan",
+                Email = "juan@test.com",
+                Rol = "Admin",
+                Estado = "activo"
+            };
+
+            await Assert.ThrowsAsync<ArgumentException>(() =>
+                _casoDeUso.EjecutarAsync(1, empleado, "pass123", new List<int>()));
+        }
+
+        [Fact]
+        public async Task EjecutarAsync_NormalizaRolYEstado()
+        {
+            var empleado = new Empleado
+            {
+                Nombre = "Juan",
+                Email = "juan@test.com",
+                Rol = "mozo",
+                Estado = "ACTIVO"
+            };
+
+            _repoMock.Setup(r => r.ObtenerPorEmailAsync(empleado.Email))
+                .ReturnsAsync((Empleado?)null);
+
+            _hasherMock.Setup(h => h.Hash("pass123"))
+                .Returns("hashedPassword");
+
+            _repoMock.Setup(r => r.CrearAsync(It.IsAny<Empleado>(), It.IsAny<List<int>>()))
+                .Returns(Task.CompletedTask)
+                .Callback<Empleado, List<int>>((e, _) => e.Id = 10);
+
+            _repoMock.Setup(r => r.ObtenerPorIdYRestauranteAsync(10, 1))
+                .ReturnsAsync((Empleado?)null);
+
+            var resultado = await _casoDeUso.EjecutarAsync(1, empleado, "pass123", new List<int>());
+
+            Assert.Equal(EmpleadoConstantes.RolMozo, resultado.Rol);
+            Assert.Equal(EmpleadoConstantes.EstadoActivo, resultado.Estado);
+        }
     }
 }

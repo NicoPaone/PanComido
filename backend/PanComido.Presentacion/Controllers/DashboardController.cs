@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.Dashboard;
@@ -13,6 +14,7 @@ namespace PanComido.Presentacion.Controllers
 {
     [Route("gerente/dashboard")]
     [ApiController]
+    [Authorize(Roles = "Gerente")]
     public class DashboardController : ControllerBase
     {
         private readonly ObtenerVencimientosYCriticidadDashboardCasoDeUso _obtenerVencimientosCasoDeUso;

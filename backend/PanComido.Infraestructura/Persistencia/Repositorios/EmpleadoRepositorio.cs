@@ -29,9 +29,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
          if (entidad == null) return null;
 
          string rol = "";
-         if (entidad.Mozo != null) rol = "Mozo";
-         else if (entidad.Gerente != null) rol = "Gerente";
-         else if (entidad.Cocina != null) rol = "Cocina";
+         if (entidad.Mozo != null) rol = EmpleadoConstantes.RolMozo;
+         else if (entidad.Gerente != null) rol = EmpleadoConstantes.RolGerente;
+         else if (entidad.Cocina != null) rol = EmpleadoConstantes.RolCocina;
 
          return new Empleado
          {
@@ -47,9 +47,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
       public async Task<string?> ObtenerRolAsync(int empleadoId)
       {
-         if (await _ctx.Mozos.AnyAsync(m    =>     m.IdEmpleado == empleadoId))  return "Mozo";
-         if (await _ctx.Gerentes.AnyAsync(g =>     g.IdEmpleado == empleadoId))  return "Gerente";
-         if (await _ctx.Cocinas.AnyAsync(c  =>     c.IdEmpleado == empleadoId))  return "Cocina";
+         if (await _ctx.Mozos.AnyAsync(m    =>     m.IdEmpleado == empleadoId))  return EmpleadoConstantes.RolMozo;
+         if (await _ctx.Gerentes.AnyAsync(g =>     g.IdEmpleado == empleadoId))  return EmpleadoConstantes.RolGerente;
+         if (await _ctx.Cocinas.AnyAsync(c  =>     c.IdEmpleado == empleadoId))  return EmpleadoConstantes.RolCocina;
          
          return null;
       }
@@ -67,9 +67,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
          return entidades.Select(entidad =>
          {
             string rol = "";
-            if (entidad.Mozo != null) rol = "Mozo";
-            else if (entidad.Gerente != null) rol = "Gerente";
-            else if (entidad.Cocina != null) rol = "Cocina";
+            if (entidad.Mozo != null) rol = EmpleadoConstantes.RolMozo;
+            else if (entidad.Gerente != null) rol = EmpleadoConstantes.RolGerente;
+            else if (entidad.Cocina != null) rol = EmpleadoConstantes.RolCocina;
 
             return new Empleado
             {
@@ -104,9 +104,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
          if (entidad == null) return null;
 
          string rol = "";
-         if (entidad.Mozo != null) rol = "Mozo";
-         else if (entidad.Gerente != null) rol = "Gerente";
-         else if (entidad.Cocina != null) rol = "Cocina";
+         if (entidad.Mozo != null) rol = EmpleadoConstantes.RolMozo;
+         else if (entidad.Gerente != null) rol = EmpleadoConstantes.RolGerente;
+         else if (entidad.Cocina != null) rol = EmpleadoConstantes.RolCocina;
 
          return new Empleado
          {
@@ -142,22 +142,24 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
          if (turnosIds != null && turnosIds.Any())
          {
-            var turnos = await _ctx.TurnoLaborals.Where(t => turnosIds.Contains(t.Id)).ToListAsync();
+            var turnos = await _ctx.TurnoLaborals
+               .Where(t => t.RestauranteId == empleado.RestauranteId && turnosIds.Contains(t.Id))
+               .ToListAsync();
             foreach (var turno in turnos)
             {
                efEmpleado.TurnoLaborals.Add(turno);
             }
          }
 
-         if (empleado.Rol.Equals("Mozo", System.StringComparison.OrdinalIgnoreCase))
+         if (empleado.Rol.Equals(EmpleadoConstantes.RolMozo, System.StringComparison.OrdinalIgnoreCase))
          {
             efEmpleado.Mozo = new EF.Mozo { Activo = true };
          }
-         else if (empleado.Rol.Equals("Gerente", System.StringComparison.OrdinalIgnoreCase))
+         else if (empleado.Rol.Equals(EmpleadoConstantes.RolGerente, System.StringComparison.OrdinalIgnoreCase))
          {
             efEmpleado.Gerente = new EF.Gerente();
          }
-         else if (empleado.Rol.Equals("Cocina", System.StringComparison.OrdinalIgnoreCase))
+         else if (empleado.Rol.Equals(EmpleadoConstantes.RolCocina, System.StringComparison.OrdinalIgnoreCase))
          {
             efEmpleado.Cocina = new EF.Cocina();
          }
@@ -190,7 +192,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
          efEmpleado.TurnoLaborals.Clear();
          if (turnosIds != null && turnosIds.Any())
          {
-            var turnos = await _ctx.TurnoLaborals.Where(t => turnosIds.Contains(t.Id)).ToListAsync();
+            var turnos = await _ctx.TurnoLaborals
+               .Where(t => t.RestauranteId == empleado.RestauranteId && turnosIds.Contains(t.Id))
+               .ToListAsync();
             foreach (var turno in turnos)
             {
                efEmpleado.TurnoLaborals.Add(turno);
@@ -198,9 +202,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
          }
 
          string rolActual = "";
-         if (efEmpleado.Mozo != null) rolActual = "Mozo";
-         else if (efEmpleado.Gerente != null) rolActual = "Gerente";
-         else if (efEmpleado.Cocina != null) rolActual = "Cocina";
+         if (efEmpleado.Mozo != null) rolActual = EmpleadoConstantes.RolMozo;
+         else if (efEmpleado.Gerente != null) rolActual = EmpleadoConstantes.RolGerente;
+         else if (efEmpleado.Cocina != null) rolActual = EmpleadoConstantes.RolCocina;
 
          if (!rolActual.Equals(empleado.Rol, System.StringComparison.OrdinalIgnoreCase))
          {
@@ -212,15 +216,15 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             efEmpleado.Gerente = null;
             efEmpleado.Cocina = null;
 
-            if (empleado.Rol.Equals("Mozo", System.StringComparison.OrdinalIgnoreCase))
+            if (empleado.Rol.Equals(EmpleadoConstantes.RolMozo, System.StringComparison.OrdinalIgnoreCase))
             {
                efEmpleado.Mozo = new EF.Mozo { Activo = true };
             }
-            else if (empleado.Rol.Equals("Gerente", System.StringComparison.OrdinalIgnoreCase))
+            else if (empleado.Rol.Equals(EmpleadoConstantes.RolGerente, System.StringComparison.OrdinalIgnoreCase))
             {
                efEmpleado.Gerente = new EF.Gerente();
             }
-            else if (empleado.Rol.Equals("Cocina", System.StringComparison.OrdinalIgnoreCase))
+            else if (empleado.Rol.Equals(EmpleadoConstantes.RolCocina, System.StringComparison.OrdinalIgnoreCase))
             {
                efEmpleado.Cocina = new EF.Cocina();
             }

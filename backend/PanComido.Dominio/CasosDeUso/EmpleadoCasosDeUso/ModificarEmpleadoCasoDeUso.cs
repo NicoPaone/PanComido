@@ -33,6 +33,12 @@ namespace PanComido.Dominio.CasosDeUso.EmpleadoCasosDeUso
             if (string.IsNullOrWhiteSpace(empleadoModificado.Rol))
                 throw new ArgumentException("El rol del empleado no puede estar vacío.");
 
+            if (!EmpleadoConstantes.EsRolValido(empleadoModificado.Rol))
+                throw new ArgumentException("El rol del empleado no es válido.");
+
+            if (!EmpleadoConstantes.EsEstadoValido(empleadoModificado.Estado))
+                throw new ArgumentException("El estado del empleado no es válido.");
+
             // Validar que el email no esté tomado por otro empleado
             var emailEnUso = await _repositorio.ObtenerPorEmailAsync(empleadoModificado.Email);
             if (emailEnUso != null && emailEnUso.Id != empleadoModificado.Id)
@@ -41,8 +47,8 @@ namespace PanComido.Dominio.CasosDeUso.EmpleadoCasosDeUso
             // Asignar campos actualizados
             empleadoExistente.Nombre = empleadoModificado.Nombre;
             empleadoExistente.Email = empleadoModificado.Email;
-            empleadoExistente.Estado = empleadoModificado.Estado;
-            empleadoExistente.Rol = empleadoModificado.Rol;
+            empleadoExistente.Estado = EmpleadoConstantes.NormalizarEstado(empleadoModificado.Estado);
+            empleadoExistente.Rol = EmpleadoConstantes.NormalizarRol(empleadoModificado.Rol);
 
             if (!string.IsNullOrWhiteSpace(nuevaContrasenia))
             {
