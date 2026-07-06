@@ -42,7 +42,8 @@ namespace PanComido.Presentacion.Mappers.Dashboard
                     MesasAtendidas = m.MesasAtendidas,
                     FacturacionTotal = m.FacturacionTotal,
                     TiempoPromedioAtencion = m.TiempoPromedioAtencion,
-                    Estado = m.Estado
+                    Estado = m.Estado,
+                    CalificacionPromedio = m.CalificacionPromedio
                 }).ToList()
             };
         }

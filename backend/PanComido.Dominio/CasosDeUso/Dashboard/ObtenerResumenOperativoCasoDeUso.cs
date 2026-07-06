@@ -112,7 +112,8 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                     MesasAtendidas = raw.MesasAtendidas,
                     FacturacionTotal = raw.FacturacionTotal,
                     TiempoPromedioAtencion = tiempoPromedioAtencion,
-                    Estado = estado
+                    Estado = estado,
+                    CalificacionPromedio = raw.PromedioEstrellas
                 });
             }
 

@@ -281,7 +281,7 @@ builder.Services.AddScoped<DesasignarMozoMesaCasoDeUso>();
 builder.Services.AddScoped<ListarMozosParaMesaCasoDeUso>();
 builder.Services.AddScoped<ObtenerDatosTransferenciaCasoDeUso>();
 builder.Services.AddScoped<ActualizarDatosTransferenciaCasoDeUso>();
-
+builder.Services.AddScoped<ObtenerResumenSatisfaccionCasoDeUso>();
 builder.Services.AddScoped<CrearEncuestaSatisfaccionCasoDeUso>();
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();

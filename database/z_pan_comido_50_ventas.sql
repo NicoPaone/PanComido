@@ -73,3 +73,41 @@ BEGIN
         
     END LOOP;
 END $$;
+
+
+-- ============================================================
+-- Generador Aleatorio de Encuestas de Satisfacción
+-- ============================================================
+DO $$
+DECLARE
+    rec RECORD;
+    v_lugar INT;
+    v_comida INT;
+    v_mozo INT;
+BEGIN
+    -- Recorremos TODAS las comandas finalizadas (estado = 4)
+    FOR rec IN SELECT id, hora_fin FROM comanda WHERE estado_comanda_id = 4 LOOP
+        
+        -- Simulamos que el 60% de los clientes deja una encuesta (random > 0.4)
+        IF random() > 0.4 THEN
+            
+            -- Generamos puntuaciones aleatorias del 1 al 5.
+            -- Para que sea realista: Comida y Lugar suelen ser buenas (3 a 5), 
+            -- pero la atención del mozo la hacemos más variable (1 a 5).
+            v_lugar := floor(random() * 3 + 3)::int; 
+            v_comida := floor(random() * 3 + 3)::int;
+            v_mozo := floor(random() * 5 + 1)::int;
+            
+            -- La encuesta se responde unos minutos aleatorios después de la hora_fin de la comanda
+            INSERT INTO encuesta_satisfaccion (comanda_id, puntuacion_lugar, puntuacion_comida, puntuacion_mozo, fecha)
+            VALUES (
+                rec.id, 
+                v_lugar, 
+                v_comida, 
+                v_mozo, 
+                rec.hora_fin + (random() * 15 || ' minutes')::interval
+            );
+            
+        END IF;
+    END LOOP;
+END $$;
