@@ -478,4 +478,14 @@ CREATE TABLE pedido_insumo (
     PRIMARY KEY (pedido_id, insumo_id)
 );
 
+-- ============================================================
+-- 13. CONFIGURACION DE TIEMPOS EXTRA
+-- ============================================================
+CREATE TABLE regla_tiempo_extra (
+    id SERIAL PRIMARY KEY,
+    restaurante_id INTEGER NOT NULL REFERENCES restaurante(id) ON DELETE CASCADE,
+    porcentaje_ocupacion_hasta INTEGER NOT NULL,
+    minutos_extra INTEGER NOT NULL
+);
+
 COMMIT;

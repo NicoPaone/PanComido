@@ -85,6 +85,9 @@ public partial class Restaurante
     public virtual ICollection<Proveedor> Proveedors { get; set; } = new List<Proveedor>();
 
     [InverseProperty("Restaurante")]
+    public virtual ICollection<ReglaTiempoExtra> ReglaTiempoExtras { get; set; } = new List<ReglaTiempoExtra>();
+
+    [InverseProperty("Restaurante")]
     public virtual ICollection<SugerenciaPlatoIum> SugerenciaPlatoIa { get; set; } = new List<SugerenciaPlatoIum>();
 
     [InverseProperty("Restaurante")]
