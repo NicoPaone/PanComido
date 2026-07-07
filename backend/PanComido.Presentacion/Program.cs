@@ -22,6 +22,7 @@ using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
+using PanComido.Dominio.CasosDeUso.ReglaTiempoExtraCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ReporteCasosDeUso;
 using PanComido.Dominio.CasosDeUso.UnidadMedidaCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
@@ -148,6 +149,7 @@ builder.Services.AddScoped<FamiliaTipograficaEntityMapper>();
 builder.Services.AddScoped<PorcentajesCategoriaEntityMapper>();
 builder.Services.AddScoped<PagoEntityMapper>();
 builder.Services.AddScoped<DatosTransferenciaEntityMapper>();
+builder.Services.AddScoped<ReglaTiempoExtraEntityMapper>();
 
 
 
@@ -182,6 +184,7 @@ builder.Services.AddScoped<DatosBienvenidaMesaMapper>();
 builder.Services.AddScoped<EncuestaMapper>();
 builder.Services.AddScoped<DatosTransferenciaMapper>();
 builder.Services.AddScoped<EmpleadoMapper>();
+builder.Services.AddScoped<ReglaTiempoExtraMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -209,6 +212,7 @@ builder.Services.AddScoped<IFamiliaTipograficaRepositorio, FamiliaTipograficaRep
 builder.Services.AddScoped<IPorcentajesCategoriaRepositorio, PorcentajesGananciaRepositorio>();
 builder.Services.AddScoped<IDatosTransferenciaRepositorio, DatosTransferenciaRepositorio>();
 builder.Services.AddScoped<IEncuestaSatisfaccionRepositorio, EncuestaSatisfaccionRepositorio>();
+builder.Services.AddScoped<IReglaTiempoExtraRepositorio, ReglaTiempoExtraRepositorio>();
 
 
 // Casos de uso
@@ -297,6 +301,11 @@ builder.Services.AddScoped<EliminarEmpleadoCasoDeUso>();
 builder.Services.AddScoped<GenerarReporteDashboardPdfCasoDeUso>();
 builder.Services.AddScoped<GenerarReportePersonalPdfCasoDeUso>();
 builder.Services.AddScoped<GenerarReporteVentasPdfCasoDeUso>();
+
+builder.Services.AddScoped<ObtenerReglasTiempoExtraCasoDeUso>();
+builder.Services.AddScoped<CrearReglaTiempoExtraCasoDeUso>();
+builder.Services.AddScoped<ModificarReglaTiempoExtraCasoDeUso>();
+builder.Services.AddScoped<EliminarReglaTiempoExtraCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
