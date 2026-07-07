@@ -1,5 +1,6 @@
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Interfaces.Servicios;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,30 +10,21 @@ namespace PanComido.Dominio.CasosDeUso.MiseAndPlaceCasoDeUso
     public class CrearMiseAndPlaceCasoDeUso
     {
         private readonly IMiseAndPlaceRepositorio _miseAndPlaceRepositorio;
-        private readonly ILoteRepositorio _loteRepositorio;
+        private readonly IGeneradorNombreLoteServicio _generadorNombreLoteServicio;
 
         public CrearMiseAndPlaceCasoDeUso(
             IMiseAndPlaceRepositorio miseAndPlaceRepositorio,
-            ILoteRepositorio loteRepositorio)
+            IGeneradorNombreLoteServicio generadorNombreLoteServicio)
         {
             _miseAndPlaceRepositorio = miseAndPlaceRepositorio;
-            _loteRepositorio = loteRepositorio;
+            _generadorNombreLoteServicio = generadorNombreLoteServicio;
         }
 
         public async Task<int> EjecutarAsync(NuevoMiseAndPlace nuevoMiseAndPlace)
         {
-            string nombreLote = await SugerenciaNombreLote(nuevoMiseAndPlace.Nombre);
+            string nombreLote = await _generadorNombreLoteServicio.GenerarNombreUnicoAsync(nuevoMiseAndPlace.Nombre);
 
             return await _miseAndPlaceRepositorio.CrearMiseAndPlaceAsync(nuevoMiseAndPlace, nombreLote);
-        }
-
-        private async Task<string> SugerenciaNombreLote(string nombreInsumo)
-        {
-            string timestamp = DateTime.Now.ToString("yyyyMMdd");
-            string nombreBase = $"{nombreInsumo}-{timestamp}";
-            int cantNombreDuplicado = await _loteRepositorio.ContarLotesConNombreBaseAsync(nombreBase);
-            if (cantNombreDuplicado == 0) return $"{nombreInsumo}-{timestamp}";
-            return $"{nombreInsumo} ({cantNombreDuplicado + 1})-{timestamp}";
         }
     }
 }

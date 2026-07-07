@@ -335,6 +335,7 @@ builder.Services.AddScoped<ICrearLlamadoServicio, CrearLlamadoServicio>();
 builder.Services.AddScoped<IRegistrarPagoServicio,  RegistrarPagoServicio>();
 builder.Services.AddScoped<IVerificarMetodoPagoHabilitadoServicio, VerificarMetodoPagoHabilitadoServicio>();
 builder.Services.AddScoped<IPdfGeneradorServicio, QuestPdfGeneradorServicio>();
+builder.Services.AddScoped<IGeneradorNombreLoteServicio, GeneradorNombreLoteServicio>();
 
 
 //Servicios externos
