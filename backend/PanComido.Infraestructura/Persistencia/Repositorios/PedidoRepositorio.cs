@@ -100,12 +100,18 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
             return efPrecio ?? 0;
         }
-
-        public async Task MarcarComoRecibidoAsync(int pedidoId)
+        public async Task MarcarComoRecibidoAsync(int pedidoId, List<DOM.PedidoInsumo>
+        itemsConPrecioConfirmado)
         {
             var efPedido = await _ctx.Pedidos
                  .Include(p => p.PedidoInsumos)
                  .FirstOrDefaultAsync(p => p.Id == pedidoId);
+
+            foreach (var item in itemsConPrecioConfirmado)
+            {
+                var efItem = efPedido.PedidoInsumos.First(pi => pi.InsumoId == item.InsumoId);
+                efItem.PrecioCompra = item.PrecioCompra;
+            }
 
             efPedido.EstadoPedidoId = (int)EstadoPedido.Recibido;
             await _ctx.SaveChangesAsync();

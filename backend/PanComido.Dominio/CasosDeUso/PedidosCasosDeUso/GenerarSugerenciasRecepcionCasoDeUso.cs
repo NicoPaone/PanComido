@@ -35,7 +35,8 @@ namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
                     Cantidad = item.Cantidad,
                     NombreLote = await SugerenciaNombreLote(item.NombreInsumo),
                     BodegaIdSug = SugerenciaBodegaId(item.CategoriaInsumoId),
-                    FechaVencimientoSug = SugerirFechaVencimiento(item.CategoriaInsumoId)
+                    FechaVencimientoSug = SugerirFechaVencimiento(item.CategoriaInsumoId),
+                    PrecioCompra = item.PrecioCompra
                 });
 
             }

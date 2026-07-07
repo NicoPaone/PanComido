@@ -108,7 +108,7 @@ namespace PanComido.Presentacion.Controllers
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Modificar(int id, [FromBody] ModificarPlatoDto request)
+        public async Task<IActionResult> Modificar(int id, [FromForm] ModificarPlatoDto request)
         {
             if (!ModelState.IsValid)
             {
@@ -119,9 +119,21 @@ namespace PanComido.Presentacion.Controllers
 
             var platoDominio = _platoMapper.ModificarADominio(id, request);
 
-            await _modificarPlatoCasoDeUso.EjecutarAsync(restauranteId, platoDominio);
+            Stream? stream = request.Imagen?.OpenReadStream();
+            string? nombreArchivo = request.Imagen?.FileName;
 
-            return Ok(new { mensaje = "Plato modificado correctamente." });
+            var platoModificado = await _modificarPlatoCasoDeUso.EjecutarAsync(
+                restauranteId,
+                platoDominio,
+                RutasCloudinary.MenuPlatos,
+                stream,
+                nombreArchivo);
+
+            return Ok(new
+            {
+                plato = _platoMapper.aDto(platoModificado),
+                mensaje = "Plato modificado correctamente."
+            });
         }
 
 
