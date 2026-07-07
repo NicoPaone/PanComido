@@ -20,7 +20,8 @@ namespace PanComido.Presentacion.Mappers
                 EstadoStock = insumo.EstadoStock?.ToString(),
                 Tipo = insumo.Tipo.ToString(),
                 Categoria = insumo.Categoria,
-                EsPrecioManual = insumo.EsPrecioManual
+                EsPrecioManual = insumo.EsPrecioManual,
+                UrlImagen = insumo.UrlImagen
             };
         }
         public List<InsumoResponseDto> aListaDto(

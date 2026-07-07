@@ -150,7 +150,6 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             efArticulo.PrecioVentaFinal = insumoDominio.PrecioVentaFinal;
             efArticulo.UrlImagen = insumoDominio.UrlImagen;
             efArticulo.EsPrecioManual = insumoDominio.EsPrecioManual;
-
             efArticulo.Insumo.CategoriaInsumoId = insumoDominio.CategoriaId;
             efArticulo.Insumo.UnidadMedidaId = insumoDominio.UnidadDeMedidaId;
             efArticulo.Insumo.StockMinimo = insumoDominio.StockMinimo;

@@ -15,5 +15,6 @@
         public string Tipo { get; set; }   // "Ingrediente" | "Bebida"
         public string? Categoria { get; set; }
         public bool EsPrecioManual { get; set; }
+        public string? UrlImagen { get; set; }
     }
 }
