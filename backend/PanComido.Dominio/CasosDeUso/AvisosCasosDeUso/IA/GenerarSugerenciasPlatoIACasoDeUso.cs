@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.IA;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Repositorios.IA;
@@ -39,7 +39,9 @@ namespace PanComido.Dominio.CasosDeUso.AvisosCasosDeUso.IA
             SugerenciaIA? sugerenciaExistente = await _sugerenciaIARepositorio.ObtenerSugerenciaIAAsync(restauranteId);
 
             if (sugerenciaExistente != null 
-                    && sugerenciaExistente.FechaSugerencia.Date == DateTime.Today)
+                    && sugerenciaExistente.FechaSugerencia.Date == DateTime.Today
+                    && sugerenciaExistente.PlatosSugeridos != null
+                    && sugerenciaExistente.PlatosSugeridos.Count > 0)
             {
                 return sugerenciaExistente;
             }
@@ -51,16 +53,23 @@ namespace PanComido.Dominio.CasosDeUso.AvisosCasosDeUso.IA
             List<Articulo> articulos = await _articulosRepositorio.ObtenerArticulosEnCartaConIngredientesAsync(restauranteId);
 
             List<string> nombresPlatosExistenes = articulos.OfType<Plato>()
-                                                        .Select(p => p.Nombre)
-                                                        .ToList();
+                                                         .Select(p => p.Nombre)
+                                                         .ToList();
 
             SugerenciaIA nuevaSugerencia = await _sugerenciaPlatosIAServicio.GenerarSugerenciasAsync(restauranteId, insumosDisponibles, vencimientosProximos, nombresPlatosExistenes , 5);
 
-            nuevaSugerencia.FechaSugerencia = DateTime.Now;
-
-            await _sugerenciaIARepositorio.GuardarSugerenciaIAAsync(restauranteId, nuevaSugerencia);
-
-            return nuevaSugerencia;
+            if (sugerenciaExistente != null && sugerenciaExistente.FechaSugerencia.Date == DateTime.Today)
+            {
+                sugerenciaExistente.PlatosSugeridos = nuevaSugerencia.PlatosSugeridos;
+                await _sugerenciaIARepositorio.GuardarSugerenciaIAAsync(restauranteId, sugerenciaExistente);
+                return sugerenciaExistente;
+            }
+            else
+            {
+                nuevaSugerencia.FechaSugerencia = DateTime.Now;
+                await _sugerenciaIARepositorio.GuardarSugerenciaIAAsync(restauranteId, nuevaSugerencia);
+                return nuevaSugerencia;
+            }
         }
     }
 }
