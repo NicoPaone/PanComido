@@ -18,6 +18,7 @@ using PanComido.Dominio.CasosDeUso.LlamadoMozoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.MesaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.PagoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
+using PanComido.Dominio.CasosDeUso.MiseAndPlaceCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasoDeUso;
 using PanComido.Dominio.CasosDeUso.PlatoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
@@ -177,6 +178,7 @@ builder.Services.AddScoped<PagoMapper>();
 builder.Services.AddScoped<DatosBienvenidaMesaMapper>();
 builder.Services.AddScoped<EncuestaMapper>();
 builder.Services.AddScoped<DatosTransferenciaMapper>();
+builder.Services.AddScoped<MiseAndPlaceMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
@@ -204,6 +206,7 @@ builder.Services.AddScoped<IFamiliaTipograficaRepositorio, FamiliaTipograficaRep
 builder.Services.AddScoped<IPorcentajesCategoriaRepositorio, PorcentajesGananciaRepositorio>();
 builder.Services.AddScoped<IDatosTransferenciaRepositorio, DatosTransferenciaRepositorio>();
 builder.Services.AddScoped<IEncuestaSatisfaccionRepositorio, EncuestaSatisfaccionRepositorio>();
+builder.Services.AddScoped<IMiseAndPlaceRepositorio, MiseAndPlaceRepositorio>();
 
 
 // Casos de uso
@@ -283,6 +286,10 @@ builder.Services.AddScoped<ObtenerDatosTransferenciaCasoDeUso>();
 builder.Services.AddScoped<ActualizarDatosTransferenciaCasoDeUso>();
 
 builder.Services.AddScoped<CrearEncuestaSatisfaccionCasoDeUso>();
+builder.Services.AddScoped<ObtenerIngredientesParaCrearMiseAndPlace>();
+builder.Services.AddScoped<CrearMiseAndPlaceCasoDeUso>();
+builder.Services.AddScoped<ObtenerTodosLosMiseAndPlaceCasoDeUso>();
+builder.Services.AddScoped<ObtenerMiseAndPlacePorIdCasoDeUso>();
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
 builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticuloServicio>();
