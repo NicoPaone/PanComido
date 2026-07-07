@@ -98,6 +98,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Proveedor> Proveedors { get; set; }
 
+    public virtual DbSet<ReglaTiempoExtra> ReglaTiempoExtras { get; set; }
+
     public virtual DbSet<Reserva> Reservas { get; set; }
 
     public virtual DbSet<Restaurante> Restaurantes { get; set; }
@@ -693,6 +695,13 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.Restaurante).WithMany(p => p.Proveedors)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("proveedor_restaurante_id_fkey");
+        });
+
+        modelBuilder.Entity<ReglaTiempoExtra>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("regla_tiempo_extra_pkey");
+
+            entity.HasOne(d => d.Restaurante).WithMany(p => p.ReglaTiempoExtras).HasConstraintName("regla_tiempo_extra_restaurante_id_fkey");
         });
 
         modelBuilder.Entity<Reserva>(entity =>

@@ -162,10 +162,30 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                                 .ThenInclude(ins => ins.IdArticuloNavigation);
         }
 
+        public async Task<List<DOM.VentaReporteDetalle>> ObtenerReporteVentasPorPeriodoAsync(int restauranteId, DateTime desde, DateTime hasta)
+        {
+            return await _ctx.Comanda
+                .Where(c => c.RestauranteId == restauranteId 
+                         && c.HoraInicio >= desde 
+                         && c.HoraInicio <= hasta
+                         && c.Pagos.Any())
+                .OrderByDescending(c => c.HoraInicio)
+                .Select(c => new DOM.VentaReporteDetalle
+                {
+                    ComandaId = c.Id,
+                    NumeroMesa = c.Mesa != null ? c.Mesa.Numero : 0,
+                    FechaHora = c.HoraInicio,
+                    CantidadArticulos = c.ArticuloComanda.Sum(ac => ac.Cantidad),
+                    Total = c.Pagos.Sum(p => p.Total),
+                    MetodoPago = c.Pagos
+                        .OrderBy(p => p.Id)
+                        .Select(p => p.MetodoPago != null ? p.MetodoPago.Descripcion : "Otro")
+                        .FirstOrDefault() ?? "Otro"
+                })
+                .ToListAsync();
+        }
     }
-
 }
-
 
 
 

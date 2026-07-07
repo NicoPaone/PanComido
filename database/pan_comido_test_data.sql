@@ -472,6 +472,16 @@ INSERT INTO notificacion (id, restaurante_id, fecha, descripcion, resuelta) VALU
     (4, 1, NOW() - INTERVAL '4 hours',    'Pedido #3 de Distribuidora Central recibido', TRUE);
 
 -- ============================================================
+-- REGLAS DE TIEMPO EXTRA
+-- ============================================================
+INSERT INTO regla_tiempo_extra (id, restaurante_id, porcentaje_ocupacion_hasta, minutos_extra) VALUES 
+    (1, 1, 30, 5),
+    (2, 1, 50, 10),
+    (3, 1, 70, 15),
+    (4, 1, 100, 20);
+
+
+-- ============================================================
 -- RESET DE SECUENCIAS
 -- ============================================================
 
@@ -500,5 +510,6 @@ SELECT setval('bodega_id_seq',            (SELECT MAX(id) FROM bodega));
 SELECT setval('articulo_comanda_id_seq',  (SELECT MAX(id) FROM articulo_comanda));
 SELECT setval('familia_tipografica_id_seq',        (SELECT MAX(id) FROM familia_tipografica));
 SELECT setval('articulo_comanda_ingrediente_excluido_id_seq', (SELECT MAX(id) FROM articulo_comanda_ingrediente_excluido));
+SELECT setval('regla_tiempo_extra_id_seq', (SELECT COALESCE(MAX(id), 1) FROM regla_tiempo_extra));
 
 COMMIT;

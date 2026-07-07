@@ -1,0 +1,215 @@
+using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Infraestructura.Persistencia.Entidades;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+
+namespace PanComido.Infraestructura.Persistencia.Repositorios
+{
+    public class MiseAndPlaceRepositorio : IMiseAndPlaceRepositorio
+    {
+        private readonly AppDbContext _ctx;
+
+        public MiseAndPlaceRepositorio(AppDbContext ctx)
+        {
+            _ctx = ctx;
+        }
+
+        public async Task<int> CrearMiseAndPlaceAsync(NuevoMiseAndPlace nuevoMiseAndPlace, string nombreLote)
+        {
+            using var transaction = await _ctx.Database.BeginTransactionAsync();
+            try
+            {
+                var articuloDb = new PanComido.Infraestructura.Persistencia.Entidades.Articulo
+                {
+                    Nombre = nuevoMiseAndPlace.Nombre,
+                    Descripcion = nuevoMiseAndPlace.Descripcion,
+                    PrecioVentaFinal = 0,
+                    PrecioGanancia = 0,
+                    PrecioPromocional = 0,
+                    RestauranteId = nuevoMiseAndPlace.RestauranteId,
+                    Eliminado = false
+                };
+
+                await _ctx.Articulos.AddAsync(articuloDb);
+                await _ctx.SaveChangesAsync();
+
+                var insumoDb = new PanComido.Infraestructura.Persistencia.Entidades.Insumo
+                {
+                    IdArticulo = articuloDb.Id,
+                    CategoriaInsumoId = nuevoMiseAndPlace.CategoriaId,
+                    UnidadMedidaId = nuevoMiseAndPlace.UnidadMedidaId,
+                    StockMinimo = 0
+                };
+
+                await _ctx.Insumos.AddAsync(insumoDb);
+                await _ctx.SaveChangesAsync();
+
+                var ingredienteDb = new PanComido.Infraestructura.Persistencia.Entidades.Ingrediente
+                {
+                    IdInsumo = insumoDb.IdArticulo
+                };
+
+                await _ctx.Ingredientes.AddAsync(ingredienteDb);
+                await _ctx.SaveChangesAsync();
+
+                var ingredientePreparadoDb = new PanComido.Infraestructura.Persistencia.Entidades.IngredientePreparado
+                {
+                    IdIngrediente = ingredienteDb.IdInsumo
+                };
+
+                await _ctx.IngredientePreparados.AddAsync(ingredientePreparadoDb);
+                await _ctx.SaveChangesAsync();
+
+                foreach (var ing in nuevoMiseAndPlace.Ingredientes)
+                {
+                    var relacion = new PanComido.Infraestructura.Persistencia.Entidades.IngredienteIngredientePreparado
+                    {
+                        IngredienteId = ing.IngredienteId,
+                        IngredientePreparadoId = ingredientePreparadoDb.IdIngrediente,
+                        Cantidad = ing.Cantidad
+                    };
+                    await _ctx.IngredienteIngredientePreparados.AddAsync(relacion);
+                }
+                await _ctx.SaveChangesAsync();
+
+                var lote = new PanComido.Infraestructura.Persistencia.Entidades.Lote
+                {
+                    InsumoId = insumoDb.IdArticulo,
+                    BodegaId = nuevoMiseAndPlace.BodegaId,
+                    Nombre = nombreLote,
+                    Cantidad = nuevoMiseAndPlace.Cantidad,
+                    FechaAdquisicion = DateOnly.FromDateTime(DateTime.UtcNow),
+                    FechaVencimiento = nuevoMiseAndPlace.FechaVencimiento
+                };
+
+                await _ctx.Lotes.AddAsync(lote);
+                await _ctx.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return ingredientePreparadoDb.IdIngrediente;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        public async Task<List<MiseAndPlaceListadoDominio>> ObtenerTodosAsync(int restauranteId)
+        {
+            var ingredientesPreparados = await _ctx.IngredientePreparados
+                .Include(ip => ip.IdIngredienteNavigation)
+                    .ThenInclude(i => i.IdInsumoNavigation)
+                        .ThenInclude(ins => ins.IdArticuloNavigation)
+                .Include(ip => ip.IdIngredienteNavigation)
+                    .ThenInclude(i => i.IdInsumoNavigation)
+                        .ThenInclude(ins => ins.Lotes)
+                            .ThenInclude(l => l.Bodega)
+                .Include(ip => ip.IdIngredienteNavigation)
+                    .ThenInclude(i => i.IdInsumoNavigation)
+                        .ThenInclude(ins => ins.UnidadMedida)
+                .Include(ip => ip.IdIngredienteNavigation)
+                    .ThenInclude(i => i.IdInsumoNavigation)
+                        .ThenInclude(ins => ins.CategoriaInsumo)
+                .Include(ip => ip.IngredienteIngredientePreparados)
+                    .ThenInclude(receta => receta.Ingrediente)
+                        .ThenInclude(ing => ing.IdInsumoNavigation)
+                            .ThenInclude(ins => ins.IdArticuloNavigation)
+                .Where(ip => ip.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.RestauranteId == restauranteId)
+                .ToListAsync();
+
+            var resultado = new List<MiseAndPlaceListadoDominio>();
+
+            foreach (var ip in ingredientesPreparados)
+            {
+                var insumo = ip.IdIngredienteNavigation.IdInsumoNavigation;
+                var articulo = insumo.IdArticuloNavigation;
+
+                var recetaDominio = ip.IngredienteIngredientePreparados.Select(r => new RecetaItemDominio
+                {
+                    IngredienteId = r.IngredienteId,
+                    NombreIngrediente = r.Ingrediente.IdInsumoNavigation.IdArticuloNavigation.Nombre,
+                    Cantidad = r.Cantidad
+                }).ToList();
+
+                foreach (var lote in insumo.Lotes)
+                {
+                    resultado.Add(new MiseAndPlaceListadoDominio
+                    {
+                        LoteId = lote.Id,
+                        ArticuloId = articulo.Id,
+                        MiseAndPlaceId = ip.IdIngrediente,
+                        Nombre = articulo.Nombre,
+                        Descripcion = articulo.Descripcion,
+                        Cantidad = lote.Cantidad,
+                        FechaVencimiento = lote.FechaVencimiento,
+                        UnidadMedida = insumo.UnidadMedida.Nombre,
+                        Categoria = insumo.CategoriaInsumo.Descripcion,
+                        Bodega = lote.Bodega.Nombre,
+                        Receta = recetaDominio
+                    });
+                }
+            }
+
+            return resultado.OrderBy(x => x.FechaVencimiento).ToList();
+        }
+
+        public async Task<MiseAndPlaceListadoDominio> ObtenerPorIdAsync(int restauranteId, int miseAndPlaceId)
+        {
+            var ip = await _ctx.IngredientePreparados
+                .Include(i => i.IdIngredienteNavigation)
+                    .ThenInclude(i => i.IdInsumoNavigation)
+                        .ThenInclude(ins => ins.IdArticuloNavigation)
+                .Include(i => i.IdIngredienteNavigation)
+                    .ThenInclude(i => i.IdInsumoNavigation)
+                        .ThenInclude(ins => ins.Lotes)
+                            .ThenInclude(l => l.Bodega)
+                .Include(i => i.IdIngredienteNavigation)
+                    .ThenInclude(i => i.IdInsumoNavigation)
+                        .ThenInclude(ins => ins.UnidadMedida)
+                .Include(i => i.IdIngredienteNavigation)
+                    .ThenInclude(i => i.IdInsumoNavigation)
+                        .ThenInclude(ins => ins.CategoriaInsumo)
+                .Include(i => i.IngredienteIngredientePreparados)
+                    .ThenInclude(receta => receta.Ingrediente)
+                        .ThenInclude(ing => ing.IdInsumoNavigation)
+                            .ThenInclude(ins => ins.IdArticuloNavigation)
+                .FirstOrDefaultAsync(i => 
+                    i.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.RestauranteId == restauranteId &&
+                    i.IdIngrediente == miseAndPlaceId);
+
+            if (ip == null) return null;
+
+            var insumo = ip.IdIngredienteNavigation.IdInsumoNavigation;
+            var articulo = insumo.IdArticuloNavigation;
+
+            var recetaDominio = ip.IngredienteIngredientePreparados.Select(r => new RecetaItemDominio
+            {
+                IngredienteId = r.IngredienteId,
+                NombreIngrediente = r.Ingrediente.IdInsumoNavigation.IdArticuloNavigation.Nombre,
+                Cantidad = r.Cantidad
+            }).ToList();
+
+            var lastLote = insumo.Lotes.OrderByDescending(l => l.FechaAdquisicion).FirstOrDefault();
+
+            return new MiseAndPlaceListadoDominio
+            {
+                LoteId = lastLote?.Id ?? 0,
+                ArticuloId = articulo.Id,
+                MiseAndPlaceId = ip.IdIngrediente,
+                Nombre = articulo.Nombre,
+                Descripcion = articulo.Descripcion,
+                Cantidad = lastLote?.Cantidad ?? 0,
+                FechaVencimiento = lastLote?.FechaVencimiento,
+                UnidadMedida = insumo.UnidadMedida.Nombre,
+                Categoria = insumo.CategoriaInsumo.Descripcion,
+                Bodega = lastLote?.Bodega?.Nombre ?? "",
+                Receta = recetaDominio
+            };
+        }
+    }
+}

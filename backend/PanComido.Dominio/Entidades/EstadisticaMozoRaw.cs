@@ -7,5 +7,7 @@ namespace PanComido.Dominio.Entidades
         public decimal FacturacionTotal { get; set; }
         public double? MinutosPromedioAtencion { get; set; }
         public int ComandasActivas { get; set; }
+        public double? PromedioEstrellas { get; set; }
+
     }
 }
