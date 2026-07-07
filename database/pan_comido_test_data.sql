@@ -207,15 +207,15 @@ INSERT INTO plato (id_articulo, tipo_plato_id, categoria_plato_id, tiempo_prepar
 -- INSUMOS
 -- ============================================================
 
-INSERT INTO insumo (id_articulo, categoria_insumo_id, unidad_medida_id, stock_minimo) VALUES
-    (12, 13, 5, 5), (13, 13, 5, 3), (14, 12, 5, 2), (15, 12, 5, 2),
-    (16, 13, 5, 3), (17, 12, 5, 1),
-    (18, 11, 1, 2), (19, 4,  1, 1), (20, 2,  1, 0.5), (21, 3,  1, 1),
-    (22, 9,  3, 0.5), (23, 4,  3, 0.3), (24, 8,  1, 2), (25, 8,  2, 1),
-    (26, 2,  1, 0.5), (27, 7,  5, 0.3), (28, 3,  1, 1), (29, 2,  1, 0.5),
-    (30, 2,  1, 0.3), (31, 8,  5, 1), (32, 11, 5, 0.5), (33, 5,  1, 1),
-    (34, 2,  2, 1), (35, 2,  1, 0.3), (36, 8,  2, 1), (37, 3,  1, 0.3),
-    (38, 2,  3, 0.5), (39, 11, 6, 0.3), (40, 11, 6, 0.2), (41, 4,  3, 0.3);
+INSERT INTO insumo (id_articulo, categoria_insumo_id, unidad_medida_id, stock_minimo, stock_recomendado) VALUES
+    (12, 13, 5, 5, 10), (13, 13, 5, 3, 6), (14, 12, 5, 2, 4), (15, 12, 5, 2, 4),
+    (16, 13, 5, 3, 6), (17, 12, 5, 1, 2),
+    (18, 11, 1, 2, 4), (19, 4,  1, 1, 2), (20, 2,  1, 0.5, 1), (21, 3,  1, 1, 2),
+    (22, 9,  3, 0.5, 1), (23, 4,  3, 0.3, 0.6), (24, 8,  1, 2, 4), (25, 8,  2, 1, 2),
+    (26, 2,  1, 0.5, 1), (27, 7,  5, 0.3, 0.6), (28, 3,  1, 1, 2), (29, 2,  1, 0.5, 1),
+    (30, 2,  1, 0.3, 0.6), (31, 8,  5, 1, 2), (32, 11, 5, 0.5, 1), (33, 5,  1, 1, 2),
+    (34, 2,  2, 1, 2), (35, 2,  1, 0.3, 0.6), (36, 8,  2, 1, 2), (37, 3,  1, 0.3, 0.6),
+    (38, 2,  3, 0.5, 1), (39, 11, 6, 0.3, 0.6), (40, 11, 6, 0.2, 0.4), (41, 4,  3, 0.3, 0.6);
 
 -- ============================================================
 -- INGREDIENTES
@@ -472,6 +472,16 @@ INSERT INTO notificacion (id, restaurante_id, fecha, descripcion, resuelta) VALU
     (4, 1, NOW() - INTERVAL '4 hours',    'Pedido #3 de Distribuidora Central recibido', TRUE);
 
 -- ============================================================
+-- REGLAS DE TIEMPO EXTRA
+-- ============================================================
+INSERT INTO regla_tiempo_extra (id, restaurante_id, porcentaje_ocupacion_hasta, minutos_extra) VALUES 
+    (1, 1, 30, 5),
+    (2, 1, 50, 10),
+    (3, 1, 70, 15),
+    (4, 1, 100, 20);
+
+
+-- ============================================================
 -- RESET DE SECUENCIAS
 -- ============================================================
 
@@ -500,5 +510,6 @@ SELECT setval('bodega_id_seq',            (SELECT MAX(id) FROM bodega));
 SELECT setval('articulo_comanda_id_seq',  (SELECT MAX(id) FROM articulo_comanda));
 SELECT setval('familia_tipografica_id_seq',        (SELECT MAX(id) FROM familia_tipografica));
 SELECT setval('articulo_comanda_ingrediente_excluido_id_seq', (SELECT MAX(id) FROM articulo_comanda_ingrediente_excluido));
+SELECT setval('regla_tiempo_extra_id_seq', (SELECT COALESCE(MAX(id), 1) FROM regla_tiempo_extra));
 
 COMMIT;

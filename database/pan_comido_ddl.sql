@@ -319,7 +319,8 @@ CREATE TABLE insumo (
     id_articulo         INTEGER PRIMARY KEY REFERENCES articulo(id),
     categoria_insumo_id INTEGER NOT NULL REFERENCES categoria_insumo(id),
     unidad_medida_id    INTEGER NOT NULL REFERENCES unidad_medida(id),
-    stock_minimo        DECIMAL NOT NULL DEFAULT 0
+    stock_minimo        DECIMAL NOT NULL DEFAULT 0,
+    stock_recomendado   DECIMAL NOT NULL DEFAULT 0
 );
 
 CREATE TABLE ingrediente (
@@ -475,6 +476,16 @@ CREATE TABLE pedido_insumo (
     precio_compra DECIMAL NOT NULL,
     cantidad      DECIMAL NOT NULL,
     PRIMARY KEY (pedido_id, insumo_id)
+);
+
+-- ============================================================
+-- 13. CONFIGURACION DE TIEMPOS EXTRA
+-- ============================================================
+CREATE TABLE regla_tiempo_extra (
+    id SERIAL PRIMARY KEY,
+    restaurante_id INTEGER NOT NULL REFERENCES restaurante(id) ON DELETE CASCADE,
+    porcentaje_ocupacion_hasta INTEGER NOT NULL,
+    minutos_extra INTEGER NOT NULL
 );
 
 COMMIT;

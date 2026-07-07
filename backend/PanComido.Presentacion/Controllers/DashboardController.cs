@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.Dashboard;
@@ -13,6 +14,7 @@ namespace PanComido.Presentacion.Controllers
 {
     [Route("gerente/dashboard")]
     [ApiController]
+    [Authorize(Roles = "Gerente")]
     public class DashboardController : ControllerBase
     {
         private readonly ObtenerVencimientosYCriticidadDashboardCasoDeUso _obtenerVencimientosCasoDeUso;
@@ -23,6 +25,7 @@ namespace PanComido.Presentacion.Controllers
         private readonly AplicarDescuentoCasoDeUso _aplicarDescuentoCasoDeUso;
         private readonly AgendarRecordatorioCasoDeUso _agendarRecordatorioCasoDeUso;
         private readonly ResolverNotificacionCasoDeUso _resolverNotificacionCasoDeUso;
+        private readonly ObtenerResumenSatisfaccionCasoDeUso _obtenerResumenSatisfaccionCasoDeUso;
         private readonly DashboardMapper _mapper;
         private readonly PlatoAnalisisMapper _platoAnalisisMapper;
 
@@ -35,6 +38,7 @@ namespace PanComido.Presentacion.Controllers
             AplicarDescuentoCasoDeUso aplicarDescuentoCasoDeUso,
             AgendarRecordatorioCasoDeUso agendarRecordatorioCasoDeUso,
             ResolverNotificacionCasoDeUso resolverNotificacionCasoDeUso,
+            ObtenerResumenSatisfaccionCasoDeUso obtenerResumenSatisfaccionCasoDeUso,
             DashboardMapper mapper,
             PlatoAnalisisMapper platoAnalisisMapper)
         {
@@ -46,6 +50,7 @@ namespace PanComido.Presentacion.Controllers
             _aplicarDescuentoCasoDeUso = aplicarDescuentoCasoDeUso;
             _agendarRecordatorioCasoDeUso = agendarRecordatorioCasoDeUso;
             _resolverNotificacionCasoDeUso = resolverNotificacionCasoDeUso;
+            _obtenerResumenSatisfaccionCasoDeUso = obtenerResumenSatisfaccionCasoDeUso;
             _mapper = mapper;
             _platoAnalisisMapper = platoAnalisisMapper;
         }
@@ -174,5 +179,22 @@ namespace PanComido.Presentacion.Controllers
             await _resolverNotificacionCasoDeUso.EjecutarAsync(restauranteId, id);
             return Ok();
         }
+
+        [HttpGet("satisfaccion")]
+        [ProducesResponseType(typeof(SatisfaccionResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ObtenerSatisfaccion(
+    [FromQuery] DateTime desde,
+    [FromQuery] DateTime hasta)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+
+            var resumen = await _obtenerResumenSatisfaccionCasoDeUso.EjecutarAsync(restauranteId, desde, hasta);
+
+            var dto = ResumenSatisfaccionMapper.AResponseDto(resumen);
+
+            return Ok(dto);
+        }
+
     }
 }
