@@ -8,5 +8,6 @@
         public string NombreLote { get; set; }
         public int BodegaIdSug { get; set; }
         public string FechaVencimientoSug { get; set; }
+        public decimal PrecioCompra { get; set; }
     }
 }

@@ -14,5 +14,6 @@ namespace PanComido.Dominio.Entidades
         public string NombreLote { get; set; }
         public int BodegaIdSug { get; set; }
         public DateOnly FechaVencimientoSug { get; set; }
+        public decimal PrecioCompra { get; set; }
     }
 }
