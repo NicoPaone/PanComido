@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.ValueObjects;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,9 +30,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
          if (entidad == null) return null;
 
          string rol = "";
-         if (entidad.Mozo != null) rol = EmpleadoConstantes.RolMozo;
-         else if (entidad.Gerente != null) rol = EmpleadoConstantes.RolGerente;
-         else if (entidad.Cocina != null) rol = EmpleadoConstantes.RolCocina;
+         if (entidad.Mozo != null) rol = RolEmpleado.Mozo;
+         else if (entidad.Gerente != null) rol = RolEmpleado.Gerente;
+         else if (entidad.Cocina != null) rol = RolEmpleado.Cocina;
 
          return new Empleado
          {
@@ -47,9 +48,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
       public async Task<string?> ObtenerRolAsync(int empleadoId)
       {
-         if (await _ctx.Mozos.AnyAsync(m    =>     m.IdEmpleado == empleadoId))  return EmpleadoConstantes.RolMozo;
-         if (await _ctx.Gerentes.AnyAsync(g =>     g.IdEmpleado == empleadoId))  return EmpleadoConstantes.RolGerente;
-         if (await _ctx.Cocinas.AnyAsync(c  =>     c.IdEmpleado == empleadoId))  return EmpleadoConstantes.RolCocina;
+         if (await _ctx.Mozos.AnyAsync(m    =>     m.IdEmpleado == empleadoId))  return RolEmpleado.Mozo;
+         if (await _ctx.Gerentes.AnyAsync(g =>     g.IdEmpleado == empleadoId))  return RolEmpleado.Gerente;
+         if (await _ctx.Cocinas.AnyAsync(c  =>     c.IdEmpleado == empleadoId))  return RolEmpleado.Cocina;
          
          return null;
       }
@@ -67,9 +68,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
          return entidades.Select(entidad =>
          {
             string rol = "";
-            if (entidad.Mozo != null) rol = EmpleadoConstantes.RolMozo;
-            else if (entidad.Gerente != null) rol = EmpleadoConstantes.RolGerente;
-            else if (entidad.Cocina != null) rol = EmpleadoConstantes.RolCocina;
+            if (entidad.Mozo != null) rol = RolEmpleado.Mozo;
+            else if (entidad.Gerente != null) rol = RolEmpleado.Gerente;
+            else if (entidad.Cocina != null) rol = RolEmpleado.Cocina;
 
             return new Empleado
             {
@@ -104,9 +105,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
          if (entidad == null) return null;
 
          string rol = "";
-         if (entidad.Mozo != null) rol = EmpleadoConstantes.RolMozo;
-         else if (entidad.Gerente != null) rol = EmpleadoConstantes.RolGerente;
-         else if (entidad.Cocina != null) rol = EmpleadoConstantes.RolCocina;
+         if (entidad.Mozo != null) rol = RolEmpleado.Mozo;
+         else if (entidad.Gerente != null) rol = RolEmpleado.Gerente;
+         else if (entidad.Cocina != null) rol = RolEmpleado.Cocina;
 
          return new Empleado
          {
@@ -151,15 +152,15 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             }
          }
 
-         if (empleado.Rol.Equals(EmpleadoConstantes.RolMozo, System.StringComparison.OrdinalIgnoreCase))
+         if (empleado.Rol.Equals(RolEmpleado.Mozo, System.StringComparison.OrdinalIgnoreCase))
          {
             efEmpleado.Mozo = new EF.Mozo { Activo = true };
          }
-         else if (empleado.Rol.Equals(EmpleadoConstantes.RolGerente, System.StringComparison.OrdinalIgnoreCase))
+         else if (empleado.Rol.Equals(RolEmpleado.Gerente, System.StringComparison.OrdinalIgnoreCase))
          {
             efEmpleado.Gerente = new EF.Gerente();
          }
-         else if (empleado.Rol.Equals(EmpleadoConstantes.RolCocina, System.StringComparison.OrdinalIgnoreCase))
+         else if (empleado.Rol.Equals(RolEmpleado.Cocina, System.StringComparison.OrdinalIgnoreCase))
          {
             efEmpleado.Cocina = new EF.Cocina();
          }
@@ -202,9 +203,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
          }
 
          string rolActual = "";
-         if (efEmpleado.Mozo != null) rolActual = EmpleadoConstantes.RolMozo;
-         else if (efEmpleado.Gerente != null) rolActual = EmpleadoConstantes.RolGerente;
-         else if (efEmpleado.Cocina != null) rolActual = EmpleadoConstantes.RolCocina;
+         if (efEmpleado.Mozo != null) rolActual = RolEmpleado.Mozo;
+         else if (efEmpleado.Gerente != null) rolActual = RolEmpleado.Gerente;
+         else if (efEmpleado.Cocina != null) rolActual = RolEmpleado.Cocina;
 
          if (!rolActual.Equals(empleado.Rol, System.StringComparison.OrdinalIgnoreCase))
          {
@@ -216,15 +217,15 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             efEmpleado.Gerente = null;
             efEmpleado.Cocina = null;
 
-            if (empleado.Rol.Equals(EmpleadoConstantes.RolMozo, System.StringComparison.OrdinalIgnoreCase))
+            if (empleado.Rol.Equals(RolEmpleado.Mozo, System.StringComparison.OrdinalIgnoreCase))
             {
                efEmpleado.Mozo = new EF.Mozo { Activo = true };
             }
-            else if (empleado.Rol.Equals(EmpleadoConstantes.RolGerente, System.StringComparison.OrdinalIgnoreCase))
+            else if (empleado.Rol.Equals(RolEmpleado.Gerente, System.StringComparison.OrdinalIgnoreCase))
             {
                efEmpleado.Gerente = new EF.Gerente();
             }
-            else if (empleado.Rol.Equals(EmpleadoConstantes.RolCocina, System.StringComparison.OrdinalIgnoreCase))
+            else if (empleado.Rol.Equals(RolEmpleado.Cocina, System.StringComparison.OrdinalIgnoreCase))
             {
                efEmpleado.Cocina = new EF.Cocina();
             }

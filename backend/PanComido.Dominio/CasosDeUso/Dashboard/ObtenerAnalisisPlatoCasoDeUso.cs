@@ -4,6 +4,7 @@ using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Repositorios.IA;
 using PanComido.Dominio.Interfaces.Servicios;
 using PanComido.Dominio.Interfaces.Servicios.IA;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,19 +19,22 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
         private readonly ICalculadorCostoPlatoServicio _calculadorCostoPlatoServicio;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly ISugerenciaPlatosIAServicio _sugerenciaPlatosIAServicio;
+        private readonly ILogger<ObtenerAnalisisPlatoCasoDeUso> _logger;
 
         public ObtenerAnalisisPlatoCasoDeUso(
             IPlatoAnalisisRepositorio platoAnalisisRepositorio,
             ISugerenciaIARepositorio sugerenciaIARepositorio,
             ICalculadorCostoPlatoServicio calculadorCostoPlatoServicio,
             IDateTimeProvider dateTimeProvider,
-            ISugerenciaPlatosIAServicio sugerenciaPlatosIAServicio)
+            ISugerenciaPlatosIAServicio sugerenciaPlatosIAServicio,
+            ILogger<ObtenerAnalisisPlatoCasoDeUso> logger)
         {
             _platoAnalisisRepositorio = platoAnalisisRepositorio;
             _sugerenciaIARepositorio = sugerenciaIARepositorio;
             _calculadorCostoPlatoServicio = calculadorCostoPlatoServicio;
             _dateTimeProvider = dateTimeProvider;
             _sugerenciaPlatosIAServicio = sugerenciaPlatosIAServicio;
+            _logger = logger;
         }
 
 
@@ -104,6 +108,8 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
             }
 
             var analisisPlato = sugerenciaIa.PlatosAnalisis.FirstOrDefault(p => p.PlatoId == plato.Id);
+            bool analisisProvieneDeCache = analisisPlato != null;
+            string? motivoFallback = null;
             if (analisisPlato == null)
             {
                 if (ventasPeriodo > 0)
@@ -123,21 +129,37 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                         {
                             analisisPlato.PlatoId = plato.Id;
                             analisisPlato.Nombre = plato.Nombre;
+                            analisisPlato.FuenteAnalisis = "ia";
+                            analisisPlato.EsFallbackLocal = false;
+                            analisisPlato.MotivoFallback = null;
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        _logger.LogWarning(
+                            ex,
+                            "No se pudo obtener analisis IA para el plato {PlatoId} del restaurante {RestauranteId}. Se usara fallback local.",
+                            plato.Id,
+                            restauranteId);
                         analisisPlato = null;
+                        motivoFallback = "No se pudo obtener analisis de IA en este momento.";
                     }
+                }
+                else
+                {
+                    motivoFallback = "No hay ventas suficientes para solicitar analisis de IA.";
                 }
 
                 if (analisisPlato == null)
                 {
-                    analisisPlato = GenerarMockAnalisisPlato(plato);
+                    analisisPlato = GenerarAnalisisLocalRespaldo(plato, motivoFallback);
                 }
 
-                sugerenciaIa.PlatosAnalisis.Add(analisisPlato);
-                await _sugerenciaIARepositorio.GuardarSugerenciaIAAsync(restauranteId, sugerenciaIa);
+                if (!analisisPlato.EsFallbackLocal)
+                {
+                    sugerenciaIa.PlatosAnalisis.Add(analisisPlato);
+                    await _sugerenciaIARepositorio.GuardarSugerenciaIAAsync(restauranteId, sugerenciaIa);
+                }
             }
 
             return new PlatoAnalisisResultado
@@ -149,16 +171,23 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                 Participacion = participacion,
                 ComparativaLider = comparativaLider,
                 Tendencia = tendencia,
-                AnalisisIa = analisisPlato
+                AnalisisIa = analisisPlato,
+                AnalisisProvieneDeCache = analisisProvieneDeCache,
+                FuenteAnalisis = analisisPlato.FuenteAnalisis,
+                EsFallbackLocal = analisisPlato.EsFallbackLocal,
+                MotivoFallback = analisisPlato.MotivoFallback
             };
         }
 
-        private PlatoAnalisisIa GenerarMockAnalisisPlato(Plato plato)
+        private PlatoAnalisisIa GenerarAnalisisLocalRespaldo(Plato plato, string? motivoFallback)
         {
             return new PlatoAnalisisIa
             {
                 PlatoId = plato.Id,
                 Nombre = plato.Nombre,
+                FuenteAnalisis = "fallback_local",
+                EsFallbackLocal = true,
+                MotivoFallback = motivoFallback ?? "La IA no devolvio un analisis disponible.",
                 Diagnostico = $"El precio actual de {plato.Nombre} está afectando su rotación debido al incremento en el costo de los insumos primarios.",
                 Alerta = PanComido.Dominio.Entidades.Enums.CriticidadAlerta.Critica.ToString().ToLower(),
                 Sugerencias = new List<PlatoSugerenciaIa>
@@ -199,5 +228,9 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
         public RendimientoPlato ComparativaLider { get; set; } = null!;
         public List<int> Tendencia { get; set; } = new List<int>();
         public PlatoAnalisisIa AnalisisIa { get; set; } = null!;
+        public bool AnalisisProvieneDeCache { get; set; }
+        public string FuenteAnalisis { get; set; } = "desconocida";
+        public bool EsFallbackLocal { get; set; }
+        public string? MotivoFallback { get; set; }
     }
 }

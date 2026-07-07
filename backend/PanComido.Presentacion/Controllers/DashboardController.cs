@@ -115,7 +115,7 @@ namespace PanComido.Presentacion.Controllers
             var resultado = await _obtenerAnalisisPlatoCasoDeUso.EjecutarAsync(restauranteId, nombre);
             if (resultado == null)
             {
-                return NotFound("No se encontró el plato especificado.");
+                return NotFound(CrearError("No se encontró el plato especificado.", "not_found"));
             }
             var dto = _platoAnalisisMapper.ParaDto(resultado);
             return Ok(dto);
@@ -128,19 +128,30 @@ namespace PanComido.Presentacion.Controllers
         public async Task<IActionResult> AplicarDescuento([FromBody] AplicarDescuentoRequest request)
         {
             int restauranteId = HttpContext.ObtenerRestauranteId();
-            var resultado = await _aplicarDescuentoCasoDeUso.EjecutarAsync(restauranteId, request.PlatoId, request.PorcentajeDescuento);
-            if (resultado == null)
+            try
             {
-                return NotFound("Plato no encontrado.");
+                var resultado = await _aplicarDescuentoCasoDeUso.EjecutarAsync(restauranteId, request.PlatoId, request.PorcentajeDescuento);
+                if (resultado == null)
+                {
+                    return NotFound(CrearError("Plato no encontrado.", "not_found"));
+                }
+                return Ok(new AplicarDescuentoResponse
+                {
+                    Mensaje = resultado.Mensaje,
+                    PlatoId = resultado.PlatoId,
+                    PrecioNuevo = resultado.PrecioNuevo,
+                    Costo = resultado.Costo,
+                    MargenPctNuevo = resultado.MargenPctNuevo
+                });
             }
-            return Ok(new AplicarDescuentoResponse
+            catch (ArgumentException ex)
             {
-                Mensaje = resultado.Mensaje,
-                PlatoId = resultado.PlatoId,
-                PrecioNuevo = resultado.PrecioNuevo,
-                Costo = resultado.Costo,
-                MargenPctNuevo = resultado.MargenPctNuevo
-            });
+                return BadRequest(CrearError(ex.Message, "bad_request"));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(CrearError(ex.Message, "business_rule_violation"));
+            }
         }
 
         [HttpPost("analisis-plato/agendar-recordatorio")]
@@ -153,7 +164,7 @@ namespace PanComido.Presentacion.Controllers
             var resultado = await _agendarRecordatorioCasoDeUso.EjecutarAsync(restauranteId, request.PlatoId, request.AccionSugerida);
             if (resultado == null)
             {
-                return NotFound("Plato no encontrado.");
+                return NotFound(CrearError("Plato no encontrado.", "not_found"));
             }
             return Ok(new AgendarRecordatorioResponse
             {
@@ -194,6 +205,16 @@ namespace PanComido.Presentacion.Controllers
             var dto = ResumenSatisfaccionMapper.AResponseDto(resumen);
 
             return Ok(dto);
+        }
+
+        private ErrorResponseDto CrearError(string mensaje, string codigo)
+        {
+            return new ErrorResponseDto
+            {
+                Error = mensaje,
+                Code = codigo,
+                TraceId = HttpContext.TraceIdentifier
+            };
         }
 
     }

@@ -52,7 +52,7 @@ namespace PanComido.Presentacion.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ErrorResponseDto { Error = ex.Message });
+                return StatusCode(StatusCodes.Status500InternalServerError, CrearError("Ocurrió un error interno en el servidor.", "internal_error"));
             }
         }
 
@@ -62,9 +62,6 @@ namespace PanComido.Presentacion.Controllers
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Crear([FromBody] CrearEmpleadoRequestDto request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             try
             {
                 var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -85,11 +82,15 @@ namespace PanComido.Presentacion.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new ErrorResponseDto { Error = ex.Message });
+                return BadRequest(CrearError(ex.Message, "bad_request"));
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
-                return StatusCode(500, new ErrorResponseDto { Error = ex.Message });
+                return Conflict(CrearError(ex.Message, "business_rule_violation"));
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, CrearError("Ocurrió un error interno en el servidor.", "internal_error"));
             }
         }
 
@@ -100,9 +101,6 @@ namespace PanComido.Presentacion.Controllers
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Modificar(int id, [FromBody] ModificarEmpleadoRequestDto request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             try
             {
                 var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -121,17 +119,21 @@ namespace PanComido.Presentacion.Controllers
                     empleado = _mapper.aDto(modificado)
                 });
             }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new ErrorResponseDto { Error = ex.Message });
-            }
             catch (ArgumentException ex)
             {
-                return BadRequest(new ErrorResponseDto { Error = ex.Message });
+                return BadRequest(CrearError(ex.Message, "bad_request"));
             }
-            catch (Exception ex)
+            catch (KeyNotFoundException ex)
             {
-                return StatusCode(500, new ErrorResponseDto { Error = ex.Message });
+                return NotFound(CrearError(ex.Message, "not_found"));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(CrearError(ex.Message, "business_rule_violation"));
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, CrearError("Ocurrió un error interno en el servidor.", "internal_error"));
             }
         }
 
@@ -150,12 +152,26 @@ namespace PanComido.Presentacion.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new ErrorResponseDto { Error = ex.Message });
+                return NotFound(CrearError(ex.Message, "not_found"));
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
-                return StatusCode(500, new ErrorResponseDto { Error = ex.Message });
+                return Conflict(CrearError(ex.Message, "business_rule_violation"));
             }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, CrearError("Ocurrió un error interno en el servidor.", "internal_error"));
+            }
+        }
+
+        private ErrorResponseDto CrearError(string mensaje, string codigo)
+        {
+            return new ErrorResponseDto
+            {
+                Error = mensaje,
+                Code = codigo,
+                TraceId = HttpContext.TraceIdentifier
+            };
         }
     }
 }

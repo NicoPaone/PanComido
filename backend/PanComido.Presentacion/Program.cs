@@ -1,5 +1,7 @@
 using MercadoPago.Config;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PanComido.Dominio.CasosDeUso.ArticuloCasosDeUso;
@@ -38,11 +40,13 @@ using PanComido.Infraestructura.Persistencia.Mappers.IA;
 using PanComido.Infraestructura.Persistencia.Repositorios;
 using PanComido.Infraestructura.Persistencia.Repositorios.IA;
 using PanComido.Infraestructura.ServiciosExternos;
+using PanComido.Infraestructura.ServiciosExternos.Dashboard;
 using PanComido.Infraestructura.ServiciosExternos.Gemini;
 using PanComido.Infraestructura.ServiciosExternos.Gemini.Mappers;
 using PanComido.Infraestructura.ServiciosExternos.Gemini.Servicio;
 using PanComido.Infraestructura.ServiciosExternos.MercadoPago;
 using PanComido.Presentacion;
+using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.Filtros;
 using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
@@ -62,6 +66,43 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<RestauranteContextoFilter>();
+});
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var controllerName = context.ActionDescriptor is ControllerActionDescriptor descriptor
+            ? descriptor.ControllerName
+            : string.Empty;
+
+        bool usaContratoRobusto = controllerName is "Empleado" or "Dashboard" or "Reporte";
+
+        if (!usaContratoRobusto)
+        {
+            var problemDetails = new ValidationProblemDetails(context.ModelState)
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "One or more validation errors occurred."
+            };
+            problemDetails.Extensions["traceId"] = context.HttpContext.TraceIdentifier;
+            return new BadRequestObjectResult(problemDetails);
+        }
+
+        var errores = context.ModelState
+            .Where(x => x.Value?.Errors.Count > 0)
+            .ToDictionary(
+                x => x.Key,
+                x => x.Value!.Errors.Select(e => string.IsNullOrWhiteSpace(e.ErrorMessage) ? "Valor inválido." : e.ErrorMessage).ToArray());
+
+        return new BadRequestObjectResult(new ErrorResponseDto
+        {
+            Error = "La solicitud contiene datos inválidos.",
+            Code = "validation_error",
+            TraceId = context.HttpContext.TraceIdentifier,
+            Details = errores
+        });
+    };
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -216,6 +257,8 @@ builder.Services.AddScoped<IDatosTransferenciaRepositorio, DatosTransferenciaRep
 builder.Services.AddScoped<IEncuestaSatisfaccionRepositorio, EncuestaSatisfaccionRepositorio>();
 builder.Services.AddScoped<IMiseAndPlaceRepositorio, MiseAndPlaceRepositorio>();
 builder.Services.AddScoped<IReglaTiempoExtraRepositorio, ReglaTiempoExtraRepositorio>();
+builder.Services.AddScoped<ITransaccionPersistenciaServicio, TransaccionPersistenciaServicio>();
+builder.Services.AddScoped<IPoliticaDescuentoDashboardServicio, PoliticaDescuentoDashboardServicio>();
 
 
 // Casos de uso
@@ -343,6 +386,7 @@ builder.Services.AddScoped<IComandaNotificador, ComandaNotificadorSignalR>();
 builder.Services.AddScoped<ILlamadoNotificador, LlamadoNotificadorSignalR>();
 builder.Services.AddScoped<IMesaNotificador, MesaNotificadorSignalR>();
 builder.Services.Configure<GeminiConfiguracion>(builder.Configuration.GetSection("Gemini"));
+builder.Services.Configure<PoliticaDescuentoDashboardConfiguracion>(builder.Configuration.GetSection("Dashboard:PoliticaDescuento"));
 builder.Services.AddScoped<GeminiResponseMapper>();
 builder.Services.AddScoped<SugerenciaIAEntityMapper>();
 builder.Services.AddScoped<ISugerenciaIARepositorio, SugerenciaIARepositorio>();
