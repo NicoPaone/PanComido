@@ -39,7 +39,6 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             {
                 dominioCompleto.MesaId = llamado.MesaId;
             }
-            Console.WriteLine("dominio completo " + dominioCompleto.Id);
             return dominioCompleto;
         }
 

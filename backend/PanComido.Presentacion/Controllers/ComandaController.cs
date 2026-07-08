@@ -131,7 +131,6 @@ namespace PanComido.Presentacion.Controllers
             List<ArticuloComanda> articulosSolicitados = _mapper.ParaListaArticuloComandaDominio(request);
             Comanda comandaActualizada = await _confirmarPedidoCasoDeUso.EjecutarAsync(restauranteId, comandaId, articulosSolicitados);
             ComandaClienteEstadoResponseDto responseDto = _mapper.ParaEstadoClienteDto(comandaActualizada);
-         Console.WriteLine("Comanda actualizada: "+ comandaActualizada);
             return Ok(responseDto);
         }
 
