@@ -2,6 +2,7 @@ using Moq;
 using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Servicios;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -16,7 +17,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
         public ObtenerInsumoPorIdCasoDeUsoTest()
         {
             _insumoRepoMock = new Mock<IInsumoRepositorio>();
-            _casoDeUso = new ObtenerInsumoPorIdCasoDeUso(_insumoRepoMock.Object);
+            _casoDeUso = new ObtenerInsumoPorIdCasoDeUso(_insumoRepoMock.Object, new UltimoPrecioCompraInsumoServicio());
         }
 
         [Fact]

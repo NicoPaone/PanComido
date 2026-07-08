@@ -12,12 +12,15 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
     {
         private readonly IArticuloRepositorio _articuloRepositorio;
         private readonly ITiempoDePreparacionPlatoServicio _tiempoDePreparacionPlatoServicio;
+        private readonly IUltimoPrecioCompraInsumoServicio _ultimoPrecioCompraServicio;
 
         public ObtenerArticulosParaCrearCartaCasoDeUso(IArticuloRepositorio articuloRepositorio,
-                                                        ITiempoDePreparacionPlatoServicio tiempoDePreparacionPlatoServicio)
+                                                        ITiempoDePreparacionPlatoServicio tiempoDePreparacionPlatoServicio,
+                                                        IUltimoPrecioCompraInsumoServicio ultimoPrecioCompraServicio)
         {
             _articuloRepositorio = articuloRepositorio;
             _tiempoDePreparacionPlatoServicio = tiempoDePreparacionPlatoServicio;
+            _ultimoPrecioCompraServicio = ultimoPrecioCompraServicio;
         }
 
         public async Task<List<Articulo>> EjecutarAsync(int restauranteId)
@@ -74,12 +77,7 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
 
         private decimal ObtenerUltimoPrecioCompraRecibido(Insumo insumo)
         {
-            var ultimoPedidoRecibido = insumo?.PedidoInsumos
-                ?.Where(pi => pi.Estado == EstadoPedido.Recibido)
-                .OrderByDescending(pi => pi.Fecha)
-                .FirstOrDefault();
-
-            return ultimoPedidoRecibido?.PrecioCompra ?? 0;
+            return _ultimoPrecioCompraServicio.ObtenerUltimoPrecioCompraRecibido(insumo?.PedidoInsumos);
         }
     }
 }

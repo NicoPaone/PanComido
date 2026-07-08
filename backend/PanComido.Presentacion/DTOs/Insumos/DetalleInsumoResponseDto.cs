@@ -14,5 +14,6 @@
         public int UnidadDeMedidaId { get; set; }
         public string? UrlImagen { get; set; }
         public string Tipo { get; set; }
+        public decimal Costo { get; set; }
     }
 }

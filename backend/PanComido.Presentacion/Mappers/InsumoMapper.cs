@@ -22,7 +22,8 @@ namespace PanComido.Presentacion.Mappers
                 Categoria = insumo.Categoria,
                 EsPrecioManual = insumo.EsPrecioManual,
                 UrlImagen = insumo.UrlImagen,
-                EsVisibleEnCarta = insumo.EsVisibleEnCarta
+                EsVisibleEnCarta = insumo.EsVisibleEnCarta,
+                Costo = insumo.CostoCalculado
             };
         }
         public List<InsumoResponseDto> aListaDto(
@@ -84,7 +85,8 @@ namespace PanComido.Presentacion.Mappers
                 CategoriaId = insumo.CategoriaId,
                 UnidadDeMedidaId = insumo.UnidadDeMedidaId,
                 UrlImagen = insumo.UrlImagen,
-                Tipo = insumo.Tipo.ToString()
+                Tipo = insumo.Tipo.ToString(),
+                Costo = insumo.CostoCalculado
             };
         }
     }

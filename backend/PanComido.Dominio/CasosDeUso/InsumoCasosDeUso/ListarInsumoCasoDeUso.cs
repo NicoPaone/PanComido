@@ -15,12 +15,18 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
         private readonly ILoteRepositorio _loteRepositorio;
 
         private readonly IEstadoStockInsumoServicio _estadoStockInsumoServicio;
+        private readonly IUltimoPrecioCompraInsumoServicio _ultimoPrecioCompraServicio;
 
-        public ListarInsumoCasoDeUso(IInsumoRepositorio insumoRepositorio, ILoteRepositorio loteRepositorio, IEstadoStockInsumoServicio estadoStockInsumoServicio)
+        public ListarInsumoCasoDeUso(
+            IInsumoRepositorio insumoRepositorio,
+            ILoteRepositorio loteRepositorio,
+            IEstadoStockInsumoServicio estadoStockInsumoServicio,
+            IUltimoPrecioCompraInsumoServicio ultimoPrecioCompraServicio)
         {
             _insumoRepositorio = insumoRepositorio;
             _loteRepositorio = loteRepositorio;
             _estadoStockInsumoServicio = estadoStockInsumoServicio;
+            _ultimoPrecioCompraServicio = ultimoPrecioCompraServicio;
         }
 
         public async Task<List<Insumo>> EjecutarAsync(int restauranteId)
@@ -36,6 +42,8 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
 
                 insumo.EstadoStock = _estadoStockInsumoServicio
                     .CalcularEstadoStock(insumo.StockActual, insumo.StockMinimo, insumo.StockRecomendado);
+
+                insumo.CostoCalculado = _ultimoPrecioCompraServicio.ObtenerUltimoPrecioCompraRecibido(insumo.PedidoInsumos);
             }
 
             return insumos;

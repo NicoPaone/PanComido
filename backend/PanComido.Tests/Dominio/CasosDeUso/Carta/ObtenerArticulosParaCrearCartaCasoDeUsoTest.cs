@@ -4,6 +4,7 @@ using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
+using PanComido.Dominio.Servicios;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,13 +16,15 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Carta
     {
         private readonly Mock<IArticuloRepositorio> _articuloRepoMock;
         private readonly Mock<ITiempoDePreparacionPlatoServicio> _tiempoPreparacionServicioMock;
+        private readonly IUltimoPrecioCompraInsumoServicio _ultimoPrecioCompraServicio;
         private readonly ObtenerArticulosParaCrearCartaCasoDeUso _casoDeUso;
 
         public ObtenerArticulosParaCrearCartaCasoDeUsoTest()
         {
             _articuloRepoMock = new Mock<IArticuloRepositorio>();
             _tiempoPreparacionServicioMock = new Mock<ITiempoDePreparacionPlatoServicio>();
-            _casoDeUso = new ObtenerArticulosParaCrearCartaCasoDeUso(_articuloRepoMock.Object, _tiempoPreparacionServicioMock.Object);
+            _ultimoPrecioCompraServicio = new UltimoPrecioCompraInsumoServicio();
+            _casoDeUso = new ObtenerArticulosParaCrearCartaCasoDeUso(_articuloRepoMock.Object, _tiempoPreparacionServicioMock.Object, _ultimoPrecioCompraServicio);
         }
 
         [Fact]

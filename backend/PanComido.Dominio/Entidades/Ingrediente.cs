@@ -12,7 +12,6 @@ namespace PanComido.Dominio.Entidades
         public string Nombre { get; set; }
         public string UnidadMedida { get; set; }
         public decimal CostoUnitario { get; set; }
-
-
+        public List<PedidoInsumo> PedidoInsumos { get; set; } = new List<PedidoInsumo>();
     }
 }

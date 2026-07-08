@@ -337,6 +337,7 @@ builder.Services.AddScoped<ISugerenciaPlatosIAServicio, GeminiSugerenciaPlatosIA
 builder.Services.AddScoped<IGestionStockServicio, GestionStockServicio>();
 builder.Services.AddScoped<IVencimientosProximosInsumosServicio, VencimientosProximosInsumosServicio>();
 builder.Services.AddScoped<ITiempoDePreparacionPlatoServicio, TiempoDePreparacionPlatoServicio>();
+builder.Services.AddScoped<IUltimoPrecioCompraInsumoServicio, UltimoPrecioCompraInsumoServicio>();
 builder.Services.AddScoped<ICalculadorCostoPlatoServicio, CalculadorCostoPlatoServicio>();
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 builder.Services.AddScoped<ICalcularTotalComandaServicio, CalcularTotalComandaServicio>();

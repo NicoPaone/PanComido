@@ -38,7 +38,11 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
         public async Task<List<DOM.Insumo>> ObtenerInsumosAsync(int restauranteId)
         {
-            var efLista = await BaseQuery(restauranteId).ToListAsync();
+            var efLista = await BaseQuery(restauranteId)
+                .Include(a => a.Insumo)
+                    .ThenInclude(i => i.PedidoInsumos)
+                        .ThenInclude(pi => pi.Pedido)
+                .ToListAsync();
             return efLista.Select(a => (DOM.Insumo)_mapper.paraDominio(a)).ToList();
         }
 
@@ -112,6 +116,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             var efArticulo = await BaseQuery(restauranteId)
                 .Include(a => a.Insumo)
                     .ThenInclude(i => i.Lotes)
+                .Include(a => a.Insumo)
+                    .ThenInclude(i => i.PedidoInsumos)
+                        .ThenInclude(pi => pi.Pedido)
                 .FirstOrDefaultAsync(a => a.Id == insumoId);
 
             return efArticulo == null ? null : (DOM.Insumo)_mapper.paraDominio(efArticulo);

@@ -17,5 +17,6 @@
         public bool EsPrecioManual { get; set; }
         public string? UrlImagen { get; set; }
         public bool EsVisibleEnCarta { get; set; }
+        public decimal Costo { get; set; }
     }
 }
