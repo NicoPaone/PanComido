@@ -1,7 +1,8 @@
 ﻿using Moq;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
-using PanComido.Infraestructura.Persistencia.Entidades;
+using PanComido.Dominio.Interfaces.Servicios;
 using DOM = PanComido.Dominio.Entidades;
 
 namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
@@ -9,11 +10,11 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
     public class GenerarSugerenciasRecepcionCasoDeUsoTest
     {
         private readonly Mock<IPedidoRepositorio> _pedidoRepoMock;
-        private readonly Mock<ILoteRepositorio> _loteRepoMock;
+        private readonly Mock<IGeneradorNombreLoteServicio> _generadorNombreLoteServicioMock;
         public GenerarSugerenciasRecepcionCasoDeUsoTest()
         {
             _pedidoRepoMock = new Mock<IPedidoRepositorio>();
-            _loteRepoMock = new Mock<ILoteRepositorio>();
+            _generadorNombreLoteServicioMock = new Mock<IGeneradorNombreLoteServicio>();
         }
 
         [Fact]
@@ -25,7 +26,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
             var pedidoExistente = new DOM.Pedido
             {
                 Id = pedidoId,
-                Estado = "Enviado",
+                Estado = EstadoPedidoProveedor.Enviado,
                 ItemsInsumo = new List<DOM.PedidoInsumo>
                 {
                     new DOM.PedidoInsumo
@@ -42,13 +43,13 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
                 .Setup(r => r.ObtenerPedidoPorIdAsync(pedidoId))
                 .ReturnsAsync(pedidoExistente);
 
-            _loteRepoMock
-                .Setup(r => r.ContarLotesConNombreBaseAsync(It.IsAny<string>()))
-                .ReturnsAsync(0);
+            _generadorNombreLoteServicioMock
+                .Setup(s => s.GenerarNombreUnicoAsync(It.IsAny<string>()))
+                .ReturnsAsync((string nombreInsumo) => $"{nombreInsumo}-{timestamp}");
 
             var casoDeUso = new GenerarSugerenciasRecepcionCasoDeUso(
                 _pedidoRepoMock.Object,
-                _loteRepoMock.Object);
+                _generadorNombreLoteServicioMock.Object);
 
             var resultado = await casoDeUso.EjecutarAsync(pedidoId);
             Assert.NotNull(resultado);
@@ -69,7 +70,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
 
             var casoDeUso = new GenerarSugerenciasRecepcionCasoDeUso(
                 _pedidoRepoMock.Object,
-                _loteRepoMock.Object);
+                _generadorNombreLoteServicioMock.Object);
 
             await Assert.ThrowsAsync<KeyNotFoundException>(() => casoDeUso.EjecutarAsync(pedidoId));
         }
@@ -84,7 +85,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
             var pedidoExistente = new DOM.Pedido
             {
                 Id = pedidoId,
-                Estado = "Pendiente",
+                Estado = EstadoPedidoProveedor.Pendiente,
                 ItemsInsumo = new List<DOM.PedidoInsumo>
                 {
                     new DOM.PedidoInsumo
@@ -103,7 +104,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
 
             var casoDeUso = new GenerarSugerenciasRecepcionCasoDeUso(
                 _pedidoRepoMock.Object,
-                _loteRepoMock.Object);
+                _generadorNombreLoteServicioMock.Object);
 
             await Assert.ThrowsAsync<InvalidOperationException>(() => casoDeUso.EjecutarAsync(pedidoId));
         }

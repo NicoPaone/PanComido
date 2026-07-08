@@ -1,13 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using DOM = PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PanComido.Infraestructura.Persistencia.Mappers;
 using EF = PanComido.Infraestructura.Persistencia.Entidades;
+using PanComido.Dominio.Entidades.Enums;
 
 namespace PanComido.Infraestructura.Persistencia.Repositorios
 {
@@ -40,11 +36,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             _ctx.PedidoInsumos.AddRange(nuevosItems);
 
             //cambiar estado a enviado
-            int estadoEnviadoId = await _ctx.EstadoPedidos
-                .Where(e => e.Descripcion == "Enviado")
-                .Select(e => e.Id)
-                .FirstAsync();
-            efPedido.EstadoPedidoId = estadoEnviadoId;
+            efPedido.EstadoPedidoId = (int)EstadoPedido.Enviado;
 
             await _ctx.SaveChangesAsync();
 
@@ -53,30 +45,16 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
         public async Task<DOM.Pedido> CrearPedidoAsync(DOM.Pedido pedido)
         {
-            int estadoPendienteId = await _ctx.EstadoPedidos
-                .Where(e => e.Descripcion == "Pendiente")
-                .Select(e => e.Id)
-                .FirstAsync();
-
-            EF.Pedido efPedido = _mapper.paraEntidad(pedido, estadoPendienteId);
+            EF.Pedido efPedido = _mapper.paraEntidad(pedido, (int)EstadoPedido.Pendiente);
 
             _ctx.Pedidos.Add(efPedido);
             await _ctx.SaveChangesAsync();
 
-            EF.Pedido pedidoCompleto = await _ctx.Pedidos
+            EF.Pedido pedidoCompleto = await BaseQueryPedido()
                 .Where(p => p.Id == efPedido.Id)
-                .Include(p => p.EstadoPedido)
-                .Include(p => p.PedidoInsumos)
-                    .ThenInclude(pi => pi.Insumo)
-                        .ThenInclude(i => i.IdArticuloNavigation)
-                .Include(p => p.Proveedor)
-                .Include(p => p.PedidoInsumos)
-                         .ThenInclude(pi => pi.Insumo)
-                         .ThenInclude(i => i.UnidadMedida)
                 .FirstAsync();
 
             return _mapper.paraDominio(pedidoCompleto);
-
         }
 
         public async Task<DateOnly?> ObtenerFechaUltimoPedidoDeProveedorAsync(int proveedorId)
@@ -92,37 +70,20 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
         public async Task<DOM.Pedido> ObtenerPedidoPorIdAsync(int pedidoId)
         {
-            var efPedido = await _ctx.Pedidos
-                .Where(p => p.Id == pedidoId)
-                .Include(p => p.EstadoPedido)
-                .Include(p => p.Proveedor)
-                .Include(p => p.PedidoInsumos)
-                    .ThenInclude(pi => pi.Insumo)
-                        .ThenInclude(i => i.IdArticuloNavigation)
-                .Include(p => p.PedidoInsumos)
-                    .ThenInclude(pi => pi.Insumo)
-                        .ThenInclude(i => i.UnidadMedida)
+            var efPedido = await BaseQueryPedido()
                 .Include(p => p.PedidoInsumos)
                     .ThenInclude(pi => pi.Insumo)
                         .ThenInclude(i => i.CategoriaInsumo)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(p => p.Id == pedidoId);
+
             if (efPedido == null) return null;
             return _mapper.paraDominio(efPedido);
         }
 
         public async Task<List<DOM.Pedido>> ObtenerPedidosPorProveedorAsync(int proveedorId)
         {
-            var efPedidos = await _ctx.Pedidos
-                .Where(p => p.ProveedorId == proveedorId)
-                .Include(p => p.EstadoPedido)
-                .Include(p => p.Proveedor)
-                .Where(p => !p.Proveedor.Eliminado)
-                .Include(p => p.PedidoInsumos)
-                    .ThenInclude(pi => pi.Insumo)
-                        .ThenInclude(i => i.IdArticuloNavigation)
-                .Include(p => p.PedidoInsumos)
-                    .ThenInclude(pi => pi.Insumo)
-                        .ThenInclude(i => i.UnidadMedida)
+            var efPedidos = await BaseQueryPedido()
+                .Where(p => p.ProveedorId == proveedorId && !p.Proveedor.Eliminado)
                 .OrderByDescending(p => p.Fecha)
                 .ToListAsync();
 
@@ -132,25 +93,29 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<decimal> ObtenerUltimoPrecioCompraUnitarioAsync(int insumoId, int proveedorId)
         {
             var efPrecio = await _ctx.PedidoInsumos
-                .Where(pi => pi.InsumoId == insumoId && pi.Pedido.ProveedorId == proveedorId)
+                .Where(pi => pi.InsumoId == insumoId
+                          && pi.Pedido.ProveedorId == proveedorId
+                          && pi.Pedido.EstadoPedidoId == (int)EstadoPedido.Recibido)
                 .OrderByDescending(pi => pi.Pedido.Fecha)
                 .Select(pi => (decimal?)pi.PrecioCompra)
                 .FirstOrDefaultAsync();
 
             return efPrecio ?? 0;
         }
-
-        public async Task MarcarComoRecibidoAsync(int pedidoId)
+        public async Task MarcarComoRecibidoAsync(int pedidoId, List<DOM.PedidoInsumo>
+        itemsConPrecioConfirmado)
         {
             var efPedido = await _ctx.Pedidos
                  .Include(p => p.PedidoInsumos)
                  .FirstOrDefaultAsync(p => p.Id == pedidoId);
 
-            int estadoEnviadoId = await _ctx.EstadoPedidos
-                .Where(e => e.Descripcion == "Recibido")
-                .Select(e => e.Id)
-                .FirstAsync();
-            efPedido.EstadoPedidoId = estadoEnviadoId;
+            foreach (var item in itemsConPrecioConfirmado)
+            {
+                var efItem = efPedido.PedidoInsumos.First(pi => pi.InsumoId == item.InsumoId);
+                efItem.PrecioCompra = item.PrecioCompra;
+            }
+
+            efPedido.EstadoPedidoId = (int)EstadoPedido.Recibido;
             await _ctx.SaveChangesAsync();
         }
 
@@ -162,12 +127,25 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .Include(pi => pi.Pedido)
                     .ThenInclude(p => p.Proveedor)
                 .Where(pi => pi.Pedido.ProveedorId == proveedorId && !pi.Pedido.Proveedor.Eliminado)
-                .Where(pi => pi.Pedido.EstadoPedido.Descripcion == "Pendiente" || pi.Pedido.EstadoPedido.Descripcion == "Enviado")
+                .Where(pi => pi.Pedido.EstadoPedidoId == (int)EstadoPedido.Pendiente || pi.Pedido.EstadoPedidoId == (int)EstadoPedido.Enviado)
                 .Select(pi => pi.InsumoId)
                 .Distinct()
                 .ToListAsync();
 
             return insumosIds;
+        }
+
+        private IQueryable<EF.Pedido> BaseQueryPedido()
+        {
+            return _ctx.Pedidos
+                .Include(p => p.EstadoPedido)
+                .Include(p => p.Proveedor)
+                .Include(p => p.PedidoInsumos)
+                    .ThenInclude(pi => pi.Insumo)
+                        .ThenInclude(i => i.IdArticuloNavigation)
+                .Include(p => p.PedidoInsumos)
+                    .ThenInclude(pi => pi.Insumo)
+                        .ThenInclude(i => i.UnidadMedida);
         }
     }
 }

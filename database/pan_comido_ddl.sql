@@ -107,7 +107,8 @@ CREATE TABLE restaurante (
     nombre                  TEXT NOT NULL,
     imagen                  TEXT,
     color_principal         TEXT,
-    color_secundario        TEXT
+    color_secundario        TEXT,
+    link_resena_google_maps TEXT
 );
 
 CREATE TABLE carta (
@@ -295,7 +296,8 @@ CREATE TABLE articulo (
     precio_ganancia         DECIMAL,
     precio_promocional      DECIMAL,
     url_imagen              TEXT,
-    eliminado               BOOLEAN NOT NULL DEFAULT FALSE
+    eliminado               BOOLEAN NOT NULL DEFAULT FALSE,
+    es_precio_manual        BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE articulo_configuracion_articulo (
@@ -317,7 +319,8 @@ CREATE TABLE insumo (
     id_articulo         INTEGER PRIMARY KEY REFERENCES articulo(id),
     categoria_insumo_id INTEGER NOT NULL REFERENCES categoria_insumo(id),
     unidad_medida_id    INTEGER NOT NULL REFERENCES unidad_medida(id),
-    stock_minimo        DECIMAL NOT NULL DEFAULT 0
+    stock_minimo        DECIMAL NOT NULL DEFAULT 0,
+    stock_recomendado   DECIMAL NOT NULL DEFAULT 0
 );
 
 CREATE TABLE ingrediente (
@@ -333,6 +336,17 @@ CREATE TABLE ingrediente_ingrediente_preparado (
     ingrediente_preparado_id INTEGER NOT NULL REFERENCES ingrediente_preparado(id_ingrediente),
     cantidad                 DECIMAL NOT NULL,
     PRIMARY KEY (ingrediente_id, ingrediente_preparado_id)
+);
+
+CREATE TABLE bebida_preparada (
+    id_articulo INTEGER PRIMARY KEY REFERENCES articulo(id)
+);
+
+CREATE TABLE bebida_preparada_insumo (
+    bebida_preparada_id INTEGER NOT NULL REFERENCES bebida_preparada(id_articulo),
+    insumo_id           INTEGER NOT NULL REFERENCES insumo(id_articulo),
+    cantidad            NUMERIC NOT NULL,
+    PRIMARY KEY (bebida_preparada_id, insumo_id)
 );
 
 CREATE TABLE restriccion_plato (
@@ -372,6 +386,17 @@ CREATE TABLE metodo_de_pago_restaurante (
     metodo_de_pago_id   INTEGER NOT NULL REFERENCES metodo_de_pago(id),
     habilitado          BOOLEAN NOT NULL DEFAULT TRUE,
     PRIMARY KEY (restaurante_id, metodo_de_pago_id)
+);
+
+-- Datos bancarios que el gerente carga para que el comensal transfiera.
+-- 1:1 con restaurante (se pisa con UPDATE, no se guarda historial).
+CREATE TABLE datos_transferencia (
+    id                  SERIAL PRIMARY KEY,
+    restaurante_id      INTEGER NOT NULL UNIQUE REFERENCES restaurante(id),
+    alias               TEXT NOT NULL,
+    cbu                 TEXT,
+    numero_cuenta       TEXT NOT NULL,
+    titular_cuenta      TEXT NOT NULL
 );
 
 CREATE TABLE cierre (
@@ -434,7 +459,19 @@ CREATE TABLE articulo_comanda_ingrediente_excluido (
 );
 
 -- ============================================================
--- 11. PROVEEDORES Y PEDIDOS
+-- 11. ENCUESTA
+-- ============================================================
+CREATE TABLE encuesta_satisfaccion (
+    id SERIAL PRIMARY KEY,
+    comanda_id INTEGER NOT NULL REFERENCES comanda(id) ON DELETE CASCADE,
+    puntuacion_lugar INTEGER NOT NULL CHECK (puntuacion_lugar >= 1 AND puntuacion_lugar <= 5),
+    puntuacion_comida INTEGER NOT NULL CHECK (puntuacion_comida >= 1 AND puntuacion_comida <= 5),
+    puntuacion_mozo INTEGER NOT NULL CHECK (puntuacion_mozo >= 1 AND puntuacion_mozo <= 5),
+    fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================================================
+-- 12. PROVEEDORES Y PEDIDOS
 -- ============================================================
 
 CREATE TABLE pedido (
@@ -450,6 +487,16 @@ CREATE TABLE pedido_insumo (
     precio_compra DECIMAL NOT NULL,
     cantidad      DECIMAL NOT NULL,
     PRIMARY KEY (pedido_id, insumo_id)
+);
+
+-- ============================================================
+-- 13. CONFIGURACION DE TIEMPOS EXTRA
+-- ============================================================
+CREATE TABLE regla_tiempo_extra (
+    id SERIAL PRIMARY KEY,
+    restaurante_id INTEGER NOT NULL REFERENCES restaurante(id) ON DELETE CASCADE,
+    porcentaje_ocupacion_hasta INTEGER NOT NULL,
+    minutos_extra INTEGER NOT NULL
 );
 
 COMMIT;

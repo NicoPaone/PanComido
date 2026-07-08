@@ -40,8 +40,14 @@ public partial class Articulo
     [Column("eliminado")]
     public bool Eliminado { get; set; }
 
+    [Column("es_precio_manual")]
+    public bool EsPrecioManual { get; set; }
+
     [InverseProperty("Articulo")]
     public virtual ICollection<ArticuloComandum> ArticuloComanda { get; set; } = new List<ArticuloComandum>();
+
+    [InverseProperty("IdArticuloNavigation")]
+    public virtual BebidaPreparadum? BebidaPreparadum { get; set; }
 
     [ForeignKey("CartaId")]
     [InverseProperty("Articulos")]

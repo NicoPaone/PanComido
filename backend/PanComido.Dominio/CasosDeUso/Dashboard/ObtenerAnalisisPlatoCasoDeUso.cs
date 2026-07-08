@@ -3,6 +3,8 @@ using PanComido.Dominio.Entidades.IA;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Repositorios.IA;
 using PanComido.Dominio.Interfaces.Servicios;
+using PanComido.Dominio.Interfaces.Servicios.IA;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,18 +18,25 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
         private readonly ISugerenciaIARepositorio _sugerenciaIARepositorio;
         private readonly ICalculadorCostoPlatoServicio _calculadorCostoPlatoServicio;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly ISugerenciaPlatosIAServicio _sugerenciaPlatosIAServicio;
+        private readonly ILogger<ObtenerAnalisisPlatoCasoDeUso> _logger;
 
         public ObtenerAnalisisPlatoCasoDeUso(
             IPlatoAnalisisRepositorio platoAnalisisRepositorio,
             ISugerenciaIARepositorio sugerenciaIARepositorio,
             ICalculadorCostoPlatoServicio calculadorCostoPlatoServicio,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider,
+            ISugerenciaPlatosIAServicio sugerenciaPlatosIAServicio,
+            ILogger<ObtenerAnalisisPlatoCasoDeUso> logger)
         {
             _platoAnalisisRepositorio = platoAnalisisRepositorio;
             _sugerenciaIARepositorio = sugerenciaIARepositorio;
             _calculadorCostoPlatoServicio = calculadorCostoPlatoServicio;
             _dateTimeProvider = dateTimeProvider;
+            _sugerenciaPlatosIAServicio = sugerenciaPlatosIAServicio;
+            _logger = logger;
         }
+
 
         public async Task<PlatoAnalisisResultado?> EjecutarAsync(int restauranteId, string nombrePlato)
         {
@@ -83,50 +92,75 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
             {
                 sugerenciaIa = new SugerenciaIA
                 {
-                    FechaSugerencia = _dateTimeProvider.ObtenerAhora(),
+                    FechaSugerencia = DateTime.MinValue,
+                    FechaUltimoAnalisisIA = _dateTimeProvider.ObtenerAhora(),
                     PlatosAnalisis = new List<PlatoAnalisisIa>()
                 };
             }
+            else if (!sugerenciaIa.FechaUltimoAnalisisIA.HasValue || sugerenciaIa.FechaUltimoAnalisisIA.Value.Date != _dateTimeProvider.ObtenerHoy())
+            {
+                sugerenciaIa.FechaUltimoAnalisisIA = _dateTimeProvider.ObtenerAhora();
+                sugerenciaIa.PlatosAnalisis = new List<PlatoAnalisisIa>();
+            }
+
             if (sugerenciaIa.PlatosAnalisis == null)
             {
                 sugerenciaIa.PlatosAnalisis = new List<PlatoAnalisisIa>();
             }
 
             var analisisPlato = sugerenciaIa.PlatosAnalisis.FirstOrDefault(p => p.PlatoId == plato.Id);
+            bool analisisProvieneDeCache = analisisPlato != null;
+            string? motivoFallback = null;
             if (analisisPlato == null)
             {
-                analisisPlato = new PlatoAnalisisIa
+                if (ventasPeriodo > 0)
                 {
-                    PlatoId = plato.Id,
-                    Nombre = plato.Nombre,
-                    Diagnostico = $"El precio actual de {plato.Nombre} está afectando su rotación debido al incremento en el costo de los insumos primarios.",
-                    Alerta = "critica",
-                    Sugerencias = new List<PlatoSugerenciaIa>
+                    try
                     {
-                        new PlatoSugerenciaIa
+                        analisisPlato = await _sugerenciaPlatosIAServicio.AnalizarPlatoRendimientoAsync(
+                            plato,
+                            costoPreparacion,
+                            ventasPeriodo,
+                            volumenVar,
+                            participacion,
+                            comparativaLider,
+                            tendencia
+                        );
+                        if (analisisPlato != null)
                         {
-                            Id = 1,
-                            Tipo = "descuento",
-                            Accion = $"Aplicar descuento promocional del 10% por 1 semana a {plato.Nombre}.",
-                            Impacto = "Impacto Medio (+10 u./mes)",
-                            Dificultad = "baja",
-                            EsAplicable = true,
-                            Aplicada = false
-                        },
-                        new PlatoSugerenciaIa
-                        {
-                            Id = 2,
-                            Tipo = "combo",
-                            Accion = $"Ofrecer {plato.Nombre} en combo promocional con Bebida.",
-                            Impacto = "Impacto Alto (+20 u./mes)",
-                            Dificultad = "media",
-                            EsAplicable = true,
-                            Aplicada = false
+                            analisisPlato.PlatoId = plato.Id;
+                            analisisPlato.Nombre = plato.Nombre;
+                            analisisPlato.FuenteAnalisis = "ia";
+                            analisisPlato.EsFallbackLocal = false;
+                            analisisPlato.MotivoFallback = null;
                         }
                     }
-                };
-                sugerenciaIa.PlatosAnalisis.Add(analisisPlato);
-                await _sugerenciaIARepositorio.GuardarSugerenciaIAAsync(restauranteId, sugerenciaIa);
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(
+                            ex,
+                            "No se pudo obtener analisis IA para el plato {PlatoId} del restaurante {RestauranteId}. Se usara fallback local.",
+                            plato.Id,
+                            restauranteId);
+                        analisisPlato = null;
+                        motivoFallback = "No se pudo obtener analisis de IA en este momento.";
+                    }
+                }
+                else
+                {
+                    motivoFallback = "No hay ventas suficientes para solicitar analisis de IA.";
+                }
+
+                if (analisisPlato == null)
+                {
+                    analisisPlato = GenerarAnalisisLocalRespaldo(plato, motivoFallback);
+                }
+
+                if (!analisisPlato.EsFallbackLocal)
+                {
+                    sugerenciaIa.PlatosAnalisis.Add(analisisPlato);
+                    await _sugerenciaIARepositorio.GuardarSugerenciaIAAsync(restauranteId, sugerenciaIa);
+                }
             }
 
             return new PlatoAnalisisResultado
@@ -138,10 +172,52 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                 Participacion = participacion,
                 ComparativaLider = comparativaLider,
                 Tendencia = tendencia,
-                AnalisisIa = analisisPlato
+                AnalisisIa = analisisPlato,
+                AnalisisProvieneDeCache = analisisProvieneDeCache,
+                FuenteAnalisis = analisisPlato.FuenteAnalisis,
+                EsFallbackLocal = analisisPlato.EsFallbackLocal,
+                MotivoFallback = analisisPlato.MotivoFallback
+            };
+        }
+
+        private PlatoAnalisisIa GenerarAnalisisLocalRespaldo(Plato plato, string? motivoFallback)
+        {
+            return new PlatoAnalisisIa
+            {
+                PlatoId = plato.Id,
+                Nombre = plato.Nombre,
+                FuenteAnalisis = "fallback_local",
+                EsFallbackLocal = true,
+                MotivoFallback = motivoFallback ?? "La IA no devolvio un analisis disponible.",
+                Diagnostico = $"El precio actual de {plato.Nombre} está afectando su rotación debido al incremento en el costo de los insumos primarios.",
+                Alerta = PanComido.Dominio.Entidades.Enums.CriticidadAlerta.Critica.ToString().ToLower(),
+                Sugerencias = new List<PlatoSugerenciaIa>
+                {
+                    new PlatoSugerenciaIa
+                    {
+                        Id = 1,
+                        Tipo = PanComido.Dominio.Entidades.Enums.TipoSugerencia.Descuento.ToString().ToLower(),
+                        Accion = $"Aplicar descuento promocional del 10% por 1 semana a {plato.Nombre}.",
+                        Impacto = "Impacto Medio (+10 u./mes)",
+                        Dificultad = PanComido.Dominio.Entidades.Enums.DificultadSugerencia.Baja.ToString().ToLower(),
+                        EsAplicable = true,
+                        Aplicada = false
+                    },
+                    new PlatoSugerenciaIa
+                    {
+                        Id = 2,
+                        Tipo = PanComido.Dominio.Entidades.Enums.TipoSugerencia.Destacar.ToString().ToLower(),
+                        Accion = $"Destacar {plato.Nombre} en el menú para darle mayor visibilidad.",
+                        Impacto = "Impacto Alto (+20 u./mes)",
+                        Dificultad = PanComido.Dominio.Entidades.Enums.DificultadSugerencia.Baja.ToString().ToLower(),
+                        EsAplicable = true,
+                        Aplicada = false
+                    }
+                }
             };
         }
     }
+
 
     public class PlatoAnalisisResultado
     {
@@ -153,5 +229,9 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
         public RendimientoPlato ComparativaLider { get; set; } = null!;
         public List<int> Tendencia { get; set; } = new List<int>();
         public PlatoAnalisisIa AnalisisIa { get; set; } = null!;
+        public bool AnalisisProvieneDeCache { get; set; }
+        public string FuenteAnalisis { get; set; } = "desconocida";
+        public bool EsFallbackLocal { get; set; }
+        public string? MotivoFallback { get; set; }
     }
 }

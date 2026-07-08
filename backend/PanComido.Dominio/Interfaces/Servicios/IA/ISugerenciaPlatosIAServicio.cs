@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.IA;
 using System;
 using System.Collections.Generic;
@@ -15,5 +15,14 @@ namespace PanComido.Dominio.Interfaces.Servicios.IA
                                                     Dictionary<int, List<Lote>> vencimientosProximos,
                                                     List<string> platosExistentes,
                                                     int cantidadPlatos);
+
+        Task<PlatoAnalisisIa> AnalizarPlatoRendimientoAsync(
+            Plato plato, 
+            decimal costoPreparacion, 
+            int ventasPeriodo, 
+            string volumenVar, 
+            string participacion, 
+            RendimientoPlato comparativaLider, 
+            List<int> tendencia);
     }
 }

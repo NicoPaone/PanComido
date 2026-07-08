@@ -22,7 +22,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 MetodoDePago = (MetodoPago)efPago.MetodoPagoId,
                 EstadoPago = (EstadoPago)efPago.EstadoPagoId,
                 CierreId = efPago.CierreId,
-                //FechaHoraPago = efPago.FechaHoraPago
+                FechaHora = efPago.FechaHora
             };
         }
 
@@ -35,8 +35,8 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 EstadoPagoId = (int)pagoDominio.EstadoPago,
                 Total = pagoDominio.Total,
                 ExternalReference = pagoDominio.ExternalReference,
-                CierreId = pagoDominio.CierreId
-                //FechaHoraPago = pagoDominio.FechaHoraPago
+                CierreId = pagoDominio.CierreId,
+                FechaHora = pagoDominio.FechaHora
             };
         }
     }

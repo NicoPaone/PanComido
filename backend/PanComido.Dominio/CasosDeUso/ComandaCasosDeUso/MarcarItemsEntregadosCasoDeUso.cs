@@ -27,7 +27,24 @@ public class MarcarItemsEntregadosCasoDeUso
 
         if (comanda.Estado == EstadoComanda.Finalizada)
             throw new InvalidOperationException("La comanda ya está finalizada.");
+        ValidarItemsDeComanda(articuloComandaIds, comanda);
 
+        await _comandaRepositorio.MarcarItemsEntregadosAsync(comandaId, articuloComandaIds);
+        Comanda comandaActualizada = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
+
+        if (comandaActualizada.Items.All(i => i.Entregado))
+        {
+            await _comandaRepositorio.ModificarEstadoComandaAsync(comandaId, (int)EstadoComanda.EnEspera);
+            comandaActualizada.Estado = EstadoComanda.EnEspera;
+        }
+
+        var mozoIds = await _mesaRepositorio.ObtenerMozoIdsPorMesaAsync(comandaActualizada.MesaId);
+        await _comandaNotificador.NotificarEstadoModificadoAsync(comandaActualizada, mozoIds);
+        return comandaActualizada;
+    }
+
+    private static void ValidarItemsDeComanda(List<int> articuloComandaIds, Comanda comanda)
+    {
         foreach (int articuloComandaId in articuloComandaIds)
         {
             if (!comanda.Items.Any(ac => ac.Id == articuloComandaId))
@@ -36,16 +53,5 @@ public class MarcarItemsEntregadosCasoDeUso
             if (item.Entregado)
                 throw new InvalidOperationException("El ítem ya fue entregado.");
         }
-
-        await _comandaRepositorio.MarcarItemsEntregadosAsync(comandaId, articuloComandaIds);
-        Comanda comandaDespuesDeEntregados = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
-
-        if (comandaDespuesDeEntregados.Items.All(i => i.Entregado))
-            await _comandaRepositorio.ModificarEstadoComandaAsync(comandaDespuesDeEntregados.Id, (int)EstadoComanda.EnEspera);
-
-        Comanda comandaFinal = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaDespuesDeEntregados.Id);
-        var mozoIds = await _mesaRepositorio.ObtenerMozoIdsPorMesaAsync(comandaFinal.MesaId);
-        await _comandaNotificador.NotificarEstadoModificadoAsync(comandaFinal, mozoIds);
-        return comandaFinal;
     }
 }

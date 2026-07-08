@@ -14,6 +14,7 @@ namespace PanComido.Presentacion.DTOs.Plato
         public string UrlImagen { get; set; }
         public bool EsVisibleEnCarta { get; set; }
         public List<int> RestriccionesIds { get; set; } = new List<int>();
+        public bool EsPrecioManual { get; set; }
         public List<IngredienteRecetaResponseDto> Ingredientes { get; set; } = new List<IngredienteRecetaResponseDto>();
     }
 }

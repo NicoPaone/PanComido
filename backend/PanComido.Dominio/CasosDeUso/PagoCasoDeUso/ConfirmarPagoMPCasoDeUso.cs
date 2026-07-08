@@ -4,11 +4,6 @@ using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
 using PanComido.Dominio.Interfaces.Servicios.MercadoPago;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
 {
@@ -46,29 +41,37 @@ namespace PanComido.Dominio.CasosDeUso.PagoCasoDeUso
             }
 
             Comanda comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(pagoAConfirmar.ComandaId);
+            bool continuar = await ValidarWebhookYPagoAsync(resultado, pagoAConfirmar, comanda);
+            if (!continuar) return null;
 
-            if (pagoAConfirmar.EstadoPago == EstadoPago.Confirmado) return null;
+            await _pagoRepositorio.ConfirmarPagoAsync(resultado.ExternalReference);
 
+            await FinalizarComandaYNotificarAsync(comanda);
+            return pagoAConfirmar;
+        }
+
+        private async Task<bool> ValidarWebhookYPagoAsync(ResultadoPagoMP resultado, Pago pagoAConfirmar, Comanda comanda)
+        {
+            if (pagoAConfirmar.EstadoPago == EstadoPago.Confirmado) return false;
 
             if (resultado.Status != "approved")
             {
                 _logger.LogWarning("Pago rechazado por MP. ExternalReference: {ExternalReference}, Status: {Status}", resultado.ExternalReference, resultado.Status);
                 await _pagoRepositorio.RechazarPagoAsync(resultado.ExternalReference);
                 await _comandaNotificador.NotificarPagoRechazadoAMesaAsync(comanda);
-                return null;
+                return false;
             }
 
-            await _pagoRepositorio.ConfirmarPagoAsync(resultado.ExternalReference);
-    
+            return true;
+        }
+
+        private async Task FinalizarComandaYNotificarAsync(Comanda comanda)
+        {
             comanda.Estado = EstadoComanda.Finalizada;
             comanda.HoraFin = DateTime.Now;
             await _comandaRepositorio.ActualizarAsync(comanda);
 
-            List<int> mozosId = new List<int>();
-            mozosId.Add(comanda.MozoId.Value);
-
-            await _comandaNotificador.NotificarEstadoModificadoAsync(comanda, mozosId);
-            return pagoAConfirmar;
+            await _comandaNotificador.NotificarEstadoModificadoAsync(comanda, new List<int> { comanda.MozoId.Value });
         }
     }
 }

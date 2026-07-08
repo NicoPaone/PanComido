@@ -25,5 +25,8 @@ namespace PanComido.Presentacion.DTOs.Pedidos
 
         [Required(ErrorMessage = "La fecha de vencimiento es obligatoria")]
         public string FechaVencimiento { get; set; }
+
+        [Range(0.01, double.MaxValue, ErrorMessage = "El precio de compra debe ser mayor a cero")]
+        public decimal PrecioCompra { get; set; }
     }
 }

@@ -1,12 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Infraestructura.Persistencia.Mappers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DOM = PanComido.Dominio.Entidades;
 using EF = PanComido.Infraestructura.Persistencia.Entidades;
 
@@ -52,21 +48,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     _ctx.Entry(articuloDB.Insumo).CurrentValues.SetValues(efArticuloNuevo.Insumo);
                 }
 
-                var configVisible = await _ctx.Set<EF.ConfiguracionArticulo>().FindAsync(2);
-                if (configVisible != null)
-                {
-                    var yaEraVisible = articuloDB.ConfiguracionArticulos.Any(c => c.Id == 2);
-
-                    if (articulo.EsVisibleEnCarta && !yaEraVisible)
-                    {
-                        articuloDB.ConfiguracionArticulos.Add(configVisible);
-                    }
-                    else if (!articulo.EsVisibleEnCarta && yaEraVisible)
-                    {
-                        var configARemover = articuloDB.ConfiguracionArticulos.First(c => c.Id == 2);
-                        articuloDB.ConfiguracionArticulos.Remove(configARemover);
-                    }
-                }
+                await ConfiguracionVisibilidadHelper.AplicarVisibilidadEnCartaAsync(_ctx, articuloDB, articulo.EsVisibleEnCarta);
 
                 await _ctx.SaveChangesAsync();
             }
@@ -88,8 +70,12 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     .ThenInclude(p => p.TipoPlato)
             .Include(a => a.Plato)
                 .ThenInclude(p => p.Restriccions)
+            .Include(a => a.BebidaPreparadum)
+                .ThenInclude(bp => bp.BebidaPreparadaInsumos)
+                    .ThenInclude(bpi => bpi.Insumo)
+                        .ThenInclude(i => i.CategoriaInsumo)
             .Where(a => a.RestauranteId == restauranteId
-                     && a.ConfiguracionArticulos.Any(c => c.Id == 2)) 
+                     && a.ConfiguracionArticulos.Any(c => c.Id == (int)ConfiguracionArticuloEnum.VisibleEnCarta))
             .ToListAsync();
 
             return articulosEnCarta.Select(a => _mapper.paraDominio(a)).ToList();
@@ -102,9 +88,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .Include(a => a.Insumo)
                     .ThenInclude(i => i.CategoriaInsumo)
                 .Include(a => a.Plato)
-                    .ThenInclude(p => p.PlatoIngredientes) 
-                        .ThenInclude(pi => pi.Ingrediente) 
-                            .ThenInclude(ing => ing.IdInsumoNavigation) 
+                    .ThenInclude(p => p.PlatoIngredientes)
+                        .ThenInclude(pi => pi.Ingrediente)
+                            .ThenInclude(ing => ing.IdInsumoNavigation)
                                 .ThenInclude(i => i.IdArticuloNavigation)
                 .Include(a => a.Plato)
                     .ThenInclude(p => p.CategoriaPlato)
@@ -112,6 +98,14 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     .ThenInclude(p => p.TipoPlato)
                 .Include(a => a.Plato)
                     .ThenInclude(p => p.Restriccions)
+                .Include(a => a.BebidaPreparadum)
+                    .ThenInclude(bp => bp.BebidaPreparadaInsumos)
+                        .ThenInclude(bpi => bpi.Insumo)
+                            .ThenInclude(i => i.IdArticuloNavigation)
+                .Include(a => a.BebidaPreparadum)
+                    .ThenInclude(bp => bp.BebidaPreparadaInsumos)
+                        .ThenInclude(bpi => bpi.Insumo)
+                            .ThenInclude(i => i.CategoriaInsumo)
                 .Include(a => a.ConfiguracionArticulos)
                 .FirstOrDefaultAsync(a => a.Id == articuloId && a.RestauranteId == restauranteId);
 
@@ -132,16 +126,29 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     .ThenInclude(p => p.PlatoIngredientes)
                         .ThenInclude(pi => pi.Ingrediente)
                             .ThenInclude(ing => ing.IdInsumoNavigation)
-                                .ThenInclude(ins => ins.PedidoInsumos) 
+                                .ThenInclude(ins => ins.PedidoInsumos)
+                                    .ThenInclude(pi => pi.Pedido)
                 .Include(a => a.Insumo)
                     .ThenInclude(i => i.CategoriaInsumo)
                 .Include(a => a.Insumo)
-                    .ThenInclude(i => i.PedidoInsumos) 
+                    .ThenInclude(i => i.PedidoInsumos)
+                        .ThenInclude(pi => pi.Pedido)
                 .Include(a => a.Plato)
-                    .ThenInclude(p => p.Restriccions) 
-                .Where(a => a.RestauranteId == restauranteId 
-                         && !a.Eliminado 
-                         && (a.Plato != null || (a.Insumo != null && a.Insumo.CategoriaInsumo.TipoAplica == 2)))
+                    .ThenInclude(p => p.Restriccions)
+                .Include(a => a.BebidaPreparadum)
+                    .ThenInclude(bp => bp.BebidaPreparadaInsumos)
+                        .ThenInclude(bpi => bpi.Insumo)
+                            .ThenInclude(i => i.PedidoInsumos)
+                                .ThenInclude(pi => pi.Pedido)
+                .Include(a => a.BebidaPreparadum)
+                    .ThenInclude(bp => bp.BebidaPreparadaInsumos)
+                        .ThenInclude(bpi => bpi.Insumo)
+                            .ThenInclude(i => i.CategoriaInsumo)
+                .Where(a => a.RestauranteId == restauranteId
+                         && !a.Eliminado
+                         && (a.Plato != null
+                             || (a.Insumo != null && a.Insumo.CategoriaInsumo.TipoAplica == (int)TipoInsumo.Bebida)
+                             || a.BebidaPreparadum != null))
                 .ToListAsync();
 
             return efArticulos.Select(a => _mapper.paraDominio(a)).ToList();

@@ -1,4 +1,5 @@
 using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
 using System.Collections.Generic;
@@ -11,12 +12,15 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
     {
         private readonly IArticuloRepositorio _articuloRepositorio;
         private readonly ITiempoDePreparacionPlatoServicio _tiempoDePreparacionPlatoServicio;
+        private readonly IUltimoPrecioCompraInsumoServicio _ultimoPrecioCompraServicio;
 
         public ObtenerArticulosParaCrearCartaCasoDeUso(IArticuloRepositorio articuloRepositorio,
-                                                        ITiempoDePreparacionPlatoServicio tiempoDePreparacionPlatoServicio)
+                                                        ITiempoDePreparacionPlatoServicio tiempoDePreparacionPlatoServicio,
+                                                        IUltimoPrecioCompraInsumoServicio ultimoPrecioCompraServicio)
         {
             _articuloRepositorio = articuloRepositorio;
             _tiempoDePreparacionPlatoServicio = tiempoDePreparacionPlatoServicio;
+            _ultimoPrecioCompraServicio = ultimoPrecioCompraServicio;
         }
 
         public async Task<List<Articulo>> EjecutarAsync(int restauranteId)
@@ -39,8 +43,7 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
         {
             if (articulo is Insumo bebida)
             {
-                var ultimoPedido = bebida.PedidoInsumos?.LastOrDefault();
-                return ultimoPedido?.PrecioCompra ?? 0;
+                return ObtenerUltimoPrecioCompraRecibido(bebida);
             }
 
             if (articulo is Plato plato && plato.Ingredientes != null)
@@ -49,16 +52,32 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
 
                 foreach (var ingredienteReceta in plato.Ingredientes)
                 {
-                    var ultimoPedido = ingredienteReceta.Insumo?.PedidoInsumos?.LastOrDefault();
-                    var precioCompraInsumo = ultimoPedido?.PrecioCompra ?? 0;
-
+                    decimal precioCompraInsumo = ObtenerUltimoPrecioCompraRecibido(ingredienteReceta.Insumo);
                     costoPlato += precioCompraInsumo * ingredienteReceta.Cantidad;
                 }
 
                 return costoPlato;
             }
 
+            if (articulo is BebidaPreparada bebidaPreparada && bebidaPreparada.Insumos != null)
+            {
+                decimal costoBebidaPreparada = 0;
+
+                foreach (var itemReceta in bebidaPreparada.Insumos)
+                {
+                    decimal precioCompraInsumo = ObtenerUltimoPrecioCompraRecibido(itemReceta.Insumo);
+                    costoBebidaPreparada += precioCompraInsumo * itemReceta.Cantidad;
+                }
+
+                return costoBebidaPreparada;
+            }
+
             return 0;
+        }
+
+        private decimal ObtenerUltimoPrecioCompraRecibido(Insumo insumo)
+        {
+            return _ultimoPrecioCompraServicio.ObtenerUltimoPrecioCompraRecibido(insumo?.PedidoInsumos);
         }
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -16,6 +17,7 @@ namespace PanComido.Presentacion.DTOs.Plato
 
         [Required]
         public int TiempoPreparacionBase { get; set; }
+        public bool EsPrecioManual { get; set; }
 
         [Required]
         public int TipoPlatoId { get; set; }
@@ -23,8 +25,9 @@ namespace PanComido.Presentacion.DTOs.Plato
         [Required]
         public int CategoriaPlatoId { get; set; }
 
-        public string UrlImagen { get; set; }
-        
+        [DataType(DataType.Upload)]
+        public IFormFile? Imagen { get; set; }
+
         public bool EsVisibleEnCarta { get; set; }
 
         public List<int> RestriccionesIds { get; set; } = new List<int>();

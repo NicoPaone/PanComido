@@ -14,7 +14,8 @@ namespace PanComido.Presentacion.Mappers
                 Cantidad = recepcionItemSugerido.Cantidad,
                 NombreLote = recepcionItemSugerido.NombreLote,
                 BodegaIdSug = recepcionItemSugerido.BodegaIdSug,
-                FechaVencimientoSug = recepcionItemSugerido.FechaVencimientoSug.ToString("dd/MM/yyyy")
+                FechaVencimientoSug = recepcionItemSugerido.FechaVencimientoSug.ToString("dd/MM/yyyy"),
+                PrecioCompra = recepcionItemSugerido.PrecioCompra
             };
         }
         public List<PreRecepcionItemResponseDto> aListaDto(List<DOM.RecepcionItemSugerido> items)
@@ -38,6 +39,20 @@ namespace PanComido.Presentacion.Mappers
         public List<DOM.Lote> aListaDominio(List<RecibirPedidoItemDto> itemsPedidoARecibirDto)
         {
             return itemsPedidoARecibirDto.Select(aDominio).ToList();
+        }
+
+        public DOM.PedidoInsumo aPedidoInsumo(RecibirPedidoItemDto itemPedidoARecibirDto)
+        {
+            return new DOM.PedidoInsumo
+            {
+                InsumoId = itemPedidoARecibirDto.InsumoId,
+                PrecioCompra = itemPedidoARecibirDto.PrecioCompra
+            };
+        }
+
+        public List<DOM.PedidoInsumo> aListaPedidoInsumo(List<RecibirPedidoItemDto> recibirPedidoItemDtos)
+        {
+            return recibirPedidoItemDtos.Select(aPedidoInsumo).ToList();
         }
     }
 }

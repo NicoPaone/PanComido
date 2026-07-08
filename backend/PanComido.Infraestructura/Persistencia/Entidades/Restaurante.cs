@@ -31,6 +31,9 @@ public partial class Restaurante
     [Column("color_secundario")]
     public string? ColorSecundario { get; set; }
 
+    [Column("link_resena_google_maps")]
+    public string? LinkResenaGoogleMaps { get; set; }
+
     [InverseProperty("Restaurante")]
     public virtual ICollection<Articulo> Articulos { get; set; } = new List<Articulo>();
 
@@ -45,6 +48,9 @@ public partial class Restaurante
 
     [InverseProperty("Restaurante")]
     public virtual ICollection<Comandum> Comanda { get; set; } = new List<Comandum>();
+
+    [InverseProperty("Restaurante")]
+    public virtual DatosTransferencium? DatosTransferencium { get; set; }
 
     [ForeignKey("DireccionId")]
     [InverseProperty("Restaurantes")]
@@ -77,6 +83,9 @@ public partial class Restaurante
 
     [InverseProperty("Restaurante")]
     public virtual ICollection<Proveedor> Proveedors { get; set; } = new List<Proveedor>();
+
+    [InverseProperty("Restaurante")]
+    public virtual ICollection<ReglaTiempoExtra> ReglaTiempoExtras { get; set; } = new List<ReglaTiempoExtra>();
 
     [InverseProperty("Restaurante")]
     public virtual ICollection<SugerenciaPlatoIum> SugerenciaPlatoIa { get; set; } = new List<SugerenciaPlatoIum>();

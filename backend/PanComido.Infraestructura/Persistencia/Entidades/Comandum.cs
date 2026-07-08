@@ -37,6 +37,9 @@ public partial class Comandum
     [InverseProperty("Comanda")]
     public virtual ICollection<ArticuloComandum> ArticuloComanda { get; set; } = new List<ArticuloComandum>();
 
+    [InverseProperty("Comanda")]
+    public virtual ICollection<EncuestaSatisfaccion> EncuestaSatisfaccions { get; set; } = new List<EncuestaSatisfaccion>();
+
     [ForeignKey("EstadoComandaId")]
     [InverseProperty("Comanda")]
     public virtual EstadoComandum EstadoComanda { get; set; } = null!;

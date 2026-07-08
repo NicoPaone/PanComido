@@ -3,20 +3,21 @@ using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PanComido.Dominio.CasosDeUso.Dashboard
 {
     public class ObtenerResumenOperativoCasoDeUso
     {
-        private readonly IComandaRepositorio _comandaRepositorio;
+        private readonly IDashboardRepositorio _dashboardRepositorio;
         private readonly IPlatoAnalisisRepositorio _platoAnalisisRepositorio;
 
         public ObtenerResumenOperativoCasoDeUso(
-            IComandaRepositorio comandaRepositorio,
+            IDashboardRepositorio dashboardRepositorio,
             IPlatoAnalisisRepositorio platoAnalisisRepositorio)
         {
-            _comandaRepositorio = comandaRepositorio;
+            _dashboardRepositorio = dashboardRepositorio;
             _platoAnalisisRepositorio = platoAnalisisRepositorio;
         }
 
@@ -27,11 +28,11 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
 
             var (desdeAnterior, hastaAnterior) = CalcularPeriodoAnterior(desde, hastaAjustado);
 
-            var totalesActuales = await _comandaRepositorio.ObtenerTotalesPeriodoAsync(restauranteId, desde, hastaAjustado);
-            var ventasAgrupadas = await _comandaRepositorio.ObtenerVentasAgrupadasAsync(restauranteId, desde, hastaAjustado, tipoAgrupacion);
-            var totalesAnteriores = await _comandaRepositorio.ObtenerTotalesPeriodoAsync(restauranteId, desdeAnterior, hastaAnterior);
+            var totalesActuales = await _dashboardRepositorio.ObtenerTotalesPeriodoAsync(restauranteId, desde, hastaAjustado);
+            var ventasAgrupadas = await _dashboardRepositorio.ObtenerVentasAgrupadasAsync(restauranteId, desde, hastaAjustado, tipoAgrupacion);
+            var totalesAnteriores = await _dashboardRepositorio.ObtenerTotalesPeriodoAsync(restauranteId, desdeAnterior, hastaAnterior);
             var recordatoriosActivos = await _platoAnalisisRepositorio.ObtenerRecordatoriosActivosAsync(restauranteId);
-            var estadisticasMozos = await _comandaRepositorio.ObtenerEstadisticasMozosAsync(restauranteId, desde, hastaAjustado);
+            var estadisticasMozosRaw = await _dashboardRepositorio.ObtenerEstadisticasMozosRawAsync(restauranteId, desde, hastaAjustado);
 
             return EnsamblarResumenOperativo(
                 totalesActuales,
@@ -40,7 +41,7 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
                 desde,
                 hastaAjustado,
                 recordatoriosActivos,
-                estadisticasMozos);
+                estadisticasMozosRaw);
         }
 
         private TipoAgrupacionTiempo DeterminarTipoAgrupacion(DateTime desde, DateTime hasta)
@@ -64,7 +65,7 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
             DateTime desde,
             DateTime hasta,
             List<Notificacion> recordatoriosActivos,
-            List<EstadisticaMozo> mozos)
+            List<EstadisticaMozoRaw> mozosRaw)
         {
             decimal ticketActual = CalcularTicketPromedio(actuales);
             decimal ticketAnterior = CalcularTicketPromedio(anteriores);
@@ -74,26 +75,45 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
 
             foreach (var item in recordatoriosActivos)
             {
-                string desc = item.Descripcion;
-                string titulo = desc;
-                string detalle = "";
-
-                int separatorIndex = desc.IndexOf(" - ");
-                if (separatorIndex >= 0)
-                {
-                    titulo = desc.Substring(0, separatorIndex);
-                    detalle = desc.Substring(separatorIndex + 3);
-                }
+                var (titulo, detalle) = item.ObtenerEstructura();
 
                 listRecordatorios.Add(new DashboardAccionItem
                 {
                     Id = item.Id,
                     Titulo = titulo,
                     Detalle = detalle,
-                    Destino = "carta",
-                    Tono = "info",
+                    Destino = NotificacionDestino.Carta.ToString().ToLower(),
+                    Tono = NotificacionTono.Info.ToString().ToLower(),
                     Impacto = "Reevaluar demanda",
                     Prioridad = 4
+                });
+            }
+
+            var listMozos = new List<EstadisticaMozo>();
+            foreach (var raw in mozosRaw)
+            {
+                string tiempoPromedioAtencion = raw.MinutosPromedioAtencion.HasValue 
+                    ? $"{Math.Round(raw.MinutosPromedioAtencion.Value)}m" 
+                    : "30m";
+
+                string estado = "Baja carga";
+                if (raw.ComandasActivas > 4)
+                {
+                    estado = "Sobrecargado";
+                }
+                else if (raw.ComandasActivas >= 2)
+                {
+                    estado = "Optimo";
+                }
+
+                listMozos.Add(new EstadisticaMozo
+                {
+                    Nombre = raw.Nombre,
+                    MesasAtendidas = raw.MesasAtendidas,
+                    FacturacionTotal = raw.FacturacionTotal,
+                    TiempoPromedioAtencion = tiempoPromedioAtencion,
+                    Estado = estado,
+                    CalificacionPromedio = raw.PromedioEstrellas
                 });
             }
 
@@ -110,7 +130,7 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
 
                 Grafico = grafico,
                 Recordatorios = listRecordatorios,
-                Mozos = mozos
+                Mozos = listMozos
             };
         }
 
@@ -133,3 +153,4 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
         }
     }
 }
+

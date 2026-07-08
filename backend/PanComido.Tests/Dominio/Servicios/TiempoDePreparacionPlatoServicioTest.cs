@@ -7,18 +7,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace PanComido.Tests.Dominio.Servicios
 {
     public class TiempoDePreparacionPlatoServicioTest
     {
         private readonly Mock<IMesaRepositorio> _mesaRepositorioMock;
+        private readonly Mock<IReglaTiempoExtraRepositorio> _reglaRepositorioMock;
         private readonly TiempoDePreparacionPlatoServicio _servicio;
 
         public TiempoDePreparacionPlatoServicioTest()
         {
             _mesaRepositorioMock = new Mock<IMesaRepositorio>();
-            _servicio = new TiempoDePreparacionPlatoServicio(_mesaRepositorioMock.Object);
+            _reglaRepositorioMock = new Mock<IReglaTiempoExtraRepositorio>();
+            _servicio = new TiempoDePreparacionPlatoServicio(_mesaRepositorioMock.Object, _reglaRepositorioMock.Object);
+            
+            _reglaRepositorioMock.Setup(r => r.ObtenerPorRestauranteIdAsync(1))
+                .ReturnsAsync(new List<ReglaTiempoExtra>
+                {
+                    new ReglaTiempoExtra { PorcentajeOcupacionHasta = 30, MinutosExtra = 5 },
+                    new ReglaTiempoExtra { PorcentajeOcupacionHasta = 50, MinutosExtra = 10 },
+                    new ReglaTiempoExtra { PorcentajeOcupacionHasta = 70, MinutosExtra = 15 },
+                    new ReglaTiempoExtra { PorcentajeOcupacionHasta = 100, MinutosExtra = 20 }
+                });
         }
 
         [Fact]
@@ -28,11 +40,7 @@ namespace PanComido.Tests.Dominio.Servicios
             _mesaRepositorioMock.Setup(r => r.ObtenerTodasAsync(1))
                 .ReturnsAsync(new List<MesaConPosiciones>
                 {
-                    new MesaConPosiciones(),
-                    new MesaConPosiciones(),
-                    new MesaConPosiciones(),
-                    new MesaConPosiciones(),
-                    new MesaConPosiciones()
+                    new MesaConPosiciones(), new MesaConPosiciones(), new MesaConPosiciones(), new MesaConPosiciones(), new MesaConPosiciones()
                 });
 
             _mesaRepositorioMock.Setup(r => r.ObtenerOcupadasAsync(1))
@@ -50,22 +58,10 @@ namespace PanComido.Tests.Dominio.Servicios
         {
             // Preparar
             _mesaRepositorioMock.Setup(r => r.ObtenerTodasAsync(1))
-                .ReturnsAsync(new List<MesaConPosiciones>
-                {
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones()
-                });
+                .ReturnsAsync(Enumerable.Repeat(new MesaConPosiciones(), 10).ToList());
 
             _mesaRepositorioMock.Setup(r => r.ObtenerOcupadasAsync(1))
-                .ReturnsAsync(new List<MesaConPosiciones>
-                {
-                    new MesaConPosiciones(),
-                    new MesaConPosiciones(),
-                    new MesaConPosiciones()
-                });
+                .ReturnsAsync(Enumerable.Repeat(new MesaConPosiciones(), 3).ToList());
 
             // Ejecutar
             var resultado = await _servicio.CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(1);
@@ -79,22 +75,10 @@ namespace PanComido.Tests.Dominio.Servicios
         {
             // Preparar
             _mesaRepositorioMock.Setup(r => r.ObtenerTodasAsync(1))
-                .ReturnsAsync(new List<MesaConPosiciones>
-                {
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones()
-                });
+                .ReturnsAsync(Enumerable.Repeat(new MesaConPosiciones(), 10).ToList());
 
             _mesaRepositorioMock.Setup(r => r.ObtenerOcupadasAsync(1))
-                .ReturnsAsync(new List<MesaConPosiciones>
-                {
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones()
-                });
+                .ReturnsAsync(Enumerable.Repeat(new MesaConPosiciones(), 5).ToList());
 
             // Ejecutar
             var resultado = await _servicio.CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(1);
@@ -108,23 +92,10 @@ namespace PanComido.Tests.Dominio.Servicios
         {
             // Preparar
             _mesaRepositorioMock.Setup(r => r.ObtenerTodasAsync(1))
-                .ReturnsAsync(new List<MesaConPosiciones>
-                {
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones()
-                });
+                .ReturnsAsync(Enumerable.Repeat(new MesaConPosiciones(), 10).ToList());
 
             _mesaRepositorioMock.Setup(r => r.ObtenerOcupadasAsync(1))
-                .ReturnsAsync(new List<MesaConPosiciones>
-                {
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones()
-                });
+                .ReturnsAsync(Enumerable.Repeat(new MesaConPosiciones(), 7).ToList());
 
             // Ejecutar
             var resultado = await _servicio.CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(1);
@@ -138,23 +109,10 @@ namespace PanComido.Tests.Dominio.Servicios
         {
             // Preparar
             _mesaRepositorioMock.Setup(r => r.ObtenerTodasAsync(1))
-                .ReturnsAsync(new List<MesaConPosiciones>
-                {
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones()
-                });
+                .ReturnsAsync(Enumerable.Repeat(new MesaConPosiciones(), 10).ToList());
 
             _mesaRepositorioMock.Setup(r => r.ObtenerOcupadasAsync(1))
-                .ReturnsAsync(new List<MesaConPosiciones>
-                {
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones()
-                });
+                .ReturnsAsync(Enumerable.Repeat(new MesaConPosiciones(), 8).ToList());
 
             // Ejecutar
             var resultado = await _servicio.CalcularTiempoExtraEnBaseALaOcupacionDeLasMesas(1);
@@ -168,22 +126,10 @@ namespace PanComido.Tests.Dominio.Servicios
         {
             // Preparar
             _mesaRepositorioMock.Setup(r => r.ObtenerTodasAsync(1))
-                .ReturnsAsync(new List<MesaConPosiciones>
-                {
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones(),
-                    new MesaConPosiciones(), new MesaConPosiciones()
-                });
+                .ReturnsAsync(Enumerable.Repeat(new MesaConPosiciones(), 10).ToList());
 
             _mesaRepositorioMock.Setup(r => r.ObtenerOcupadasAsync(1))
-                .ReturnsAsync(new List<MesaConPosiciones>
-                {
-                    new MesaConPosiciones(),
-                    new MesaConPosiciones(),
-                    new MesaConPosiciones()
-                });
+                .ReturnsAsync(Enumerable.Repeat(new MesaConPosiciones(), 3).ToList());
 
             var plato = new Plato
             {

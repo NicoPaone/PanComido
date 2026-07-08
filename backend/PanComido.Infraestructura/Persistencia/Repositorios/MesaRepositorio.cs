@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Infraestructura.Persistencia.Entidades;
 using PanComido.Infraestructura.Persistencia.Mappers;
@@ -22,14 +23,14 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         private IQueryable<EF.Mesa> BaseQuery(int restauranteId)
         {
             return _ctx.Mesas
-               .Where(m => m.Grilla.RestauranteId == restauranteId && m.Activo);
+                .Where(m => m.Grilla.RestauranteId == restauranteId && m.Activo)
+                .Include(m => m.DimensionMesa)
+                .Include(m => m.Mozos);
         }
         public async Task<DOM.MesaConPosiciones?> ObtenerPorIdAsync(int id, int restauranteId)
         {
             EF.Mesa mesaEF = await BaseQuery(restauranteId)
                .AsNoTracking()
-               .Include(m => m.DimensionMesa)
-               .Include(m => m.Mozos)
                .FirstOrDefaultAsync(m => m.Id == id);
             return _mapper.paraDominioCompleto(mesaEF);
         }
@@ -43,8 +44,6 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             List<EF.Mesa> mesasEF = await BaseQuery(restauranteId)
                .AsNoTracking()
-               .Include(m => m.DimensionMesa)
-               .Include(m => m.Mozos)
                .ToListAsync();
 
             return mesasEF
@@ -56,8 +55,6 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             List<EF.Mesa> mesasEF = await BaseQuery(restauranteId)
                 .AsNoTracking()
-                .Include(m => m.DimensionMesa)
-                .Include(m => m.Mozos)
                 .Where(m => m.EstadoMesaId == (int)DOM.Enums.EstadoMesa.Ocupada)
                 .ToListAsync();
 
@@ -70,8 +67,6 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             List<EF.Mesa> mesasEF = await BaseQuery(restauranteId)
                 .AsNoTracking()
-                .Include(m => m.DimensionMesa)
-                .Include(m => m.Mozos)
                 .Where(m => m.EstadoMesaId == (int)DOM.Enums.EstadoMesa.Disponible)
                 .ToListAsync();
 
@@ -97,56 +92,39 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .ToListAsync();
         }
 
-        public async Task AsignarMozosAsync(int restauranteId, int mesaId, List<int> mozosIds)
+        public async Task AsignarMozosAsync(int mesaId, List<int> mozosAAgregarIds, List<int> mozosAEliminarIds)
         {
             var mesa = await _ctx.Mesas
                 .Include(m => m.Mozos)
-                .FirstOrDefaultAsync(m => m.Id == mesaId && m.Grilla.RestauranteId == restauranteId);
-                
-            if (mesa == null) throw new Exception($"La mesa {mesaId} no existe en este restaurante.");
+                .FirstOrDefaultAsync(m => m.Id == mesaId);
 
-            var mozosExistentes = mesa.Mozos.Select(m => m.IdEmpleado).ToList();
-            var nuevosMozosIds = mozosIds.Except(mozosExistentes).ToList();
-            var mozosAEliminarIds = mozosExistentes.Except(mozosIds).ToList();
-
-            bool cambiosRealizados = false;
+            if (mesa == null) return;
 
             if (mozosAEliminarIds.Any())
             {
                 var mozosAEliminar = mesa.Mozos.Where(m => mozosAEliminarIds.Contains(m.IdEmpleado)).ToList();
                 foreach (var mozo in mozosAEliminar)
-                {
                     mesa.Mozos.Remove(mozo);
-                }
-                cambiosRealizados = true;
             }
 
-            if (nuevosMozosIds.Any())
+            if (mozosAAgregarIds.Any())
             {
-                var mozos = await _ctx.Mozos.Where(m => nuevosMozosIds.Contains(m.IdEmpleado)).ToListAsync();
-                if (mozos.Count != nuevosMozosIds.Count)
-                {
+                var mozos = await _ctx.Mozos.Where(m => mozosAAgregarIds.Contains(m.IdEmpleado)).ToListAsync();
+                if (mozos.Count != mozosAAgregarIds.Count)
                     throw new Exception("Uno o más IDs de mozo enviados no existen en la base de datos.");
-                }
                 foreach (var mozo in mozos)
-                {
                     mesa.Mozos.Add(mozo);
-                }
-                cambiosRealizados = true;
             }
 
-            if (cambiosRealizados)
-            {
-                await _ctx.SaveChangesAsync();
-            }
+            await _ctx.SaveChangesAsync();
         }
 
-        public async Task DesasignarMozoAsync(int restauranteId, int mesaId, int mozoId)
+        public async Task DesasignarMozoAsync(int mesaId, int mozoId)
         {
             var mesa = await _ctx.Mesas
                 .Include(m => m.Mozos)
-                .FirstOrDefaultAsync(m => m.Id == mesaId && m.Grilla.RestauranteId == restauranteId);
-                
+                .FirstOrDefaultAsync(m => m.Id == mesaId);
+
             if (mesa == null) return;
 
             var mozo = mesa.Mozos.FirstOrDefault(m => m.IdEmpleado == mozoId);
@@ -163,34 +141,39 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
             var mesasNuevas = mesasDominio.Where(m => m.Id <= 0).ToList();
             var mesasActualizar = mesasDominio.Where(m => m.Id > 0).ToList();
+            await AgregarMesasNuevasAsync(grilla, mesasNuevas);
+            await ActualizarMesasExistentesAsync(restauranteId, mesasActualizar);
 
-            foreach (var mesaNueva in mesasNuevas)
+            var idsRecibidos = mesasActualizar.Select(m => m.Id).ToList();
+            await EliminarMesasAusentesAsync(restauranteId, idsRecibidos);
+
+            await _ctx.SaveChangesAsync();
+        }
+
+        private async Task EliminarMesasAusentesAsync(int restauranteId, List<int> idsRecibidos)
+        {
+            var idsMesasParaEliminar = await _ctx.Mesas
+                            .Where(m => m.Grilla.RestauranteId == restauranteId && !idsRecibidos.Contains(m.Id) && m.Activo)
+                            .Select(m => m.Id)
+                            .ToListAsync();
+
+            if (idsMesasParaEliminar.Any())
             {
-                int dimensionId = mesaNueva.DimensionMesaId;
-                if (dimensionId <= 0 && !string.IsNullOrEmpty(mesaNueva.Forma))
+                var mesasParaEliminar = await _ctx.Mesas
+                    .Where(m => idsMesasParaEliminar.Contains(m.Id))
+                    .ToListAsync();
+
+                foreach (var mesaParaEliminar in mesasParaEliminar)
                 {
-                    var dim = await _ctx.DimensionMesas.FirstOrDefaultAsync(d => d.Forma == mesaNueva.Forma);
-                    if (dim != null) dimensionId = dim.Id;
+                    mesaParaEliminar.Activo = false;
                 }
 
-                var nuevaMesaEF = new EF.Mesa
-                {
-                    GrillaId = grilla.Id,
-                    Numero = mesaNueva.Numero,
-                    CantPersonasMax = mesaNueva.CantPersonasMax,
-                    EstadoMesaId = (int)mesaNueva.EstadoMesa,
-                    PosicionXInicio = mesaNueva.PosicionXInicio,
-                    PosicionXFin = mesaNueva.PosicionXFin,
-                    PosicionYInicio = mesaNueva.PosicionYInicio,
-                    PosicionYFin = mesaNueva.PosicionYFin,
-                    DimensionMesaId = dimensionId,
-                    TipoElemento = mesaNueva.TipoElemento,
-                    Color = mesaNueva.Color,
-                    TextoObjeto = mesaNueva.TextoObjeto
-                };
-                _ctx.Mesas.Add(nuevaMesaEF);
+                _ctx.Mesas.UpdateRange(mesasParaEliminar);
             }
+        }
 
+        private async Task ActualizarMesasExistentesAsync(int restauranteId, List<MesaMapaDominio> mesasActualizar)
+        {
             if (mesasActualizar.Any())
             {
                 var idsActualizar = mesasActualizar.Select(m => m.Id).ToList();
@@ -218,48 +201,36 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     _ctx.Mesas.Update(mesaExistente);
                 }
             }
+        }
 
-            var idsRecibidos = mesasActualizar.Select(m => m.Id).ToList();
-
-            var idsMesasParaEliminar = await _ctx.Mesas
-                .Where(m => m.Grilla.RestauranteId == restauranteId && !idsRecibidos.Contains(m.Id) && m.Activo)
-                .Select(m => m.Id)
-                .ToListAsync();
-
-            if (idsMesasParaEliminar.Any())
+        private async Task AgregarMesasNuevasAsync(Grilla grilla, List<MesaMapaDominio> mesasNuevas)
+        {
+            foreach (var mesaNueva in mesasNuevas)
             {
-                var tieneComandasActivas = await _ctx.Mesas
-                    .Where(m => idsMesasParaEliminar.Contains(m.Id))
-                    .SelectMany(m => m.Comanda)
-                    .AnyAsync(c => c.EstadoComandaId != 4);
-
-                if (tieneComandasActivas)
+                int dimensionId = mesaNueva.DimensionMesaId;
+                if (dimensionId <= 0 && !string.IsNullOrEmpty(mesaNueva.Forma))
                 {
-                    throw new InvalidOperationException("No se puede guardar el mapa: se intentó eliminar una mesa que tiene una comanda activa.");
+                    var dim = await _ctx.DimensionMesas.FirstOrDefaultAsync(d => d.Forma == mesaNueva.Forma);
+                    if (dim != null) dimensionId = dim.Id;
                 }
 
-                var tieneMozosAsignados = await _ctx.Mesas
-                    .Where(m => idsMesasParaEliminar.Contains(m.Id))
-                    .AnyAsync(m => m.Mozos.Any());
-
-                if (tieneMozosAsignados)
+                var nuevaMesaEF = new EF.Mesa
                 {
-                    throw new InvalidOperationException("No se puede guardar el mapa: se intentó eliminar una mesa que tiene mozos asignados. Desasigná a los mozos antes de eliminarla.");
-                }
-
-                var mesasParaEliminar = await _ctx.Mesas
-                    .Where(m => idsMesasParaEliminar.Contains(m.Id))
-                    .ToListAsync();
-
-                foreach(var mesaParaEliminar in mesasParaEliminar)
-                {
-                    mesaParaEliminar.Activo = false;
-                }
-                
-                _ctx.Mesas.UpdateRange(mesasParaEliminar);
+                    GrillaId = grilla.Id,
+                    Numero = mesaNueva.Numero,
+                    CantPersonasMax = mesaNueva.CantPersonasMax,
+                    EstadoMesaId = (int)mesaNueva.EstadoMesa,
+                    PosicionXInicio = mesaNueva.PosicionXInicio,
+                    PosicionXFin = mesaNueva.PosicionXFin,
+                    PosicionYInicio = mesaNueva.PosicionYInicio,
+                    PosicionYFin = mesaNueva.PosicionYFin,
+                    DimensionMesaId = dimensionId,
+                    TipoElemento = mesaNueva.TipoElemento,
+                    Color = mesaNueva.Color,
+                    TextoObjeto = mesaNueva.TextoObjeto
+                };
+                _ctx.Mesas.Add(nuevaMesaEF);
             }
-
-            await _ctx.SaveChangesAsync();
         }
 
         public async Task<List<DOM.Empleado>> ObtenerTodosLosMozosAsync(int restauranteId)
@@ -279,6 +250,29 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 ContraseniaHash = e.Contrasena,
                 Estado = e.Estado
             }).ToList();
+        }
+
+        public async Task<List<int>> ObtenerIdsMesasActivasAsync(int restauranteId)
+        {
+            return await _ctx.Mesas
+                .Where(m => m.Grilla.RestauranteId == restauranteId && m.Activo)
+                .Select(m => m.Id)
+                .ToListAsync();
+        }
+
+        public async Task<bool> TieneComandasActivasAsync(List<int> mesaIds)
+        {
+            return await _ctx.Mesas
+                .Where(m => mesaIds.Contains(m.Id))
+                .SelectMany(m => m.Comanda)
+                .AnyAsync(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada);
+        }
+
+        public async Task<bool> TieneMozosAsignadosAsync(List<int> mesaIds)
+        {
+            return await _ctx.Mesas
+                .Where(m => mesaIds.Contains(m.Id))
+                .AnyAsync(m => m.Mozos.Any());
         }
     }
 }

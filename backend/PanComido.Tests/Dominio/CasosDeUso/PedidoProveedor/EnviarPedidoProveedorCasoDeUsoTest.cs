@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
 using PanComido.Dominio.CasosDeUso.PedidosCasosDeUso;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using DOM = PanComido.Dominio.Entidades;
 
@@ -28,7 +29,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
             var pedidoExistente = new DOM.Pedido
             {
                 Id = pedidoId,
-                Estado = "Pendiente",
+                Estado = EstadoPedidoProveedor.Pendiente,
                 ProveedorNombre = "Proveedor Test",
                 ProveedorTelefono = "1150259552"
             };
@@ -36,7 +37,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
             var pedidoConfirmado = new DOM.Pedido
             {
                 Id = pedidoId,
-                Estado = "Enviado",
+                Estado = EstadoPedidoProveedor.Enviado,
                 ProveedorNombre = "Proveedor Test",
                 ProveedorTelefono = "1150259552",
                 ItemsInsumo = new List<DOM.PedidoInsumo>
@@ -55,7 +56,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
 
             var (pedido, linkWpp) = await CrearCasoDeUso().EjecutarAsync(pedidoId, pedidoConfirmado.ItemsInsumo);
 
-            Assert.Equal("Enviado", pedido.Estado);
+            Assert.Equal(EstadoPedidoProveedor.Enviado, pedido.Estado);
             Assert.StartsWith("https://wa.me/", linkWpp);
             _pedidoRepoMock.Verify(r => r.EnviarPedidoAsync(It.IsAny<int>(), It.IsAny<List<DOM.PedidoInsumo>>()), Times.Once);
         }
@@ -75,7 +76,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
         {
             _pedidoRepoMock
                 .Setup(r => r.ObtenerPedidoPorIdAsync(1))
-                .ReturnsAsync(new DOM.Pedido { Id = 1, Estado = "Enviado" });
+                .ReturnsAsync(new DOM.Pedido { Id = 1, Estado = EstadoPedidoProveedor.Enviado });
 
             await Assert.ThrowsAsync<InvalidOperationException>(() => CrearCasoDeUso().EjecutarAsync(1, new List<DOM.PedidoInsumo>()));
         }
@@ -85,7 +86,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
         {
             _pedidoRepoMock
                 .Setup(r => r.ObtenerPedidoPorIdAsync(1))
-                .ReturnsAsync(new DOM.Pedido { Id = 1, Estado = "Pendiente" });
+                .ReturnsAsync(new DOM.Pedido { Id = 1, Estado = EstadoPedidoProveedor.Pendiente });
 
             await Assert.ThrowsAsync<ArgumentException>(() => CrearCasoDeUso().EjecutarAsync(1, new List<DOM.PedidoInsumo>()));
         }

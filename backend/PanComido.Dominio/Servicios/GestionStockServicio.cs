@@ -34,6 +34,8 @@ namespace PanComido.Dominio.Servicios
             {
                 if (itemDeComanda.Articulo is Plato plato)
                     CalcularInsumosDePlato(plato, itemDeComanda, insumosARestar);
+                else if (itemDeComanda.Articulo is BebidaPreparada bebidaPreparada)
+                    CalcularInsumosDeBebidaPreparada(bebidaPreparada, itemDeComanda, insumosARestar);
                 else
                     CalcularInsumoDirecto(itemDeComanda.Articulo, itemDeComanda, insumosARestar);
             }
@@ -52,6 +54,15 @@ namespace PanComido.Dominio.Servicios
                     decimal cantidadTotalARestar = ingrediente.Cantidad * itemDeComanda.Cantidad;
                     AcumularInsumoARestar(insumosARestar, ingrediente.InsumoId, cantidadTotalARestar);
                 }
+            }
+        }
+
+        private void CalcularInsumosDeBebidaPreparada(BebidaPreparada bebidaPreparada, ArticuloComanda itemDeComanda, Dictionary<int, decimal> insumosARestar)
+        {
+            foreach (var item in bebidaPreparada.Insumos)
+            {
+                decimal cantidadTotalARestar = item.Cantidad * itemDeComanda.Cantidad;
+                AcumularInsumoARestar(insumosARestar, item.InsumoId, cantidadTotalARestar);
             }
         }
 

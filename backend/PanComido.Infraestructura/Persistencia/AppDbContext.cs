@@ -18,6 +18,10 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<ArticuloComandum> ArticuloComanda { get; set; }
 
+    public virtual DbSet<BebidaPreparadaInsumo> BebidaPreparadaInsumos { get; set; }
+
+    public virtual DbSet<BebidaPreparadum> BebidaPreparada { get; set; }
+
     public virtual DbSet<Bodega> Bodegas { get; set; }
 
     public virtual DbSet<Cartum> Carta { get; set; }
@@ -36,9 +40,13 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<ConfiguracionArticulo> ConfiguracionArticulos { get; set; }
 
+    public virtual DbSet<DatosTransferencium> DatosTransferencia { get; set; }
+
     public virtual DbSet<DimensionMesa> DimensionMesas { get; set; }
 
     public virtual DbSet<Empleado> Empleados { get; set; }
+
+    public virtual DbSet<EncuestaSatisfaccion> EncuestaSatisfaccions { get; set; }
 
     public virtual DbSet<EstadoComandum> EstadoComanda { get; set; }
 
@@ -94,6 +102,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Proveedor> Proveedors { get; set; }
 
+    public virtual DbSet<ReglaTiempoExtra> ReglaTiempoExtras { get; set; }
+
     public virtual DbSet<Reserva> Reservas { get; set; }
 
     public virtual DbSet<Restaurante> Restaurantes { get; set; }
@@ -121,6 +131,7 @@ public partial class AppDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("articulo_pkey");
 
             entity.Property(e => e.Eliminado).HasDefaultValue(false);
+            entity.Property(e => e.EsPrecioManual).HasDefaultValue(true);
 
             entity.HasOne(d => d.Carta).WithMany(p => p.Articulos).HasConstraintName("articulo_carta_id_fkey");
 
@@ -176,6 +187,30 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.Comanda).WithMany(p => p.ArticuloComanda)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("articulo_comanda_comanda_id_fkey");
+        });
+
+        modelBuilder.Entity<BebidaPreparadaInsumo>(entity =>
+        {
+            entity.HasKey(e => new { e.BebidaPreparadaId, e.InsumoId }).HasName("bebida_preparada_insumo_pkey");
+
+            entity.HasOne(d => d.BebidaPreparada).WithMany(p => p.BebidaPreparadaInsumos)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("bebida_preparada_insumo_bebida_preparada_id_fkey");
+
+            entity.HasOne(d => d.Insumo).WithMany(p => p.BebidaPreparadaInsumos)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("bebida_preparada_insumo_insumo_id_fkey");
+        });
+
+        modelBuilder.Entity<BebidaPreparadum>(entity =>
+        {
+            entity.HasKey(e => e.IdArticulo).HasName("bebida_preparada_pkey");
+
+            entity.Property(e => e.IdArticulo).ValueGeneratedNever();
+
+            entity.HasOne(d => d.IdArticuloNavigation).WithOne(p => p.BebidaPreparadum)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("bebida_preparada_id_articulo_fkey");
         });
 
         modelBuilder.Entity<Bodega>(entity =>
@@ -287,6 +322,15 @@ public partial class AppDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("configuracion_articulo_pkey");
         });
 
+        modelBuilder.Entity<DatosTransferencium>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("datos_transferencia_pkey");
+
+            entity.HasOne(d => d.Restaurante).WithOne(p => p.DatosTransferencium)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("datos_transferencia_restaurante_id_fkey");
+        });
+
         modelBuilder.Entity<DimensionMesa>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("dimension_mesa_pkey");
@@ -321,6 +365,15 @@ public partial class AppDbContext : DbContext
                         j.IndexerProperty<int>("EmpleadoId").HasColumnName("empleado_id");
                         j.IndexerProperty<int>("TurnoLaboralId").HasColumnName("turno_laboral_id");
                     });
+        });
+
+        modelBuilder.Entity<EncuestaSatisfaccion>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("encuesta_satisfaccion_pkey");
+
+            entity.Property(e => e.Fecha).HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasOne(d => d.Comanda).WithMany(p => p.EncuestaSatisfaccions).HasConstraintName("encuesta_satisfaccion_comanda_id_fkey");
         });
 
         modelBuilder.Entity<EstadoComandum>(entity =>
@@ -670,6 +723,13 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.Restaurante).WithMany(p => p.Proveedors)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("proveedor_restaurante_id_fkey");
+        });
+
+        modelBuilder.Entity<ReglaTiempoExtra>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("regla_tiempo_extra_pkey");
+
+            entity.HasOne(d => d.Restaurante).WithMany(p => p.ReglaTiempoExtras).HasConstraintName("regla_tiempo_extra_restaurante_id_fkey");
         });
 
         modelBuilder.Entity<Reserva>(entity =>

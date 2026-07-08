@@ -3,10 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.CartaCasosDeUso;
 using PanComido.Presentacion.DTOs.Carta;
 using PanComido.Presentacion.DTOs.ErrorResponse;
-using PanComido.Presentacion.DTOs.MetodoDePago;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Sesion;
-using System.Threading.Tasks;
 
 namespace PanComido.Presentacion.Controllers
 {

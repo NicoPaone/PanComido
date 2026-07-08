@@ -26,6 +26,7 @@ namespace PanComido.Dominio.Entidades
         public decimal FacturacionTotal { get; set; }
         public string TiempoPromedioAtencion { get; set; } = string.Empty;
         public string Estado { get; set; } = string.Empty;
+        public double? CalificacionPromedio { get; set; }
     }
 
     public class DashboardAccionItem

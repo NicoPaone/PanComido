@@ -1,11 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Infraestructura.Persistencia.Mappers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DOM = PanComido.Dominio.Entidades;
+using EF = PanComido.Infraestructura.Persistencia.Entidades;
 
 namespace PanComido.Infraestructura.Persistencia.Repositorios
 {
@@ -23,21 +21,11 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         }
 
 
-        public async Task CrearAsync(Dominio.Entidades.Plato platoDominio)
+        public async Task CrearAsync(DOM.Plato platoDominio)
         {
             var efArticulo = _articuloMapper.paraEntidad(platoDominio);
 
-           
-            if (platoDominio.Restricciones != null && platoDominio.Restricciones.Any())
-            {
-                var idsRestricciones = platoDominio.Restricciones.Select(r => r.Id).ToList();
-                var restriccionesDb = await _ctx.Restriccions
-                                                .Where(r => idsRestricciones.Contains(r.Id))
-                                                .ToListAsync();
-
-                efArticulo.Plato.Restriccions = restriccionesDb;
-            }
-
+            efArticulo.Plato.Restriccions = await ObtenerRestriccionesDbAsync(platoDominio.Restricciones);
 
             await _ctx.Articulos.AddAsync(efArticulo);
             await _ctx.SaveChangesAsync();
@@ -48,13 +36,13 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<bool> ExistePlatoConNombreAsync(int restauranteId, string nombre)
         {
             return await _ctx.Articulos
-                .AnyAsync(a => a.RestauranteId == restauranteId 
-                            && a.Plato != null 
-                            && !a.Eliminado 
+                .AnyAsync(a => a.RestauranteId == restauranteId
+                            && a.Plato != null
+                            && !a.Eliminado
                             && a.Nombre.ToLower() == nombre.ToLower());
         }
 
-        public async Task<Dominio.Entidades.Plato> ObtenerPorIdAsync(int platoId, int restauranteId)
+        public async Task<DOM.Plato> ObtenerPorIdAsync(int platoId, int restauranteId)
         {
             var efArticulo = await _ctx.Articulos
                 .Include(a => a.Plato)
@@ -72,10 +60,10 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 return null;
             }
 
-            return (Dominio.Entidades.Plato)_articuloMapper.paraDominio(efArticulo);
+            return (DOM.Plato)_articuloMapper.paraDominio(efArticulo);
         }
 
-        public async Task ActualizarAsync(Dominio.Entidades.Plato platoDominio)
+        public async Task ActualizarAsync(DOM.Plato platoDominio)
         {
             var efArticulo = await _ctx.Articulos
                 .Include(a => a.Plato)
@@ -90,78 +78,10 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 throw new InvalidOperationException("Plato no encontrado para actualizar.");
             }
 
-            // actualizar datos de Articulo
-            efArticulo.Nombre = platoDominio.Nombre;
-            efArticulo.Descripcion = platoDominio.Descripcion;
-            efArticulo.PrecioVentaFinal = platoDominio.PrecioVentaFinal;
-            efArticulo.UrlImagen = platoDominio.UrlImagen;
-
-            var configVisible = await _ctx.ConfiguracionArticulos.FindAsync(2);
-            if (platoDominio.EsVisibleEnCarta)
-            {
-                if (!efArticulo.ConfiguracionArticulos.Any(c => c.Id == 2) && configVisible != null)
-                {
-                    efArticulo.ConfiguracionArticulos.Add(configVisible);
-                }
-            }
-            else
-            {
-                var cfg = efArticulo.ConfiguracionArticulos.FirstOrDefault(c => c.Id == 2);
-                if (cfg != null)
-                {
-                    efArticulo.ConfiguracionArticulos.Remove(cfg);
-                }
-            }
-
-            // actualizar datos de Plato
-            efArticulo.Plato.TiempoPreparacionBase = platoDominio.TiempoPreparacionBase;
-            efArticulo.Plato.TipoPlatoId = platoDominio.TipoPlatoId;
-            efArticulo.Plato.CategoriaPlatoId = platoDominio.CategoriaPlatoId;
-
-            // actualizar Restricciones
-            efArticulo.Plato.Restriccions.Clear();
-            if (platoDominio.Restricciones != null && platoDominio.Restricciones.Any())
-            {
-                var idsRestricciones = platoDominio.Restricciones.Select(r => r.Id).ToList();
-                var restriccionesDb = await _ctx.Restriccions
-                                                .Where(r => idsRestricciones.Contains(r.Id))
-                                                .ToListAsync();
-                foreach (var rest in restriccionesDb)
-                {
-                    efArticulo.Plato.Restriccions.Add(rest);
-                }
-            }
-
-            // actualizar Ingredientes
-            var ingredientesActuales = efArticulo.Plato.PlatoIngredientes.ToList();
-            var idsNuevos = platoDominio.Ingredientes.Select(i => i.InsumoId).ToList();
-
-            foreach (var existente in ingredientesActuales)
-            {
-                if (!idsNuevos.Contains(existente.IngredienteId))
-                {
-                    _ctx.Set<Entidades.PlatoIngrediente>().Remove(existente);
-                }
-            }
-
-            foreach (var ingDominio in platoDominio.Ingredientes)
-            {
-                var existente = efArticulo.Plato.PlatoIngredientes.FirstOrDefault(pi => pi.IngredienteId == ingDominio.InsumoId);
-                if (existente != null)
-                {
-                    existente.Cantidad = ingDominio.Cantidad;
-                    existente.Opcional = ingDominio.Opcional;
-                }
-                else
-                {
-                    efArticulo.Plato.PlatoIngredientes.Add(new Entidades.PlatoIngrediente
-                    {
-                        IngredienteId = ingDominio.InsumoId,
-                        Cantidad = ingDominio.Cantidad,
-                        Opcional = ingDominio.Opcional
-                    });
-                }
-            }
+            ActualizarDatosBasicos(efArticulo, platoDominio);
+            await ActualizarConfiguracionVisibilidadAsync(efArticulo, platoDominio.EsVisibleEnCarta);
+            await ActualizarRestriccionesAsync(efArticulo, platoDominio.Restricciones);
+            ActualizarIngredientes(efArticulo, platoDominio.Ingredientes);
 
             await _ctx.SaveChangesAsync();
         }
@@ -173,12 +93,83 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
             if (efArticulo == null)
             {
-                throw new ArgumentException("El plato no existe o no pertenece al restaurante.");
+                throw new KeyNotFoundException("El plato no existe o no pertenece al restaurante.");
             }
 
             efArticulo.Eliminado = true;
             await _ctx.SaveChangesAsync();
         }
-    }
+
+        private async Task<List<EF.Restriccion>> ObtenerRestriccionesDbAsync(List<DOM.Restriccion> restriccionesDominio)
+        {
+            if (restriccionesDominio == null || !restriccionesDominio.Any())
+                return new List<EF.Restriccion>();
+
+            var ids = restriccionesDominio.Select(r => r.Id).ToList();
+            return await _ctx.Restriccions.Where(r => ids.Contains(r.Id)).ToListAsync();
+        }
+
+        private void ActualizarDatosBasicos(EF.Articulo efArticulo, DOM.Plato platoDominio)
+        {
+            efArticulo.Nombre = platoDominio.Nombre;
+            efArticulo.Descripcion = platoDominio.Descripcion;
+            efArticulo.PrecioVentaFinal = platoDominio.PrecioVentaFinal;
+            efArticulo.UrlImagen = platoDominio.UrlImagen;
+
+            efArticulo.Plato.TiempoPreparacionBase = platoDominio.TiempoPreparacionBase;
+            efArticulo.Plato.TipoPlatoId = platoDominio.TipoPlatoId;
+            efArticulo.Plato.CategoriaPlatoId = platoDominio.CategoriaPlatoId;
+        }
+
+        private Task ActualizarConfiguracionVisibilidadAsync(EF.Articulo efArticulo, bool esVisibleEnCarta)
+        {
+            return ConfiguracionVisibilidadHelper.AplicarVisibilidadEnCartaAsync(_ctx, efArticulo, esVisibleEnCarta);
+        }
+
+        private async Task ActualizarRestriccionesAsync(EF.Articulo efArticulo, List<DOM.Restriccion> restriccionesDominio)
+        {
+            efArticulo.Plato.Restriccions.Clear();
+            var restriccionesDb = await ObtenerRestriccionesDbAsync(restriccionesDominio);
+            foreach (var rest in restriccionesDb)
+            {
+                efArticulo.Plato.Restriccions.Add(rest);
+            }
+        }
+
+        private void ActualizarIngredientes(EF.Articulo efArticulo, List<DOM.PlatoIngrediente> ingredientesDominio)
+        {
+            var insumosNuevos = ingredientesDominio.Select(i => i.InsumoId).ToList();
+            var entidadesAEliminar = efArticulo.Plato.PlatoIngredientes
+                .Where(pi => !insumosNuevos.Contains(pi.IngredienteId))
+                .ToList();
+
+            foreach (var aEliminar in entidadesAEliminar)
+            {
+                _ctx.Set<EF.PlatoIngrediente>().Remove(aEliminar);
+            }
+
+            foreach (var ingDominio in ingredientesDominio)
+            {
+                var existente = efArticulo.Plato.PlatoIngredientes.FirstOrDefault(pi => pi.IngredienteId == ingDominio.InsumoId);
+                if (existente != null)
+                {
+                    existente.Cantidad = ingDominio.Cantidad;
+                    existente.Opcional = ingDominio.Opcional;
+                }
+                else
+                {
+                    efArticulo.Plato.PlatoIngredientes.Add(new EF.PlatoIngrediente
+                    {
+                        IngredienteId = ingDominio.InsumoId,
+                        Cantidad = ingDominio.Cantidad,
+                        Opcional = ingDominio.Opcional
+                    });
+                }
+            }
+        }
+
+
 
     }
+
+}

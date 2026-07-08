@@ -1,21 +1,21 @@
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+using PanComido.Dominio.Interfaces.Servicios;
 
 namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
 {
     public class ModificarPlatoCasoDeUso
     {
         private readonly IPlatoRepositorio _platoRepositorio;
+        private readonly IImagenServicio _servicioImagen;
 
-        public ModificarPlatoCasoDeUso(IPlatoRepositorio platoRepositorio)
+        public ModificarPlatoCasoDeUso(IPlatoRepositorio platoRepositorio, IImagenServicio servicioImagen)
         {
             _platoRepositorio = platoRepositorio;
+            _servicioImagen = servicioImagen;
         }
 
-        public async Task EjecutarAsync(int restauranteId, Plato platoModificado)
+        public async Task<Plato> EjecutarAsync(int restauranteId, Plato platoModificado, string carpetaCloudinary, Stream stream, string nombreImagen)
         {
 
             var platoExistente = await _platoRepositorio.ObtenerPorIdAsync(platoModificado.Id, restauranteId);
@@ -30,13 +30,20 @@ namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
             platoExistente.TiempoPreparacionBase = platoModificado.TiempoPreparacionBase;
             platoExistente.TipoPlatoId = platoModificado.TipoPlatoId;
             platoExistente.CategoriaPlatoId = platoModificado.CategoriaPlatoId;
-            platoExistente.UrlImagen = platoModificado.UrlImagen;
             platoExistente.EsVisibleEnCarta = platoModificado.EsVisibleEnCarta;
 
             platoExistente.Restricciones = platoModificado.Restricciones;
             platoExistente.Ingredientes = platoModificado.Ingredientes;
+            platoExistente.EsPrecioManual = platoModificado.EsPrecioManual;
+
+            if (stream != null && !string.IsNullOrEmpty(nombreImagen))
+            {
+                platoExistente.UrlImagen = await _servicioImagen.SubirImagenAsync(stream, nombreImagen, carpetaCloudinary);
+            }
 
             await _platoRepositorio.ActualizarAsync(platoExistente);
+
+            return platoExistente;
         }
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.Dashboard;
@@ -13,15 +14,18 @@ namespace PanComido.Presentacion.Controllers
 {
     [Route("gerente/dashboard")]
     [ApiController]
+    [Authorize(Roles = "Gerente")]
     public class DashboardController : ControllerBase
     {
         private readonly ObtenerVencimientosYCriticidadDashboardCasoDeUso _obtenerVencimientosCasoDeUso;
         private readonly ObtenerRendimientoComercialCasoDeUso _obtenerRendimientoCasoDeUso;
         private readonly ObtenerResumenOperativoCasoDeUso _obtenerResumenOperativoCasoDeUso;
+        private readonly ObtenerIngredientesExcluidosStatsCasoDeUso _obtenerIngredientesExcluidosStatsCasoDeUso;
         private readonly ObtenerAnalisisPlatoCasoDeUso _obtenerAnalisisPlatoCasoDeUso;
         private readonly AplicarDescuentoCasoDeUso _aplicarDescuentoCasoDeUso;
         private readonly AgendarRecordatorioCasoDeUso _agendarRecordatorioCasoDeUso;
         private readonly ResolverNotificacionCasoDeUso _resolverNotificacionCasoDeUso;
+        private readonly ObtenerResumenSatisfaccionCasoDeUso _obtenerResumenSatisfaccionCasoDeUso;
         private readonly DashboardMapper _mapper;
         private readonly PlatoAnalisisMapper _platoAnalisisMapper;
 
@@ -29,20 +33,24 @@ namespace PanComido.Presentacion.Controllers
             ObtenerVencimientosYCriticidadDashboardCasoDeUso obtenerVencimientosCasoDeUso,
             ObtenerRendimientoComercialCasoDeUso obtenerRendimientoCasoDeUso,
             ObtenerResumenOperativoCasoDeUso obtenerResumenOperativoCasoDeUso,
+            ObtenerIngredientesExcluidosStatsCasoDeUso obtenerIngredientesExcluidosStatsCasoDeUso,
             ObtenerAnalisisPlatoCasoDeUso obtenerAnalisisPlatoCasoDeUso,
             AplicarDescuentoCasoDeUso aplicarDescuentoCasoDeUso,
             AgendarRecordatorioCasoDeUso agendarRecordatorioCasoDeUso,
             ResolverNotificacionCasoDeUso resolverNotificacionCasoDeUso,
+            ObtenerResumenSatisfaccionCasoDeUso obtenerResumenSatisfaccionCasoDeUso,
             DashboardMapper mapper,
             PlatoAnalisisMapper platoAnalisisMapper)
         {
             _obtenerVencimientosCasoDeUso = obtenerVencimientosCasoDeUso;
             _obtenerRendimientoCasoDeUso = obtenerRendimientoCasoDeUso;
             _obtenerResumenOperativoCasoDeUso = obtenerResumenOperativoCasoDeUso;
+            _obtenerIngredientesExcluidosStatsCasoDeUso = obtenerIngredientesExcluidosStatsCasoDeUso;
             _obtenerAnalisisPlatoCasoDeUso = obtenerAnalisisPlatoCasoDeUso;
             _aplicarDescuentoCasoDeUso = aplicarDescuentoCasoDeUso;
             _agendarRecordatorioCasoDeUso = agendarRecordatorioCasoDeUso;
             _resolverNotificacionCasoDeUso = resolverNotificacionCasoDeUso;
+            _obtenerResumenSatisfaccionCasoDeUso = obtenerResumenSatisfaccionCasoDeUso;
             _mapper = mapper;
             _platoAnalisisMapper = platoAnalisisMapper;
         }
@@ -84,6 +92,19 @@ namespace PanComido.Presentacion.Controllers
             return Ok(respuestaDto);
         }
 
+        [HttpGet("ingredientes-excluidos")]
+        [ProducesResponseType(typeof(List<IngredienteExcluidoStatDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ObtenerIngredientesExcluidos(
+            [FromQuery] DateTime desde,
+            [FromQuery] DateTime hasta)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+            var stats = await _obtenerIngredientesExcluidosStatsCasoDeUso.EjecutarAsync(restauranteId, desde, hasta);
+            var respuestaDto = _mapper.aListaIngredientesExcluidosDto(stats);
+            return Ok(respuestaDto);
+        }
+
         [HttpGet("analisis-plato")]
         [ProducesResponseType(typeof(PlatoAnalisisDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -94,7 +115,7 @@ namespace PanComido.Presentacion.Controllers
             var resultado = await _obtenerAnalisisPlatoCasoDeUso.EjecutarAsync(restauranteId, nombre);
             if (resultado == null)
             {
-                return NotFound("No se encontró el plato especificado.");
+                return NotFound(CrearError("No se encontró el plato especificado.", "not_found"));
             }
             var dto = _platoAnalisisMapper.ParaDto(resultado);
             return Ok(dto);
@@ -107,19 +128,30 @@ namespace PanComido.Presentacion.Controllers
         public async Task<IActionResult> AplicarDescuento([FromBody] AplicarDescuentoRequest request)
         {
             int restauranteId = HttpContext.ObtenerRestauranteId();
-            var resultado = await _aplicarDescuentoCasoDeUso.EjecutarAsync(restauranteId, request.PlatoId, request.PorcentajeDescuento);
-            if (resultado == null)
+            try
             {
-                return NotFound("Plato no encontrado.");
+                var resultado = await _aplicarDescuentoCasoDeUso.EjecutarAsync(restauranteId, request.PlatoId, request.PorcentajeDescuento);
+                if (resultado == null)
+                {
+                    return NotFound(CrearError("Plato no encontrado.", "not_found"));
+                }
+                return Ok(new AplicarDescuentoResponse
+                {
+                    Mensaje = resultado.Mensaje,
+                    PlatoId = resultado.PlatoId,
+                    PrecioNuevo = resultado.PrecioNuevo,
+                    Costo = resultado.Costo,
+                    MargenPctNuevo = resultado.MargenPctNuevo
+                });
             }
-            return Ok(new AplicarDescuentoResponse
+            catch (ArgumentException ex)
             {
-                Mensaje = resultado.Mensaje,
-                PlatoId = resultado.PlatoId,
-                PrecioNuevo = resultado.PrecioNuevo,
-                Costo = resultado.Costo,
-                MargenPctNuevo = resultado.MargenPctNuevo
-            });
+                return BadRequest(CrearError(ex.Message, "bad_request"));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(CrearError(ex.Message, "business_rule_violation"));
+            }
         }
 
         [HttpPost("analisis-plato/agendar-recordatorio")]
@@ -132,7 +164,7 @@ namespace PanComido.Presentacion.Controllers
             var resultado = await _agendarRecordatorioCasoDeUso.EjecutarAsync(restauranteId, request.PlatoId, request.AccionSugerida);
             if (resultado == null)
             {
-                return NotFound("Plato no encontrado.");
+                return NotFound(CrearError("Plato no encontrado.", "not_found"));
             }
             return Ok(new AgendarRecordatorioResponse
             {
@@ -158,5 +190,32 @@ namespace PanComido.Presentacion.Controllers
             await _resolverNotificacionCasoDeUso.EjecutarAsync(restauranteId, id);
             return Ok();
         }
+
+        [HttpGet("satisfaccion")]
+        [ProducesResponseType(typeof(SatisfaccionResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ObtenerSatisfaccion(
+    [FromQuery] DateTime desde,
+    [FromQuery] DateTime hasta)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+
+            var resumen = await _obtenerResumenSatisfaccionCasoDeUso.EjecutarAsync(restauranteId, desde, hasta);
+
+            var dto = ResumenSatisfaccionMapper.AResponseDto(resumen);
+
+            return Ok(dto);
+        }
+
+        private ErrorResponseDto CrearError(string mensaje, string codigo)
+        {
+            return new ErrorResponseDto
+            {
+                Error = mensaje,
+                Code = codigo,
+                TraceId = HttpContext.TraceIdentifier
+            };
+        }
+
     }
 }

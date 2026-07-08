@@ -9,6 +9,7 @@ namespace PanComido.Dominio.Interfaces.Servicios
 {
     public interface IEstadoStockInsumoServicio
     {
-        public EstadoStock CalcularEstadoStock(decimal stockActual, decimal stockMinimo);
+        EstadoStock CalcularEstadoStock(decimal stockActual, decimal stockMinimo, decimal stockRecomendado);
+
     }
 }

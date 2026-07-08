@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.ConfiguracionCasoDeUso;
 using PanComido.Dominio.Constantes;
 using PanComido.Dominio.Entidades;
+using PanComido.Presentacion.DTOs.DatosTransferencia;
 using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.DTOs.FamiliaTipografica;
 using PanComido.Presentacion.DTOs.FilaVirtual;
@@ -31,6 +32,9 @@ namespace PanComido.Presentacion.Controllers
         private readonly ActualizarPorcentajesCasoDeUso _actualizarPorcentajesCasoDeUso;
         private readonly ActualizarFilaVirtualCasoDeUso _actualizarFilaVirtualCasoDeUso;
         private readonly ListarFamiliasTipograficasCasoDeUso _listarFamiliasTipograficasCasoDeUso;
+        private readonly ObtenerDatosTransferenciaCasoDeUso _obtenerDatosTransferenciaCasoDeUso;
+        private readonly ActualizarDatosTransferenciaCasoDeUso _actualizarDatosTransferenciaCasoDeUso;
+        private readonly DatosTransferenciaMapper _datosTransferenciaMapper;
         private readonly MetodoDePagoMapper _metodoDePagoMapper;
         private readonly RestauranteMapper _restauranteMapper;
         private readonly TurnoLaboralMapper _turnoLaboralMapper;
@@ -50,6 +54,9 @@ namespace PanComido.Presentacion.Controllers
             ObtenerPorcentajesCasoDeUso obtenerPorcentajesCasoDeUso,
             ActualizarPorcentajesCasoDeUso actualizarPorcentajesCasoDeUSo,
             ListarFamiliasTipograficasCasoDeUso listarFamiliasTipograficasCasoDeUso,
+            ObtenerDatosTransferenciaCasoDeUso obtenerDatosTransferenciaCasoDeUso,
+            ActualizarDatosTransferenciaCasoDeUso actualizarDatosTransferenciaCasoDeUso,
+            DatosTransferenciaMapper datosTransferenciaMapper,
             MetodoDePagoMapper metodoDePagoMapper,
             RestauranteMapper restauranteMapper,
             TurnoLaboralMapper turnoLaboralMapper,
@@ -68,6 +75,9 @@ namespace PanComido.Presentacion.Controllers
             _obtenerFilaVirtualCasoDeUso = obtenerFilaVirtualCasoDeUso;
             _actualizarFilaVirtualCasoDeUso = actualizarFilaVirtualCasoDeUSo;
             _listarFamiliasTipograficasCasoDeUso = listarFamiliasTipograficasCasoDeUso;
+            _obtenerDatosTransferenciaCasoDeUso = obtenerDatosTransferenciaCasoDeUso;
+            _actualizarDatosTransferenciaCasoDeUso = actualizarDatosTransferenciaCasoDeUso;
+            _datosTransferenciaMapper = datosTransferenciaMapper;
             _metodoDePagoMapper = metodoDePagoMapper;
             _restauranteMapper = restauranteMapper;
             _turnoLaboralMapper = turnoLaboralMapper;
@@ -138,6 +148,18 @@ namespace PanComido.Presentacion.Controllers
             var dtos = _metodoDePagoMapper.aListaDto(metodosDePago);
             return Ok(dtos);
         }
+
+        [HttpGet("metodos-pago/{restauranteId}/comensal")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(List<MetodoDePagoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<List<MetodoDePagoResponseDto>>> ObtenerMetodosDePagoParaComensal(int restauranteId)
+        {
+            var metodosDePago = await _obtenerMetodosDePagoCasoDeUso.EjecutarAsync(restauranteId);
+            var dtos = _metodoDePagoMapper.aListaDto(metodosDePago);
+            return Ok(dtos);
+        }
+
 
         [HttpPut("habilitar-metodos-pago")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -229,6 +251,46 @@ namespace PanComido.Presentacion.Controllers
             FilaVirtual filaVirtual = _filaVirtualMapper.aDominio(filaVirtualRequest);
 
             await _actualizarFilaVirtualCasoDeUso.EjecutarAsync(restauranteId, filaVirtual.Habilitada);
+
+            return Ok();
+        }
+
+        [HttpGet("datos-transferencia")]
+        [ProducesResponseType(typeof(List<DatosTransferenciaResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<DatosTransferenciaResponseDto>> ObtenerDatosTransferencia()
+        {
+            var restauranteId = HttpContext.ObtenerRestauranteId();
+
+            var datosTransferencia = await _obtenerDatosTransferenciaCasoDeUso.EjecutarAsync(restauranteId);
+
+            var dto = _datosTransferenciaMapper.aDto(datosTransferencia);
+            return Ok(dto);
+        }
+
+        [HttpGet("datos-transferencia/{restauranteId}/comensal")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(DatosTransferenciaResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<DatosTransferenciaResponseDto>> ObtenerDatosTransferenciaParaComensal(int restauranteId)
+        {
+            var datosTransferencia = await _obtenerDatosTransferenciaCasoDeUso.EjecutarAsync(restauranteId);
+
+            var dto = _datosTransferenciaMapper.aDto(datosTransferencia);
+            return Ok(dto);
+        }
+
+        [HttpPut("acualizar-datos-transferencia")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> ActualizarDatosTransferencia([FromBody] DatosTransferenciaRequestDto datosTransferenciaRequest)
+        {
+            var restauranteId = HttpContext.ObtenerRestauranteId();
+            DatosTransferencia datosTransferencia = _datosTransferenciaMapper.aDominio(datosTransferenciaRequest);
+
+            await _actualizarDatosTransferenciaCasoDeUso.EjecutarAsync(restauranteId, datosTransferencia);
 
             return Ok();
         }

@@ -33,7 +33,7 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
 
                 ingrediente.FechaVencimientoProxima = (DateOnly)await _loteRepositorio.ObtenerFechaDeVencimientoMasProximaDeInsumo(ingrediente.Id);
 
-                ingrediente.EstadoStock =  _estadoStockServicio.CalcularEstadoStock(ingrediente.StockActual, ingrediente.StockMinimo );
+                ingrediente.EstadoStock =  _estadoStockServicio.CalcularEstadoStock(ingrediente.StockActual, ingrediente.StockMinimo, ingrediente.StockRecomendado);
 
             }
 

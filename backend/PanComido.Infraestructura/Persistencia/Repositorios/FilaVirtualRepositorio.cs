@@ -18,13 +18,12 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             _filaVirtualEntityMapper = filaVirtualEntityMapper;
         }
 
-        public async Task<FilaVirtual> ObtenerFilaVirtualAsync(int restauranteId)
+        public async Task<FilaVirtual?> ObtenerFilaVirtualAsync(int restauranteId)
         {
             var efFila = await _ctx.FilaVirtuals
                 .FirstOrDefaultAsync(f => f.RestauranteId == restauranteId);
 
-            if (efFila == null)
-                throw new KeyNotFoundException("Fila virtual no encontrada");
+            if (efFila == null) return null;
 
             return _filaVirtualEntityMapper.paraDominio(efFila);
         }

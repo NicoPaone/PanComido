@@ -12,5 +12,6 @@
         public string? FamiliaCategoria { get; set; }
         public string? TipografiaTitulo { get; set; }
         public string? TipografiaCuerpo { get; set; }
+        public string? LinkResenaGoogleMaps { get; set; }
     }
 }

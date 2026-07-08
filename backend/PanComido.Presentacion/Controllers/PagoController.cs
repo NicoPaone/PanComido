@@ -13,52 +13,53 @@ namespace PanComido.Presentacion.Controllers
     [Authorize]
     public class PagoController : ControllerBase
     {
-        private readonly SolicitarPagoEfectivoCasoDeUso _solicitarPagoEfectivoCasoDeUso;
-        private readonly ConfirmarPagoEfectivoCasoDeUso _confirmarPagoEfectivoCasoDeUso;
+        private readonly SolicitarPagoCasoDeUso _solicitarPagoCasoDeUso;
+        private readonly ConfirmarPagoCasoDeUso _confirmarPagoCasoDeUso;
         private readonly CrearPreferenciaMPCasoDeUso _crearPreferenciaMPCasoDeUso;
         private readonly ConfirmarPagoMPCasoDeUso _confirmarPagoMPCasoDeUso;
         private readonly PagoMapper _pagoMapper;
-
         private readonly ILogger<PagoController> _logger;
+
         public PagoController(
-            SolicitarPagoEfectivoCasoDeUso solicitarPagoEfectivoCasoDeUso,
-            ConfirmarPagoEfectivoCasoDeUso confirmarPagoEfectivoCasoDeUso,
+            SolicitarPagoCasoDeUso solicitarPagoCasoDeUso,
+            ConfirmarPagoCasoDeUso confirmarPagoCasoDeUso,
             CrearPreferenciaMPCasoDeUso crearPreferenciaMPCasoDeUso,
             ConfirmarPagoMPCasoDeUso confirmarPagoMPCasoDeUso,
             PagoMapper pagoMapper,
             ILogger<PagoController> logger)
         {
-            _solicitarPagoEfectivoCasoDeUso = solicitarPagoEfectivoCasoDeUso;
-            _confirmarPagoEfectivoCasoDeUso = confirmarPagoEfectivoCasoDeUso;
+            _solicitarPagoCasoDeUso = solicitarPagoCasoDeUso;
+            _confirmarPagoCasoDeUso = confirmarPagoCasoDeUso;
             _crearPreferenciaMPCasoDeUso = crearPreferenciaMPCasoDeUso;
             _confirmarPagoMPCasoDeUso = confirmarPagoMPCasoDeUso;
             _pagoMapper = pagoMapper;
             _logger = logger;
         }
 
-        [HttpPost("solicitar-efectivo/{comandaId}/comensal/{restauranteId}")]
+        [HttpPost("solicitar-pago/{comandaId}/comensal/{restauranteId}")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> SolicitarPagoEfectivoComensal(int comandaId, int restauranteId)
+        public async Task<IActionResult> SolicitarPagoComensal(int comandaId, int restauranteId, [FromBody] SolicitarPagoRequestDto solicitarPagoRequest)
         {
-            var resultado = await _solicitarPagoEfectivoCasoDeUso.EjecutarAsync(comandaId, restauranteId);
+            var resultado = await _solicitarPagoCasoDeUso.EjecutarAsync(comandaId, restauranteId, solicitarPagoRequest.MetodoPago);
             return Ok(resultado);
         }
 
-        [HttpPost("confirmar-pago-efectivo/{comandaId}")]
+        [HttpPost("confirmar-pago/{comandaId}")]
         [Authorize(Roles = "Mozo, Gerente")]
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
-        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ConfirmarPagoEfectivo(int comandaId)
+        [ProducesResponseType(typeof(ErrorResponseDto),
+        StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ConfirmarPago(int comandaId, [FromBody] ConfirmarPagoRequestDto request)
         {
             var restauranteId = HttpContext.ObtenerRestauranteId();
-            var pagoConfirmado = await _confirmarPagoEfectivoCasoDeUso.EjecutarAsync(comandaId, restauranteId);
+            var pagoConfirmado = await _confirmarPagoCasoDeUso.EjecutarAsync(comandaId, restauranteId, request.MetodoPago);
             var dto = _pagoMapper.aDto(pagoConfirmado);
             return Ok(dto);
         }

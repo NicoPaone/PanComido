@@ -21,6 +21,10 @@ namespace PanComido.Presentacion.Mappers.Dashboard
                 },
                 Diagnostico = resultado.AnalisisIa.Diagnostico,
                 Alerta = resultado.AnalisisIa.Alerta,
+                FuenteAnalisis = resultado.FuenteAnalisis,
+                EsFallbackLocal = resultado.EsFallbackLocal,
+                AnalisisProvieneDeCache = resultado.AnalisisProvieneDeCache,
+                MensajeFallback = resultado.MotivoFallback,
                 Metricas = new MetricasAnalisisDto
                 {
                     Volumen = $"{resultado.VentasPeriodo} u.",

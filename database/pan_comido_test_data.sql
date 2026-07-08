@@ -14,8 +14,8 @@ BEGIN;
 INSERT INTO ubicacion (id, direccion, ciudad, codigo_postal) VALUES
     (1, 'Av. Corrientes 1234', 'CABA', '1043');
 
-INSERT INTO restaurante (id, direccion_id, familia_tipografica_id, nombre, imagen, color_principal, color_secundario) VALUES
-    (1, 1, 7, 'Pan Comido', '/img/logo-pan-comido.png', '#FBAC28', '#C5172E');
+INSERT INTO restaurante (id, direccion_id, familia_tipografica_id, nombre, imagen, color_principal, color_secundario, link_resena_google_maps) VALUES
+    (1, 1, 7, 'Pan Comido', '/img/logo-pan-comido.png', '#FBAC28', '#C5172E', 'https://search.google.com/local/writereview?placeid=ChIJNZc0EjjIvJUR1ZS_W7XWAgA');
 
 INSERT INTO carta (id, restaurante_id) VALUES
     (1, 1);
@@ -33,7 +33,7 @@ INSERT INTO turno_laboral (id, restaurante_id, horario_laboral_inicio, horario_l
 -- ============================================================
 
 INSERT INTO empleado (id, restaurante_id, nombre, email, contrasena, estado, eliminado) VALUES
-    (1, 1, 'Carlos López',    'carlos@pancomido.com',  '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',  'activo',   FALSE),
+(1, 1, 'Carlos López',    'carlos@pancomido.com',  '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',  'activo',   FALSE),
     (2, 1, 'Cocina',          'cocina@pancomido.com',  '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',  'activo',   FALSE),
     (3, 1, 'Ana Rodríguez',   'ana@pancomido.com',     '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',    'activo',   FALSE),
     (4, 1, 'Pedro Martínez',  'pedro@pancomido.com',   '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42',    'activo',   FALSE),
@@ -51,8 +51,7 @@ VALUES (1, 'Martin Mozo', 'martin@pancomido.com', '$2a$11$v3Wa2R8iZwjWc7RI/ANkIe
 INSERT INTO mozo (id_empleado, activo) VALUES (currval('empleado_id_seq'), true);
 
 INSERT INTO empleado (restaurante_id, nombre, email, contrasena, estado)
-VALUES (1, 'Sofia Cocina', 'sofia@pancomido.com', '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42', 'activo');
-INSERT INTO cocina (id_empleado) VALUES (currval('empleado_id_seq'));
+VALUES (1, 'Sofia Cocina', 'sofia@pancomido.com', '$2a$11$v3Wa2R8iZwjWc7RI/ANkIeDbrrQUXOEGdGDFf.dQVaqUNjGm8Tv42', 'activo');INSERT INTO cocina (id_empleado) VALUES (currval('empleado_id_seq'));
 
 INSERT INTO gerente (id_empleado) VALUES (1);
 INSERT INTO cocina (id_empleado) VALUES (2);
@@ -137,48 +136,48 @@ INSERT INTO reserva (id, mesa_id, cant_comensales, nombre_titular, fecha, horari
 -- ARTÍCULOS
 -- ============================================================
 
-INSERT INTO articulo (id, carta_id, restaurante_id, nombre, descripcion, precio_venta_final, precio_ganancia, precio_promocional, url_imagen, eliminado) VALUES
-    (1,  1, 1, 'Pizza Muzzarella',       'Pizza clásica con mozzarella y salsa de tomate',        4500, 2800, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894359/PizzaMuzzarela_abbvtw.jpg', FALSE),
-    (2,  1, 1, 'Pizza Napolitana',        'Pizza con tomate, mozzarella y ajo',                   5000, 3200, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894356/PiazzaNapolitana_pqgxd9.jpg', FALSE),
-    (3,  1, 1, 'Milanesa Napolitana',     'Milanesa de pollo con jamón, queso y salsa',           6500, 4000, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894348/MilanesaNapolitana_x78usk.jpg', FALSE),
-    (4,  1, 1, 'Hamburguesa Clásica',     'Carne vacuna, lechuga, tomate, cebolla',               5500, 3500, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894341/hamburguesa-clasica_ckpng4.jpg', FALSE),
-    (5,  1, 1, 'Ensalada César',          'Lechuga, pollo grillado, croutons, parmesano',         4000, 2500, 3500, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894328/EnsaladaCesar_wt0x7f.jpg', FALSE),
-    (6,  1, 1, 'Bife de Chorizo',         'Bife de chorizo a la parrilla con guarnición',         8500, 5500, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894311/BifeDeCorizo_i3y5o9.jpg', FALSE),
-    (7,  1, 1, 'Spaghetti Bolognesa',     'Pasta con salsa bolognesa casera',                     5000, 3000, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894335/Espagueti_amwx6n.jpg', FALSE),
-    (8,  1, 1, 'Empanadas de Carne (x3)', 'Empanadas de carne cortada a cuchillo',                3000, 1800, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894325/EmpanadaCarne_zhdcnj.jpg', FALSE),
-    (9,  1, 1, 'Papas Fritas',            'Porción de papas fritas',                              2500, 1500, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894352/PapaFrita_lzgtgm.jpg', FALSE),
-    (10, 1, 1, 'Ensalada Mixta',          'Lechuga, tomate, cebolla, huevo',                      2000, 1200, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894332/EnsaladaMixta_hun4ub.jpg', FALSE),
-    (11, 1, 1, 'Wok de Pollo y Verduras', 'Pollo salteado con pimiento, cebolla y salsa de soja', 5500, 3300, 4800, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894367/WokDePolloYVerduras_j0psxj.jpg', FALSE),
-    (12, 1, 1, 'Coca-Cola 500ml',         'Gaseosa línea Coca-Cola',                              1500, 900,  NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894318/CocaCola_zldkj2.jpg', FALSE),
-    (13, 1, 1, 'Agua Mineral 500ml',      'Agua mineral sin gas',                                 1000, 600,  NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894304/AguaMineral_ztybkv.jpg', FALSE),
-    (14, 1, 1, 'Cerveza Artesanal IPA',   'Pinta de cerveza artesanal IPA',                       2500, 1500, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894315/CervezaIpa_xtyhtv.jpg', FALSE),
-    (15, 1, 1, 'Vino Malbec (copa)',      'Copa de Malbec Reserva',                               2000, 1200, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894321/CopaMalbec_spilal.jpg', FALSE),
-    (16, 1, 1, 'Sprite 500ml',            'Gaseosa Sprite',                                       1500, 900,  NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894363/Sprite_leudfx.jpg', FALSE),
-    (17, 1, 1, 'Fernet con Coca',         'Fernet Branca con Coca-Cola',                          2500, 1500, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894338/FernetConCola_ettmuk.jpg', FALSE),
-    (18, NULL, 1, 'Harina 000',           NULL, NULL, NULL, NULL, NULL, FALSE),
-    (19, NULL, 1, 'Mozzarella',           NULL, NULL, NULL, NULL, NULL, FALSE),
-    (20, NULL, 1, 'Tomate perita',        NULL, NULL, NULL, NULL, NULL, FALSE),
-    (21, NULL, 1, 'Pechuga de pollo',     NULL, NULL, NULL, NULL, NULL, FALSE),
-    (22, NULL, 1, 'Aceite de oliva',      NULL, NULL, NULL, NULL, NULL, FALSE),
-    (23, NULL, 1, 'Crema de leche',       NULL, NULL, NULL, NULL, NULL, FALSE),
-    (24, NULL, 1, 'Sal',                  NULL, NULL, NULL, NULL, NULL, FALSE),
-    (25, NULL, 1, 'Pimienta',             NULL, NULL, NULL, NULL, NULL, FALSE),
-    (26, NULL, 1, 'Lechuga',              NULL, NULL, NULL, NULL, NULL, FALSE),
-    (27, NULL, 1, 'Huevos',               NULL, NULL, NULL, NULL, NULL, FALSE),
-    (28, NULL, 1, 'Carne vacuna (bife)',  NULL, NULL, NULL, NULL, NULL, FALSE),
-    (29, NULL, 1, 'Papa',                 NULL, NULL, NULL, NULL, NULL, FALSE),
-    (30, NULL, 1, 'Cebolla',              NULL, NULL, NULL, NULL, NULL, FALSE),
-    (31, NULL, 1, 'Ajo',                  NULL, NULL, NULL, NULL, NULL, FALSE),
-    (32, NULL, 1, 'Pan de hamburguesa',   NULL, NULL, NULL, NULL, NULL, FALSE),
-    (33, NULL, 1, 'Fideos secos',         NULL, NULL, NULL, NULL, NULL, FALSE),
-    (34, NULL, 1, 'Albahaca',             NULL, NULL, NULL, NULL, NULL, FALSE),
-    (35, NULL, 1, 'Pimiento rojo',        NULL, NULL, NULL, NULL, NULL, FALSE),
-    (36, NULL, 1, 'Orégano',              NULL, NULL, NULL, NULL, NULL, FALSE),
-    (37, NULL, 1, 'Jamón cocido',         NULL, NULL, NULL, NULL, NULL, FALSE),
-    (38, NULL, 1, 'Salsa de tomate casera', NULL, NULL, NULL, NULL, NULL, FALSE),
-    (39, NULL, 1, 'Masa de pizza',        NULL, NULL, NULL, NULL, NULL, FALSE),
-    (40, NULL, 1, 'Masa de empanada',     NULL, NULL, NULL, NULL, NULL, FALSE),
-    (41, NULL, 1, 'Salsa bechamel',       NULL, NULL, NULL, NULL, NULL, FALSE);
+INSERT INTO articulo (id, carta_id, restaurante_id, nombre, descripcion, precio_venta_final, precio_ganancia, precio_promocional, url_imagen, eliminado, es_precio_manual) VALUES
+    (1,  1, 1, 'Pizza Muzzarella',       'Pizza clásica con mozzarella y salsa de tomate',        4500, 2800, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894359/PizzaMuzzarela_abbvtw.jpg', FALSE, TRUE),
+    (2,  1, 1, 'Pizza Napolitana',        'Pizza con tomate, mozzarella y ajo',                   5000, 3200, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894356/PiazzaNapolitana_pqgxd9.jpg', FALSE, TRUE),
+    (3,  1, 1, 'Milanesa Napolitana',     'Milanesa de pollo con jamón, queso y salsa',           6500, 4000, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894348/MilanesaNapolitana_x78usk.jpg', FALSE, FALSE),
+    (4,  1, 1, 'Hamburguesa Clásica',     'Carne vacuna, lechuga, tomate, cebolla',               5500, 3500, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894341/hamburguesa-clasica_ckpng4.jpg', FALSE, TRUE),
+    (5,  1, 1, 'Ensalada César',          'Lechuga, pollo grillado, croutons, parmesano',         4000, 2500, 3500, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894328/EnsaladaCesar_wt0x7f.jpg', FALSE, FALSE),
+    (6,  1, 1, 'Bife de Chorizo',         'Bife de chorizo a la parrilla con guarnición',         8500, 5500, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894311/BifeDeCorizo_i3y5o9.jpg', FALSE, TRUE),
+    (7,  1, 1, 'Spaghetti Bolognesa',     'Pasta con salsa bolognesa casera',                     5000, 3000, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894335/Espagueti_amwx6n.jpg', FALSE, TRUE),
+    (8,  1, 1, 'Empanadas de Carne (x3)', 'Empanadas de carne cortada a cuchillo',                3000, 1800, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894325/EmpanadaCarne_zhdcnj.jpg', FALSE, FALSE),
+    (9,  1, 1, 'Papas Fritas',            'Porción de papas fritas',                              2500, 1500, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894352/PapaFrita_lzgtgm.jpg', FALSE, TRUE),
+    (10, 1, 1, 'Ensalada Mixta',          'Lechuga, tomate, cebolla, huevo',                      2000, 1200, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894332/EnsaladaMixta_hun4ub.jpg', FALSE, FALSE),
+    (11, 1, 1, 'Wok de Pollo y Verduras', 'Pollo salteado con pimiento, cebolla y salsa de soja', 5500, 3300, 4800, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894367/WokDePolloYVerduras_j0psxj.jpg', FALSE, TRUE),
+    (12, 1, 1, 'Coca-Cola 500ml',         'Gaseosa línea Coca-Cola',                              1500, 900,  NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894318/CocaCola_zldkj2.jpg', FALSE, FALSE),
+    (13, 1, 1, 'Agua Mineral 500ml',      'Agua mineral sin gas',                                 1000, 600,  NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894304/AguaMineral_ztybkv.jpg', FALSE, FALSE),
+    (14, 1, 1, 'Cerveza Artesanal IPA',   'Pinta de cerveza artesanal IPA',                       2500, 1500, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894315/CervezaIpa_xtyhtv.jpg', FALSE, FALSE),
+    (15, 1, 1, 'Vino Malbec (copa)',      'Copa de Malbec Reserva',                               2000, 1200, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894321/CopaMalbec_spilal.jpg', FALSE, FALSE),
+    (16, 1, 1, 'Sprite 500ml',            'Gaseosa Sprite',                                       1500, 900,  NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894363/Sprite_leudfx.jpg', FALSE, FALSE),
+    (17, 1, 1, 'Fernet con Coca',         'Fernet Branca con Coca-Cola',                          2500, 1500, NULL, 'https://res.cloudinary.com/ddqc6v6zu/image/upload/v1781894338/FernetConCola_ettmuk.jpg', FALSE, FALSE),
+    (18, NULL, 1, 'Harina 000',           NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (19, NULL, 1, 'Mozzarella',           NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (20, NULL, 1, 'Tomate perita',        NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (21, NULL, 1, 'Pechuga de pollo',     NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (22, NULL, 1, 'Aceite de oliva',      NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (23, NULL, 1, 'Crema de leche',       NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (24, NULL, 1, 'Sal',                  NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (25, NULL, 1, 'Pimienta',             NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (26, NULL, 1, 'Lechuga',              NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (27, NULL, 1, 'Huevos',               NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (28, NULL, 1, 'Carne vacuna (bife)',  NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (29, NULL, 1, 'Papa',                 NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (30, NULL, 1, 'Cebolla',              NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (31, NULL, 1, 'Ajo',                  NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (32, NULL, 1, 'Pan de hamburguesa',   NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (33, NULL, 1, 'Fideos secos',         NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (34, NULL, 1, 'Albahaca',             NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (35, NULL, 1, 'Pimiento rojo',        NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (36, NULL, 1, 'Orégano',              NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (37, NULL, 1, 'Jamón cocido',         NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (38, NULL, 1, 'Salsa de tomate casera', NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (39, NULL, 1, 'Masa de pizza',        NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (40, NULL, 1, 'Masa de empanada',     NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
+    (41, NULL, 1, 'Salsa bechamel',       NULL, NULL, NULL, NULL, NULL, FALSE, FALSE);
 
 INSERT INTO articulo_configuracion_articulo (articulo_id, configuracion_articulo_id) VALUES
     (1, 1), (1, 2), (2, 1), (2, 2), (3, 1), (3, 2), (4, 1), (4, 2),
@@ -208,15 +207,15 @@ INSERT INTO plato (id_articulo, tipo_plato_id, categoria_plato_id, tiempo_prepar
 -- INSUMOS
 -- ============================================================
 
-INSERT INTO insumo (id_articulo, categoria_insumo_id, unidad_medida_id, stock_minimo) VALUES
-    (12, 13, 5, 5), (13, 13, 5, 3), (14, 12, 5, 2), (15, 12, 5, 2),
-    (16, 13, 5, 3), (17, 12, 5, 1),
-    (18, 11, 1, 2), (19, 4,  1, 1), (20, 2,  1, 0.5), (21, 3,  1, 1),
-    (22, 9,  3, 0.5), (23, 4,  3, 0.3), (24, 8,  1, 2), (25, 8,  2, 1),
-    (26, 2,  1, 0.5), (27, 7,  5, 0.3), (28, 3,  1, 1), (29, 2,  1, 0.5),
-    (30, 2,  1, 0.3), (31, 8,  5, 1), (32, 11, 5, 0.5), (33, 5,  1, 1),
-    (34, 2,  2, 1), (35, 2,  1, 0.3), (36, 8,  2, 1), (37, 3,  1, 0.3),
-    (38, 2,  3, 0.5), (39, 11, 6, 0.3), (40, 11, 6, 0.2), (41, 4,  3, 0.3);
+INSERT INTO insumo (id_articulo, categoria_insumo_id, unidad_medida_id, stock_minimo, stock_recomendado) VALUES
+    (12, 13, 5, 5, 10), (13, 13, 5, 3, 6), (14, 12, 5, 2, 4), (15, 12, 5, 2, 4),
+    (16, 13, 5, 3, 6), (17, 12, 5, 1, 2),
+    (18, 11, 1, 2, 4), (19, 4,  1, 1, 2), (20, 2,  1, 0.5, 1), (21, 3,  1, 1, 2),
+    (22, 9,  3, 0.5, 1), (23, 4,  3, 0.3, 0.6), (24, 8,  1, 2, 4), (25, 8,  2, 1, 2),
+    (26, 2,  1, 0.5, 1), (27, 7,  5, 0.3, 0.6), (28, 3,  1, 1, 2), (29, 2,  1, 0.5, 1),
+    (30, 2,  1, 0.3, 0.6), (31, 8,  5, 1, 2), (32, 11, 5, 0.5, 1), (33, 5,  1, 1, 2),
+    (34, 2,  2, 1, 2), (35, 2,  1, 0.3, 0.6), (36, 8,  2, 1, 2), (37, 3,  1, 0.3, 0.6),
+    (38, 2,  3, 0.5, 1), (39, 11, 6, 0.3, 0.6), (40, 11, 6, 0.2, 0.4), (41, 4,  3, 0.3, 0.6);
 
 -- ============================================================
 -- INGREDIENTES
@@ -347,14 +346,24 @@ INSERT INTO cierre (id, restaurante_id, turno_laboral_id, diferencia, sobrante, 
 INSERT INTO comanda (id, mesa_id, restaurante_id, estado_comanda_id, cant_comensales, hora_inicio, hora_fin) VALUES
     (1, 3, 1, 2, 3, NOW() - INTERVAL '25 minutes', NULL),
     (2, 4, 1, 1, 5, NOW() - INTERVAL '5 minutes',  NULL),
-    (3, 1, 1, 3, 2, NOW() - INTERVAL '3 hours',     NOW() - INTERVAL '2 hours');
+    (3, 1, 1, 3, 2, NOW() - INTERVAL '3 hours',     NOW() - INTERVAL '2 hours'),
+    (4, 2, 1, 3, 2, NOW() - INTERVAL '1 day', NOW() - INTERVAL '23 hours'),
+    (5, 5, 1, 3, 4, NOW() - INTERVAL '2 days', NOW() - INTERVAL '47 hours'),
+    (6, 1, 1, 3, 1, NOW() - INTERVAL '2 days', NOW() - INTERVAL '47 hours'),
+    (7, 3, 1, 3, 3, NOW() - INTERVAL '3 days', NOW() - INTERVAL '70 hours'),
+    (8, 4, 1, 3, 2, NOW() - INTERVAL '4 days', NOW() - INTERVAL '94 hours');
 
 -- ============================================================
 -- PAGOS (deben ir DESPUÉS de comanda: pago.comanda_id la referencia)
 -- ============================================================
 
 INSERT INTO pago (id, comanda_id, cierre_id, metodo_pago_id, estado_pago_id, external_reference, total) VALUES
-    (1, 3, 1, 1, 2, NULL, 28500.00);
+    (1, 3, 1, 1, 2, NULL, 28500.00),
+    (2, 4, 1, 1, 2, NULL, 11000.00),
+    (3, 5, 1, 2, 2, NULL, 22000.00),
+    (4, 6, 1, 1, 2, NULL, 5500.00),
+    (5, 7, 1, 1, 2, NULL, 16500.00),
+    (6, 8, 1, 2, 2, NULL, 11000.00);
 
 INSERT INTO articulo_comanda (id, comanda_id, articulo_id, cantidad, entregado, observaciones_generales, nombre_comensal) VALUES
     (1,  1, 1,  1, FALSE, NULL,                       'Lucas'), -- Era: 'Sin orégano'
@@ -370,7 +379,13 @@ INSERT INTO articulo_comanda (id, comanda_id, articulo_id, cantidad, entregado, 
     (11, 2, 13, 2, FALSE, NULL,                       'Julia'),
     (12, 3, 2,  1, TRUE,  NULL,                       'Martin'),
     (13, 3, 11, 1, TRUE,  NULL,                       'Martin'), -- Era: 'Sin pimienta'
-    (14, 3, 16, 2, TRUE,  NULL,                       'Nicole');
+    (14, 3, 16, 2, TRUE,  NULL,                       'Nicole'),
+    (15, 4, 4,  2, TRUE,  NULL,                       'Esteban'),
+    (16, 5, 4,  2, TRUE,  NULL,                       'Gabriela'),
+    (17, 5, 1,  2, TRUE,  NULL,                       'Juana'),
+    (18, 6, 4,  1, TRUE,  NULL,                       'Roberto'),
+    (19, 7, 4,  3, TRUE,  NULL,                       'Florencia'),
+    (20, 8, 4,  2, TRUE,  NULL,                       'Clara');
 
 -- ============================================================
 -- INGREDIENTES EXCLUIDOS (Relación N:N)
@@ -381,7 +396,12 @@ INSERT INTO articulo_comanda_ingrediente_excluido (articulo_comanda_id, ingredie
     (1, 36), -- A la Pizza Muzzarella (ID 1) se le saca el Orégano (Insumo 36)
     (6, 37), -- A la Milanesa Napolitana (ID 6) se le saca el Jamón cocido (Insumo 37)
     (7, 30), -- A las Hamburguesas (ID 7) se les saca la Cebolla (Insumo 30)
-    (13, 25); -- Al Wok de Pollo (ID 13) se le saca la Pimienta (Insumo 25)
+    (13, 25), -- Al Wok de Pollo (ID 13) se le saca la Pimienta (Insumo 25)
+    (15, 30), -- Esteban excluye Cebolla (30) de la Hamburguesa Clásica (15)
+    (16, 30), -- Gabriela excluye Cebolla (30) de la Hamburguesa Clásica (16)
+    (17, 36), -- Juana excluye Orégano (36) de la Pizza Muzzarella (17)
+    (18, 30), -- Roberto excluye Cebolla (30) de la Hamburguesa Clásica (18)
+    (19, 30); -- Florencia excluye Cebolla (30) de la Hamburguesa Clásica (19)
 
 -- ============================================================
 -- LLAMADOS
@@ -452,6 +472,16 @@ INSERT INTO notificacion (id, restaurante_id, fecha, descripcion, resuelta) VALU
     (4, 1, NOW() - INTERVAL '4 hours',    'Pedido #3 de Distribuidora Central recibido', TRUE);
 
 -- ============================================================
+-- REGLAS DE TIEMPO EXTRA
+-- ============================================================
+INSERT INTO regla_tiempo_extra (id, restaurante_id, porcentaje_ocupacion_hasta, minutos_extra) VALUES 
+    (1, 1, 30, 5),
+    (2, 1, 50, 10),
+    (3, 1, 70, 15),
+    (4, 1, 100, 20);
+
+
+-- ============================================================
 -- RESET DE SECUENCIAS
 -- ============================================================
 
@@ -480,5 +510,6 @@ SELECT setval('bodega_id_seq',            (SELECT MAX(id) FROM bodega));
 SELECT setval('articulo_comanda_id_seq',  (SELECT MAX(id) FROM articulo_comanda));
 SELECT setval('familia_tipografica_id_seq',        (SELECT MAX(id) FROM familia_tipografica));
 SELECT setval('articulo_comanda_ingrediente_excluido_id_seq', (SELECT MAX(id) FROM articulo_comanda_ingrediente_excluido));
+SELECT setval('regla_tiempo_extra_id_seq', (SELECT COALESCE(MAX(id), 1) FROM regla_tiempo_extra));
 
 COMMIT;

@@ -2,7 +2,6 @@ using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Presentacion.DTOs.Articulo;
 using PanComido.Presentacion.DTOs.Cliente;
-using PanComido.Presentacion.DTOs.Articulo;
 using PanComido.Presentacion.DTOs.Comanda;
 using DOM = PanComido.Dominio.Entidades;
 
@@ -106,6 +105,7 @@ namespace PanComido.Presentacion.Mappers
                 EstadoComanda.Nueva => "Recibido",
                 EstadoComanda.EnPreparacion => "Preparación",
                 EstadoComanda.EnEspera => "Listo",
+                EstadoComanda.Finalizada => "Finalizada",
                 EstadoComanda.Abierta => "Esperando pedido",
                 _ => "Esperando pedido"
             };

@@ -28,6 +28,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             var domInsumo = new DOM.Insumo
             {
                 StockMinimo = efArticulo.Insumo.StockMinimo,
+                StockRecomendado = efArticulo.Insumo.StockRecomendado,
                 Tipo = efArticulo.Insumo.CategoriaInsumo != null ? (TipoInsumo)efArticulo.Insumo.CategoriaInsumo.TipoAplica : default,
                 Categoria = efArticulo.Insumo.CategoriaInsumo?.Descripcion,
                 UnidadMedida = efArticulo.Insumo.UnidadMedida?.Nombre,
@@ -50,7 +51,9 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 {
                     InsumoId = pi.InsumoId,
                     Cantidad = pi.Cantidad,
-                    PrecioCompra = pi.PrecioCompra
+                    PrecioCompra = pi.PrecioCompra,
+                    Fecha = pi.Pedido?.Fecha ?? default,
+                    Estado = pi.Pedido != null ? (DOM.Enums.EstadoPedido)pi.Pedido.EstadoPedidoId : default
                 }).ToList();
             }
             return domInsumo;
@@ -63,6 +66,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 CategoriaInsumoId = insumoDominio.CategoriaId,
                 UnidadMedidaId = insumoDominio.UnidadDeMedidaId,
                 StockMinimo = insumoDominio.StockMinimo,
+                StockRecomendado = insumoDominio.StockRecomendado,
 
                 Lotes = insumoDominio.Lotes?
                 .Select(l => _loteEntityMapper.paraEntidad(l))

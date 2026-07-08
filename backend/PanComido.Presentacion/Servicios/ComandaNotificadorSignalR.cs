@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.SignalR;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Servicios;
 using PanComido.Presentacion.Hubs;
-using System.Linq;
 
 namespace PanComido.Presentacion.Servicios
 {

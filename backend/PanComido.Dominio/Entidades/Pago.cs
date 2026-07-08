@@ -1,9 +1,4 @@
 ﻿using PanComido.Dominio.Entidades.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PanComido.Dominio.Entidades
 {
@@ -16,6 +11,6 @@ namespace PanComido.Dominio.Entidades
         public string? ExternalReference { get; set; }
         public decimal Total { get; set; }
         public EstadoPago EstadoPago { get; set; }
-        //public DateTime FechaHoraPago { get; set; }
+        public DateTime FechaHora { get; set; }
     }
 }

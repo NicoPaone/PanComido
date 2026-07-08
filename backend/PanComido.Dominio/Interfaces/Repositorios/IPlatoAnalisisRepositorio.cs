@@ -17,5 +17,7 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task GuardarRecordatorioNotificacionAsync(int restauranteId, string descripcion);
         Task<List<Notificacion>> ObtenerRecordatoriosActivosAsync(int restauranteId);
         Task ResolverNotificacionAsync(int restauranteId, int id);
+        Task<List<RendimientoPlato>> ObtenerTopPlatosMasVendidosAsync(int restauranteId, DateTime fechaDesde, DateTime fechaHasta, int limite = 5);
+        Task<List<RendimientoPlato>> ObtenerTopPlatosMenosVendidosAsync(int restauranteId, DateTime fechaDesde, DateTime fechaHasta, int limite = 5);
     }
 }
