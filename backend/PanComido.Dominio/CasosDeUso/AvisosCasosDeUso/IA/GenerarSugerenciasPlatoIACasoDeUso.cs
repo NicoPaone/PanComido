@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.IA;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Repositorios.IA;
@@ -39,7 +39,8 @@ namespace PanComido.Dominio.CasosDeUso.AvisosCasosDeUso.IA
             SugerenciaIA? sugerenciaExistente = await _sugerenciaIARepositorio.ObtenerSugerenciaIAAsync(restauranteId);
 
             if (sugerenciaExistente != null 
-                    && sugerenciaExistente.FechaSugerencia.Date == DateTime.Today)
+                    && sugerenciaExistente.FechaSugerencia.Date == DateTime.Today
+                    && sugerenciaExistente.PlatosSugeridos.Any())
             {
                 return sugerenciaExistente;
             }
