@@ -33,11 +33,16 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .ThenInclude(i => i.UnidadMedida)
             .Include(a => a.Insumo)
                 .ThenInclude(i => i.Ingrediente)
-                    .ThenInclude(ing => ing.IngredientePreparado);
+                    .ThenInclude(ing => ing.IngredientePreparado)
+            .Include(a => a.ConfiguracionArticulos);
 
         public async Task<List<DOM.Insumo>> ObtenerInsumosAsync(int restauranteId)
         {
-            var efLista = await BaseQuery(restauranteId).ToListAsync();
+            var efLista = await BaseQuery(restauranteId)
+                .Include(a => a.Insumo)
+                    .ThenInclude(i => i.PedidoInsumos)
+                        .ThenInclude(pi => pi.Pedido)
+                .ToListAsync();
             return efLista.Select(a => (DOM.Insumo)_mapper.paraDominio(a)).ToList();
         }
 
@@ -95,6 +100,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<DOM.Insumo> CrearAsync(DOM.Insumo insumoDominio)
         {
             EF.Articulo efArticulo = _mapper.paraEntidad(insumoDominio);
+            await ConfiguracionVisibilidadHelper.AplicarVisibilidadEnCartaAsync(_ctx, efArticulo, insumoDominio.EsVisibleEnCarta);
+
             await _ctx.Articulos.AddAsync(efArticulo);
 
             await _ctx.SaveChangesAsync();
@@ -109,38 +116,39 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             var efArticulo = await BaseQuery(restauranteId)
                 .Include(a => a.Insumo)
                     .ThenInclude(i => i.Lotes)
+                .Include(a => a.Insumo)
+                    .ThenInclude(i => i.PedidoInsumos)
+                        .ThenInclude(pi => pi.Pedido)
                 .FirstOrDefaultAsync(a => a.Id == insumoId);
 
             return efArticulo == null ? null : (DOM.Insumo)_mapper.paraDominio(efArticulo);
         }
 
-        public async Task ActualizarAsync(DOM.Insumo insumoDominio)
+        public async Task<DOM.Insumo> ActualizarAsync(DOM.Insumo insumoDominio)
         {
             var efArticulo = await BaseQuery(insumoDominio.RestauranteId)
                 .FirstOrDefaultAsync(a => a.Id == insumoDominio.Id);
 
-            if (efArticulo == null)
-            {
-                throw new InvalidOperationException("Insumo no encontrado para actualizar.");
-            }
+            if (efArticulo == null) return null;
 
             ActualizarDatosBasicos(efArticulo, insumoDominio);
+            await ConfiguracionVisibilidadHelper.AplicarVisibilidadEnCartaAsync(_ctx, efArticulo, insumoDominio.EsVisibleEnCarta);
 
             await _ctx.SaveChangesAsync();
+            return insumoDominio;
         }
 
-        public async Task EliminarAsync(int insumoId, int restauranteId)
+        public async Task<DOM.Insumo> EliminarAsync(int insumoId, int restauranteId)
         {
             var efArticulo = await _ctx.Articulos
                 .FirstOrDefaultAsync(a => a.Id == insumoId && a.RestauranteId == restauranteId && a.Insumo != null);
 
-            if (efArticulo == null)
-            {
-                throw new KeyNotFoundException("El insumo no existe o no pertenece al restaurante.");
-            }
+            if (efArticulo == null) return null;
 
             efArticulo.Eliminado = true;
             await _ctx.SaveChangesAsync();
+
+            return new DOM.Insumo { Id = efArticulo.Id, Nombre = efArticulo.Nombre };
         }
 
         private void ActualizarDatosBasicos(EF.Articulo efArticulo, DOM.Insumo insumoDominio)

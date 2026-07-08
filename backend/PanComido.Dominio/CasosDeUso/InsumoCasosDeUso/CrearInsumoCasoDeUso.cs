@@ -64,6 +64,8 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
                 ? await SubirYObtenerUrlDeImagen(stream, nombreImagen, carpetaCloudinary)
                 : null;
 
+            insumo.EsVisibleEnCarta = categoria.TipoAplica == TipoInsumo.Bebida && insumo.EsVisibleEnCarta;
+
             Insumo insumoCreado = await _insumoRepositorio.CrearAsync(insumo);
 
             CompletarDatosDeRespuesta(insumoCreado, categoria, unidadMedida, loteInicial);

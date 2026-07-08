@@ -25,6 +25,9 @@ public partial class Insumo
     [Column("stock_recomendado")]
     public decimal StockRecomendado { get; set; }
 
+    [InverseProperty("Insumo")]
+    public virtual ICollection<BebidaPreparadaInsumo> BebidaPreparadaInsumos { get; set; } = new List<BebidaPreparadaInsumo>();
+
     [ForeignKey("CategoriaInsumoId")]
     [InverseProperty("Insumos")]
     public virtual CategoriaInsumo CategoriaInsumo { get; set; } = null!;

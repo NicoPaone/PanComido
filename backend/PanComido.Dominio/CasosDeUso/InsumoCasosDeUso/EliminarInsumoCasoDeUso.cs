@@ -1,4 +1,5 @@
-﻿using PanComido.Dominio.Interfaces.Repositorios;
+﻿using System.Collections.Generic;
+using PanComido.Dominio.Interfaces.Repositorios;
 using System.Threading.Tasks;
 
 namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
@@ -14,7 +15,11 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
 
         public async Task EjecutarAsync(int insumoId, int restauranteId)
         {
-            await _insumoRepositorio.EliminarAsync(insumoId, restauranteId);
+            var eliminado = await _insumoRepositorio.EliminarAsync(insumoId, restauranteId);
+            if (eliminado == null)
+            {
+                throw new KeyNotFoundException("El insumo no existe o no pertenece al restaurante.");
+            }
         }
     }
 }

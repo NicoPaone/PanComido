@@ -8,6 +8,7 @@ using PanComido.Dominio.CasosDeUso.ArticuloCasosDeUso;
 using PanComido.Dominio.CasosDeUso.AutenticacionCasosDeUso;
 using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso.IA;
+using PanComido.Dominio.CasosDeUso.BebidaPreparadaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.BodegaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.CartaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
@@ -192,6 +193,7 @@ builder.Services.AddScoped<PorcentajesCategoriaEntityMapper>();
 builder.Services.AddScoped<PagoEntityMapper>();
 builder.Services.AddScoped<DatosTransferenciaEntityMapper>();
 builder.Services.AddScoped<ReglaTiempoExtraEntityMapper>();
+builder.Services.AddScoped<BebidaPreparadaEntityMapper>();
 
 
 
@@ -211,6 +213,7 @@ builder.Services.AddScoped<LlamadoMapper>();
 builder.Services.AddScoped<CartaComensalMapper>();
 builder.Services.AddScoped<FormularioParaCrearPlatoMapper>();
 builder.Services.AddScoped<PlatoMapper>();
+builder.Services.AddScoped<BebidaPreparadaMapper>();
 builder.Services.AddScoped<ArticuloCartaMapper>();
 builder.Services.AddScoped<MetodoDePagoMapper>();
 builder.Services.AddScoped<RestauranteMapper>();
@@ -259,6 +262,7 @@ builder.Services.AddScoped<IMiseAndPlaceRepositorio, MiseAndPlaceRepositorio>();
 builder.Services.AddScoped<IReglaTiempoExtraRepositorio, ReglaTiempoExtraRepositorio>();
 builder.Services.AddScoped<ITransaccionPersistenciaServicio, TransaccionPersistenciaServicio>();
 builder.Services.AddScoped<IPoliticaDescuentoDashboardServicio, PoliticaDescuentoDashboardServicio>();
+builder.Services.AddScoped<IBebidaPreparadaRepositorio, BebidaPreparadaRepositorio>();
 
 
 // Casos de uso
@@ -287,6 +291,10 @@ builder.Services.AddScoped<CrearPlatoCasoDeUso>();
 builder.Services.AddScoped<ModificarPlatoCasoDeUso>();
 builder.Services.AddScoped<EliminarPlatoCasoDeUso>();
 builder.Services.AddScoped<ObtenerPlatoPorIdCasoDeUso>();
+builder.Services.AddScoped<CrearBebidaPreparadaCasoDeUso>();
+builder.Services.AddScoped<ModificarBebidaPreparadaCasoDeUso>();
+builder.Services.AddScoped<EliminarBebidaPreparadaCasoDeUso>();
+builder.Services.AddScoped<ObtenerBebidaPreparadaPorIdCasoDeUso>();
 builder.Services.AddScoped<ObtenerCartaComensalCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConStockCriticoCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConVencimientoProximoCasoDeUso>();
@@ -366,11 +374,13 @@ builder.Services.AddScoped<EliminarReglaTiempoExtraCasoDeUso>();
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
 builder.Services.AddScoped<IInsumoValidacionServicio, InsumoValidacionServicio>();
+builder.Services.AddScoped<IBebidaPreparadaValidacionServicio, BebidaPreparadaValidacionServicio>();
 builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticuloServicio>();
 builder.Services.AddScoped<ISugerenciaPlatosIAServicio, GeminiSugerenciaPlatosIAServicio >();
 builder.Services.AddScoped<IGestionStockServicio, GestionStockServicio>();
 builder.Services.AddScoped<IVencimientosProximosInsumosServicio, VencimientosProximosInsumosServicio>();
 builder.Services.AddScoped<ITiempoDePreparacionPlatoServicio, TiempoDePreparacionPlatoServicio>();
+builder.Services.AddScoped<IUltimoPrecioCompraInsumoServicio, UltimoPrecioCompraInsumoServicio>();
 builder.Services.AddScoped<ICalculadorCostoPlatoServicio, CalculadorCostoPlatoServicio>();
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 builder.Services.AddScoped<ICalcularTotalComandaServicio, CalcularTotalComandaServicio>();

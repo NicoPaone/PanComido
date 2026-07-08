@@ -43,6 +43,8 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
 
             ActualizarDatosInsumo(insumoModificado, insumoExistente);
 
+            insumoExistente.EsVisibleEnCarta = categoria.TipoAplica == TipoInsumo.Bebida && insumoModificado.EsVisibleEnCarta;
+
             await ActualizarImagenSegunTipoAsync(stream, nombreImagen, carpetaCloudinary, insumoExistente, categoria);
 
             await _insumoRepositorio.ActualizarAsync(insumoExistente);

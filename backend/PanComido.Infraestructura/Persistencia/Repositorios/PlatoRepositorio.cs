@@ -121,25 +121,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             efArticulo.Plato.CategoriaPlatoId = platoDominio.CategoriaPlatoId;
         }
 
-        private async Task ActualizarConfiguracionVisibilidadAsync(EF.Articulo efArticulo, bool esVisibleEnCarta)
+        private Task ActualizarConfiguracionVisibilidadAsync(EF.Articulo efArticulo, bool esVisibleEnCarta)
         {
-            var configVisible = await _ctx.ConfiguracionArticulos.FindAsync((int)ConfiguracionArticuloEnum.VisibleEnCarta);
-
-            if (esVisibleEnCarta)
-            {
-                if (!efArticulo.ConfiguracionArticulos.Any(c => c.Id == (int)ConfiguracionArticuloEnum.VisibleEnCarta) && configVisible != null)
-                {
-                    efArticulo.ConfiguracionArticulos.Add(configVisible);
-                }
-            }
-            else
-            {
-                var cfg = efArticulo.ConfiguracionArticulos.FirstOrDefault(c => c.Id == (int)ConfiguracionArticuloEnum.VisibleEnCarta);
-                if (cfg != null)
-                {
-                    efArticulo.ConfiguracionArticulos.Remove(cfg);
-                }
-            }
+            return ConfiguracionVisibilidadHelper.AplicarVisibilidadEnCartaAsync(_ctx, efArticulo, esVisibleEnCarta);
         }
 
         private async Task ActualizarRestriccionesAsync(EF.Articulo efArticulo, List<DOM.Restriccion> restriccionesDominio)
