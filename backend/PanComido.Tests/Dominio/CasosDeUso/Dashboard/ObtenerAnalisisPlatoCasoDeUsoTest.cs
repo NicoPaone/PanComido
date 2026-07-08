@@ -288,7 +288,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
             // Ya fue analizado hoy (está en PlatosAnalisis)
             var sugerenciaExistente = new SugerenciaIA
             {
-                FechaSugerencia = fechaReferencia,
+                FechaUltimoAnalisisIA = fechaReferencia,
                 PlatosAnalisis = new List<PlatoAnalisisIa>
                 {
                     new PlatoAnalisisIa { PlatoId = plato.Id, Nombre = plato.Nombre, Diagnostico = "Diagnóstico Cacheado" }
@@ -339,7 +339,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
             // Sugerencia vieja (de ayer) con plato analizado ayer
             var sugerenciaExistente = new SugerenciaIA
             {
-                FechaSugerencia = fechaAyer,
+                FechaUltimoAnalisisIA = fechaAyer,
                 PlatosAnalisis = new List<PlatoAnalisisIa>
                 {
                     new PlatoAnalisisIa { PlatoId = plato.Id, Nombre = plato.Nombre, Diagnostico = "Ayer" }

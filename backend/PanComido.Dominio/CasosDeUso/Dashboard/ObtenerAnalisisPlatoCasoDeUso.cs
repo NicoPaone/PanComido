@@ -92,13 +92,14 @@ namespace PanComido.Dominio.CasosDeUso.Dashboard
             {
                 sugerenciaIa = new SugerenciaIA
                 {
-                    FechaSugerencia = _dateTimeProvider.ObtenerAhora(),
+                    FechaSugerencia = DateTime.MinValue,
+                    FechaUltimoAnalisisIA = _dateTimeProvider.ObtenerAhora(),
                     PlatosAnalisis = new List<PlatoAnalisisIa>()
                 };
             }
-            else if (sugerenciaIa.FechaSugerencia.Date != _dateTimeProvider.ObtenerHoy())
+            else if (!sugerenciaIa.FechaUltimoAnalisisIA.HasValue || sugerenciaIa.FechaUltimoAnalisisIA.Value.Date != _dateTimeProvider.ObtenerHoy())
             {
-                sugerenciaIa.FechaSugerencia = _dateTimeProvider.ObtenerAhora();
+                sugerenciaIa.FechaUltimoAnalisisIA = _dateTimeProvider.ObtenerAhora();
                 sugerenciaIa.PlatosAnalisis = new List<PlatoAnalisisIa>();
             }
 
