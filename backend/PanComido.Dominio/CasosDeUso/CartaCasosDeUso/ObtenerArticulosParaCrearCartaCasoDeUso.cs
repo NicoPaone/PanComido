@@ -56,6 +56,19 @@ namespace PanComido.Dominio.CasosDeUso.CartaCasosDeUso
                 return costoPlato;
             }
 
+            if (articulo is BebidaPreparada bebidaPreparada && bebidaPreparada.Insumos != null)
+            {
+                decimal costoBebidaPreparada = 0;
+
+                foreach (var itemReceta in bebidaPreparada.Insumos)
+                {
+                    decimal precioCompraInsumo = ObtenerUltimoPrecioCompraRecibido(itemReceta.Insumo);
+                    costoBebidaPreparada += precioCompraInsumo * itemReceta.Cantidad;
+                }
+
+                return costoBebidaPreparada;
+            }
+
             return 0;
         }
 

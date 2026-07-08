@@ -207,5 +207,43 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
             Assert.Null(insumoExistenteDb.UrlImagen);
             _imagenServicioMock.Verify(s => s.SubirImagenAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoEsIngredienteConEsVisibleEnCartaTrue_LoFuerzaAFalse()
+        {
+            int restauranteId = 1;
+            Insumo insumoModificado = new Insumo { Id = 10, CategoriaId = 1, UnidadDeMedidaId = 1, StockMinimo = 1, StockRecomendado = 2, EsVisibleEnCarta = true };
+            Insumo insumoExistenteDb = new Insumo { Id = 10, RestauranteId = restauranteId, Tipo = TipoInsumo.Ingrediente };
+            CategoriaInsumo categoria = new CategoriaInsumo { Id = 1, TipoAplica = TipoInsumo.Ingrediente, Descripcion = "Secos" };
+            UnidadMedida unidadMedida = new UnidadMedida { Id = 1, Nombre = "Kilos" };
+
+            _insumoRepoMock.Setup(r => r.ObtenerPorIdAsync(insumoModificado.Id, restauranteId))
+                .ReturnsAsync(insumoExistenteDb);
+            _insumoValidacionServicioMock.Setup(s => s.ObtenerYValidarCategoriaAsync(1)).ReturnsAsync(categoria);
+            _insumoValidacionServicioMock.Setup(s => s.ObtenerYValidarUnidadMedidaAsync(1)).ReturnsAsync(unidadMedida);
+
+            await _casoDeUso.EjecutarAsync(restauranteId, insumoModificado, Stream.Null, "", "");
+
+            Assert.False(insumoExistenteDb.EsVisibleEnCarta);
+        }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoEsBebidaConEsVisibleEnCartaTrue_LoRespeta()
+        {
+            int restauranteId = 1;
+            Insumo insumoModificado = new Insumo { Id = 10, CategoriaId = 1, UnidadDeMedidaId = 1, StockMinimo = 1, StockRecomendado = 2, EsVisibleEnCarta = true };
+            Insumo insumoExistenteDb = new Insumo { Id = 10, RestauranteId = restauranteId, Tipo = TipoInsumo.Bebida, UrlImagen = "url.jpg" };
+            CategoriaInsumo categoria = new CategoriaInsumo { Id = 1, TipoAplica = TipoInsumo.Bebida, Descripcion = "Sin alcohol" };
+            UnidadMedida unidadMedida = new UnidadMedida { Id = 1, Nombre = "Unidad" };
+
+            _insumoRepoMock.Setup(r => r.ObtenerPorIdAsync(insumoModificado.Id, restauranteId))
+                .ReturnsAsync(insumoExistenteDb);
+            _insumoValidacionServicioMock.Setup(s => s.ObtenerYValidarCategoriaAsync(1)).ReturnsAsync(categoria);
+            _insumoValidacionServicioMock.Setup(s => s.ObtenerYValidarUnidadMedidaAsync(1)).ReturnsAsync(unidadMedida);
+
+            await _casoDeUso.EjecutarAsync(restauranteId, insumoModificado, Stream.Null, "", "carpeta");
+
+            Assert.True(insumoExistenteDb.EsVisibleEnCarta);
+        }
     }
 }

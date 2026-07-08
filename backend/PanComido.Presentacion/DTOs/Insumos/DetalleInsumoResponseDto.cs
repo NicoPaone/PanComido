@@ -7,6 +7,7 @@
         public string Descripcion { get; set; }
         public decimal? PrecioVentaFinal { get; set; }
         public bool EsPrecioManual { get; set; }
+        public bool EsVisibleEnCarta { get; set; }
         public decimal StockMinimo { get; set; }
         public decimal StockRecomendado { get; set; }
         public int CategoriaId { get; set; }
