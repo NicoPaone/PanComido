@@ -107,7 +107,7 @@ namespace PanComido.Presentacion.Controllers
             [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
             public async Task<IActionResult> Ocupar(int restauranteId, int idMesa, [FromBody] OcuparMesaRequestDto request)
         {
-            var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, idMesa, request.CantidadComensales.Value);
+            var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, idMesa, request.CantidadComensales.Value, request.TurnoId);
 
                 return StatusCode(201,
                     new OcuparMesaComensalResponseDto
@@ -127,7 +127,7 @@ namespace PanComido.Presentacion.Controllers
             {
                 int restauranteId = HttpContext.ObtenerRestauranteId();
 
-            var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, idMesa, request.CantidadComensales.Value);
+            var mesaConPosiciones = await _ocuparMesaCasoDeUso.EjecutarAsync(restauranteId, idMesa, request.CantidadComensales.Value, request.TurnoId);
 
                 return StatusCode(201,
                     new OcuparMesaResponseDto
