@@ -25,6 +25,13 @@ namespace PanComido.Dominio.Servicios
                               && stock >= (i.Cantidad * cantidadPedida));
             }
 
+            if (articulo is BebidaPreparada bebidaPreparada)
+            {
+                return bebidaPreparada.Insumos
+                    .All(i => stockDeInsumosActual.TryGetValue(i.InsumoId, out decimal stock)
+                              && stock >= (i.Cantidad * cantidadPedida));
+            }
+
             return stockDeInsumosActual.TryGetValue(articulo.Id, out decimal stockDisponible)
                    && stockDisponible >= cantidadPedida;
         }

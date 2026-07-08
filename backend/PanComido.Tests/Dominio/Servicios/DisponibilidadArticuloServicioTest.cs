@@ -147,6 +147,62 @@ namespace PanComido.Tests.Dominio.Servicios
         }
 
         [Fact]
+        public void VerificarDisponibilidad_CuandoBebidaPreparadaTieneStockSuficiente_RetornaTrue()
+        {
+            // Preparar
+            var servicio = new DisponibilidadArticuloServicio();
+
+            var bebidaPreparada = new BebidaPreparada
+            {
+                Insumos = new List<BebidaPreparadaInsumo>
+                {
+                    new BebidaPreparadaInsumo { InsumoId = 1, Cantidad = 100 },
+                    new BebidaPreparadaInsumo { InsumoId = 2, Cantidad = 300 }
+                }
+            };
+
+            var stock = new Dictionary<int, decimal>
+            {
+                { 1, 1000 },
+                { 2, 2000 }
+            };
+
+            // Ejecutar
+            var resultado = servicio.VerificarDisponibilidad(bebidaPreparada, 2, stock);
+
+            // Verificar
+            Assert.True(resultado);
+        }
+
+        [Fact]
+        public void VerificarDisponibilidad_CuandoBebidaPreparadaNoTieneStockSuficiente_RetornaFalse()
+        {
+            // Preparar
+            var servicio = new DisponibilidadArticuloServicio();
+
+            var bebidaPreparada = new BebidaPreparada
+            {
+                Insumos = new List<BebidaPreparadaInsumo>
+                {
+                    new BebidaPreparadaInsumo { InsumoId = 1, Cantidad = 100 },
+                    new BebidaPreparadaInsumo { InsumoId = 2, Cantidad = 300 }
+                }
+            };
+
+            var stock = new Dictionary<int, decimal>
+            {
+                { 1, 1000 },
+                { 2, 100 }
+            };
+
+            // Ejecutar
+            var resultado = servicio.VerificarDisponibilidad(bebidaPreparada, 2, stock);
+
+            // Verificar
+            Assert.False(resultado);
+        }
+
+        [Fact]
         public void VerificarDisponibilidad_SobrecargaSinCantidad_UsaCantidadUno()
         {
             // Preparar

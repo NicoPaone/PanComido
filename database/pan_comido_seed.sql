@@ -19,7 +19,7 @@ INSERT INTO categoria_plato (descripcion) VALUES
 
 INSERT INTO tipo_plato (descripcion) VALUES
     ('Pasta'), ('Minuta'), ('Pizza'), ('Parrilla'), ('Sandwich'),
-    ('Ensalada'), ('Mariscos'), ('Wok y Salteado'), ('Tarta y Empanada');
+    ('Ensalada'), ('Mariscos'), ('Wok y Salteado'), ('Tarta y Empanada'), ('Postre');
 
 INSERT INTO restriccion (descripcion) VALUES
     ('Vegano'), ('Vegetariano'), ('Sin TACC');

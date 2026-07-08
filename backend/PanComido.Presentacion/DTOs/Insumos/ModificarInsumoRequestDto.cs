@@ -15,6 +15,8 @@ namespace PanComido.Presentacion.DTOs.Insumos
 
         public bool EsPrecioManual { get; set; }
 
+        public bool EsVisibleEnCarta { get; set; }
+
         [Range(0, double.MaxValue, ErrorMessage = "El stock mínimo no puede ser negativo.")]
         public decimal StockMinimo { get; set; }
 

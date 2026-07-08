@@ -93,7 +93,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<decimal> ObtenerUltimoPrecioCompraUnitarioAsync(int insumoId, int proveedorId)
         {
             var efPrecio = await _ctx.PedidoInsumos
-                .Where(pi => pi.InsumoId == insumoId && pi.Pedido.ProveedorId == proveedorId)
+                .Where(pi => pi.InsumoId == insumoId
+                          && pi.Pedido.ProveedorId == proveedorId
+                          && pi.Pedido.EstadoPedidoId == (int)EstadoPedido.Recibido)
                 .OrderByDescending(pi => pi.Pedido.Fecha)
                 .Select(pi => (decimal?)pi.PrecioCompra)
                 .FirstOrDefaultAsync();

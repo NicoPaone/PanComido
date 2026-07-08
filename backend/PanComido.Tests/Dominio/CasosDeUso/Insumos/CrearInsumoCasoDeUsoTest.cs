@@ -264,5 +264,52 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
             _imagenServicioMock.Verify(s => s.SubirImagenAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
             _insumoRepoMock.Verify(r => r.CrearAsync(insumo), Times.Once);
         }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoEsIngredienteConEsVisibleEnCartaTrue_LoFuerzaAFalse()
+        {
+            // 1. Preparar
+            int restauranteId = 1;
+            int bodegaId = 5;
+            int cantidadInicial = 20;
+
+            CrearInsumoCasoDeUso casoDeUso = CrearCasoDeUsoConReposMock();
+            Insumo insumo = new Insumo { Nombre = "Harina", CategoriaId = 1, UnidadDeMedidaId = 1, StockMinimo = 5, EsVisibleEnCarta = true };
+
+            _insumoValidacionServicioMock.Setup(s => s.ObtenerYValidarCategoriaAsync(1)).ReturnsAsync(new CategoriaInsumo { Id = 1, TipoAplica = TipoInsumo.Ingrediente, Descripcion = "Secos" });
+            _insumoValidacionServicioMock.Setup(s => s.ObtenerYValidarUnidadMedidaAsync(1)).ReturnsAsync(new UnidadMedida { Nombre = "Kilos" });
+            _bodegaRepoMock.Setup(r => r.ExisteBodegaEnRestauranteAsync(restauranteId, bodegaId)).ReturnsAsync(true);
+            _insumoRepoMock.Setup(r => r.CrearAsync(It.IsAny<Insumo>())).ReturnsAsync(insumo);
+
+            // 2. Ejecutar
+            await casoDeUso.EjecutarAsync(restauranteId, insumo, cantidadInicial, bodegaId, DateOnly.FromDateTime(DateTime.UtcNow).AddDays(5), Stream.Null, "", "");
+
+            // 3. Verificar
+            Assert.False(insumo.EsVisibleEnCarta);
+        }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoEsBebidaConEsVisibleEnCartaTrue_LoRespeta()
+        {
+            // 1. Preparar
+            int restauranteId = 1;
+            int bodegaId = 5;
+            int cantidadInicial = 20;
+            using Stream stream = new MemoryStream();
+
+            CrearInsumoCasoDeUso casoDeUso = CrearCasoDeUsoConReposMock();
+            Insumo insumo = new Insumo { Nombre = "Coca", CategoriaId = 1, UnidadDeMedidaId = 1, StockMinimo = 5, EsVisibleEnCarta = true };
+
+            _insumoValidacionServicioMock.Setup(s => s.ObtenerYValidarCategoriaAsync(1)).ReturnsAsync(new CategoriaInsumo { Id = 1, TipoAplica = TipoInsumo.Bebida, Descripcion = "Sin alcohol" });
+            _insumoValidacionServicioMock.Setup(s => s.ObtenerYValidarUnidadMedidaAsync(1)).ReturnsAsync(new UnidadMedida { Nombre = "Unidad" });
+            _bodegaRepoMock.Setup(r => r.ExisteBodegaEnRestauranteAsync(restauranteId, bodegaId)).ReturnsAsync(true);
+            _insumoRepoMock.Setup(r => r.CrearAsync(It.IsAny<Insumo>())).ReturnsAsync(insumo);
+
+            // 2. Ejecutar
+            await casoDeUso.EjecutarAsync(restauranteId, insumo, cantidadInicial, bodegaId, DateOnly.FromDateTime(DateTime.UtcNow).AddDays(5), stream, "foto.jpg", "carpeta");
+
+            // 3. Verificar
+            Assert.True(insumo.EsVisibleEnCarta);
+        }
     }
 }

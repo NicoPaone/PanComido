@@ -5,6 +5,7 @@ using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
+using PanComido.Dominio.Servicios;
 
 namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
 {
@@ -13,12 +14,14 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
         private readonly Mock<IInsumoRepositorio> _insumoRepoMock;
         private readonly Mock<ILoteRepositorio> _loteRepoMock;
         private readonly Mock<IEstadoStockInsumoServicio> _estadoServicioMock;
+        private readonly IUltimoPrecioCompraInsumoServicio _ultimoPrecioCompraServicio;
 
         public ListarInsumoCasoDeUsoTests()
         {
             _insumoRepoMock = new Mock<IInsumoRepositorio>();
             _loteRepoMock = new Mock<ILoteRepositorio>();
             _estadoServicioMock = new Mock<IEstadoStockInsumoServicio>();
+            _ultimoPrecioCompraServicio = new UltimoPrecioCompraInsumoServicio();
         }
 
         [Fact]
@@ -67,7 +70,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
             ListarInsumoCasoDeUso casoDeUso = new ListarInsumoCasoDeUso(
                 _insumoRepoMock.Object,
                 _loteRepoMock.Object,
-                _estadoServicioMock.Object
+                _estadoServicioMock.Object,
+                _ultimoPrecioCompraServicio
             );
 
             // 2. Ejecutar
@@ -101,7 +105,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
             ListarInsumoCasoDeUso casoDeUso = new ListarInsumoCasoDeUso(
                 _insumoRepoMock.Object,
                 _loteRepoMock.Object,
-                _estadoServicioMock.Object
+                _estadoServicioMock.Object,
+                _ultimoPrecioCompraServicio
             );
 
             // 2. Ejecutar
@@ -156,7 +161,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
             _estadoServicioMock.Setup(s => s.CalcularEstadoStock(stockTomate, minTomate, It.IsAny<decimal>())).Returns(EstadoStock.Critico);
 
             ListarInsumoCasoDeUso casoDeUso = new ListarInsumoCasoDeUso(
-                _insumoRepoMock.Object, _loteRepoMock.Object, _estadoServicioMock.Object);
+                _insumoRepoMock.Object, _loteRepoMock.Object, _estadoServicioMock.Object, _ultimoPrecioCompraServicio);
 
             // 2. Ejecutar
             var resultado = await casoDeUso.EjecutarAsync(restauranteId);
@@ -205,7 +210,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
             _estadoServicioMock.Setup(s => s.CalcularEstadoStock(stockVacio, stockMinimoFalso, It.IsAny<decimal>())).Returns(EstadoStock.Critico);
 
             ListarInsumoCasoDeUso casoDeUso = new ListarInsumoCasoDeUso(
-                _insumoRepoMock.Object, _loteRepoMock.Object, _estadoServicioMock.Object);
+                _insumoRepoMock.Object, _loteRepoMock.Object, _estadoServicioMock.Object, _ultimoPrecioCompraServicio);
 
             // 2. Ejecutar
             var resultado = await casoDeUso.EjecutarAsync(restauranteId);
