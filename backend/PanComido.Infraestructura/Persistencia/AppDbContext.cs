@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using PanComido.Infraestructura.Persistencia.Entidades;
@@ -115,6 +115,10 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<TurnoFila> TurnoFilas { get; set; }
 
     public virtual DbSet<TurnoLaboral> TurnoLaborals { get; set; }
+
+   
+   
+
 
     public virtual DbSet<Ubicacion> Ubicacions { get; set; }
 

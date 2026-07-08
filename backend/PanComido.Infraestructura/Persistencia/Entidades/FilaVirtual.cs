@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -18,6 +18,9 @@ public partial class FilaVirtual
 
     [Column("habilitada")]
     public bool Habilitada { get; set; }
+
+    [Column("tiempo_promedio_comida_minutos")]
+    public int TiempoPromedioComidaMinutos { get; set; }
 
     [ForeignKey("RestauranteId")]
     [InverseProperty("FilaVirtuals")]

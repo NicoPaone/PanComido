@@ -274,5 +274,24 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .Where(m => mesaIds.Contains(m.Id))
                 .AnyAsync(m => m.Mozos.Any());
         }
+
+        public async Task<List<MesaFilaVirtualDto>> ObtenerMesasParaFilaVirtualAsync(int restauranteId)
+        {
+            return await _ctx.Mesas
+                .AsNoTracking()
+                .Where(m => m.Grilla.RestauranteId == restauranteId && m.Activo)
+                .Select(m => new MesaFilaVirtualDto
+                {
+                    Id = m.Id,
+                    CantPersonasMax = m.CantPersonasMax,
+                    EstadoMesa = (DOM.Enums.EstadoMesa)m.EstadoMesaId,
+                    HoraInicioComandaActiva = m.Comanda
+                        .Where(c => c.EstadoComandaId != (int)DOM.Enums.EstadoComanda.Finalizada)
+                        .OrderByDescending(c => c.HoraInicio)
+                        .Select(c => (DateTime?)c.HoraInicio)
+                        .FirstOrDefault()
+                })
+                .ToListAsync();
+        }
     }
 }
