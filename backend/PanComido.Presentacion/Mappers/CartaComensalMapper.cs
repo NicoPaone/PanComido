@@ -32,8 +32,13 @@ namespace PanComido.Presentacion.Mappers
                 dto.EsPlato = false;
                 dto.CategoriaBebida = bebida.Categoria;
             }
+            else if (articuloDominio is BebidaPreparada bebidaPreparada)
+            {
+                dto.EsPlato = false;
+                dto.CategoriaBebida = bebidaPreparada.Categoria;
+            }
 
-            return dto;
+                return dto;
         }
 
         public List<ArticuloCartaDto> ParaDtoList(List<Articulo> articulosDominio)
