@@ -8,7 +8,7 @@ namespace PanComido.Presentacion.DTOs.BebidaPreparada
         [Required(ErrorMessage = "El nombre de la bebida preparada no puede estar vacío.")]
         public string Nombre { get; set; }
 
-        public string Descripcion { get; set; }
+        public string? Descripcion { get; set; }
 
         [Required]
         [Range(0.01, double.MaxValue, ErrorMessage = "El precio de venta final debe ser mayor que cero.")]

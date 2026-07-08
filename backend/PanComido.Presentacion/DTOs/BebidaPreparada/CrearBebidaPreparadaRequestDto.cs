@@ -7,7 +7,7 @@ namespace PanComido.Presentacion.DTOs.BebidaPreparada
         [Required]
         public string Nombre { get; set; }
 
-        public string Descripcion { get; set; }
+        public string? Descripcion { get; set; }
 
         [Required]
         public decimal PrecioVentaFinal { get; set; }
