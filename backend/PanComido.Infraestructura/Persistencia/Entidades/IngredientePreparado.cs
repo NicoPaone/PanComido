@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -12,6 +12,9 @@ public partial class IngredientePreparado
     [Key]
     [Column("id_ingrediente")]
     public int IdIngrediente { get; set; }
+
+    [Column("rendimiento_base")]
+    public decimal RendimientoBase { get; set; }
 
     [ForeignKey("IdIngrediente")]
     [InverseProperty("IngredientePreparado")]

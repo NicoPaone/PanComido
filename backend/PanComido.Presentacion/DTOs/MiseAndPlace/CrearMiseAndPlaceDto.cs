@@ -16,6 +16,9 @@ namespace PanComido.Presentacion.DTOs.MiseAndPlace
         public decimal Cantidad { get; set; }
 
         [Required]
+        public decimal RendimientoBase { get; set; }
+
+        [Required]
         public DateOnly FechaVencimiento { get; set; }
 
         [Required]

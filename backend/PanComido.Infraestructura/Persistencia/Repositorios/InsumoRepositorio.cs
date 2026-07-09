@@ -107,6 +107,15 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                             && a.Nombre.ToLower() == nombre.ToLower());
         }
 
+        public async Task<bool> ExisteInsumoAsync(int insumoId, int restauranteId)
+        {
+            return await _ctx.Articulos
+                .AnyAsync(a => a.Id == insumoId 
+                            && a.RestauranteId == restauranteId 
+                            && a.Insumo != null 
+                            && !a.Eliminado);
+        }
+
         public async Task<DOM.Insumo> CrearAsync(DOM.Insumo insumoDominio)
         {
             EF.Articulo efArticulo = _mapper.paraEntidad(insumoDominio);

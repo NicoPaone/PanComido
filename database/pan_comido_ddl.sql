@@ -328,7 +328,8 @@ CREATE TABLE ingrediente (
 );
 
 CREATE TABLE ingrediente_preparado (
-    id_ingrediente  INTEGER PRIMARY KEY REFERENCES ingrediente(id_insumo)
+    id_ingrediente      INTEGER PRIMARY KEY REFERENCES ingrediente(id_insumo),
+    rendimiento_base    DECIMAL NOT NULL DEFAULT 1
 );
 
 CREATE TABLE ingrediente_ingrediente_preparado (
