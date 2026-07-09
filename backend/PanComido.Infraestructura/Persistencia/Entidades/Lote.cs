@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -30,6 +30,9 @@ public partial class Lote
 
     [Column("fecha_vencimiento")]
     public DateOnly? FechaVencimiento { get; set; }
+
+    [Column("eliminado")]
+    public bool Eliminado { get; set; }
 
     [ForeignKey("BodegaId")]
     [InverseProperty("Lotes")]

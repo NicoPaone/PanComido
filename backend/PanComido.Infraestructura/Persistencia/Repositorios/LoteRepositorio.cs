@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.Interfaces.Repositorios;
 using DOM = PanComido.Dominio.Entidades;
 using System;
@@ -24,7 +24,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
         public async Task<DateOnly?> ObtenerFechaDeVencimientoMasProximaDeInsumo(int insumoId)
         {
-            return await _ctx.Lotes.Where(l => l.InsumoId == insumoId)
+            return await _ctx.Lotes.Where(l => l.InsumoId == insumoId && !l.Eliminado)
                 .OrderBy(l => l.FechaVencimiento)
                 .Select(l => (DateOnly?)l.FechaVencimiento)
                 .FirstOrDefaultAsync();
@@ -32,14 +32,14 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
         public async Task<decimal> ObtenerStockTotalDeInsumo(int insumoId)
         {
-            return await _ctx.Lotes.Where(l => l.InsumoId == insumoId)
+            return await _ctx.Lotes.Where(l => l.InsumoId == insumoId && !l.Eliminado)
                 .SumAsync(l => (decimal?)l.Cantidad) ?? 0m;
         }
 
         public Task<Dictionary<(int insumoId, int bodegaId), DateOnly?>> ObtenerVencimientosPorBodega(int restauranteId)
         {
             return _ctx.Lotes
-                .Where(l => l.Bodega.RestauranteId == restauranteId)
+                .Where(l => l.Bodega.RestauranteId == restauranteId && !l.Eliminado)
                 .GroupBy(l => new { l.InsumoId, l.BodegaId })
                 .Select(g => new
                 {
@@ -53,7 +53,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public Task<Dictionary<(int insumoId, int bodegaId), decimal>> ObtenerStocksPorBodega(int restauranteId)
         {
             return _ctx.Lotes
-                .Where(l => l.Bodega.RestauranteId == restauranteId)
+                .Where(l => l.Bodega.RestauranteId == restauranteId && !l.Eliminado)
                 .GroupBy(l => new { l.InsumoId, l.BodegaId })
                 .Select(g => new
                 {
@@ -74,7 +74,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<int> ContarLotesConNombreBaseAsync(string nombreBase)
         {
             return await _ctx.Lotes
-                .Where(l => l.Nombre.StartsWith(nombreBase))
+                .Where(l => l.Nombre.StartsWith(nombreBase) && !l.Eliminado)
                 .CountAsync();
         }
 
@@ -82,7 +82,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             var diccionarioStock = await _ctx.Lotes
                 .AsNoTracking()
-                .Where(l => l.Insumo.IdArticuloNavigation.RestauranteId == restauranteId)
+                .Where(l => l.Insumo.IdArticuloNavigation.RestauranteId == restauranteId && !l.Eliminado)
                 .Where(l => l.FechaVencimiento == null || l.FechaVencimiento >= fechaLimite)
                 .GroupBy(l => l.InsumoId)
                 .Select(grupo => new
@@ -99,12 +99,21 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             List<EF.Lote> efLotes = await _ctx.Lotes
                 .AsNoTracking()
-                .Where(l => l.Bodega.RestauranteId == restauranteId && l.Cantidad > 0)
+                .Where(l => l.Bodega.RestauranteId == restauranteId && l.Cantidad > 0 && !l.Eliminado)
                 .OrderBy(l => l.FechaVencimiento)
                 .ThenBy(l => l.Nombre)
                 .ToListAsync();
 
             return efLotes.Select(l => _loteEntityMapper.paraDominio(l)).ToList();
+        }
+
+        public async Task<DOM.Lote> ObtenerPorIdAsync(int restauranteId, int loteId)
+        {
+            var efLote = await _ctx.Lotes
+                .AsNoTracking()
+                .FirstOrDefaultAsync(l => l.Id == loteId && l.Bodega.RestauranteId == restauranteId && !l.Eliminado);
+
+            return efLote != null ? _loteEntityMapper.paraDominio(efLote) : null;
         }
 
         public async Task<List<DOM.Lote>> ObtenerLotesPorFechaVencimientoAscendenteAsync(int restauranteId, int insumoId)
@@ -113,7 +122,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                             .AsNoTracking()
                             .Where(l => l.Bodega.RestauranteId == restauranteId
                                         && l.InsumoId == insumoId
-                                        && l.Cantidad > 0)
+                                        && l.Cantidad > 0
+                                        && !l.Eliminado)
                             .OrderBy(l => l.FechaVencimiento)
                             .ToListAsync();
 
@@ -126,6 +136,17 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
             _ctx.Lotes.UpdateRange(efLotes);
             await _ctx.SaveChangesAsync();
+        }
+
+        public async Task<bool> EliminarAsync(int restauranteId, int loteId)
+        {
+            var lote = await _ctx.Lotes.FirstOrDefaultAsync(l => l.Id == loteId && l.Bodega.RestauranteId == restauranteId && !l.Eliminado);
+            if (lote == null) return false;
+
+            lote.Eliminado = true;
+            _ctx.Lotes.Update(lote);
+            await _ctx.SaveChangesAsync();
+            return true;
         }
     }
 }
