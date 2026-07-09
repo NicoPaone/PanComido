@@ -13,6 +13,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
         private readonly Mock<ILlamadoNotificador> _llamadoNotificadorMock;
         private readonly Mock<ILlamadoRepositorio> _llamadoMockRepo;
         private readonly Mock<IMesaNotificador> _mesaNotificadorMock;
+        private readonly Mock<ITurnoFilaRepositorio> _turnoFilaRepositorioMock;
+        private readonly Mock<IFilaVirtualNotificador> _filaVirtualNotificadorMock;
 
         public CambiarEstadoMesaCasoDeUsoTest()
         {
@@ -20,6 +22,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
             _llamadoNotificadorMock = new Mock<ILlamadoNotificador>();
             _llamadoMockRepo = new Mock<ILlamadoRepositorio>();
             _mesaNotificadorMock = new Mock<IMesaNotificador>();
+            _turnoFilaRepositorioMock = new Mock<ITurnoFilaRepositorio>();
+            _filaVirtualNotificadorMock = new Mock<IFilaVirtualNotificador>();
         }
 
         [Fact]
@@ -47,7 +51,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
                 .Setup(n => n.NotificarMesaActualizadaAsync(It.IsAny<MesaConPosiciones>(), restauranteId))
                 .Returns(Task.CompletedTask);
 
-            var casoDeUso = new CambiarEstadoMesaCasoDeUso(_mesaMockRepo.Object, _llamadoNotificadorMock.Object, _llamadoMockRepo.Object, _mesaNotificadorMock.Object);
+            var casoDeUso = new CambiarEstadoMesaCasoDeUso(_mesaMockRepo.Object, _llamadoNotificadorMock.Object, _llamadoMockRepo.Object, _mesaNotificadorMock.Object, _turnoFilaRepositorioMock.Object, _filaVirtualNotificadorMock.Object);
 
             var resultado = await casoDeUso.EjecutarAsync(restauranteId, mesaId, estadoNuevo);
 
@@ -67,7 +71,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
                 .Setup(r => r.ObtenerPorIdAsync(mesaId, restauranteId))
                 .ReturnsAsync((MesaConPosiciones)null);
 
-            var casoDeUso = new CambiarEstadoMesaCasoDeUso(_mesaMockRepo.Object, _llamadoNotificadorMock.Object, _llamadoMockRepo.Object, _mesaNotificadorMock.Object);
+            var casoDeUso = new CambiarEstadoMesaCasoDeUso(_mesaMockRepo.Object, _llamadoNotificadorMock.Object, _llamadoMockRepo.Object, _mesaNotificadorMock.Object, _turnoFilaRepositorioMock.Object, _filaVirtualNotificadorMock.Object);
 
             await Assert.ThrowsAsync<ArgumentException>(() => casoDeUso.EjecutarAsync(restauranteId, mesaId, EstadoMesa.Ocupada));
             

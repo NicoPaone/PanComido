@@ -133,8 +133,9 @@ CREATE TABLE grilla (
 
 CREATE TABLE fila_virtual (
     id              SERIAL PRIMARY KEY,
-    restaurante_id  INTEGER NOT NULL REFERENCES restaurante(id),
-    habilitada      BOOLEAN NOT NULL DEFAULT TRUE
+    restaurante_id  INTEGER NOT NULL REFERENCES restaurante(id) ON DELETE CASCADE,
+    habilitada      BOOLEAN NOT NULL DEFAULT FALSE,
+    tiempo_promedio_comida_minutos INTEGER NOT NULL DEFAULT 40
 );
 
 CREATE TABLE bodega (
@@ -276,10 +277,21 @@ CREATE TABLE llamado (
 -- 6. FILA VIRTUAL
 -- ============================================================
 
+CREATE TABLE estado_turno_mesa (
+    id INT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL
+);
+
 CREATE TABLE turno_fila (
     id                  SERIAL PRIMARY KEY,
     fila_virtual_id     INTEGER NOT NULL REFERENCES fila_virtual(id),
-    numero              INTEGER NOT NULL
+    numero              INTEGER NOT NULL,
+    cantidad_comensales INTEGER NOT NULL,
+    fecha_hora_ingreso  TIMESTAMP NOT NULL DEFAULT NOW(),
+    estado_turno_mesa_id INTEGER NOT NULL REFERENCES estado_turno_mesa(id),
+    mesa_asignada_id    INTEGER REFERENCES mesa(id),
+    fecha_hora_asignacion TIMESTAMP,
+    comanda_pre_armada_id INTEGER
 );
 
 -- ============================================================
@@ -500,5 +512,9 @@ CREATE TABLE regla_tiempo_extra (
     porcentaje_ocupacion_hasta INTEGER NOT NULL,
     minutos_extra INTEGER NOT NULL
 );
+
+ALTER TABLE turno_fila 
+    ADD CONSTRAINT fk_turno_fila_comanda 
+    FOREIGN KEY (comanda_pre_armada_id) REFERENCES comanda(id);
 
 COMMIT;
