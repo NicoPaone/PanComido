@@ -18,6 +18,7 @@ namespace PanComido.Presentacion.Mappers
                 Id = bodega.Id,
                 Nombre = bodega.Nombre,
                 TipoBodega = bodega.TipoBodega,
+                TipoBodegaId = bodega.TipoBodegaId
             };
         }
 
@@ -35,6 +36,7 @@ namespace PanComido.Presentacion.Mappers
                 Id = bodega.Id,
                 Nombre = bodega.Nombre,
                 TipoBodega = bodega.TipoBodega,
+                TipoBodegaId = bodega.TipoBodegaId,
                 Insumos = _insumoMapper.aListaDto(bodega.Insumos)
             };
         }

@@ -8,6 +8,7 @@ namespace PanComido.Presentacion.DTOs.Bodegas
         public string Nombre { get; set; }
 
         public string TipoBodega { get; set; }
+        public int TipoBodegaId { get; set; }
         public List<InsumoResponseDto> Insumos { get; set; } = new List<InsumoResponseDto>();
     }
 }
