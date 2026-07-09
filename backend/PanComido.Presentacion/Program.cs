@@ -78,7 +78,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
             ? descriptor.ControllerName
             : string.Empty;
 
-        bool usaContratoRobusto = controllerName is "Empleado" or "Dashboard" or "Reporte";
+        bool usaContratoRobusto = controllerName is "Empleado" or "Dashboard" or "DashboardPlatoAnalisis" or "DashboardNotificaciones" or "Reporte";
 
         if (!usaContratoRobusto)
         {
