@@ -23,6 +23,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
         private readonly Mock<IInsumoValidacionServicio> _insumoValidacionServicioMock;
         private readonly Mock<IEstadoStockInsumoServicio> _estadoStockServicioMock;
         private readonly Mock<IImagenServicio> _imagenServicioMock;
+        private readonly Mock<INormalizadorNombreServicio> _normalizadorNombreServicioMock;
         private readonly Mock<ILogger<CrearInsumoCasoDeUso>> _loggerMock;
 
         public CrearInsumoCasoDeUsoTest()
@@ -33,6 +34,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
             _insumoValidacionServicioMock = new Mock<IInsumoValidacionServicio>();
             _estadoStockServicioMock = new Mock<IEstadoStockInsumoServicio>();
             _imagenServicioMock = new Mock<IImagenServicio>();
+            _normalizadorNombreServicioMock = new Mock<INormalizadorNombreServicio>();
+            _normalizadorNombreServicioMock.Setup(s => s.Normalizar(It.IsAny<string>())).Returns((string nombre) => nombre);
             _loggerMock = new Mock<ILogger<CrearInsumoCasoDeUso>>();
         }
 
@@ -45,6 +48,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
                 _insumoValidacionServicioMock.Object,
                 _estadoStockServicioMock.Object,
                 _imagenServicioMock.Object,
+                _normalizadorNombreServicioMock.Object,
                 _loggerMock.Object);
         }
 
@@ -88,6 +92,30 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
 
             // se llego a llamar al repo para el alta
             _insumoRepoMock.Verify(r => r.CrearAsync(insumo), Times.Once);
+        }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoElNombreYaExiste_LanzaArgumentException()
+        {
+            // 1. Preparar
+            int restauranteId = 1;
+            int bodegaId = 5;
+            int cantidadInicial = 20;
+
+            CrearInsumoCasoDeUso casoDeUso = CrearCasoDeUsoConReposMock();
+            Insumo insumo = new Insumo { Nombre = "Harina", CategoriaId = 1, UnidadDeMedidaId = 1, StockMinimo = 5 };
+
+            _insumoRepoMock.Setup(r => r.ExisteInsumoConNombreAsync(restauranteId, insumo.Nombre)).ReturnsAsync(true);
+
+            // 2. Ejecutar y 3.Verificar que lanza la excepcion
+            ArgumentException excepcion = await Assert.ThrowsAsync<ArgumentException>(() =>
+                casoDeUso.EjecutarAsync(restauranteId, insumo, cantidadInicial, bodegaId, DateOnly.FromDateTime(DateTime.UtcNow).AddDays(5), Stream.Null, "", ""));
+
+            Assert.Equal($"Ya existe un insumo con el nombre '{insumo.Nombre}' en el restaurante.", excepcion.Message);
+
+            // nunca llega a validar bodega ni a llamar al repositorio de creacion
+            _bodegaRepoMock.Verify(r => r.ExisteBodegaEnRestauranteAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+            _insumoRepoMock.Verify(r => r.CrearAsync(It.IsAny<Insumo>()), Times.Never);
         }
 
         [Fact]

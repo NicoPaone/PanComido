@@ -4,6 +4,7 @@ using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -14,13 +15,16 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Platos
     {
         private readonly Mock<IPlatoRepositorio> _platoRepoMock;
         private readonly Mock<IImagenServicio> _imagenServicioMock;
+        private readonly Mock<INormalizadorNombreServicio> _normalizadorNombreServicioMock;
         private readonly ModificarPlatoCasoDeUso _casoDeUso;
 
         public ModificarPlatoCasoDeUsoTest()
         {
             _platoRepoMock = new Mock<IPlatoRepositorio>();
             _imagenServicioMock = new Mock<IImagenServicio>();
-            _casoDeUso = new ModificarPlatoCasoDeUso(_platoRepoMock.Object, _imagenServicioMock.Object);
+            _normalizadorNombreServicioMock = new Mock<INormalizadorNombreServicio>();
+            _normalizadorNombreServicioMock.Setup(s => s.Normalizar(It.IsAny<string>())).Returns((string nombre) => nombre);
+            _casoDeUso = new ModificarPlatoCasoDeUso(_platoRepoMock.Object, _imagenServicioMock.Object, _normalizadorNombreServicioMock.Object);
         }
 
         [Fact]
@@ -41,6 +45,89 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Platos
             Assert.Equal("El plato que intenta modificar no existe o no pertenece al restaurante.", excepcion.Message);
 
             // Verificamos que el repositorio nunca intentó guardar en BD
+            _platoRepoMock.Verify(r => r.ActualizarAsync(It.IsAny<Plato>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoElNombreEsVacio_LanzaArgumentException()
+        {
+            // Preparar
+            int restauranteId = 1;
+            var platoModificado = new Plato { Id = 10, Nombre = "" };
+            var platoExistenteDb = new Plato { Id = 10, Nombre = "Plato Viejo" };
+
+            _platoRepoMock.Setup(r => r.ObtenerPorIdAsync(platoModificado.Id, restauranteId))
+                          .ReturnsAsync(platoExistenteDb);
+
+            // Ejecutar y Verificar
+            var excepcion = await Assert.ThrowsAsync<ArgumentException>(() =>
+                _casoDeUso.EjecutarAsync(restauranteId, platoModificado, "", Stream.Null, ""));
+
+            Assert.Equal("El nombre del plato no puede estar vacío.", excepcion.Message);
+            _platoRepoMock.Verify(r => r.ActualizarAsync(It.IsAny<Plato>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoElNuevoNombreYaLoUsaOtroPlato_LanzaArgumentException()
+        {
+            // Preparar
+            int restauranteId = 1;
+            var platoModificado = new Plato { Id = 10, Nombre = "Milanesa" };
+            var platoExistenteDb = new Plato { Id = 10, Nombre = "Plato Viejo" };
+
+            _platoRepoMock.Setup(r => r.ObtenerPorIdAsync(platoModificado.Id, restauranteId))
+                          .ReturnsAsync(platoExistenteDb);
+            _platoRepoMock.Setup(r => r.ExistePlatoConNombreAsync(restauranteId, platoModificado.Nombre))
+                          .ReturnsAsync(true);
+
+            // Ejecutar y Verificar
+            var excepcion = await Assert.ThrowsAsync<ArgumentException>(() =>
+                _casoDeUso.EjecutarAsync(restauranteId, platoModificado, "", Stream.Null, ""));
+
+            Assert.Equal($"Ya existe un plato con el nombre '{platoModificado.Nombre}' en el restaurante.", excepcion.Message);
+            _platoRepoMock.Verify(r => r.ActualizarAsync(It.IsAny<Plato>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoElNombreNoCambia_NoConsultaDuplicados()
+        {
+            // Preparar
+            int restauranteId = 1;
+            var platoModificado = new Plato { Id = 10, Nombre = "Plato Viejo", PrecioVentaFinal = 500 };
+            var platoExistenteDb = new Plato { Id = 10, Nombre = "Plato Viejo", PrecioVentaFinal = 200 };
+
+            _platoRepoMock.Setup(r => r.ObtenerPorIdAsync(platoModificado.Id, restauranteId))
+                          .ReturnsAsync(platoExistenteDb);
+
+            // Ejecutar
+            await _casoDeUso.EjecutarAsync(restauranteId, platoModificado, "", Stream.Null, "");
+
+            // Verificar
+            _platoRepoMock.Verify(r => r.ExistePlatoConNombreAsync(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
+            _platoRepoMock.Verify(r => r.ActualizarAsync(platoExistenteDb), Times.Once);
+        }
+
+        [Fact]
+        public async Task EjecutarAsync_CantidadDeUnIngredienteEsCeroOMenor_LanzaArgumentException()
+        {
+            // Preparar
+            int restauranteId = 1;
+            var platoModificado = new Plato
+            {
+                Id = 10,
+                Nombre = "Plato Editado",
+                Ingredientes = new List<PlatoIngrediente> { new PlatoIngrediente { InsumoId = 1, Cantidad = -1 } }
+            };
+            var platoExistenteDb = new Plato { Id = 10, Nombre = "Plato Viejo" };
+
+            _platoRepoMock.Setup(r => r.ObtenerPorIdAsync(platoModificado.Id, restauranteId))
+                          .ReturnsAsync(platoExistenteDb);
+
+            // Ejecutar y Verificar
+            var excepcion = await Assert.ThrowsAsync<ArgumentException>(() =>
+                _casoDeUso.EjecutarAsync(restauranteId, platoModificado, "", Stream.Null, ""));
+
+            Assert.Equal("La cantidad de cada ingrediente debe ser mayor que cero.", excepcion.Message);
             _platoRepoMock.Verify(r => r.ActualizarAsync(It.IsAny<Plato>()), Times.Never);
         }
 

@@ -40,6 +40,7 @@ namespace PanComido.Presentacion.DTOs.Plato
         public int InsumoId { get; set; }
 
         [Required]
+        [Range(0.01, (double)decimal.MaxValue, ErrorMessage = "La cantidad de cada ingrediente debe ser mayor que cero.")]
         public decimal Cantidad { get; set; }
 
         public bool Opcional { get; set; }

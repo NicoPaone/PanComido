@@ -1,6 +1,8 @@
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
+using System;
+using System.Linq;
 
 namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
 {
@@ -8,11 +10,13 @@ namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
     {
         private readonly IPlatoRepositorio _platoRepositorio;
         private readonly IImagenServicio _servicioImagen;
+        private readonly INormalizadorNombreServicio _normalizadorNombreServicio;
 
-        public ModificarPlatoCasoDeUso(IPlatoRepositorio platoRepositorio, IImagenServicio servicioImagen)
+        public ModificarPlatoCasoDeUso(IPlatoRepositorio platoRepositorio, IImagenServicio servicioImagen, INormalizadorNombreServicio normalizadorNombreServicio)
         {
             _platoRepositorio = platoRepositorio;
             _servicioImagen = servicioImagen;
+            _normalizadorNombreServicio = normalizadorNombreServicio;
         }
 
         public async Task<Plato> EjecutarAsync(int restauranteId, Plato platoModificado, string carpetaCloudinary, Stream stream, string nombreImagen)
@@ -22,6 +26,24 @@ namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
             if (platoExistente == null)
             {
                 throw new ArgumentException("El plato que intenta modificar no existe o no pertenece al restaurante.");
+            }
+
+            if (string.IsNullOrWhiteSpace(platoModificado.Nombre))
+            {
+                throw new ArgumentException("El nombre del plato no puede estar vacío.");
+            }
+
+            platoModificado.Nombre = _normalizadorNombreServicio.Normalizar(platoModificado.Nombre);
+
+            bool elNombreCambio = !string.Equals(platoModificado.Nombre, platoExistente.Nombre, StringComparison.OrdinalIgnoreCase);
+            if (elNombreCambio && await _platoRepositorio.ExistePlatoConNombreAsync(restauranteId, platoModificado.Nombre))
+            {
+                throw new ArgumentException($"Ya existe un plato con el nombre '{platoModificado.Nombre}' en el restaurante.");
+            }
+
+            if (platoModificado.Ingredientes != null && platoModificado.Ingredientes.Any(i => i.Cantidad <= 0))
+            {
+                throw new ArgumentException("La cantidad de cada ingrediente debe ser mayor que cero.");
             }
 
             platoExistente.Nombre = platoModificado.Nombre;
