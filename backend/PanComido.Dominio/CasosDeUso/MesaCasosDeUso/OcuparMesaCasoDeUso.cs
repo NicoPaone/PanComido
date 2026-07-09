@@ -88,9 +88,9 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
                 throw new ArgumentException("La mesa no existe o no pertenece al restaurante.");
             }
 
-            if (mesa.EstadoMesa != EstadoMesa.Disponible)
+            if (mesa.EstadoMesa != EstadoMesa.Disponible && mesa.EstadoMesa != EstadoMesa.Reservada)
             {
-                _logger.LogWarning("Rechazo al ocupar mesa: La mesa {MesaId} en el restaurante {RestauranteId} se encuentra en estado '{EstadoMesa}' en lugar de Disponible.", mesaId, restauranteId, mesa.EstadoMesa);
+                _logger.LogWarning("Rechazo al ocupar mesa: La mesa {MesaId} en el restaurante {RestauranteId} se encuentra en estado '{EstadoMesa}' en lugar de Disponible o Reservada.", mesaId, restauranteId, mesa.EstadoMesa);
                 throw new InvalidOperationException("La mesa no está disponible para ser ocupada.");
             }
 

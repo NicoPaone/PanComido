@@ -42,7 +42,11 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
                     bool superponenY = m1.PosicionYInicio < m2.PosicionYFin && m1.PosicionYFin > m2.PosicionYInicio;
 
                     if (superponenX && superponenY)
-                        throw new InvalidOperationException($"Las mesas {m1.Numero} y {m2.Numero} están superpuestas. Por favor separalas.");
+                    {
+                        var desc1 = m1.TipoElemento == 1 ? $"La mesa {m1.Numero}" : "Un objeto";
+                        var desc2 = m2.TipoElemento == 1 ? $"la mesa {m2.Numero}" : "un objeto";
+                        throw new InvalidOperationException($"{desc1} y {desc2} están superpuestos. Por favor separalos.");
+                    }
                 }
             }
         }

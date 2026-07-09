@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR;
 
 namespace PanComido.Presentacion.Hubs
 {
@@ -28,6 +28,11 @@ namespace PanComido.Presentacion.Hubs
         public async Task UnirseMesa(int mesaId)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, $"Mesa_{mesaId}");
+        }
+
+        public async Task UnirseTurnoFila(int turnoId)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, $"TurnoFila_{turnoId}");
         }
     }
 }

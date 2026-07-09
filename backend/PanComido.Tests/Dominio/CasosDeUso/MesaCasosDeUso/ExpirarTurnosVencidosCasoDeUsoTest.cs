@@ -14,6 +14,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
         private readonly Mock<IMesaRepositorio> _mesaRepositorioMock;
         private readonly Mock<IFilaVirtualNotificador> _filaVirtualNotificadorMock;
         private readonly Mock<ILogger<ExpirarTurnosVencidosCasoDeUso>> _loggerMock;
+        private readonly Mock<IMesaNotificador> _mesaNotificadorMock;
 
         public ExpirarTurnosVencidosCasoDeUsoTest()
         {
@@ -21,6 +22,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
             _mesaRepositorioMock = new Mock<IMesaRepositorio>();
             _filaVirtualNotificadorMock = new Mock<IFilaVirtualNotificador>();
             _loggerMock = new Mock<ILogger<ExpirarTurnosVencidosCasoDeUso>>();
+            _mesaNotificadorMock = new Mock<IMesaNotificador>();
         }
 
         [Fact]
@@ -46,7 +48,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
             var mesa = new MesaConPosiciones
             {
                 Id = mesaId,
-                CantPersonasMax = 4
+                CantPersonasMax = 4,
+                EstadoMesa = EstadoMesa.Reservada
             };
 
             var turnoSiguiente = new TurnoFila
@@ -76,7 +79,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
             var casoDeUso = new ExpirarTurnosVencidosCasoDeUso(
                 _turnoFilaRepositorioMock.Object,
                 _mesaRepositorioMock.Object,
-                _filaVirtualNotificadorMock.Object);
+                _filaVirtualNotificadorMock.Object,
+                _mesaNotificadorMock.Object);
 
             // Act
             await casoDeUso.EjecutarAsync();
@@ -119,7 +123,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
 
             _mesaRepositorioMock
                 .Setup(r => r.ObtenerPorIdAsync(mesaId, restauranteId))
-                .ReturnsAsync(new MesaConPosiciones { Id = mesaId, CantPersonasMax = 4 });
+                .ReturnsAsync(new MesaConPosiciones { Id = mesaId, CantPersonasMax = 4, EstadoMesa = EstadoMesa.Reservada });
 
             _turnoFilaRepositorioMock
                 .Setup(r => r.ObtenerProximoTurnoEnEsperaAsync(It.IsAny<int>(), It.IsAny<int>()))
@@ -128,7 +132,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
             var casoDeUso = new ExpirarTurnosVencidosCasoDeUso(
                 _turnoFilaRepositorioMock.Object,
                 _mesaRepositorioMock.Object,
-                _filaVirtualNotificadorMock.Object);
+                _filaVirtualNotificadorMock.Object,
+                _mesaNotificadorMock.Object);
 
             // Act
             await casoDeUso.EjecutarAsync();

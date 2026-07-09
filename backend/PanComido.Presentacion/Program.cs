@@ -153,6 +153,7 @@ builder.Services.AddScoped<ReglaTiempoExtraEntityMapper>();
 
 
 
+
 // Mappers de Presentacion (Dominio <-> DTOs)   
 builder.Services.AddScoped<InsumoMapper>();
 builder.Services.AddScoped<BodegaMapper>();
@@ -328,6 +329,8 @@ builder.Services.AddScoped<IRegistrarPagoServicio,  RegistrarPagoServicio>();
 builder.Services.AddScoped<IVerificarMetodoPagoHabilitadoServicio, VerificarMetodoPagoHabilitadoServicio>();
 builder.Services.AddScoped<IPdfGeneradorServicio, QuestPdfGeneradorServicio>();
 builder.Services.AddScoped<ICacheServicio, MemoriaCacheServicio>();
+builder.Services.AddScoped<IExpirarTurnosVencidosCasoDeUso, ExpirarTurnosVencidosCasoDeUso>();
+
 
 
 //Servicios externos

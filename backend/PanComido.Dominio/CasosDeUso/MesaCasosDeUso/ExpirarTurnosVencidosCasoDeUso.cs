@@ -17,15 +17,18 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
         private readonly ITurnoFilaRepositorio _turnoFilaRepositorio;
         private readonly IMesaRepositorio _mesaRepositorio;
         private readonly IFilaVirtualNotificador _filaVirtualNotificador;
+        private readonly IMesaNotificador _mesaNotificador;
 
         public ExpirarTurnosVencidosCasoDeUso(
             ITurnoFilaRepositorio turnoFilaRepositorio,
             IMesaRepositorio mesaRepositorio,
-            IFilaVirtualNotificador filaVirtualNotificador)
+            IFilaVirtualNotificador filaVirtualNotificador,
+            IMesaNotificador mesaNotificador)
         {
             _turnoFilaRepositorio = turnoFilaRepositorio;
             _mesaRepositorio = mesaRepositorio;
             _filaVirtualNotificador = filaVirtualNotificador;
+            _mesaNotificador = mesaNotificador;
         }
 
         public async Task EjecutarAsync()
@@ -56,7 +59,7 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
                     
                     var mesa = await _mesaRepositorio.ObtenerPorIdAsync(mesaId, filaVirtual.RestauranteId);
                     
-                    if (mesa != null)
+                    if (mesa != null && mesa.EstadoMesa == EstadoMesa.Reservada)
                     {
                         var proximoTurno = await _turnoFilaRepositorio.ObtenerProximoTurnoEnEsperaAsync(turno.FilaVirtualId, mesa.CantPersonasMax);
                         
@@ -73,7 +76,9 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
                         else
                         {
                             // Si no hay nadie en espera compatible, liberamos la mesa
+                            mesa.EstadoMesa = EstadoMesa.Disponible;
                             await _mesaRepositorio.ActualizarEstadoAsync(mesaId, EstadoMesa.Disponible);
+                            await _mesaNotificador.NotificarMesaActualizadaAsync(mesa, filaVirtual.RestauranteId);
                         }
                     }
                 }

@@ -72,4 +72,10 @@ INSERT INTO familia_tipografica (categoria, tipografia_titulo, tipografia_cuerpo
     ('Rústica',  'Righteous',          'Karla'),
     ('Rústica',  'Abril Fatface',      'Merriweather');
 
+INSERT INTO estado_turno_mesa (id, nombre) VALUES
+    (1, 'En Espera'),
+    (2, 'Mesa Asignada'),
+    (3, 'Completado'),
+    (4, 'Cancelado');
+
 COMMIT;

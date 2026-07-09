@@ -55,7 +55,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             List<EF.Mesa> mesasEF = await BaseQuery(restauranteId)
                 .AsNoTracking()
-                .Where(m => m.EstadoMesaId == (int)DOM.Enums.EstadoMesa.Ocupada)
+                .Where(m => m.EstadoMesaId == (int)DOM.Enums.EstadoMesa.Ocupada && m.TipoElemento == 1)
                 .ToListAsync();
 
             return mesasEF
@@ -67,7 +67,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             List<EF.Mesa> mesasEF = await BaseQuery(restauranteId)
                 .AsNoTracking()
-                .Where(m => m.EstadoMesaId == (int)DOM.Enums.EstadoMesa.Disponible)
+                .Where(m => m.EstadoMesaId == (int)DOM.Enums.EstadoMesa.Disponible && m.TipoElemento == 1)
                 .ToListAsync();
 
             return mesasEF
@@ -279,7 +279,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             return await _ctx.Mesas
                 .AsNoTracking()
-                .Where(m => m.Grilla.RestauranteId == restauranteId && m.Activo)
+                .Where(m => m.Grilla.RestauranteId == restauranteId && m.Activo && m.TipoElemento == 1)
                 .Select(m => new MesaFilaVirtualDto
                 {
                     Id = m.Id,
