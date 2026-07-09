@@ -8,6 +8,7 @@ namespace PanComido.Presentacion.DTOs.Proveedores
         [MaxLength(100, ErrorMessage = "El nombre no puede superar los 100 caracteres.")]
         public string Nombre { get; set; }
 
+        [Required(ErrorMessage = "El teléfono es obligatorio.")]
         [MaxLength(20, ErrorMessage = "El teléfono no puede superar los 10 caracteres")]
         public string? NumeroTelefonoWsp { get; set; }
 

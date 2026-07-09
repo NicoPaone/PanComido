@@ -15,7 +15,7 @@ namespace PanComido.Presentacion.DTOs.Pedidos
         public int InsumoId { get; set; }
         [Range(0.01, double.MaxValue, ErrorMessage = "La cantidad debe ser mayor a cero")]
         public decimal Cantidad { get; set; }
-        [Range(1, double.MaxValue, ErrorMessage = "El precio de compra no puede ser negativo")]
+        [Range(0, double.MaxValue, ErrorMessage = "El precio de compra no puede ser negativo")]
         public decimal PrecioCompra { get; set; }
     }
 }
