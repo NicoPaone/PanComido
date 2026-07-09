@@ -49,8 +49,20 @@ namespace PanComido.Dominio.Servicios
 
         public async Task ValidarInsumosDeRecetaBebidaAsync(int restauranteId, List<BebidaPreparadaInsumo> insumos)
         {
+            if (insumos.Select(i => i.InsumoId).Distinct().Count() != insumos.Count)
+            {
+                _logger.LogWarning("Rechazo de validación: la lista de insumos de la receta contiene IDs duplicados.");
+                throw new ArgumentException("No se puede repetir el mismo insumo en la receta.");
+            }
+
             foreach (var item in insumos)
             {
+                if (item.Cantidad <= 0)
+                {
+                    _logger.LogWarning("Rechazo de validación: La cantidad del insumo {InsumoId} debe ser mayor que cero.", item.InsumoId);
+                    throw new ArgumentException("La cantidad de cada insumo debe ser mayor que cero.");
+                }
+
                 Insumo insumo = await _insumoRepositorio.ObtenerPorIdAsync(item.InsumoId, restauranteId);
                 if (insumo == null)
                 {

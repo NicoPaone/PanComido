@@ -13,6 +13,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.BebidaPreparada
         private readonly Mock<IInsumoValidacionServicio> _insumoValidacionServicioMock;
         private readonly Mock<IBebidaPreparadaValidacionServicio> _bebidaPreparadaValidacionServicioMock;
         private readonly Mock<IImagenServicio> _imagenServicioMock;
+        private readonly Mock<INormalizadorNombreServicio> _normalizadorNombreServicioMock;
         private readonly CrearBebidaPreparadaCasoDeUso _casoDeUso;
 
         public CrearBebidaPreparadaCasoDeUsoTest()
@@ -21,12 +22,15 @@ namespace PanComido.Tests.Dominio.CasosDeUso.BebidaPreparada
             _insumoValidacionServicioMock = new Mock<IInsumoValidacionServicio>();
             _bebidaPreparadaValidacionServicioMock = new Mock<IBebidaPreparadaValidacionServicio>();
             _imagenServicioMock = new Mock<IImagenServicio>();
+            _normalizadorNombreServicioMock = new Mock<INormalizadorNombreServicio>();
+            _normalizadorNombreServicioMock.Setup(s => s.Normalizar(It.IsAny<string>())).Returns((string nombre) => nombre);
 
             _casoDeUso = new CrearBebidaPreparadaCasoDeUso(
                 _bebidaPreparadaRepoMock.Object,
                 _insumoValidacionServicioMock.Object,
                 _bebidaPreparadaValidacionServicioMock.Object,
                 _imagenServicioMock.Object,
+                _normalizadorNombreServicioMock.Object,
                 Mock.Of<ILogger<CrearBebidaPreparadaCasoDeUso>>());
         }
 

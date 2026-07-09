@@ -15,6 +15,7 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
 
         private readonly IEstadoStockInsumoServicio _estadoStockInsumoServicio;
         private readonly IImagenServicio _imagenServicio;
+        private readonly INormalizadorNombreServicio _normalizadorNombreServicio;
 
         private readonly ILogger<CrearInsumoCasoDeUso> _logger;
 
@@ -24,6 +25,7 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
             IInsumoValidacionServicio insumoValidacionServicio,
             IEstadoStockInsumoServicio estadoStockInsumoServicio,
             IImagenServicio imagenServicio,
+            INormalizadorNombreServicio normalizadorNombreServicio,
             ILogger<CrearInsumoCasoDeUso> logger)
         {
             _insumoRepositorio = insumoRepositorio;
@@ -32,6 +34,7 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
             _loteRepositorio = loteRepositorio;
             _estadoStockInsumoServicio = estadoStockInsumoServicio;
             _imagenServicio = imagenServicio;
+            _normalizadorNombreServicio = normalizadorNombreServicio;
             _logger = logger;
         }
 
@@ -48,6 +51,8 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
             _logger.LogInformation("Iniciando creación del insumo '{NombreInsumo}' para el restaurante {RestauranteId}. Cantidad inicial: {CantidadInicial}, Bodega destino: {BodegaId}", insumo.Nombre, restauranteId, cantidadInicial, idBodega);
 
             ValidarReglasDeNegocio(restauranteId, insumo, cantidadInicial, fechaVencimiento);
+            insumo.Nombre = _normalizadorNombreServicio.Normalizar(insumo.Nombre);
+            await ValidarNombreDuplicadoAsync(restauranteId, insumo.Nombre);
             await ValidarBodegaAsync(restauranteId, idBodega);
 
             CategoriaInsumo categoria = await _insumoValidacionServicio.ObtenerYValidarCategoriaAsync(insumo.CategoriaId);
@@ -87,6 +92,15 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
             {
                 _logger.LogWarning("Rechazo al crear insumo: La fecha de vencimiento ingresada no es una fecha futura. RestauranteId: {RestauranteId}", restauranteId);
                 throw new ArgumentException("La fecha de vencimiento debe ser una fecha futura.");
+            }
+        }
+
+        private async Task ValidarNombreDuplicadoAsync(int restauranteId, string nombre)
+        {
+            if (await _insumoRepositorio.ExisteInsumoConNombreAsync(restauranteId, nombre))
+            {
+                _logger.LogWarning("Rechazo al crear insumo: Ya existe uno con el nombre '{NombreInsumo}' en el restaurante {RestauranteId}.", nombre, restauranteId);
+                throw new ArgumentException($"Ya existe un insumo con el nombre '{nombre}' en el restaurante.");
             }
         }
 

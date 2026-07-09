@@ -2,6 +2,7 @@
 using Moq;
 using PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Interfaces.Servicios;
 using DOM = PanComido.Dominio.Entidades;
 
 namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
@@ -9,16 +10,19 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
     public class CrearProvedorCasoDeUsoTests
     {
         private readonly Mock<IProveedorRepositorio> _proveedorRepoMock;
+        private readonly Mock<INormalizadorNombreServicio> _normalizadorNombreServicioMock;
         private readonly Mock<ILogger<CrearProveedorCasoDeUso>> _loggerMock;
 
         public CrearProvedorCasoDeUsoTests()
         {
             _proveedorRepoMock = new Mock<IProveedorRepositorio>();
+            _normalizadorNombreServicioMock = new Mock<INormalizadorNombreServicio>();
+            _normalizadorNombreServicioMock.Setup(s => s.Normalizar(It.IsAny<string>())).Returns((string nombre) => nombre);
             _loggerMock = new Mock<ILogger<CrearProveedorCasoDeUso>>();
         }
 
         private CrearProveedorCasoDeUso CrearCasoDeUso() =>
-            new CrearProveedorCasoDeUso(_proveedorRepoMock.Object, _loggerMock.Object);
+            new CrearProveedorCasoDeUso(_proveedorRepoMock.Object, _normalizadorNombreServicioMock.Object, _loggerMock.Object);
 
         [Fact]
         public async Task EjecutarAsync_CuandoTodosLosDatosSonValidos_SeCreaElNuevoProveedor()

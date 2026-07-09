@@ -39,7 +39,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public Task<Dictionary<(int insumoId, int bodegaId), DateOnly?>> ObtenerVencimientosPorBodega(int restauranteId)
         {
             return _ctx.Lotes
-                .Where(l => l.Bodega.RestauranteId == restauranteId && !l.Eliminado)
+                .Where(l => l.Bodega.RestauranteId == restauranteId && !l.Eliminado && !l.Insumo.IdArticuloNavigation.Eliminado)
                 .GroupBy(l => new { l.InsumoId, l.BodegaId })
                 .Select(g => new
                 {
@@ -53,7 +53,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public Task<Dictionary<(int insumoId, int bodegaId), decimal>> ObtenerStocksPorBodega(int restauranteId)
         {
             return _ctx.Lotes
-                .Where(l => l.Bodega.RestauranteId == restauranteId && !l.Eliminado)
+                .Where(l => l.Bodega.RestauranteId == restauranteId && !l.Eliminado && !l.Insumo.IdArticuloNavigation.Eliminado)
                 .GroupBy(l => new { l.InsumoId, l.BodegaId })
                 .Select(g => new
                 {

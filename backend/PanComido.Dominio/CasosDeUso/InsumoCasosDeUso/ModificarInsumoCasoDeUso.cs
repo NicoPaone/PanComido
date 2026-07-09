@@ -18,18 +18,21 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
         private readonly IEstadoStockInsumoServicio _estadoStockInsumoServicio;
         private readonly IImagenServicio _imagenServicio;
         private readonly IInsumoValidacionServicio _insumoValidacionServicio;
+        private readonly INormalizadorNombreServicio _normalizadorNombreServicio;
         private readonly ILogger<ModificarInsumoCasoDeUso> _logger;
 
         public ModificarInsumoCasoDeUso(IInsumoRepositorio insumoRepositorio,
                                             IEstadoStockInsumoServicio estadoStockInsumoServicio,
                                             IImagenServicio imagenServicio,
                                                         IInsumoValidacionServicio insumoValidacionServicio,
+                                            INormalizadorNombreServicio normalizadorNombreServicio,
                                             ILogger<ModificarInsumoCasoDeUso> logger)
         {
             _insumoRepositorio = insumoRepositorio;
             _estadoStockInsumoServicio = estadoStockInsumoServicio;
             _imagenServicio = imagenServicio;
             _insumoValidacionServicio = insumoValidacionServicio;
+            _normalizadorNombreServicio = normalizadorNombreServicio;
             _logger = logger;
         }
 
@@ -38,6 +41,9 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
             _logger.LogInformation("Iniciando modificación del insumo {InsumoId} para el restaurante {RestauranteId}.", insumoModificado.Id, restauranteId);
             var insumoExistente = await _insumoRepositorio.ObtenerPorIdAsync(insumoModificado.Id, restauranteId);
             CategoriaInsumo categoria = await ValidarExistenciaYCategoria(insumoModificado, insumoExistente);
+
+            insumoModificado.Nombre = _normalizadorNombreServicio.Normalizar(insumoModificado.Nombre);
+            await ValidarNombreDuplicadoAsync(restauranteId, insumoModificado.Nombre, insumoExistente.Nombre);
 
             UnidadMedida unidadMedida = await _insumoValidacionServicio.ObtenerYValidarUnidadMedidaAsync(insumoModificado.UnidadDeMedidaId);
 
@@ -83,6 +89,16 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
             insumoExistente.StockMinimo = insumoModificado.StockMinimo;
             insumoExistente.StockRecomendado = insumoModificado.StockRecomendado;
             insumoExistente.EsPrecioManual = insumoModificado.EsPrecioManual;
+        }
+
+        private async Task ValidarNombreDuplicadoAsync(int restauranteId, string nombreNuevo, string nombreActual)
+        {
+            bool elNombreCambio = !string.Equals(nombreNuevo, nombreActual, StringComparison.OrdinalIgnoreCase);
+            if (elNombreCambio && await _insumoRepositorio.ExisteInsumoConNombreAsync(restauranteId, nombreNuevo))
+            {
+                _logger.LogWarning("Rechazo al modificar insumo: Ya existe un insumo con el nombre '{NombreInsumo}' en el restaurante {RestauranteId}.", nombreNuevo, restauranteId);
+                throw new ArgumentException($"Ya existe un insumo con el nombre '{nombreNuevo}' en el restaurante.");
+            }
         }
 
         private async Task<CategoriaInsumo> ValidarExistenciaYCategoria(Insumo insumoModificado, Insumo insumoExistente)

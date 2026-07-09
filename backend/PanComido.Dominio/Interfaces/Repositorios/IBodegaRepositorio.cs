@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +16,7 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task<Bodega> ModificarAsync(Bodega bodega, int restauranteId);
         Task<bool> EliminarAsync(int id, int restauranteId);
         Task<bool> TieneLotesAsociadosAsync(int bodegaId);
+        Task<bool> ExisteBodegaPorNombreAsync(string nombre, int restauranteId, int? idExcluido = null);
 
     }
 }
