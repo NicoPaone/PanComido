@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
+using PanComido.Dominio.ValueObjects;
 
 namespace PanComido.Dominio.CasosDeUso.EmpleadoCasosDeUso
 {
@@ -33,10 +34,10 @@ namespace PanComido.Dominio.CasosDeUso.EmpleadoCasosDeUso
             if (string.IsNullOrWhiteSpace(empleadoModificado.Rol))
                 throw new ArgumentException("El rol del empleado no puede estar vacío.");
 
-            if (!EmpleadoConstantes.EsRolValido(empleadoModificado.Rol))
+            if (!RolEmpleado.EsValido(empleadoModificado.Rol))
                 throw new ArgumentException("El rol del empleado no es válido.");
 
-            if (!EmpleadoConstantes.EsEstadoValido(empleadoModificado.Estado))
+            if (!EstadoEmpleado.EsValido(empleadoModificado.Estado))
                 throw new ArgumentException("El estado del empleado no es válido.");
 
             // Validar que el email no esté tomado por otro empleado
@@ -47,8 +48,8 @@ namespace PanComido.Dominio.CasosDeUso.EmpleadoCasosDeUso
             // Asignar campos actualizados
             empleadoExistente.Nombre = empleadoModificado.Nombre;
             empleadoExistente.Email = empleadoModificado.Email;
-            empleadoExistente.Estado = EmpleadoConstantes.NormalizarEstado(empleadoModificado.Estado);
-            empleadoExistente.Rol = EmpleadoConstantes.NormalizarRol(empleadoModificado.Rol);
+            empleadoExistente.Estado = EstadoEmpleado.Crear(empleadoModificado.Estado).Valor;
+            empleadoExistente.Rol = RolEmpleado.Crear(empleadoModificado.Rol).Valor;
 
             if (!string.IsNullOrWhiteSpace(nuevaContrasenia))
             {

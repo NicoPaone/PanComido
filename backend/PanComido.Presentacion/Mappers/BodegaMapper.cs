@@ -18,6 +18,7 @@ namespace PanComido.Presentacion.Mappers
                 Id = bodega.Id,
                 Nombre = bodega.Nombre,
                 TipoBodega = bodega.TipoBodega,
+                TipoBodegaId = bodega.TipoBodegaId
             };
         }
 
@@ -35,6 +36,7 @@ namespace PanComido.Presentacion.Mappers
                 Id = bodega.Id,
                 Nombre = bodega.Nombre,
                 TipoBodega = bodega.TipoBodega,
+                TipoBodegaId = bodega.TipoBodegaId,
                 Insumos = _insumoMapper.aListaDto(bodega.Insumos)
             };
         }
@@ -44,6 +46,16 @@ namespace PanComido.Presentacion.Mappers
             return bodegas
                 .Select(b => bodegaConInsumosADto(b))
                 .ToList();
+        }
+        public DOM.Bodega aDominio(GuardarBodegaRequestDto dto, int? id = null)
+        {
+            if (dto == null) return null;
+            return new DOM.Bodega
+            {
+                Id = id ?? 0,
+                Nombre = dto.Nombre,
+                TipoBodegaId = dto.TipoBodegaId
+            };
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +10,6 @@ namespace PanComido.Dominio.Interfaces.Servicios
     public interface IGestionStockServicio
     {
         Task DescontarStockPorArticulosAsync(int restauranteId, List<ArticuloComanda> articulosSolicitados);
+        Task DescontarStockInsumosAsync(int restauranteId, Dictionary<int, decimal> insumosARestar);
     }
 }

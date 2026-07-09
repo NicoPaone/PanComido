@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
 using System;
@@ -12,10 +12,12 @@ namespace PanComido.Dominio.Servicios
     public class GestionStockServicio : IGestionStockServicio
     {
         private readonly ILoteRepositorio _loteRepositorio;
+        private readonly IInsumoRepositorio _insumoRepositorio;
 
-        public GestionStockServicio(ILoteRepositorio loteRepositorio)
+        public GestionStockServicio(ILoteRepositorio loteRepositorio, IInsumoRepositorio insumoRepositorio)
         {
             _loteRepositorio = loteRepositorio;
+            _insumoRepositorio = insumoRepositorio;
         }
 
         public async Task DescontarStockPorArticulosAsync(int restauranteId, List<ArticuloComanda> articulosSolicitados)
@@ -23,7 +25,7 @@ namespace PanComido.Dominio.Servicios
             Dictionary<int, decimal> insumosARestar = CalcularInsumosARestar(articulosSolicitados);
 
             if (insumosARestar.Any())
-                await DescontarPorLotesSegunFIFOAsync(restauranteId, insumosARestar);
+                await DescontarStockInsumosAsync(restauranteId, insumosARestar);
         }
 
         private Dictionary<int, decimal> CalcularInsumosARestar(List<ArticuloComanda> articulosSolicitados)
@@ -34,6 +36,8 @@ namespace PanComido.Dominio.Servicios
             {
                 if (itemDeComanda.Articulo is Plato plato)
                     CalcularInsumosDePlato(plato, itemDeComanda, insumosARestar);
+                else if (itemDeComanda.Articulo is BebidaPreparada bebidaPreparada)
+                    CalcularInsumosDeBebidaPreparada(bebidaPreparada, itemDeComanda, insumosARestar);
                 else
                     CalcularInsumoDirecto(itemDeComanda.Articulo, itemDeComanda, insumosARestar);
             }
@@ -55,6 +59,15 @@ namespace PanComido.Dominio.Servicios
             }
         }
 
+        private void CalcularInsumosDeBebidaPreparada(BebidaPreparada bebidaPreparada, ArticuloComanda itemDeComanda, Dictionary<int, decimal> insumosARestar)
+        {
+            foreach (var item in bebidaPreparada.Insumos)
+            {
+                decimal cantidadTotalARestar = item.Cantidad * itemDeComanda.Cantidad;
+                AcumularInsumoARestar(insumosARestar, item.InsumoId, cantidadTotalARestar);
+            }
+        }
+
         private void CalcularInsumoDirecto(Articulo articulo, ArticuloComanda itemDeComanda, Dictionary<int, decimal> insumosARestar)
         {
             AcumularInsumoARestar(insumosARestar, articulo.Id, itemDeComanda.Cantidad);
@@ -71,7 +84,7 @@ namespace PanComido.Dominio.Servicios
             insumosARestar[insumoId] += cantidadASumar;
         }
 
-        private async Task DescontarPorLotesSegunFIFOAsync(int restauranteId, Dictionary<int, decimal> insumosARestar)
+        public async Task DescontarStockInsumosAsync(int restauranteId, Dictionary<int, decimal> insumosARestar)
         {
             List<Lote> lotesModificados = new();
             foreach (var kvp in insumosARestar)
@@ -87,6 +100,13 @@ namespace PanComido.Dominio.Servicios
                     lote.Cantidad -= aDescontarDeEsteLote;
                     cantidadPorDescontar -= aDescontarDeEsteLote;
                     lotesModificados.Add(lote);
+                }
+
+                if (cantidadPorDescontar > 0)
+                {
+                    var insumo = await _insumoRepositorio.ObtenerPorIdAsync(insumoId, restauranteId);
+                    string nombreInsumo = insumo != null ? $"'{insumo.Nombre}'" : $"ID {insumoId}";
+                    throw new InvalidOperationException($"No hay suficiente stock físico para el insumo {nombreInsumo}. Faltan {cantidadPorDescontar} unidades.");
                 }
             }
             if (lotesModificados.Any())

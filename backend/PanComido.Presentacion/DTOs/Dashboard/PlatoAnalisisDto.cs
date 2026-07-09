@@ -46,6 +46,10 @@ namespace PanComido.Presentacion.DTOs.Dashboard
         public DashboardRankingItemDto Plato { get; set; } = new DashboardRankingItemDto();
         public string Diagnostico { get; set; } = string.Empty;
         public string Alerta { get; set; } = "moderada";
+        public string FuenteAnalisis { get; set; } = "desconocida";
+        public bool EsFallbackLocal { get; set; }
+        public bool AnalisisProvieneDeCache { get; set; }
+        public string? MensajeFallback { get; set; }
         public MetricasAnalisisDto Metricas { get; set; } = new MetricasAnalisisDto();
         public ComparativaAnalisisDto Comparativa { get; set; } = new ComparativaAnalisisDto();
         public List<int> Tendencia { get; set; } = new List<int>();

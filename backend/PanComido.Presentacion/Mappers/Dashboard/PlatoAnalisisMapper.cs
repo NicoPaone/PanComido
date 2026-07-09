@@ -8,6 +8,35 @@ namespace PanComido.Presentacion.Mappers.Dashboard
 {
     public class PlatoAnalisisMapper
     {
+        public AplicarDescuentoResponse ParaDto(AplicarDescuentoResultado resultado)
+        {
+            return new AplicarDescuentoResponse
+            {
+                Mensaje = resultado.Mensaje,
+                PlatoId = resultado.PlatoId,
+                PrecioNuevo = resultado.PrecioNuevo,
+                Costo = resultado.Costo,
+                MargenPctNuevo = resultado.MargenPctNuevo
+            };
+        }
+
+        public AgendarRecordatorioResponse ParaDto(AgendarRecordatorioResultado resultado)
+        {
+            return new AgendarRecordatorioResponse
+            {
+                Mensaje = resultado.Mensaje,
+                AccionItem = new DashboardAccionItemDto
+                {
+                    Titulo = resultado.Titulo,
+                    Detalle = resultado.Detalle,
+                    Destino = resultado.Destino,
+                    Tono = resultado.Tono,
+                    Impacto = resultado.Impacto,
+                    Prioridad = resultado.Prioridad
+                }
+            };
+        }
+
         public PlatoAnalisisDto ParaDto(PlatoAnalisisResultado resultado)
         {
             var dto = new PlatoAnalisisDto
@@ -21,6 +50,10 @@ namespace PanComido.Presentacion.Mappers.Dashboard
                 },
                 Diagnostico = resultado.AnalisisIa.Diagnostico,
                 Alerta = resultado.AnalisisIa.Alerta,
+                FuenteAnalisis = resultado.FuenteAnalisis,
+                EsFallbackLocal = resultado.EsFallbackLocal,
+                AnalisisProvieneDeCache = resultado.AnalisisProvieneDeCache,
+                MensajeFallback = resultado.MotivoFallback,
                 Metricas = new MetricasAnalisisDto
                 {
                     Volumen = $"{resultado.VentasPeriodo} u.",

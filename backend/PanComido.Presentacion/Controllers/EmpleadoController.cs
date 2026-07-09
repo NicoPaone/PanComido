@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.EmpleadoCasosDeUso;
-using PanComido.Dominio.Entidades;
 using PanComido.Presentacion.DTOs.Empleado;
 using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.Mappers;
@@ -43,28 +42,19 @@ namespace PanComido.Presentacion.Controllers
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<EmpleadoResponseDto>>> ObtenerTodos()
         {
-            try
-            {
-                var restauranteId = HttpContext.ObtenerRestauranteId();
-                var empleados = await _listarEmpleadosCasoDeUso.EjecutarAsync(restauranteId);
-                var dtos = _mapper.aListaDto(empleados);
-                return Ok(dtos);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ErrorResponseDto { Error = ex.Message });
-            }
+            var restauranteId = HttpContext.ObtenerRestauranteId();
+            var empleados = await _listarEmpleadosCasoDeUso.EjecutarAsync(restauranteId);
+            var dtos = _mapper.aListaDto(empleados);
+            return Ok(dtos);
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(EmpleadoOperacionResponseDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Crear([FromBody] CrearEmpleadoRequestDto request)
+        public async Task<ActionResult<EmpleadoOperacionResponseDto>> Crear([FromBody] CrearEmpleadoRequestDto request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             try
             {
                 var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -77,32 +67,30 @@ namespace PanComido.Presentacion.Controllers
                     request.TurnosIds
                 );
 
-                return StatusCode(201, new
+                return StatusCode(StatusCodes.Status201Created, new EmpleadoOperacionResponseDto
                 {
-                    mensaje = "Empleado creado correctamente.",
-                    empleado = _mapper.aDto(creado)
+                    Mensaje = "Empleado creado correctamente.",
+                    Empleado = _mapper.aDto(creado)
                 });
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new ErrorResponseDto { Error = ex.Message });
+                return BadRequest(ApiErrorResponseFactory.Crear(HttpContext, ex.Message, "bad_request"));
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
-                return StatusCode(500, new ErrorResponseDto { Error = ex.Message });
+                return Conflict(ApiErrorResponseFactory.Crear(HttpContext, ex.Message, "business_rule_violation"));
             }
         }
 
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(EmpleadoOperacionResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Modificar(int id, [FromBody] ModificarEmpleadoRequestDto request)
+        public async Task<ActionResult<EmpleadoOperacionResponseDto>> Modificar(int id, [FromBody] ModificarEmpleadoRequestDto request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             try
             {
                 var restauranteId = HttpContext.ObtenerRestauranteId();
@@ -115,46 +103,50 @@ namespace PanComido.Presentacion.Controllers
                     request.TurnosIds
                 );
 
-                return Ok(new
+                return Ok(new EmpleadoOperacionResponseDto
                 {
-                    mensaje = "Empleado modificado correctamente.",
-                    empleado = _mapper.aDto(modificado)
+                    Mensaje = "Empleado modificado correctamente.",
+                    Empleado = _mapper.aDto(modificado)
                 });
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new ErrorResponseDto { Error = ex.Message });
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new ErrorResponseDto { Error = ex.Message });
+                return BadRequest(ApiErrorResponseFactory.Crear(HttpContext, ex.Message, "bad_request"));
             }
-            catch (Exception ex)
+            catch (KeyNotFoundException ex)
             {
-                return StatusCode(500, new ErrorResponseDto { Error = ex.Message });
+                return NotFound(ApiErrorResponseFactory.Crear(HttpContext, ex.Message, "not_found"));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ApiErrorResponseFactory.Crear(HttpContext, ex.Message, "business_rule_violation"));
             }
         }
 
         [HttpDelete("{id}")]
-        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(EliminarEmpleadoResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Eliminar(int id)
+        public async Task<ActionResult<EliminarEmpleadoResponseDto>> Eliminar(int id)
         {
             try
             {
                 var restauranteId = HttpContext.ObtenerRestauranteId();
                 await _eliminarEmpleadoCasoDeUso.EjecutarAsync(id, restauranteId);
 
-                return Ok(new { mensaje = "Empleado eliminado correctamente." });
+                return Ok(new EliminarEmpleadoResponseDto
+                {
+                    Mensaje = "Empleado eliminado correctamente."
+                });
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new ErrorResponseDto { Error = ex.Message });
+                return NotFound(ApiErrorResponseFactory.Crear(HttpContext, ex.Message, "not_found"));
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
-                return StatusCode(500, new ErrorResponseDto { Error = ex.Message });
+                return Conflict(ApiErrorResponseFactory.Crear(HttpContext, ex.Message, "business_rule_violation"));
             }
         }
     }

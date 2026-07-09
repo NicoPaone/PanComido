@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PanComido.Dominio.Entidades.Enums;
 using DOM = PanComido.Dominio.Entidades;
 using EF = PanComido.Infraestructura.Persistencia.Entidades;
 
@@ -34,7 +35,9 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                         {
                             InsumoId = pedido.InsumoId,
                             Cantidad = pedido.Cantidad,
-                            PrecioCompra = pedido.PrecioCompra
+                            PrecioCompra = pedido.PrecioCompra,
+                            Fecha = pedido.Pedido?.Fecha ?? default,
+                            Estado = pedido.Pedido != null ? (EstadoPedido)pedido.Pedido.EstadoPedidoId : default
                         }).ToList() ?? new List<DOM.PedidoInsumo>()
                     }
                 }).ToList() ?? new List<DOM.PlatoIngrediente>(),

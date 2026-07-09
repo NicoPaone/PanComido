@@ -51,7 +51,9 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 {
                     InsumoId = pi.InsumoId,
                     Cantidad = pi.Cantidad,
-                    PrecioCompra = pi.PrecioCompra
+                    PrecioCompra = pi.PrecioCompra,
+                    Fecha = pi.Pedido?.Fecha ?? default,
+                    Estado = pi.Pedido != null ? (DOM.Enums.EstadoPedido)pi.Pedido.EstadoPedidoId : default
                 }).ToList();
             }
             return domInsumo;

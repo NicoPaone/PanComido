@@ -105,9 +105,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
         public async Task<List<EstadisticaMozoRaw>> ObtenerEstadisticasMozosRawAsync(int restauranteId, DateTime desde, DateTime hasta)
         {
-            // 1. Obtener los mozos con sus mesas en una sola consulta
             var mozosData = await _ctx.Mozos
-                .Include(m => m.IdEmpleadoNavigation)
                 .Where(m => m.IdEmpleadoNavigation.RestauranteId == restauranteId)
                 .Select(m => new
                 {
@@ -117,47 +115,79 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 })
                 .ToListAsync();
 
-            // 2. Obtener todas las comandas y pagos del periodo en una sola consulta
-            var comandasData = await _ctx.Comanda
-                .Include(c => c.Pagos)
-                .Include(c => c.EncuestaSatisfaccions)
+            var comandasPorMesa = await _ctx.Comanda
                 .Where(c => c.RestauranteId == restauranteId
                          && c.HoraInicio >= desde
                          && c.HoraInicio <= hasta)
+                .GroupBy(c => c.MesaId)
+                .Select(g => new
+                {
+                    MesaId = g.Key,
+                    TotalPago = g.SelectMany(c => c.Pagos).Sum(p => p.Total),
+                    CantidadComandas = g.Count(),
+                    CantidadFinalizadas = g.Count(c => c.HoraFin.HasValue),
+                    ComandasActivas = g.Count(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada
+                                                && c.EstadoComandaId != (int)EstadoComanda.Abierta)
+                })
+                .ToDictionaryAsync(x => x.MesaId);
+
+            var minutosFinalizadasPorMesa = (await _ctx.Comanda
+                .Where(c => c.RestauranteId == restauranteId
+                         && c.HoraInicio >= desde
+                         && c.HoraInicio <= hasta
+                         && c.HoraFin.HasValue)
                 .Select(c => new
                 {
                     c.MesaId,
                     c.HoraInicio,
-                    c.HoraFin,
-                    c.EstadoComandaId,
-                    TotalPago = c.Pagos.Sum(p => p.Total),
-                    PuntuacionesMozo = c.EncuestaSatisfaccions.Select(e => e.PuntuacionMozo).ToList()
+                    HoraFin = c.HoraFin!.Value
                 })
-                .ToListAsync();
+                .ToListAsync())
+                .GroupBy(c => c.MesaId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Sum(c => (c.HoraFin - c.HoraInicio).TotalMinutes));
 
-            // 3. Procesar en memoria (cero consultas N+1)
+            var encuestasPorMesa = await _ctx.EncuestaSatisfaccions
+                .Where(e => e.Comanda.RestauranteId == restauranteId
+                         && e.Fecha >= desde
+                         && e.Fecha <= hasta)
+                .GroupBy(e => e.Comanda.MesaId)
+                .Select(g => new
+                {
+                    MesaId = g.Key,
+                    Promedio = g.Average(e => (double?)e.PuntuacionMozo)
+                })
+                .ToDictionaryAsync(x => x.MesaId, x => x.Promedio);
+
             var statsList = new List<EstadisticaMozoRaw>();
 
             foreach (var mozo in mozosData)
             {
                 var mesasDelMozo = mozo.MesaIds;
-                var comandasDelMozo = comandasData.Where(c => mesasDelMozo.Contains(c.MesaId)).ToList();
+                var statsMesas = mesasDelMozo
+                    .Where(comandasPorMesa.ContainsKey)
+                    .Select(mesaId => comandasPorMesa[mesaId])
+                    .ToList();
 
-                int mesasAtendidas = comandasDelMozo.Select(c => c.MesaId).Distinct().Count();
-                decimal facturacionTotal = comandasDelMozo.Sum(c => c.TotalPago);
+                int mesasAtendidas = statsMesas.Count;
+                decimal facturacionTotal = statsMesas.Sum(c => c.TotalPago);
+                int cantidadFinalizadas = statsMesas.Sum(c => c.CantidadFinalizadas);
+                double? avgMinutes = cantidadFinalizadas > 0
+                    ? mesasDelMozo
+                        .Where(minutosFinalizadasPorMesa.ContainsKey)
+                        .Sum(mesaId => minutosFinalizadasPorMesa[mesaId]) / cantidadFinalizadas
+                    : null;
 
-                var comandasFinalizadas = comandasDelMozo.Where(c => c.HoraFin.HasValue).ToList();
-                double? avgMinutes = null;
-                if (comandasFinalizadas.Any())
-                {
-                    avgMinutes = comandasFinalizadas.Average(c => (c.HoraFin.Value - c.HoraInicio).TotalMinutes);
-                }
+                int comandasActivas = statsMesas.Sum(c => c.ComandasActivas);
 
-                int comandasActivas = comandasDelMozo.Count(c => c.EstadoComandaId != (int)EstadoComanda.Finalizada
-                                                              && c.EstadoComandaId != (int)EstadoComanda.Abierta);
-
-                var todasLasPuntuaciones = comandasDelMozo.SelectMany(c => c.PuntuacionesMozo).ToList();
-                double? avgEstrellas = todasLasPuntuaciones.Any() ? todasLasPuntuaciones.Average() : null;
+                var promediosEncuestas = mesasDelMozo
+                    .Where(encuestasPorMesa.ContainsKey)
+                    .Select(mesaId => encuestasPorMesa[mesaId])
+                    .Where(promedio => promedio.HasValue)
+                    .Select(promedio => promedio!.Value)
+                    .ToList();
+                double? avgEstrellas = promediosEncuestas.Any() ? promediosEncuestas.Average() : null;
 
                 statsList.Add(new EstadisticaMozoRaw
                 {

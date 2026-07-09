@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Interfaces.Servicios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,12 +13,14 @@ namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
     public class CrearProveedorCasoDeUso
     {
         private readonly IProveedorRepositorio _proveedorRepositorio;
+        private readonly INormalizadorNombreServicio _normalizadorNombreServicio;
         private readonly ILogger<CrearProveedorCasoDeUso> _logger;
 
 
-        public CrearProveedorCasoDeUso(IProveedorRepositorio proveedorRepositorio, ILogger<CrearProveedorCasoDeUso> logger)
+        public CrearProveedorCasoDeUso(IProveedorRepositorio proveedorRepositorio, INormalizadorNombreServicio normalizadorNombreServicio, ILogger<CrearProveedorCasoDeUso> logger)
         {
             _proveedorRepositorio = proveedorRepositorio;
+            _normalizadorNombreServicio = normalizadorNombreServicio;
             _logger = logger;
 
         }
@@ -26,8 +29,8 @@ namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
         {
             if (string.IsNullOrWhiteSpace(proveedor.Nombre)) throw new ArgumentException("El nombre del proveedor no puede ser nulo o vacío.");
 
-            proveedor.Nombre = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(proveedor.Nombre.Trim().ToLower()); //todas las primeras letras del nombre van a empezar en mayuscula
-            
+            proveedor.Nombre = _normalizadorNombreServicio.Normalizar(proveedor.Nombre);
+
             if(proveedor.CategoriaIds == null || proveedor.CategoriaIds.Count == 0) throw new ArgumentException("El proveedor debe tener al menos una categoría asociada.");
 
             bool nombreExistente = await _proveedorRepositorio.ExisteProveedorConNombreAsync(proveedor.RestauranteId, proveedor.Nombre);

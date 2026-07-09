@@ -7,12 +7,14 @@ namespace PanComido.Presentacion.DTOs.Insumos
         [Required(ErrorMessage = "El nombre es obligatorio.")]
         [MaxLength(100, ErrorMessage = "El nombre no puede superar los 100 caracteres.")]
         public string Nombre { get; set; }
-        public string Descripcion { get; set; }
+        public string? Descripcion { get; set; }
 
         [Range(0, double.MaxValue, ErrorMessage = "El precio no puede ser negativo.")]
         public decimal? PrecioVentaFinal { get; set; }
 
         public bool EsPrecioManual { get; set; }
+
+        public bool EsVisibleEnCarta { get; set; }
 
         [Range(0, double.MaxValue, ErrorMessage = "El stock mínimo no puede ser negativo.")]
         public decimal StockMinimo { get; set; }

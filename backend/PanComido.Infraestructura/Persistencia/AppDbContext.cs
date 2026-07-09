@@ -18,6 +18,10 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<ArticuloComandum> ArticuloComanda { get; set; }
 
+    public virtual DbSet<BebidaPreparadaInsumo> BebidaPreparadaInsumos { get; set; }
+
+    public virtual DbSet<BebidaPreparadum> BebidaPreparada { get; set; }
+
     public virtual DbSet<Bodega> Bodegas { get; set; }
 
     public virtual DbSet<Cartum> Carta { get; set; }
@@ -187,6 +191,30 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.Comanda).WithMany(p => p.ArticuloComanda)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("articulo_comanda_comanda_id_fkey");
+        });
+
+        modelBuilder.Entity<BebidaPreparadaInsumo>(entity =>
+        {
+            entity.HasKey(e => new { e.BebidaPreparadaId, e.InsumoId }).HasName("bebida_preparada_insumo_pkey");
+
+            entity.HasOne(d => d.BebidaPreparada).WithMany(p => p.BebidaPreparadaInsumos)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("bebida_preparada_insumo_bebida_preparada_id_fkey");
+
+            entity.HasOne(d => d.Insumo).WithMany(p => p.BebidaPreparadaInsumos)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("bebida_preparada_insumo_insumo_id_fkey");
+        });
+
+        modelBuilder.Entity<BebidaPreparadum>(entity =>
+        {
+            entity.HasKey(e => e.IdArticulo).HasName("bebida_preparada_pkey");
+
+            entity.Property(e => e.IdArticulo).ValueGeneratedNever();
+
+            entity.HasOne(d => d.IdArticuloNavigation).WithOne(p => p.BebidaPreparadum)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("bebida_preparada_id_articulo_fkey");
         });
 
         modelBuilder.Entity<Bodega>(entity =>

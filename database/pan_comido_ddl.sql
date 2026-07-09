@@ -340,7 +340,8 @@ CREATE TABLE ingrediente (
 );
 
 CREATE TABLE ingrediente_preparado (
-    id_ingrediente  INTEGER PRIMARY KEY REFERENCES ingrediente(id_insumo)
+    id_ingrediente      INTEGER PRIMARY KEY REFERENCES ingrediente(id_insumo),
+    rendimiento_base    DECIMAL NOT NULL DEFAULT 1
 );
 
 CREATE TABLE ingrediente_ingrediente_preparado (
@@ -348,6 +349,17 @@ CREATE TABLE ingrediente_ingrediente_preparado (
     ingrediente_preparado_id INTEGER NOT NULL REFERENCES ingrediente_preparado(id_ingrediente),
     cantidad                 DECIMAL NOT NULL,
     PRIMARY KEY (ingrediente_id, ingrediente_preparado_id)
+);
+
+CREATE TABLE bebida_preparada (
+    id_articulo INTEGER PRIMARY KEY REFERENCES articulo(id)
+);
+
+CREATE TABLE bebida_preparada_insumo (
+    bebida_preparada_id INTEGER NOT NULL REFERENCES bebida_preparada(id_articulo),
+    insumo_id           INTEGER NOT NULL REFERENCES insumo(id_articulo),
+    cantidad            NUMERIC NOT NULL,
+    PRIMARY KEY (bebida_preparada_id, insumo_id)
 );
 
 CREATE TABLE restriccion_plato (
@@ -375,7 +387,8 @@ CREATE TABLE lote (
     nombre              TEXT NOT NULL,
     cantidad            DECIMAL NOT NULL,
     fecha_adquisicion   DATE NOT NULL,
-    fecha_vencimiento   DATE
+    fecha_vencimiento   DATE,
+    eliminado           BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 -- ============================================================

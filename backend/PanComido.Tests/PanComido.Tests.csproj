@@ -30,6 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\PanComido.Dominio\PanComido.Dominio.csproj" />
     <ProjectReference Include="..\PanComido.Infraestructura\PanComido.Infraestructura.csproj" />
+    <ProjectReference Include="..\PanComido.Presentacion\PanComido.Presentacion.csproj" />
   </ItemGroup>
 
 </Project>

@@ -76,7 +76,7 @@ namespace PanComido.Presentacion.Controllers
         {
             int restauranteId = HttpContext.ObtenerRestauranteId();
             await _eliminarCU.EjecutarAsync(id, restauranteId);
-            return Ok("La regla fue borrada con exito.");
+            return Ok(new { mensaje = "La regla fue borrada con exito." });
         }
     }
 }

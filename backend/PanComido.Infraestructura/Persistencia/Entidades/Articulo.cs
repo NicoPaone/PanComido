@@ -46,6 +46,9 @@ public partial class Articulo
     [InverseProperty("Articulo")]
     public virtual ICollection<ArticuloComandum> ArticuloComanda { get; set; } = new List<ArticuloComandum>();
 
+    [InverseProperty("IdArticuloNavigation")]
+    public virtual BebidaPreparadum? BebidaPreparadum { get; set; }
+
     [ForeignKey("CartaId")]
     [InverseProperty("Articulos")]
     public virtual Cartum? Carta { get; set; }

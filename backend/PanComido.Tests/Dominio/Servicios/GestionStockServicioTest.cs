@@ -189,6 +189,46 @@ namespace PanComido.Tests.Dominio.Servicios
         }
 
         [Fact]
+        public async Task DescontarStockPorArticulosAsync_CuandoEsBebidaPreparada_DescuentaInsumosDeLaReceta()
+        {
+            // Preparar
+            var bebidaPreparada = new BebidaPreparada
+            {
+                Insumos = new List<BebidaPreparadaInsumo>
+                {
+                    new BebidaPreparadaInsumo { InsumoId = 1, Cantidad = 100 },
+                    new BebidaPreparadaInsumo { InsumoId = 2, Cantidad = 300 }
+                }
+            };
+
+            var comanda = new ArticuloComanda
+            {
+                Articulo = bebidaPreparada,
+                Cantidad = 2,
+                IngredientesExcluidosIds = new List<int>()
+            };
+
+            var loteFernet = new Lote { Id = 1, Cantidad = 1000 };
+            var loteCoca = new Lote { Id = 2, Cantidad = 2000 };
+
+            _loteRepositorioMock
+                .Setup(r => r.ObtenerLotesPorFechaVencimientoAscendenteAsync(1, 1))
+                .ReturnsAsync(new List<Lote> { loteFernet });
+            _loteRepositorioMock
+                .Setup(r => r.ObtenerLotesPorFechaVencimientoAscendenteAsync(1, 2))
+                .ReturnsAsync(new List<Lote> { loteCoca });
+
+            // Ejecutar
+            await _servicio.DescontarStockPorArticulosAsync(
+                1,
+                new List<ArticuloComanda> { comanda });
+
+            // Verificar
+            Assert.Equal(800, loteFernet.Cantidad);
+            Assert.Equal(1400, loteCoca.Cantidad);
+        }
+
+        [Fact]
         public async Task DescontarStockPorArticulosAsync_NoActualizaLotes_CuandoNoHayArticulos()
         {
             // Ejecutar

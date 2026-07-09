@@ -20,6 +20,10 @@ namespace PanComido.Presentacion.Mappers
                 EstadoStock = insumo.EstadoStock?.ToString(),
                 Tipo = insumo.Tipo.ToString(),
                 Categoria = insumo.Categoria,
+                EsPrecioManual = insumo.EsPrecioManual,
+                UrlImagen = insumo.UrlImagen,
+                EsVisibleEnCarta = insumo.EsVisibleEnCarta,
+                Costo = insumo.CostoCalculado
             };
         }
         public List<InsumoResponseDto> aListaDto(
@@ -40,10 +44,49 @@ namespace PanComido.Presentacion.Mappers
                 Descripcion = request.Descripcion,
                 PrecioVentaFinal = request.PrecioVentaFinal,
                 EsPrecioManual = request.EsPrecioManual,
+                EsVisibleEnCarta = request.EsVisibleEnCarta,
                 StockMinimo = request.StockMinimo,
                 StockRecomendado = request.StockRecomendado,
                 CategoriaId = request.CategoriaId,
                 UnidadDeMedidaId = request.UnidadDeMedidaId
+            };
+        }
+
+        public DOM.Insumo ModificarADominio(int id, ModificarInsumoRequestDto insumoRequest)
+        {
+            if (insumoRequest == null) return null;
+            return new DOM.Insumo
+            {
+                Id = id,
+                Nombre = insumoRequest.Nombre,
+                Descripcion = insumoRequest.Descripcion,
+                PrecioVentaFinal = insumoRequest.PrecioVentaFinal,
+                EsPrecioManual = insumoRequest.EsPrecioManual,
+                EsVisibleEnCarta = insumoRequest.EsVisibleEnCarta,
+                StockMinimo = insumoRequest.StockMinimo,
+                StockRecomendado = insumoRequest.StockRecomendado,
+                CategoriaId = insumoRequest.CategoriaId,
+                UnidadDeMedidaId = insumoRequest.UnidadDeMedidaId
+            };
+        }
+
+        public DetalleInsumoResponseDto aDetalleDto(DOM.Insumo insumo)
+        {
+            return new DetalleInsumoResponseDto
+            {
+                Id = insumo.Id,
+                Nombre = insumo.Nombre,
+                Descripcion = insumo.Descripcion,
+                PrecioVentaFinal = insumo.PrecioVentaFinal,
+                EsPrecioManual = insumo.EsPrecioManual,
+                EsVisibleEnCarta = insumo.EsVisibleEnCarta,
+                StockMinimo = insumo.StockMinimo,
+                StockRecomendado = insumo.StockRecomendado,
+                CategoriaId = insumo.CategoriaId,
+                UnidadDeMedidaId = insumo.UnidadDeMedidaId,
+                UrlImagen = insumo.UrlImagen,
+                Tipo = insumo.Tipo.ToString(),
+                Costo = insumo.CostoCalculado
             };
         }
     }

@@ -6,6 +6,7 @@ using PanComido.Dominio.CasosDeUso.EmpleadoCasosDeUso;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
+using PanComido.Dominio.ValueObjects;
 using Xunit;
 
 namespace PanComido.Tests.Dominio.CasosDeUso.EmpleadoCasosDeUso
@@ -115,8 +116,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.EmpleadoCasosDeUso
 
             var resultado = await _casoDeUso.EjecutarAsync(1, empleado, "pass123", new List<int>());
 
-            Assert.Equal(EmpleadoConstantes.RolMozo, resultado.Rol);
-            Assert.Equal(EmpleadoConstantes.EstadoActivo, resultado.Estado);
+            Assert.Equal(RolEmpleado.Mozo, resultado.Rol);
+            Assert.Equal(EstadoEmpleado.Activo, resultado.Estado);
         }
     }
 }
