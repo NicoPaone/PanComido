@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Infraestructura.Persistencia.Mappers;
@@ -88,11 +88,20 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
         public async Task<bool> TieneLotesAsociadosAsync(int bodegaId)
         {
-            return await _ctx.Bodegas
-                .Include(b => b.Lotes)
-                .Where(b => b.Id == bodegaId)
-                .SelectMany(b => b.Lotes)
-                .AnyAsync();
+            return await _ctx.Lotes
+                .AnyAsync(l => l.BodegaId == bodegaId && !l.Insumo.IdArticuloNavigation.Eliminado);
+        }
+
+        public async Task<bool> ExisteBodegaPorNombreAsync(string nombre, int restauranteId, int? idExcluido = null)
+        {
+            var query = _ctx.Bodegas.Where(b => b.Nombre.ToLower() == nombre.ToLower() && b.RestauranteId == restauranteId && !b.Eliminado);
+            
+            if (idExcluido.HasValue)
+            {
+                query = query.Where(b => b.Id != idExcluido.Value);
+            }
+
+            return await query.AnyAsync();
         }
 
 
