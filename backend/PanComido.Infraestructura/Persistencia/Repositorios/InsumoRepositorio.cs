@@ -26,7 +26,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
         private IQueryable<EF.Articulo> BaseQuery(int restauranteId) => _ctx.Articulos
             .Where(a => a.RestauranteId == restauranteId
-                     && a.Insumo != null)
+                     && a.Insumo != null
+                     && !a.Eliminado)
             .Include(a => a.Insumo)
                 .ThenInclude(i => i.CategoriaInsumo)
             .Include(a => a.Insumo)
