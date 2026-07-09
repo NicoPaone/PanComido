@@ -9,9 +9,11 @@ namespace PanComido.Presentacion.Mappers
         {
             Plato plato = articulo as Plato;
             Insumo insumo = articulo as Insumo;
+            BebidaPreparada bebidaPreparada = articulo as BebidaPreparada;
 
             bool esPlato = plato != null;
             bool esInsumo = insumo != null;
+            bool esBebidaPreparada = bebidaPreparada != null;
 
             return new ArticuloCartaResponseDto
             {
@@ -23,14 +25,19 @@ namespace PanComido.Presentacion.Mappers
                 VisibleEnCarta = articulo.EsVisibleEnCarta,
 
                 Destacado = esPlato ? plato.Destacado : false,
-                TipoArticulo = esPlato ? "Plato" : "Bebida",
+                TipoArticulo = esPlato
+                    ? "Plato"
+                    : (esBebidaPreparada ? "BebidaPreparada" : "Bebida"),
                 Costo = articulo.CostoCalculado,
                 Categoria = esPlato
                     ? (plato.Categoria ?? "Sin categoria")
                     : (esInsumo
                         ? (insumo.Categoria ?? "Sin categoria")
-                        : "Sin categoria"),
+                        : (esBebidaPreparada
+                            ? (bebidaPreparada.Categoria ?? "Sin categoria")
+                            : "Sin categoria")),
                 CategoriaPlatoId = esPlato ? plato.CategoriaPlatoId : null,
+                CategoriaInsumoId = esInsumo ? insumo.CategoriaId : null,
                 TiempoPreparacionBase = esPlato ? plato.TiempoPreparacionBase : default,
                 TiempoPreparacionEstimado = esPlato ? plato.TiempoPreparacionEstimado : default,
                 EsPrecioManual = articulo.EsPrecioManual,

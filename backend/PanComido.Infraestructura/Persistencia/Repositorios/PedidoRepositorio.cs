@@ -93,19 +93,27 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<decimal> ObtenerUltimoPrecioCompraUnitarioAsync(int insumoId, int proveedorId)
         {
             var efPrecio = await _ctx.PedidoInsumos
-                .Where(pi => pi.InsumoId == insumoId && pi.Pedido.ProveedorId == proveedorId)
+                .Where(pi => pi.InsumoId == insumoId
+                          && pi.Pedido.ProveedorId == proveedorId
+                          && pi.Pedido.EstadoPedidoId == (int)EstadoPedido.Recibido)
                 .OrderByDescending(pi => pi.Pedido.Fecha)
                 .Select(pi => (decimal?)pi.PrecioCompra)
                 .FirstOrDefaultAsync();
 
             return efPrecio ?? 0;
         }
-
-        public async Task MarcarComoRecibidoAsync(int pedidoId)
+        public async Task MarcarComoRecibidoAsync(int pedidoId, List<DOM.PedidoInsumo>
+        itemsConPrecioConfirmado)
         {
             var efPedido = await _ctx.Pedidos
                  .Include(p => p.PedidoInsumos)
                  .FirstOrDefaultAsync(p => p.Id == pedidoId);
+
+            foreach (var item in itemsConPrecioConfirmado)
+            {
+                var efItem = efPedido.PedidoInsumos.First(pi => pi.InsumoId == item.InsumoId);
+                efItem.PrecioCompra = item.PrecioCompra;
+            }
 
             efPedido.EstadoPedidoId = (int)EstadoPedido.Recibido;
             await _ctx.SaveChangesAsync();

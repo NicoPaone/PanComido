@@ -73,7 +73,8 @@ namespace PanComido.Presentacion.Mappers
                 {
                     IngredienteId = r.IngredienteId,
                     NombreIngrediente = r.NombreIngrediente,
-                    Cantidad = r.Cantidad
+                    Cantidad = r.Cantidad,
+                    UnidadMedida = r.UnidadMedida
                 }).ToList()
             };
         }

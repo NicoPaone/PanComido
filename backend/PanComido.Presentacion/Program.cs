@@ -1,11 +1,14 @@
 using MercadoPago.Config;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PanComido.Dominio.CasosDeUso.ArticuloCasosDeUso;
 using PanComido.Dominio.CasosDeUso.AutenticacionCasosDeUso;
 using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso;
 using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso.IA;
+using PanComido.Dominio.CasosDeUso.BebidaPreparadaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.BodegaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.CartaCasosDeUso;
 using PanComido.Dominio.CasosDeUso.ComandaCasosDeUso;
@@ -38,11 +41,13 @@ using PanComido.Infraestructura.Persistencia.Mappers.IA;
 using PanComido.Infraestructura.Persistencia.Repositorios;
 using PanComido.Infraestructura.Persistencia.Repositorios.IA;
 using PanComido.Infraestructura.ServiciosExternos;
+using PanComido.Infraestructura.ServiciosExternos.Dashboard;
 using PanComido.Infraestructura.ServiciosExternos.Gemini;
 using PanComido.Infraestructura.ServiciosExternos.Gemini.Mappers;
 using PanComido.Infraestructura.ServiciosExternos.Gemini.Servicio;
 using PanComido.Infraestructura.ServiciosExternos.MercadoPago;
 using PanComido.Presentacion;
+using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.Filtros;
 using PanComido.Presentacion.Hubs;
 using PanComido.Presentacion.Mappers;
@@ -62,6 +67,43 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<RestauranteContextoFilter>();
+});
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var controllerName = context.ActionDescriptor is ControllerActionDescriptor descriptor
+            ? descriptor.ControllerName
+            : string.Empty;
+
+        bool usaContratoRobusto = controllerName is "Empleado" or "Dashboard" or "Reporte";
+
+        if (!usaContratoRobusto)
+        {
+            var problemDetails = new ValidationProblemDetails(context.ModelState)
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "One or more validation errors occurred."
+            };
+            problemDetails.Extensions["traceId"] = context.HttpContext.TraceIdentifier;
+            return new BadRequestObjectResult(problemDetails);
+        }
+
+        var errores = context.ModelState
+            .Where(x => x.Value?.Errors.Count > 0)
+            .ToDictionary(
+                x => x.Key,
+                x => x.Value!.Errors.Select(e => string.IsNullOrWhiteSpace(e.ErrorMessage) ? "Valor inválido." : e.ErrorMessage).ToArray());
+
+        return new BadRequestObjectResult(new ErrorResponseDto
+        {
+            Error = "La solicitud contiene datos inválidos.",
+            Code = "validation_error",
+            TraceId = context.HttpContext.TraceIdentifier,
+            Details = errores
+        });
+    };
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -151,6 +193,7 @@ builder.Services.AddScoped<PorcentajesCategoriaEntityMapper>();
 builder.Services.AddScoped<PagoEntityMapper>();
 builder.Services.AddScoped<DatosTransferenciaEntityMapper>();
 builder.Services.AddScoped<ReglaTiempoExtraEntityMapper>();
+builder.Services.AddScoped<BebidaPreparadaEntityMapper>();
 
 
 
@@ -170,6 +213,7 @@ builder.Services.AddScoped<LlamadoMapper>();
 builder.Services.AddScoped<CartaComensalMapper>();
 builder.Services.AddScoped<FormularioParaCrearPlatoMapper>();
 builder.Services.AddScoped<PlatoMapper>();
+builder.Services.AddScoped<BebidaPreparadaMapper>();
 builder.Services.AddScoped<ArticuloCartaMapper>();
 builder.Services.AddScoped<MetodoDePagoMapper>();
 builder.Services.AddScoped<RestauranteMapper>();
@@ -187,11 +231,13 @@ builder.Services.AddScoped<DatosTransferenciaMapper>();
 builder.Services.AddScoped<MiseAndPlaceMapper>();
 builder.Services.AddScoped<EmpleadoMapper>();
 builder.Services.AddScoped<ReglaTiempoExtraMapper>();
+builder.Services.AddScoped<TipoBodegaMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
 builder.Services.AddScoped<ILoteRepositorio, LoteRepositorio>();
 builder.Services.AddScoped<IBodegaRepositorio, BodegaRepositorio>();
+builder.Services.AddScoped<ITipoBodegaRepositorio, TipoBodegaRepositorio>();
 builder.Services.AddScoped<IProveedorRepositorio, ProveedorRepositorio>();
 builder.Services.AddScoped<IPedidoRepositorio, PedidoRepositorio>();
 builder.Services.AddScoped<IComandaRepositorio, ComandaRepositorio>();
@@ -216,6 +262,9 @@ builder.Services.AddScoped<IDatosTransferenciaRepositorio, DatosTransferenciaRep
 builder.Services.AddScoped<IEncuestaSatisfaccionRepositorio, EncuestaSatisfaccionRepositorio>();
 builder.Services.AddScoped<IMiseAndPlaceRepositorio, MiseAndPlaceRepositorio>();
 builder.Services.AddScoped<IReglaTiempoExtraRepositorio, ReglaTiempoExtraRepositorio>();
+builder.Services.AddScoped<ITransaccionPersistenciaServicio, TransaccionPersistenciaServicio>();
+builder.Services.AddScoped<IPoliticaDescuentoDashboardServicio, PoliticaDescuentoDashboardServicio>();
+builder.Services.AddScoped<IBebidaPreparadaRepositorio, BebidaPreparadaRepositorio>();
 
 
 // Casos de uso
@@ -244,6 +293,10 @@ builder.Services.AddScoped<CrearPlatoCasoDeUso>();
 builder.Services.AddScoped<ModificarPlatoCasoDeUso>();
 builder.Services.AddScoped<EliminarPlatoCasoDeUso>();
 builder.Services.AddScoped<ObtenerPlatoPorIdCasoDeUso>();
+builder.Services.AddScoped<CrearBebidaPreparadaCasoDeUso>();
+builder.Services.AddScoped<ModificarBebidaPreparadaCasoDeUso>();
+builder.Services.AddScoped<EliminarBebidaPreparadaCasoDeUso>();
+builder.Services.AddScoped<ObtenerBebidaPreparadaPorIdCasoDeUso>();
 builder.Services.AddScoped<ObtenerCartaComensalCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConStockCriticoCasoDeUso>();
 builder.Services.AddScoped<ListarInsumosConVencimientoProximoCasoDeUso>();
@@ -295,7 +348,10 @@ builder.Services.AddScoped<ObtenerDatosTransferenciaCasoDeUso>();
 builder.Services.AddScoped<ActualizarDatosTransferenciaCasoDeUso>();
 builder.Services.AddScoped<ObtenerResumenSatisfaccionCasoDeUso>();
 builder.Services.AddScoped<CrearEncuestaSatisfaccionCasoDeUso>();
-
+builder.Services.AddScoped<ModificarInsumoCasoDeUso>();
+builder.Services.AddScoped<ObtenerInsumoPorIdCasoDeUso>();
+builder.Services.AddScoped<EliminarInsumoCasoDeUso>();
+builder.Services.AddScoped<CrearEncuestaSatisfaccionCasoDeUso>();
 builder.Services.AddScoped<CrearEncuestaSatisfaccionCasoDeUso>();
 builder.Services.AddScoped<ObtenerIngredientesParaCrearMiseAndPlace>();
 builder.Services.AddScoped<CrearMiseAndPlaceCasoDeUso>();
@@ -307,23 +363,29 @@ builder.Services.AddScoped<ListarEmpleadosCasoDeUso>();
 builder.Services.AddScoped<CrearEmpleadoCasoDeUso>();
 builder.Services.AddScoped<ModificarEmpleadoCasoDeUso>();
 builder.Services.AddScoped<EliminarEmpleadoCasoDeUso>();
-
 builder.Services.AddScoped<GenerarReporteDashboardPdfCasoDeUso>();
 builder.Services.AddScoped<GenerarReportePersonalPdfCasoDeUso>();
 builder.Services.AddScoped<GenerarReporteVentasPdfCasoDeUso>();
-
 builder.Services.AddScoped<ObtenerReglasTiempoExtraCasoDeUso>();
 builder.Services.AddScoped<CrearReglaTiempoExtraCasoDeUso>();
 builder.Services.AddScoped<ModificarReglaTiempoExtraCasoDeUso>();
 builder.Services.AddScoped<EliminarReglaTiempoExtraCasoDeUso>();
+builder.Services.AddScoped<CrearBodegaCasoDeUso>();
+builder.Services.AddScoped<ModificarBodegaCasoDeUso>();
+builder.Services.AddScoped<EliminarBodegaCasoDeUso>();
+builder.Services.AddScoped<ListarTiposBodegaCasoDeUso>();
+
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
+builder.Services.AddScoped<IInsumoValidacionServicio, InsumoValidacionServicio>();
+builder.Services.AddScoped<IBebidaPreparadaValidacionServicio, BebidaPreparadaValidacionServicio>();
 builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticuloServicio>();
 builder.Services.AddScoped<ISugerenciaPlatosIAServicio, GeminiSugerenciaPlatosIAServicio >();
 builder.Services.AddScoped<IGestionStockServicio, GestionStockServicio>();
 builder.Services.AddScoped<IVencimientosProximosInsumosServicio, VencimientosProximosInsumosServicio>();
 builder.Services.AddScoped<ITiempoDePreparacionPlatoServicio, TiempoDePreparacionPlatoServicio>();
+builder.Services.AddScoped<IUltimoPrecioCompraInsumoServicio, UltimoPrecioCompraInsumoServicio>();
 builder.Services.AddScoped<ICalculadorCostoPlatoServicio, CalculadorCostoPlatoServicio>();
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 builder.Services.AddScoped<ICalcularTotalComandaServicio, CalcularTotalComandaServicio>();
@@ -331,6 +393,7 @@ builder.Services.AddScoped<ICrearLlamadoServicio, CrearLlamadoServicio>();
 builder.Services.AddScoped<IRegistrarPagoServicio,  RegistrarPagoServicio>();
 builder.Services.AddScoped<IVerificarMetodoPagoHabilitadoServicio, VerificarMetodoPagoHabilitadoServicio>();
 builder.Services.AddScoped<IPdfGeneradorServicio, QuestPdfGeneradorServicio>();
+builder.Services.AddScoped<IGeneradorNombreLoteServicio, GeneradorNombreLoteServicio>();
 
 
 //Servicios externos
@@ -338,6 +401,7 @@ builder.Services.AddScoped<IComandaNotificador, ComandaNotificadorSignalR>();
 builder.Services.AddScoped<ILlamadoNotificador, LlamadoNotificadorSignalR>();
 builder.Services.AddScoped<IMesaNotificador, MesaNotificadorSignalR>();
 builder.Services.Configure<GeminiConfiguracion>(builder.Configuration.GetSection("Gemini"));
+builder.Services.Configure<PoliticaDescuentoDashboardConfiguracion>(builder.Configuration.GetSection("Dashboard:PoliticaDescuento"));
 builder.Services.AddScoped<GeminiResponseMapper>();
 builder.Services.AddScoped<SugerenciaIAEntityMapper>();
 builder.Services.AddScoped<ISugerenciaIARepositorio, SugerenciaIARepositorio>();

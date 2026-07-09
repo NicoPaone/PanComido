@@ -14,6 +14,8 @@ namespace PanComido.Presentacion.Controllers
     [Authorize(Roles = "Gerente")]
     public class ReporteController : ControllerBase
     {
+        private const int RangoMaximoDiasReporte = 366;
+
         private readonly GenerarReporteDashboardPdfCasoDeUso _dashboardPdfCasoDeUso;
         private readonly GenerarReportePersonalPdfCasoDeUso _personalPdfCasoDeUso;
         private readonly GenerarReporteVentasPdfCasoDeUso _ventasPdfCasoDeUso;
@@ -33,31 +35,22 @@ namespace PanComido.Presentacion.Controllers
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObtenerReporteDashboard(
-            [FromQuery] string fechaInicio, 
-            [FromQuery] string fechaFin)
+            [FromQuery] DateOnly fechaInicio, 
+            [FromQuery] DateOnly fechaFin)
         {
-            if (!DateTime.TryParse(fechaInicio, out var desde) || !DateTime.TryParse(fechaFin, out var hasta))
+            var validacion = ValidarRango(fechaInicio, fechaFin);
+            if (validacion != null)
             {
-                return BadRequest(new ErrorResponseDto { Error = "Formato de fechas inválido (YYYY-MM-DD)." });
+                return validacion;
             }
 
-            if (desde > hasta)
-            {
-                return BadRequest(new ErrorResponseDto { Error = "La fecha de inicio debe ser anterior a la fecha de fin." });
-            }
+            var desde = fechaInicio.ToDateTime(TimeOnly.MinValue);
+            var hasta = fechaFin.ToDateTime(TimeOnly.MinValue);
+            var restauranteId = HttpContext.ObtenerRestauranteId();
+            var pdfBytes = await _dashboardPdfCasoDeUso.EjecutarAsync(restauranteId, desde, hasta);
 
-            try
-            {
-                var restauranteId = HttpContext.ObtenerRestauranteId();
-                var pdfBytes = await _dashboardPdfCasoDeUso.EjecutarAsync(restauranteId, desde, hasta);
-
-                string nombreArchivo = $"reporte_ejecutivo_{desde:yyyyMMdd}_{hasta:yyyyMMdd}.pdf";
-                return File(pdfBytes, "application/pdf", nombreArchivo);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ErrorResponseDto { Error = $"Error al generar reporte: {ex.Message}" });
-            }
+            string nombreArchivo = $"reporte_ejecutivo_{fechaInicio:yyyyMMdd}_{fechaFin:yyyyMMdd}.pdf";
+            return File(pdfBytes, "application/pdf", nombreArchivo);
         }
 
         [HttpGet("personal/pdf")]
@@ -65,18 +58,11 @@ namespace PanComido.Presentacion.Controllers
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObtenerReportePersonal()
         {
-            try
-            {
-                var restauranteId = HttpContext.ObtenerRestauranteId();
-                var pdfBytes = await _personalPdfCasoDeUso.EjecutarAsync(restauranteId);
+            var restauranteId = HttpContext.ObtenerRestauranteId();
+            var pdfBytes = await _personalPdfCasoDeUso.EjecutarAsync(restauranteId);
 
-                string nombreArchivo = $"reporte_personal_{DateTime.Now:yyyyMMdd}.pdf";
-                return File(pdfBytes, "application/pdf", nombreArchivo);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ErrorResponseDto { Error = $"Error al generar reporte: {ex.Message}" });
-            }
+            string nombreArchivo = $"reporte_personal_{DateTime.Now:yyyyMMdd}.pdf";
+            return File(pdfBytes, "application/pdf", nombreArchivo);
         }
 
         [HttpGet("ventas/pdf")]
@@ -84,31 +70,53 @@ namespace PanComido.Presentacion.Controllers
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObtenerReporteVentas(
-            [FromQuery] string fechaInicio, 
-            [FromQuery] string fechaFin)
+            [FromQuery] DateOnly fechaInicio, 
+            [FromQuery] DateOnly fechaFin)
         {
-            if (!DateTime.TryParse(fechaInicio, out var desde) || !DateTime.TryParse(fechaFin, out var hasta))
+            var validacion = ValidarRango(fechaInicio, fechaFin);
+            if (validacion != null)
             {
-                return BadRequest(new ErrorResponseDto { Error = "Formato de fechas inválido (YYYY-MM-DD)." });
+                return validacion;
             }
 
-            if (desde > hasta)
+            var desde = fechaInicio.ToDateTime(TimeOnly.MinValue);
+            var hasta = fechaFin.ToDateTime(TimeOnly.MinValue);
+            var restauranteId = HttpContext.ObtenerRestauranteId();
+            var pdfBytes = await _ventasPdfCasoDeUso.EjecutarAsync(restauranteId, desde, hasta);
+
+            string nombreArchivo = $"reporte_ventas_{fechaInicio:yyyyMMdd}_{fechaFin:yyyyMMdd}.pdf";
+            return File(pdfBytes, "application/pdf", nombreArchivo);
+        }
+
+        private BadRequestObjectResult? ValidarRango(DateOnly fechaInicio, DateOnly fechaFin)
+        {
+            if (fechaInicio == default || fechaFin == default)
             {
-                return BadRequest(new ErrorResponseDto { Error = "La fecha de inicio debe ser anterior a la fecha de fin." });
+                return BadRequest(CrearError("Las fechas son requeridas y deben usar formato YYYY-MM-DD.", "validation_error"));
             }
 
-            try
+            if (fechaInicio > fechaFin)
             {
-                var restauranteId = HttpContext.ObtenerRestauranteId();
-                var pdfBytes = await _ventasPdfCasoDeUso.EjecutarAsync(restauranteId, desde, hasta);
+                return BadRequest(CrearError("La fecha de inicio debe ser anterior o igual a la fecha de fin.", "validation_error"));
+            }
 
-                string nombreArchivo = $"reporte_ventas_{desde:yyyyMMdd}_{hasta:yyyyMMdd}.pdf";
-                return File(pdfBytes, "application/pdf", nombreArchivo);
-            }
-            catch (Exception ex)
+            int dias = fechaFin.DayNumber - fechaInicio.DayNumber + 1;
+            if (dias > RangoMaximoDiasReporte)
             {
-                return StatusCode(500, new ErrorResponseDto { Error = $"Error al generar reporte: {ex.Message}" });
+                return BadRequest(CrearError($"El rango máximo permitido para reportes es de {RangoMaximoDiasReporte} días.", "validation_error"));
             }
+
+            return null;
+        }
+
+        private ErrorResponseDto CrearError(string mensaje, string codigo)
+        {
+            return new ErrorResponseDto
+            {
+                Error = mensaje,
+                Code = codigo,
+                TraceId = HttpContext.TraceIdentifier
+            };
         }
     }
 }

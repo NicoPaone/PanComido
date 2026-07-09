@@ -17,10 +17,25 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             {
                 Id = bodegaEF.Id,
                 Nombre = bodegaEF.Nombre,
+                TipoBodegaId = bodegaEF.TipoBodegaId,
                 TipoBodega = bodegaEF.TipoBodega.Descripcion,
                 Insumos = new List<DOM.Insumo>()
             };
         }
+
+        public EF.Bodega paraEntity(DOM.Bodega bodegaDOM, int restauranteId)
+        {
+            if (bodegaDOM == null) return null;
+            return new EF.Bodega
+            {
+                Id = bodegaDOM.Id,
+                RestauranteId = restauranteId,
+                Nombre = bodegaDOM.Nombre,
+                TipoBodegaId = bodegaDOM.TipoBodegaId,
+                Eliminado = false
+            };
+        }
+
 
     }
 }

@@ -1,14 +1,9 @@
 using Microsoft.Extensions.Logging;
-using PanComido.Dominio.CasosDeUso.ArticuloCasosDeUso;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
 {
@@ -113,6 +108,8 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
         {
             if (articuloCompleto is Plato plato)
                 DescontarStockDePlatoEnMemoria(plato, itemDeComanda, stockInsumosDisponibles);
+            else if (articuloCompleto is BebidaPreparada bebidaPreparada)
+                DescontarStockDeBebidaPreparadaEnMemoria(bebidaPreparada, itemDeComanda, stockInsumosDisponibles);
             else
                 DescontarStockDirectoEnMemoria(articuloCompleto, itemDeComanda, stockInsumosDisponibles);
         }
@@ -132,6 +129,19 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
                 {
                     decimal cantidadARestar = ingrediente.Cantidad * itemDeComanda.Cantidad;
                     stockInsumosDisponibles[ingrediente.InsumoId] -= cantidadARestar;
+                }
+            }
+        }
+        private void DescontarStockDeBebidaPreparadaEnMemoria(BebidaPreparada bebidaPreparada, ArticuloComanda itemDeComanda, Dictionary<int, decimal> stockInsumosDisponibles)
+        {
+            itemDeComanda.IngredientesExcluidosIds = new List<int>();
+
+            foreach (var item in bebidaPreparada.Insumos)
+            {
+                if (stockInsumosDisponibles.ContainsKey(item.InsumoId))
+                {
+                    decimal cantidadARestar = item.Cantidad * itemDeComanda.Cantidad;
+                    stockInsumosDisponibles[item.InsumoId] -= cantidadARestar;
                 }
             }
         }

@@ -12,6 +12,6 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task<decimal> ObtenerUltimoPrecioCompraUnitarioAsync(int insumoId, int proveedorId);
         Task<Pedido> EnviarPedidoAsync(int pedidoId, List<PedidoInsumo> itemsNuevos);
         Task<Pedido> ObtenerPedidoPorIdAsync(int pedidoId);
-        Task MarcarComoRecibidoAsync(int pedidoId);
+        Task MarcarComoRecibidoAsync(int pedidoId, List<PedidoInsumo> itemsConPrecioConfirmado);
     }
 }

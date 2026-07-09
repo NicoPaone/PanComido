@@ -60,11 +60,11 @@ IRegistrarPagoServicio registrarPagoServicio, IVerificarMetodoPagoHabilitadoServ
 
         private async Task VerificarEstadoComandaYPagoAsync(Comanda comanda)
         {
-            //if (comanda.Estado != EstadoComanda.EnEspera)
-            //{
-            //    _logger.LogWarning("Intento de confirmar pago efectivo en estado inválido. ComandaId: {ComandaId}, Estado: {Estado}", comanda.Id, comanda.Estado);
-            //    throw new ArgumentException("La comanda no está esperando pago.");
-            //}
+            if (comanda.Estado != EstadoComanda.EnEspera)
+            {
+                _logger.LogWarning("Intento de confirmar pago efectivo en estado inválido. ComandaId: {ComandaId}, Estado: {Estado}", comanda.Id, comanda.Estado);
+                throw new ArgumentException("La comanda no está esperando pago.");
+            }
 
             Pago pagoExistente = await _pagoRepositorio.ObtenerPagoPorComandaIdAsync(comanda.Id);
             if (pagoExistente != null && pagoExistente.EstadoPago == EstadoPago.Confirmado)

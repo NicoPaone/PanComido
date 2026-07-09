@@ -44,6 +44,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
                 .Include(i => i.IdInsumoNavigation)
                     .ThenInclude(ins => ins.PedidoInsumos)
+                        .ThenInclude(pi => pi.Pedido)
 
                 .Where(i => i.IdInsumoNavigation.IdArticuloNavigation.RestauranteId == restauranteId)
                 .ToListAsync();

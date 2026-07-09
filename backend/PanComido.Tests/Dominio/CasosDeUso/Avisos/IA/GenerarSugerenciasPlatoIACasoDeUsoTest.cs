@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using PanComido.Dominio.CasosDeUso.AvisosCasosDeUso.IA;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.IA;
@@ -24,7 +24,11 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Avisos.IA
 
             var sugerenciaExistente = new SugerenciaIA
             {
-                FechaSugerencia = DateTime.Today
+                FechaSugerencia = DateTime.Today,
+                PlatosSugeridos = new List<PlatoSugeridoIA>
+                {
+                    new PlatoSugeridoIA { Id = 1, Nombre = "Plato Test" }
+                }
             };
 
             var sugerenciaRepoMock = new Mock<ISugerenciaIARepositorio>();

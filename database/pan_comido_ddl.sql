@@ -338,6 +338,17 @@ CREATE TABLE ingrediente_ingrediente_preparado (
     PRIMARY KEY (ingrediente_id, ingrediente_preparado_id)
 );
 
+CREATE TABLE bebida_preparada (
+    id_articulo INTEGER PRIMARY KEY REFERENCES articulo(id)
+);
+
+CREATE TABLE bebida_preparada_insumo (
+    bebida_preparada_id INTEGER NOT NULL REFERENCES bebida_preparada(id_articulo),
+    insumo_id           INTEGER NOT NULL REFERENCES insumo(id_articulo),
+    cantidad            NUMERIC NOT NULL,
+    PRIMARY KEY (bebida_preparada_id, insumo_id)
+);
+
 CREATE TABLE restriccion_plato (
     restriccion_id  INTEGER NOT NULL REFERENCES restriccion(id),
     plato_id        INTEGER NOT NULL REFERENCES plato(id_articulo),

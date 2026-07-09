@@ -79,13 +79,13 @@ namespace PanComido.Presentacion.Controllers
                     Cantidad = i.Cantidad
                 })
             };
+         int id = await _crearMiseAndPlaceCasoDeUso.EjecutarAsync(nuevoMiseAndPlace);
+         var dominio = await _obtenerPorIdCasoDeUso.EjecutarAsync(restauranteId, id);
 
-            await _crearMiseAndPlaceCasoDeUso.EjecutarAsync(nuevoMiseAndPlace);
+         return CreatedAtAction(nameof(ObtenerPorId), new { id }, _mapper.aDtoListado(dominio));
+      }
 
-            return Ok(new { Mensaje = "Mise and Place creado exitosamente." });
-        }
-
-        [HttpGet("listar")]
+      [HttpGet("listar")]
         [ProducesResponseType(typeof(List<MiseAndPlaceListadoDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ListarMiseAndPlace()

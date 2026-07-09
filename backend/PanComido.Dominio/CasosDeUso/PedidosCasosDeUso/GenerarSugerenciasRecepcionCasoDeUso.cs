@@ -1,5 +1,6 @@
 ﻿using DOM = PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Interfaces.Servicios;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 
@@ -8,14 +9,14 @@ namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
     public class GenerarSugerenciasRecepcionCasoDeUso
     {
         private readonly IPedidoRepositorio _pedidoRepositorio;
-        private readonly ILoteRepositorio _loteRepositorio;
+        private readonly IGeneradorNombreLoteServicio _generadorNombreLoteServicio;
 
         public GenerarSugerenciasRecepcionCasoDeUso(
             IPedidoRepositorio pedidoRepositorio,
-            ILoteRepositorio loteRepositorio)
+            IGeneradorNombreLoteServicio generadorNombreLoteServicio)
         {
             _pedidoRepositorio = pedidoRepositorio;
-            _loteRepositorio = loteRepositorio;
+            _generadorNombreLoteServicio = generadorNombreLoteServicio;
         }
 
         public async Task<List<DOM.RecepcionItemSugerido>> EjecutarAsync(int pedidoId)
@@ -33,23 +34,15 @@ namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
                     InsumoId = item.InsumoId,
                     NombreInsumo = item.NombreInsumo,
                     Cantidad = item.Cantidad,
-                    NombreLote = await SugerenciaNombreLote(item.NombreInsumo),
+                    NombreLote = await _generadorNombreLoteServicio.GenerarNombreUnicoAsync(item.NombreInsumo),
                     BodegaIdSug = SugerenciaBodegaId(item.CategoriaInsumoId),
-                    FechaVencimientoSug = SugerirFechaVencimiento(item.CategoriaInsumoId)
+                    FechaVencimientoSug = SugerirFechaVencimiento(item.CategoriaInsumoId),
+                    PrecioCompra = item.PrecioCompra
                 });
 
             }
 
             return (sugerencias);
-        }
-
-        private async Task<string> SugerenciaNombreLote(string nombreInsumo)
-        {
-            string timestamp = DateTime.Now.ToString("yyyyMMdd");
-            string nombreBase = $"{nombreInsumo}-{timestamp}";
-            int cantNombreDuplicado = await _loteRepositorio.ContarLotesConNombreBaseAsync(nombreBase);
-            if (cantNombreDuplicado == 0) return $"{nombreInsumo}-{timestamp}";
-            return $"{nombreInsumo} ({cantNombreDuplicado + 1})-{timestamp}";
         }
 
         private int SugerenciaBodegaId(int categoriaInsumoId)

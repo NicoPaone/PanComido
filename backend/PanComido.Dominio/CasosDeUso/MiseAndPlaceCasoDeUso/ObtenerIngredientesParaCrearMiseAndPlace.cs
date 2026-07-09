@@ -44,7 +44,7 @@ namespace PanComido.Dominio.CasosDeUso.MiseAndPlaceCasoDeUso
         {
             var categorias = await _categoriaRepositorio.ObtenerCategoriasInsumoAsync();
             return categorias
-                .Where(c => c.Descripcion.ToLower() != "con alcohol" && c.Descripcion.ToLower() != "sin alcohol")
+                .Where(c => c.TipoAplica == Entidades.Enums.TipoInsumo.Ingrediente)
                 .ToList();
         }
 

@@ -6,6 +6,7 @@ using PanComido.Dominio.Entidades.IA;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Repositorios.IA;
 using PanComido.Dominio.Interfaces.Servicios;
+using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -34,7 +35,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
                 _sugerenciaIaRepoMock.Object,
                 _calculadorCostoMock.Object,
                 _dateTimeProviderMock.Object,
-                _sugerenciaPlatosIAServicioMock.Object);
+                _sugerenciaPlatosIAServicioMock.Object,
+                NullLogger<ObtenerAnalisisPlatoCasoDeUso>.Instance);
         }
 
 
@@ -104,12 +106,14 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
             Assert.Equal(7, resultado.Tendencia.Count);
             Assert.NotNull(resultado.AnalisisIa);
             Assert.Equal(2, resultado.AnalisisIa.Sugerencias.Count);
+            Assert.True(resultado.EsFallbackLocal);
+            Assert.Equal("fallback_local", resultado.FuenteAnalisis);
             
-            _sugerenciaIaRepoMock.Verify(r => r.GuardarSugerenciaIAAsync(restauranteId, It.IsAny<SugerenciaIA>()), Times.Once);
+            _sugerenciaIaRepoMock.Verify(r => r.GuardarSugerenciaIAAsync(restauranteId, It.IsAny<SugerenciaIA>()), Times.Never);
         }
 
         [Fact]
-        public async Task EjecutarAsync_DebeUsarMockFallback_CuandoVentasPeriodoEsCero()
+        public async Task EjecutarAsync_DebeUsarFallbackLocal_CuandoVentasPeriodoEsCero()
         {
             int restauranteId = 1;
             string nombrePlato = "Ensalada Cesar";
@@ -141,17 +145,19 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
 
             Assert.NotNull(resultado);
             Assert.NotNull(resultado.AnalisisIa);
-            // El mock fallback devuelve diagnóstico con el nombre del plato
             Assert.Contains(nombrePlato, resultado.AnalisisIa.Diagnostico);
             Assert.Equal(2, resultado.AnalisisIa.Sugerencias.Count);
-            // No se debe haber llamado a la IA porque ventas = 0
+            Assert.True(resultado.EsFallbackLocal);
+            Assert.Equal("fallback_local", resultado.FuenteAnalisis);
+            Assert.Contains("ventas suficientes", resultado.MotivoFallback);
             _sugerenciaPlatosIAServicioMock.Verify(s => s.AnalizarPlatoRendimientoAsync(
                 It.IsAny<Plato>(), It.IsAny<decimal>(), It.IsAny<int>(), It.IsAny<string>(), 
                 It.IsAny<string>(), It.IsAny<RendimientoPlato>(), It.IsAny<List<int>>()), Times.Never);
+            _sugerenciaIaRepoMock.Verify(r => r.GuardarSugerenciaIAAsync(restauranteId, It.IsAny<SugerenciaIA>()), Times.Never);
         }
 
         [Fact]
-        public async Task EjecutarAsync_DebeUsarMockFallback_CuandoServicioIaLanzaExcepcion()
+        public async Task EjecutarAsync_DebeUsarFallbackLocal_CuandoServicioIaLanzaExcepcion()
         {
             int restauranteId = 1;
             string nombrePlato = "Burguer XL";
@@ -189,9 +195,12 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
 
             Assert.NotNull(resultado);
             Assert.NotNull(resultado.AnalisisIa);
-            // Debe caer en el mock fallback
             Assert.Contains(nombrePlato, resultado.AnalisisIa.Diagnostico);
             Assert.Equal(2, resultado.AnalisisIa.Sugerencias.Count);
+            Assert.True(resultado.EsFallbackLocal);
+            Assert.Equal("fallback_local", resultado.FuenteAnalisis);
+            Assert.Equal("No se pudo obtener analisis de IA en este momento.", resultado.MotivoFallback);
+            _sugerenciaIaRepoMock.Verify(r => r.GuardarSugerenciaIAAsync(restauranteId, It.IsAny<SugerenciaIA>()), Times.Never);
         }
 
         [Fact]
@@ -247,6 +256,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
             Assert.Equal("Diagnóstico optimizado por Gemini", resultado.AnalisisIa.Diagnostico);
             Assert.Single(resultado.AnalisisIa.Sugerencias);
             Assert.Equal("Subir precio 5%", resultado.AnalisisIa.Sugerencias[0].Accion);
+            Assert.False(resultado.EsFallbackLocal);
+            Assert.Equal("ia", resultado.FuenteAnalisis);
         }
 
         [Fact]
@@ -277,7 +288,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
             // Ya fue analizado hoy (está en PlatosAnalisis)
             var sugerenciaExistente = new SugerenciaIA
             {
-                FechaSugerencia = fechaReferencia,
+                FechaUltimoAnalisisIA = fechaReferencia,
                 PlatosAnalisis = new List<PlatoAnalisisIa>
                 {
                     new PlatoAnalisisIa { PlatoId = plato.Id, Nombre = plato.Nombre, Diagnostico = "Diagnóstico Cacheado" }
@@ -292,6 +303,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
             Assert.NotNull(resultado);
             Assert.NotNull(resultado.AnalisisIa);
             Assert.Equal("Diagnóstico Cacheado", resultado.AnalisisIa.Diagnostico);
+            Assert.True(resultado.AnalisisProvieneDeCache);
             
             _sugerenciaPlatosIAServicioMock.Verify(s => s.AnalizarPlatoRendimientoAsync(
                 It.IsAny<Plato>(), It.IsAny<decimal>(), It.IsAny<int>(), It.IsAny<string>(), 
@@ -327,7 +339,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
             // Sugerencia vieja (de ayer) con plato analizado ayer
             var sugerenciaExistente = new SugerenciaIA
             {
-                FechaSugerencia = fechaAyer,
+                FechaUltimoAnalisisIA = fechaAyer,
                 PlatosAnalisis = new List<PlatoAnalisisIa>
                 {
                     new PlatoAnalisisIa { PlatoId = plato.Id, Nombre = plato.Nombre, Diagnostico = "Ayer" }
@@ -355,6 +367,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
             Assert.NotNull(resultado.AnalisisIa);
             // Debe resetear el plato de ayer y permitir la llamada hoy
             Assert.Equal("Diagnóstico hoy", resultado.AnalisisIa.Diagnostico);
+            Assert.False(resultado.EsFallbackLocal);
+            Assert.Equal("ia", resultado.FuenteAnalisis);
             
             _sugerenciaPlatosIAServicioMock.Verify(s => s.AnalizarPlatoRendimientoAsync(
                 It.IsAny<Plato>(), It.IsAny<decimal>(), It.IsAny<int>(), It.IsAny<string>(), 
@@ -362,4 +376,3 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Dashboard
         }
     }
 }
-

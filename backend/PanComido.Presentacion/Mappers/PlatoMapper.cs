@@ -55,7 +55,6 @@ namespace PanComido.Presentacion.Mappers
                 TiempoPreparacionBase = platoDto.TiempoPreparacionBase,
                 TipoPlatoId = platoDto.TipoPlatoId,
                 CategoriaPlatoId = platoDto.CategoriaPlatoId,
-                UrlImagen = platoDto.UrlImagen,
                 EsVisibleEnCarta = platoDto.EsVisibleEnCarta,
                 EsPrecioManual = platoDto.EsPrecioManual,
 

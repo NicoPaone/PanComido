@@ -7,11 +7,13 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
     {
         private readonly PlatoEntityMapper _platoMapper;
         private readonly InsumoEntityMapper _insumoMapper;
+        private readonly BebidaPreparadaEntityMapper _bebidaPreparadaMapper;
 
-        public ArticuloEntityMapper(PlatoEntityMapper platoMapper, InsumoEntityMapper insumoMapper)
+        public ArticuloEntityMapper(PlatoEntityMapper platoMapper, InsumoEntityMapper insumoMapper, BebidaPreparadaEntityMapper bebidaPreparadaMapper)
         {
             _platoMapper = platoMapper;
             _insumoMapper = insumoMapper;
+            _bebidaPreparadaMapper = bebidaPreparadaMapper;
         }
         public DOM.Articulo paraDominio(EF.Articulo efArticulo)
         {
@@ -26,6 +28,10 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             else if (efArticulo.Insumo != null)
             {
                 articuloBase = _insumoMapper.CompletarMapeoDominio(efArticulo);
+            }
+            else if (efArticulo.BebidaPreparadum != null)
+            {
+                articuloBase = _bebidaPreparadaMapper.CompletarMapeoDominio(efArticulo);
             }
             else
             {
@@ -69,6 +75,10 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             else if (articuloDominio is DOM.Plato platoDominio)
             {
                 efArticulo.Plato = _platoMapper.CompletarMapeoAEntidad(platoDominio);
+            }
+            else if (articuloDominio is DOM.BebidaPreparada bebidaPreparadaDominio)
+            {
+                efArticulo.BebidaPreparadum = _bebidaPreparadaMapper.CompletarMapeoAEntidad(bebidaPreparadaDominio);
             }
             else
             {

@@ -119,6 +119,10 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     .ThenInclude(receta => receta.Ingrediente)
                         .ThenInclude(ing => ing.IdInsumoNavigation)
                             .ThenInclude(ins => ins.IdArticuloNavigation)
+                .Include(ip => ip.IngredienteIngredientePreparados)
+                    .ThenInclude(receta => receta.Ingrediente)
+                        .ThenInclude(ing => ing.IdInsumoNavigation)
+                            .ThenInclude(ins => ins.UnidadMedida)
                 .Where(ip => ip.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.RestauranteId == restauranteId)
                 .ToListAsync();
 
@@ -133,7 +137,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 {
                     IngredienteId = r.IngredienteId,
                     NombreIngrediente = r.Ingrediente.IdInsumoNavigation.IdArticuloNavigation.Nombre,
-                    Cantidad = r.Cantidad
+                    Cantidad = r.Cantidad,
+                    UnidadMedida = r.Ingrediente.IdInsumoNavigation.UnidadMedida.Nombre
                 }).ToList();
 
                 foreach (var lote in insumo.Lotes)
@@ -178,6 +183,10 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     .ThenInclude(receta => receta.Ingrediente)
                         .ThenInclude(ing => ing.IdInsumoNavigation)
                             .ThenInclude(ins => ins.IdArticuloNavigation)
+                .Include(i => i.IngredienteIngredientePreparados)
+                    .ThenInclude(receta => receta.Ingrediente)
+                        .ThenInclude(ing => ing.IdInsumoNavigation)
+                            .ThenInclude(ins => ins.UnidadMedida)
                 .FirstOrDefaultAsync(i => 
                     i.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.RestauranteId == restauranteId &&
                     i.IdIngrediente == miseAndPlaceId);
@@ -191,7 +200,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             {
                 IngredienteId = r.IngredienteId,
                 NombreIngrediente = r.Ingrediente.IdInsumoNavigation.IdArticuloNavigation.Nombre,
-                Cantidad = r.Cantidad
+                Cantidad = r.Cantidad,
+                UnidadMedida = r.Ingrediente.IdInsumoNavigation.UnidadMedida.Nombre
             }).ToList();
 
             var lastLote = insumo.Lotes.OrderByDescending(l => l.FechaAdquisicion).FirstOrDefault();

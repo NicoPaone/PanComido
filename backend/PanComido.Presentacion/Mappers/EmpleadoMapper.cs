@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using PanComido.Dominio.Entidades;
+using PanComido.Dominio.ValueObjects;
 using PanComido.Presentacion.DTOs.Empleado;
 
 namespace PanComido.Presentacion.Mappers
@@ -38,10 +39,12 @@ namespace PanComido.Presentacion.Mappers
         {
             return new Empleado
             {
-                Nombre = dto.Nombre,
-                Email = dto.Email,
-                Estado = dto.Estado,
-                Rol = dto.Rol
+                Nombre = dto.Nombre.Trim(),
+                Email = dto.Email.Trim(),
+                Estado = string.IsNullOrWhiteSpace(dto.Estado)
+                    ? EstadoEmpleado.ActivoPorDefecto().Valor
+                    : EstadoEmpleado.Crear(dto.Estado).Valor,
+                Rol = RolEmpleado.Crear(dto.Rol).Valor
             };
         }
 
@@ -50,10 +53,10 @@ namespace PanComido.Presentacion.Mappers
             return new Empleado
             {
                 Id = id,
-                Nombre = dto.Nombre,
-                Email = dto.Email,
-                Estado = dto.Estado,
-                Rol = dto.Rol
+                Nombre = dto.Nombre.Trim(),
+                Email = dto.Email.Trim(),
+                Estado = EstadoEmpleado.Crear(dto.Estado).Valor,
+                Rol = RolEmpleado.Crear(dto.Rol).Valor
             };
         }
     }
