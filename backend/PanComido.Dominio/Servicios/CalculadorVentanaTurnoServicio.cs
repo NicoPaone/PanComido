@@ -14,11 +14,17 @@ namespace PanComido.Dominio.Servicios
             if (cruzaMedianoche)
                 finHoy = finHoy.AddDays(1);
 
-            if (ahora >= inicioHoy && ahora < finHoy)
+            var inicioAyer = inicioHoy.AddDays(-1);
+            var finAyer = finHoy.AddDays(-1);
+
+            bool enCursoHoy = ahora >= inicioHoy && ahora < finHoy;
+            bool enCursoAyer = ahora >= inicioAyer && ahora < finAyer;
+
+            if (enCursoHoy || enCursoAyer)
                 throw new InvalidOperationException("No se puede cerrar un turno que todavía está en curso.");
 
             if (ahora < inicioHoy)
-                return (inicioHoy.AddDays(-1), finHoy.AddDays(-1));
+                return (inicioAyer, finAyer);
 
             return (inicioHoy, finHoy);
         }

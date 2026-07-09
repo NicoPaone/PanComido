@@ -46,6 +46,12 @@ namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
                 throw new ArgumentException("La cantidad de cada ingrediente debe ser mayor que cero.");
             }
 
+            if (platoModificado.Ingredientes != null &&
+                platoModificado.Ingredientes.Select(i => i.InsumoId).Distinct().Count() != platoModificado.Ingredientes.Count)
+            {
+                throw new ArgumentException("No se puede repetir el mismo insumo en los ingredientes del plato.");
+            }
+
             platoExistente.Nombre = platoModificado.Nombre;
             platoExistente.Descripcion = platoModificado.Descripcion;
             platoExistente.PrecioVentaFinal = platoModificado.PrecioVentaFinal;
