@@ -238,7 +238,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
             var lote = new PanComido.Infraestructura.Persistencia.Entidades.Lote
             {
-                InsumoId = ingredientePreparadoDb.IdIngredienteNavigation.IdArticulo,
+                InsumoId = ingredientePreparadoDb.IdIngredienteNavigation.IdInsumo,
                 BodegaId = bodegaId,
                 Nombre = nombreLote,
                 Cantidad = cantidad,
