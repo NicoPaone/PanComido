@@ -68,6 +68,7 @@ namespace PanComido.Presentacion.Controllers
                 Nombre = dto.Nombre,
                 Descripcion = dto.Descripcion,
                 Cantidad = dto.Cantidad,
+                RendimientoBase = dto.RendimientoBase,
                 FechaVencimiento = dto.FechaVencimiento,
                 UnidadMedidaId = dto.UnidadMedidaId,
                 CategoriaId = dto.CategoriaId,
@@ -135,6 +136,25 @@ namespace PanComido.Presentacion.Controllers
             return Ok(new { Mensaje = "Mise and Place eliminado exitosamente." });
         }
 
+        [HttpPost("{id}/producir")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ProducirMiseAndPlace(
+            int id,
+            [FromBody] ProducirMiseAndPlaceDto request,
+            [FromServices] ProducirMiseAndPlaceCasoDeUso producirCasoDeUso)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+            var loteId = await producirCasoDeUso.EjecutarAsync(
+                restauranteId,
+                id,
+                request.Cantidad,
+                request.FechaVencimiento,
+                request.BodegaId);
+
+            return Ok(new { Mensaje = $"Producción registrada con éxito. Lote físico creado con ID: {loteId}" });
+        }
+
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
@@ -148,7 +168,7 @@ namespace PanComido.Presentacion.Controllers
                 LoteId = dto.LoteId,
                 Nombre = dto.Nombre,
                 Descripcion = dto.Descripcion,
-                Cantidad = dto.Cantidad,
+                RendimientoBase = dto.RendimientoBase,
                 FechaVencimiento = dto.FechaVencimiento,
                 UnidadMedidaId = dto.UnidadMedidaId,
                 CategoriaId = dto.CategoriaId,
@@ -167,8 +187,7 @@ namespace PanComido.Presentacion.Controllers
                 return NotFound(new ErrorResponseDto { Error = "Mise and Place o Lote no encontrado." });
             }
 
-            var modificado = await _obtenerPorIdCasoDeUso.EjecutarAsync(restauranteId, id);
-            return Ok(_mapper.aDtoListado(modificado));
+            return Ok(new { Mensaje = "Mise and Place modificado exitosamente." });
         }
     }
 }

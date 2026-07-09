@@ -1,20 +1,29 @@
-using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace PanComido.Dominio.CasosDeUso.MiseAndPlaceCasoDeUso
 {
     public class EliminarMiseAndPlaceCasoDeUso
     {
-        private readonly IMiseAndPlaceRepositorio _repositorio;
+        private readonly EliminarInsumoCasoDeUso _eliminarInsumo;
 
-        public EliminarMiseAndPlaceCasoDeUso(IMiseAndPlaceRepositorio repositorio)
+        public EliminarMiseAndPlaceCasoDeUso(EliminarInsumoCasoDeUso eliminarInsumo)
         {
-            _repositorio = repositorio;
+            _eliminarInsumo = eliminarInsumo;
         }
 
         public async Task<bool> EjecutarAsync(int restauranteId, int miseAndPlaceId)
         {
-            return await _repositorio.EliminarMiseAndPlaceAsync(restauranteId, miseAndPlaceId);
+            try
+            {
+                await _eliminarInsumo.EjecutarAsync(miseAndPlaceId, restauranteId);
+                return true;
+            }
+            catch (KeyNotFoundException)
+            {
+                return false;
+            }
         }
     }
 }

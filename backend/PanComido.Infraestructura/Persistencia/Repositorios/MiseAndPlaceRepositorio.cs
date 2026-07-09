@@ -57,7 +57,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
                 var ingredientePreparadoDb = new PanComido.Infraestructura.Persistencia.Entidades.IngredientePreparado
                 {
-                    IdIngrediente = ingredienteDb.IdInsumo
+                    IdIngrediente = ingredienteDb.IdInsumo,
+                    RendimientoBase = nuevoMiseAndPlace.RendimientoBase
                 };
 
                 await _ctx.IngredientePreparados.AddAsync(ingredientePreparadoDb);
@@ -123,7 +124,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     .ThenInclude(receta => receta.Ingrediente)
                         .ThenInclude(ing => ing.IdInsumoNavigation)
                             .ThenInclude(ins => ins.UnidadMedida)
-                .Where(ip => ip.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.RestauranteId == restauranteId && !ip.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.Eliminado)
+                .Where(ip => ip.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.RestauranteId == restauranteId &&
+                             !ip.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.Eliminado)
                 .ToListAsync();
 
             var resultado = new List<MiseAndPlaceListadoDominio>();
@@ -189,6 +191,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                             .ThenInclude(ins => ins.UnidadMedida)
                 .FirstOrDefaultAsync(i => 
                     i.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.RestauranteId == restauranteId &&
+                    !i.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.Eliminado &&
                     i.IdIngrediente == miseAndPlaceId);
 
             if (ip == null) return null;
@@ -214,12 +217,40 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 Nombre = articulo.Nombre,
                 Descripcion = articulo.Descripcion,
                 Cantidad = lastLote?.Cantidad ?? 0,
+                RendimientoBase = ip.RendimientoBase,
                 FechaVencimiento = lastLote?.FechaVencimiento,
                 UnidadMedida = insumo.UnidadMedida.Nombre,
                 Categoria = insumo.CategoriaInsumo.Descripcion,
                 Bodega = lastLote?.Bodega?.Nombre ?? "",
                 Receta = recetaDominio
             };
+        }
+
+        public async Task<int> ProducirMiseAndPlaceAsync(int restauranteId, int miseAndPlaceId, decimal cantidad, DateOnly fechaVencimiento, int bodegaId, string nombreLote)
+        {
+            var ingredientePreparadoDb = await _ctx.IngredientePreparados
+                .Include(ip => ip.IdIngredienteNavigation)
+                .FirstOrDefaultAsync(ip => ip.IdIngrediente == miseAndPlaceId);
+
+            if (ingredientePreparadoDb == null)
+            {
+                throw new ArgumentException("El ingrediente preparado no existe.");
+            }
+
+            var lote = new PanComido.Infraestructura.Persistencia.Entidades.Lote
+            {
+                InsumoId = ingredientePreparadoDb.IdIngredienteNavigation.IdInsumo,
+                BodegaId = bodegaId,
+                Nombre = nombreLote,
+                Cantidad = cantidad,
+                FechaAdquisicion = DateOnly.FromDateTime(DateTime.UtcNow),
+                FechaVencimiento = fechaVencimiento
+            };
+
+            await _ctx.Lotes.AddAsync(lote);
+            await _ctx.SaveChangesAsync();
+
+            return lote.Id;
         }
 
         public async Task<bool> EliminarMiseAndPlaceAsync(int restauranteId, int miseAndPlaceId)
@@ -242,19 +273,20 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             {
                 var articulo = await _ctx.Articulos.FirstOrDefaultAsync(a => a.Id == miseAndPlaceId && a.RestauranteId == restauranteId);
                 var insumo = await _ctx.Insumos.FirstOrDefaultAsync(i => i.IdArticulo == miseAndPlaceId);
+                var ingredientePreparado = await _ctx.IngredientePreparados.FirstOrDefaultAsync(ip => ip.IdIngrediente == miseAndPlaceId);
                 var lote = await _ctx.Lotes.FirstOrDefaultAsync(l => l.Id == datos.LoteId && l.InsumoId == miseAndPlaceId && !l.Eliminado);
 
-                if (articulo == null || articulo.Eliminado || insumo == null || lote == null)
+                if (articulo == null || articulo.Eliminado || insumo == null || ingredientePreparado == null || lote == null)
                     return false;
 
-                // 1. Update Articulo and Insumo
+                // 1. Update Articulo, Insumo and IngredientePreparado
                 articulo.Nombre = datos.Nombre;
                 articulo.Descripcion = datos.Descripcion;
                 insumo.CategoriaInsumoId = datos.CategoriaId;
                 insumo.UnidadMedidaId = datos.UnidadMedidaId;
+                ingredientePreparado.RendimientoBase = datos.RendimientoBase;
 
-                // 2. Update Lote
-                lote.Cantidad = datos.Cantidad;
+                // 2. Update Lote (Solo Bodega y Vencimiento, NO Cantidad para evitar desajustes de stock)
                 lote.FechaVencimiento = datos.FechaVencimiento;
                 lote.BodegaId = datos.BodegaId;
 
