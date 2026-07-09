@@ -10,11 +10,12 @@ namespace PanComido.Presentacion.DTOs.MiseAndPlace
         public int LoteId { get; set; }
 
         [Required]
-        public string Nombre { get; set; }
+        public string Nombre { get; set; } = string.Empty;
 
-        public string Descripcion { get; set; }
+        public string Descripcion { get; set; } = string.Empty;
 
         [Required]
+        [Range(0.01, double.MaxValue, ErrorMessage = "La cantidad debe ser mayor a 0")]
         public decimal Cantidad { get; set; }
 
         [Required]
@@ -30,7 +31,7 @@ namespace PanComido.Presentacion.DTOs.MiseAndPlace
         public int BodegaId { get; set; }
 
         [Required]
-        public List<IngredienteDeMiseAndPlaceDto> Ingredientes { get; set; }
+        public List<IngredienteDeMiseAndPlaceDto> Ingredientes { get; set; } = new List<IngredienteDeMiseAndPlaceDto>();
     }
 
     public class IngredienteDeMiseAndPlaceDto
@@ -39,6 +40,7 @@ namespace PanComido.Presentacion.DTOs.MiseAndPlace
         public int IngredienteId { get; set; }
 
         [Required]
+        [Range(0.01, double.MaxValue, ErrorMessage = "La cantidad del ingrediente debe ser mayor a 0")]
         public decimal Cantidad { get; set; }
     }
 }

@@ -23,6 +23,10 @@ namespace PanComido.Dominio.CasosDeUso.BodegaCasosDeUso
             {
                 throw new ArgumentException("El tipo de bodega proporcionado no es válido.");
             }
+            if (await _bodegaRepositorio.ExisteBodegaPorNombreAsync(bodega.Nombre, restauranteId))
+            {
+                throw new ArgumentException("Ya existe una bodega con este nombre.");
+            }
             return await _bodegaRepositorio.CrearAsync(bodega, restauranteId);
         }
     }

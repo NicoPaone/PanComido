@@ -18,6 +18,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
         private readonly Mock<IEstadoStockInsumoServicio> _estadoStockServicioMock;
         private readonly Mock<IImagenServicio> _imagenServicioMock;
         private readonly Mock<IInsumoValidacionServicio> _insumoValidacionServicioMock;
+        private readonly Mock<INormalizadorNombreServicio> _normalizadorNombreServicioMock;
         private readonly Mock<ILogger<ModificarInsumoCasoDeUso>> _loggerMock;
         private readonly ModificarInsumoCasoDeUso _casoDeUso;
 
@@ -27,6 +28,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
             _estadoStockServicioMock = new Mock<IEstadoStockInsumoServicio>();
             _imagenServicioMock = new Mock<IImagenServicio>();
             _insumoValidacionServicioMock = new Mock<IInsumoValidacionServicio>();
+            _normalizadorNombreServicioMock = new Mock<INormalizadorNombreServicio>();
+            _normalizadorNombreServicioMock.Setup(s => s.Normalizar(It.IsAny<string>())).Returns((string nombre) => nombre);
             _loggerMock = new Mock<ILogger<ModificarInsumoCasoDeUso>>();
 
             _casoDeUso = new ModificarInsumoCasoDeUso(
@@ -34,6 +37,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
                 _estadoStockServicioMock.Object,
                 _imagenServicioMock.Object,
                 _insumoValidacionServicioMock.Object,
+                _normalizadorNombreServicioMock.Object,
                 _loggerMock.Object);
         }
 
@@ -75,6 +79,49 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
 
             _insumoValidacionServicioMock.Verify(s => s.ObtenerYValidarUnidadMedidaAsync(It.IsAny<int>()), Times.Never);
             _insumoRepoMock.Verify(r => r.ActualizarAsync(It.IsAny<Insumo>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoElNuevoNombreYaLoUsaOtroInsumo_LanzaArgumentException()
+        {
+            int restauranteId = 1;
+            Insumo insumoModificado = new Insumo { Id = 10, Nombre = "Azucar", CategoriaId = 1, UnidadDeMedidaId = 1 };
+            Insumo insumoExistenteDb = new Insumo { Id = 10, RestauranteId = restauranteId, Nombre = "Harina", Tipo = TipoInsumo.Ingrediente };
+            CategoriaInsumo categoria = new CategoriaInsumo { Id = 1, TipoAplica = TipoInsumo.Ingrediente };
+
+            _insumoRepoMock.Setup(r => r.ObtenerPorIdAsync(insumoModificado.Id, restauranteId))
+                .ReturnsAsync(insumoExistenteDb);
+            _insumoValidacionServicioMock.Setup(s => s.ObtenerYValidarCategoriaAsync(1)).ReturnsAsync(categoria);
+            _insumoRepoMock.Setup(r => r.ExisteInsumoConNombreAsync(restauranteId, insumoModificado.Nombre)).ReturnsAsync(true);
+
+            ArgumentException excepcion = await Assert.ThrowsAsync<ArgumentException>(() =>
+                _casoDeUso.EjecutarAsync(restauranteId, insumoModificado, Stream.Null, "", ""));
+
+            Assert.Equal($"Ya existe un insumo con el nombre '{insumoModificado.Nombre}' en el restaurante.", excepcion.Message);
+
+            _insumoValidacionServicioMock.Verify(s => s.ObtenerYValidarUnidadMedidaAsync(It.IsAny<int>()), Times.Never);
+            _insumoRepoMock.Verify(r => r.ActualizarAsync(It.IsAny<Insumo>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoElNombreNoCambia_NoConsultaDuplicados()
+        {
+            int restauranteId = 1;
+            Insumo insumoModificado = new Insumo { Id = 10, Nombre = "Harina", CategoriaId = 1, UnidadDeMedidaId = 1, StockMinimo = 5, StockRecomendado = 20 };
+            Insumo insumoExistenteDb = new Insumo { Id = 10, RestauranteId = restauranteId, Nombre = "Harina", Tipo = TipoInsumo.Ingrediente, StockActual = 30 };
+            CategoriaInsumo categoria = new CategoriaInsumo { Id = 1, TipoAplica = TipoInsumo.Ingrediente, Descripcion = "Secos" };
+            UnidadMedida unidadMedida = new UnidadMedida { Id = 1, Nombre = "Kilos" };
+
+            _insumoRepoMock.Setup(r => r.ObtenerPorIdAsync(insumoModificado.Id, restauranteId))
+                .ReturnsAsync(insumoExistenteDb);
+            _insumoValidacionServicioMock.Setup(s => s.ObtenerYValidarCategoriaAsync(1)).ReturnsAsync(categoria);
+            _insumoValidacionServicioMock.Setup(s => s.ObtenerYValidarUnidadMedidaAsync(1)).ReturnsAsync(unidadMedida);
+            _estadoStockServicioMock.Setup(s => s.CalcularEstadoStock(30, 5, 20)).Returns(EstadoStock.Normal);
+
+            await _casoDeUso.EjecutarAsync(restauranteId, insumoModificado, Stream.Null, "", "");
+
+            _insumoRepoMock.Verify(r => r.ExisteInsumoConNombreAsync(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
+            _insumoRepoMock.Verify(r => r.ActualizarAsync(insumoExistenteDb), Times.Once);
         }
 
         [Fact]

@@ -16,12 +16,14 @@ namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
         private readonly IPlatoRepositorio _platoRepositorio;
 
       private readonly IImagenServicio _servicioImagen;
+      private readonly INormalizadorNombreServicio _normalizadorNombreServicio;
 
-      public CrearPlatoCasoDeUso(IPlatoRepositorio platoRepositorio, IImagenServicio servicio)
+      public CrearPlatoCasoDeUso(IPlatoRepositorio platoRepositorio, IImagenServicio servicio, INormalizadorNombreServicio normalizadorNombreServicio)
         {
             _platoRepositorio = platoRepositorio;
          _servicioImagen = servicio;
-        }   
+         _normalizadorNombreServicio = normalizadorNombreServicio;
+        }
 
         public async Task EjecutarAsync ( int restauranteID, Plato plato, string carpetaCloudinary, Stream stream, string nombreImagen)
         {
@@ -30,6 +32,9 @@ namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
             {
                 throw new ArgumentException("El nombre del plato no puede estar vacío.");
             }
+
+            plato.Nombre = _normalizadorNombreServicio.Normalizar(plato.Nombre);
+
             if (plato.PrecioVentaFinal <= 0)
             {
                 throw new ArgumentException("El precio de venta final debe ser mayor que cero.");
@@ -38,6 +43,16 @@ namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
             if ( plato.Ingredientes == null || !plato.Ingredientes.Any() )
             {
                 throw new ArgumentException("El plato debe tener al menos un ingrediente.");
+            }
+
+            if (plato.Ingredientes.Any(i => i.Cantidad <= 0))
+            {
+                throw new ArgumentException("La cantidad de cada ingrediente debe ser mayor que cero.");
+            }
+
+            if (plato.Ingredientes.Select(i => i.InsumoId).Distinct().Count() != plato.Ingredientes.Count)
+            {
+                throw new ArgumentException("No se puede repetir el mismo insumo en los ingredientes del plato.");
             }
 
             bool existePlato = await _platoRepositorio.ExistePlatoConNombreAsync(restauranteID, plato.Nombre);

@@ -5,5 +5,6 @@
         public int Id { get; set; }
         public string Nombre { get; set; }
         public string TipoBodega { get; set; }
+        public int TipoBodegaId { get; set; }
     }
 }

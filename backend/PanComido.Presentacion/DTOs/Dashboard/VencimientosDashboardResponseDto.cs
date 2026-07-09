@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PanComido.Presentacion.DTOS.Dashboard
+namespace PanComido.Presentacion.DTOs.Dashboard
 {
     public class VencimientosDashboardResponseDto
     {

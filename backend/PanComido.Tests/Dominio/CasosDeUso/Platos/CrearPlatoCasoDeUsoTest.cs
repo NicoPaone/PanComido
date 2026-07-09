@@ -15,13 +15,16 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Platos
     {
         private readonly Mock<IPlatoRepositorio> _platoRepoMock;
         private readonly Mock<IImagenServicio> _imagenServicioMock;
+        private readonly Mock<INormalizadorNombreServicio> _normalizadorNombreServicioMock;
         private readonly CrearPlatoCasoDeUso _casoDeUso;
 
         public CrearPlatoCasoDeUsoTest()
         {
             _platoRepoMock = new Mock<IPlatoRepositorio>();
             _imagenServicioMock = new Mock<IImagenServicio>();
-            _casoDeUso = new CrearPlatoCasoDeUso(_platoRepoMock.Object, _imagenServicioMock.Object);
+            _normalizadorNombreServicioMock = new Mock<INormalizadorNombreServicio>();
+            _normalizadorNombreServicioMock.Setup(s => s.Normalizar(It.IsAny<string>())).Returns((string nombre) => nombre);
+            _casoDeUso = new CrearPlatoCasoDeUso(_platoRepoMock.Object, _imagenServicioMock.Object, _normalizadorNombreServicioMock.Object);
         }
 
         [Fact]
@@ -69,14 +72,33 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Platos
         }
 
         [Fact]
+        public async Task EjecutarAsync_CantidadDeUnIngredienteEsCeroOMenor_LanzaArgumentException()
+        {
+            // Preparar
+            var plato = new Plato
+            {
+                Nombre = "Plato Test",
+                PrecioVentaFinal = 100,
+                Ingredientes = new List<PlatoIngrediente> { new PlatoIngrediente { InsumoId = 1, Cantidad = 0 } }
+            };
+
+            // Ejecutar y Verificar
+            var excepcion = await Assert.ThrowsAsync<ArgumentException>(() =>
+                _casoDeUso.EjecutarAsync(1, plato, "cloudinary", Stream.Null, "imagen.png"));
+
+            Assert.Equal("La cantidad de cada ingrediente debe ser mayor que cero.", excepcion.Message);
+            _platoRepoMock.Verify(r => r.CrearAsync(It.IsAny<Plato>()), Times.Never);
+        }
+
+        [Fact]
         public async Task EjecutarAsync_NombreYaExiste_LanzaArgumentException()
         {
             // Preparar
             var plato = new Plato 
             { 
-                Nombre = "Plato Duplicado", 
+                Nombre = "Plato Duplicado",
                 PrecioVentaFinal = 100,
-                Ingredientes = new List<PlatoIngrediente> { new PlatoIngrediente() }
+                Ingredientes = new List<PlatoIngrediente> { new PlatoIngrediente { Cantidad = 1 } }
             };
 
             _platoRepoMock.Setup(r => r.ExistePlatoConNombreAsync(1, "Plato Duplicado"))
@@ -95,9 +117,9 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Platos
             // Preparar
             var plato = new Plato 
             { 
-                Nombre = "Plato OK", 
+                Nombre = "Plato OK",
                 PrecioVentaFinal = 100,
-                Ingredientes = new List<PlatoIngrediente> { new PlatoIngrediente() }
+                Ingredientes = new List<PlatoIngrediente> { new PlatoIngrediente { Cantidad = 1 } }
             };
             var stream = new MemoryStream();
             var urlImagenMock = "http://cloudinary.com/imagen.png";
