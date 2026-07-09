@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using DOM = PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Infraestructura.Persistencia.Mappers;
@@ -133,6 +133,14 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .ToListAsync();
 
             return insumosIds;
+        }
+
+        public async Task<bool> ExisteInsumoEnPedidosPendientesAsync(int insumoId)
+        {
+            return await _ctx.PedidoInsumos
+                .AnyAsync(pi => pi.InsumoId == insumoId 
+                             && !pi.Pedido.Proveedor.Eliminado
+                             && (pi.Pedido.EstadoPedidoId == (int)EstadoPedido.Pendiente || pi.Pedido.EstadoPedidoId == (int)EstadoPedido.Enviado));
         }
 
         private IQueryable<EF.Pedido> BaseQueryPedido()

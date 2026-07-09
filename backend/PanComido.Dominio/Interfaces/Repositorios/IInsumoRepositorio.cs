@@ -19,5 +19,6 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task<Insumo> ObtenerPorIdAsync(int insumoId, int restauranteId);
         Task<Insumo> ActualizarAsync(Insumo insumo);
         Task<Insumo> EliminarAsync(int insumoId, int restauranteId);
+        Task<bool> ExistenInsumosActivosAsync(List<int> insumoIds, int restauranteId);
     }
 }

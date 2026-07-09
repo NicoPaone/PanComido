@@ -170,6 +170,14 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
 
 
+        public async Task<bool> ExisteInsumoEnPlatosActivosAsync(int insumoId)
+        {
+            return await _ctx.Articulos
+                .AnyAsync(a => a.Plato != null 
+                            && !a.Eliminado
+                            && a.Plato.PlatoIngredientes.Any(pi => pi.IngredienteId == insumoId));
+        }
+
     }
 
 }

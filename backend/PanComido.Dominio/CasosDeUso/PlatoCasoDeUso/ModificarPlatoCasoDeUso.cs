@@ -9,12 +9,14 @@ namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
     public class ModificarPlatoCasoDeUso
     {
         private readonly IPlatoRepositorio _platoRepositorio;
+        private readonly IInsumoValidacionServicio _insumoValidacionServicio;
         private readonly IImagenServicio _servicioImagen;
         private readonly INormalizadorNombreServicio _normalizadorNombreServicio;
 
-        public ModificarPlatoCasoDeUso(IPlatoRepositorio platoRepositorio, IImagenServicio servicioImagen, INormalizadorNombreServicio normalizadorNombreServicio)
+        public ModificarPlatoCasoDeUso(IPlatoRepositorio platoRepositorio, IInsumoValidacionServicio insumoValidacionServicio, IImagenServicio servicioImagen, INormalizadorNombreServicio normalizadorNombreServicio)
         {
             _platoRepositorio = platoRepositorio;
+            _insumoValidacionServicio = insumoValidacionServicio;
             _servicioImagen = servicioImagen;
             _normalizadorNombreServicio = normalizadorNombreServicio;
         }
@@ -50,6 +52,12 @@ namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
                 platoModificado.Ingredientes.Select(i => i.InsumoId).Distinct().Count() != platoModificado.Ingredientes.Count)
             {
                 throw new ArgumentException("No se puede repetir el mismo insumo en los ingredientes del plato.");
+            }
+
+            if (platoModificado.Ingredientes != null && platoModificado.Ingredientes.Any())
+            {
+                var insumoIds = platoModificado.Ingredientes.Select(i => i.InsumoId).ToList();
+                await _insumoValidacionServicio.ValidarInsumosActivosAsync(insumoIds, restauranteId);
             }
 
             platoExistente.Nombre = platoModificado.Nombre;

@@ -24,7 +24,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
         public async Task<DateOnly?> ObtenerFechaDeVencimientoMasProximaDeInsumo(int insumoId)
         {
-            return await _ctx.Lotes.Where(l => l.InsumoId == insumoId && !l.Eliminado)
+            return await _ctx.Lotes.Where(l => l.InsumoId == insumoId && !l.Eliminado && !l.Insumo.IdArticuloNavigation.Eliminado)
                 .OrderBy(l => l.FechaVencimiento)
                 .Select(l => (DateOnly?)l.FechaVencimiento)
                 .FirstOrDefaultAsync();
@@ -32,7 +32,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
         public async Task<decimal> ObtenerStockTotalDeInsumo(int insumoId)
         {
-            return await _ctx.Lotes.Where(l => l.InsumoId == insumoId && !l.Eliminado)
+            return await _ctx.Lotes.Where(l => l.InsumoId == insumoId && !l.Eliminado && !l.Insumo.IdArticuloNavigation.Eliminado)
                 .SumAsync(l => (decimal?)l.Cantidad) ?? 0m;
         }
 
@@ -74,7 +74,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<int> ContarLotesConNombreBaseAsync(string nombreBase)
         {
             return await _ctx.Lotes
-                .Where(l => l.Nombre.StartsWith(nombreBase) && !l.Eliminado)
+                .Where(l => l.Nombre.StartsWith(nombreBase) && !l.Eliminado && !l.Insumo.IdArticuloNavigation.Eliminado)
                 .CountAsync();
         }
 
@@ -82,7 +82,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             var diccionarioStock = await _ctx.Lotes
                 .AsNoTracking()
-                .Where(l => l.Insumo.IdArticuloNavigation.RestauranteId == restauranteId && !l.Eliminado)
+                .Where(l => l.Insumo.IdArticuloNavigation.RestauranteId == restauranteId && !l.Eliminado && !l.Insumo.IdArticuloNavigation.Eliminado)
                 .Where(l => l.FechaVencimiento == null || l.FechaVencimiento >= fechaLimite)
                 .GroupBy(l => l.InsumoId)
                 .Select(grupo => new
@@ -99,7 +99,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             List<EF.Lote> efLotes = await _ctx.Lotes
                 .AsNoTracking()
-                .Where(l => l.Bodega.RestauranteId == restauranteId && l.Cantidad > 0 && !l.Eliminado)
+                .Where(l => l.Bodega.RestauranteId == restauranteId && l.Cantidad > 0 && !l.Eliminado && !l.Insumo.IdArticuloNavigation.Eliminado)
                 .OrderBy(l => l.FechaVencimiento)
                 .ThenBy(l => l.Nombre)
                 .ToListAsync();
@@ -111,7 +111,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             var efLote = await _ctx.Lotes
                 .AsNoTracking()
-                .FirstOrDefaultAsync(l => l.Id == loteId && l.Bodega.RestauranteId == restauranteId && !l.Eliminado);
+                .FirstOrDefaultAsync(l => l.Id == loteId && l.Bodega.RestauranteId == restauranteId && !l.Eliminado && !l.Insumo.IdArticuloNavigation.Eliminado);
 
             return efLote != null ? _loteEntityMapper.paraDominio(efLote) : null;
         }
@@ -123,7 +123,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                             .Where(l => l.Bodega.RestauranteId == restauranteId
                                         && l.InsumoId == insumoId
                                         && l.Cantidad > 0
-                                        && !l.Eliminado)
+                                        && !l.Eliminado && !l.Insumo.IdArticuloNavigation.Eliminado)
                             .OrderBy(l => l.FechaVencimiento)
                             .ToListAsync();
 
@@ -140,7 +140,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
 
         public async Task<bool> EliminarAsync(int restauranteId, int loteId)
         {
-            var lote = await _ctx.Lotes.FirstOrDefaultAsync(l => l.Id == loteId && l.Bodega.RestauranteId == restauranteId && !l.Eliminado);
+            var lote = await _ctx.Lotes.FirstOrDefaultAsync(l => l.Id == loteId && l.Bodega.RestauranteId == restauranteId && !l.Eliminado && !l.Insumo.IdArticuloNavigation.Eliminado);
             if (lote == null) return false;
 
             lote.Eliminado = true;

@@ -14,6 +14,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Platos
     public class CrearPlatoCasoDeUsoTest
     {
         private readonly Mock<IPlatoRepositorio> _platoRepoMock;
+        private readonly Mock<IInsumoValidacionServicio> _insumoValidacionServicioMock;
         private readonly Mock<IImagenServicio> _imagenServicioMock;
         private readonly Mock<INormalizadorNombreServicio> _normalizadorNombreServicioMock;
         private readonly CrearPlatoCasoDeUso _casoDeUso;
@@ -21,10 +22,11 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Platos
         public CrearPlatoCasoDeUsoTest()
         {
             _platoRepoMock = new Mock<IPlatoRepositorio>();
+            _insumoValidacionServicioMock = new Mock<IInsumoValidacionServicio>();
             _imagenServicioMock = new Mock<IImagenServicio>();
             _normalizadorNombreServicioMock = new Mock<INormalizadorNombreServicio>();
             _normalizadorNombreServicioMock.Setup(s => s.Normalizar(It.IsAny<string>())).Returns((string nombre) => nombre);
-            _casoDeUso = new CrearPlatoCasoDeUso(_platoRepoMock.Object, _imagenServicioMock.Object, _normalizadorNombreServicioMock.Object);
+            _casoDeUso = new CrearPlatoCasoDeUso(_platoRepoMock.Object, _insumoValidacionServicioMock.Object, _imagenServicioMock.Object, _normalizadorNombreServicioMock.Object);
         }
 
         [Fact]

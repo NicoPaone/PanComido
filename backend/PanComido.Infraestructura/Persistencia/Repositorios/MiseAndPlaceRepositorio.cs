@@ -108,7 +108,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                         .ThenInclude(ins => ins.IdArticuloNavigation)
                 .Include(ip => ip.IdIngredienteNavigation)
                     .ThenInclude(i => i.IdInsumoNavigation)
-                        .ThenInclude(ins => ins.Lotes)
+                        .ThenInclude(ins => ins.Lotes.Where(l => !l.Eliminado))
                             .ThenInclude(l => l.Bodega)
                 .Include(ip => ip.IdIngredienteNavigation)
                     .ThenInclude(i => i.IdInsumoNavigation)
@@ -173,7 +173,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                         .ThenInclude(ins => ins.IdArticuloNavigation)
                 .Include(i => i.IdIngredienteNavigation)
                     .ThenInclude(i => i.IdInsumoNavigation)
-                        .ThenInclude(ins => ins.Lotes)
+                        .ThenInclude(ins => ins.Lotes.Where(l => !l.Eliminado))
                             .ThenInclude(l => l.Bodega)
                 .Include(i => i.IdIngredienteNavigation)
                     .ThenInclude(i => i.IdInsumoNavigation)
@@ -191,6 +191,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                             .ThenInclude(ins => ins.UnidadMedida)
                 .FirstOrDefaultAsync(i => 
                     i.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.RestauranteId == restauranteId &&
+                    !i.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.Eliminado &&
                     i.IdIngrediente == miseAndPlaceId);
 
             if (ip == null) return null;
@@ -273,7 +274,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 var articulo = await _ctx.Articulos.FirstOrDefaultAsync(a => a.Id == miseAndPlaceId && a.RestauranteId == restauranteId);
                 var insumo = await _ctx.Insumos.FirstOrDefaultAsync(i => i.IdArticulo == miseAndPlaceId);
                 var ingredientePreparado = await _ctx.IngredientePreparados.FirstOrDefaultAsync(ip => ip.IdIngrediente == miseAndPlaceId);
-                var lote = await _ctx.Lotes.FirstOrDefaultAsync(l => l.Id == datos.LoteId && l.InsumoId == miseAndPlaceId);
+                var lote = await _ctx.Lotes.FirstOrDefaultAsync(l => l.Id == datos.LoteId && l.InsumoId == miseAndPlaceId && !l.Eliminado);
 
                 if (articulo == null || articulo.Eliminado || insumo == null || ingredientePreparado == null || lote == null)
                     return false;
@@ -318,6 +319,14 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 await transaction.RollbackAsync();
                 throw;
             }
+        }
+
+        public async Task<bool> ExisteInsumoEnMiseAndPlaceActivosAsync(int insumoId)
+        {
+            return await _ctx.IngredientePreparados
+                .AnyAsync(ip => ip.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation != null 
+                             && !ip.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.Eliminado
+                             && ip.IngredienteIngredientePreparados.Any(receta => receta.IngredienteId == insumoId));
         }
     }
 }

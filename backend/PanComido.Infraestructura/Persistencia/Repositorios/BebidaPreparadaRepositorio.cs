@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Infraestructura.Persistencia.Mappers;
 using DOM = PanComido.Dominio.Entidades;
@@ -122,6 +122,14 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     });
                 }
             }
+        }
+
+        public async Task<bool> ExisteInsumoEnBebidasActivasAsync(int insumoId)
+        {
+            return await _ctx.Articulos
+                .AnyAsync(a => a.BebidaPreparadum != null 
+                            && !a.Eliminado
+                            && a.BebidaPreparadum.BebidaPreparadaInsumos.Any(bpi => bpi.InsumoId == insumoId));
         }
     }
 }
