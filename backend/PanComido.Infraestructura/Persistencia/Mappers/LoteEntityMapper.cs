@@ -1,4 +1,4 @@
-﻿using EF = PanComido.Infraestructura.Persistencia.Entidades;
+using EF = PanComido.Infraestructura.Persistencia.Entidades;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +22,8 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 Nombre = loteDom.Nombre,
                 Cantidad = loteDom.Cantidad,
                 FechaAdquisicion = loteDom.FechaAdquisicion,
-                FechaVencimiento = loteDom.FechaVencimiento
+                FechaVencimiento = loteDom.FechaVencimiento,
+                Eliminado = loteDom.Eliminado
             };
         }
 
@@ -38,8 +39,8 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 Nombre = loteEF.Nombre,
                 Cantidad = loteEF.Cantidad,
                 FechaAdquisicion = loteEF.FechaAdquisicion,
-
-                FechaVencimiento = loteEF.FechaVencimiento
+                FechaVencimiento = loteEF.FechaVencimiento,
+                Eliminado = loteEF.Eliminado
             };
         }
     }
