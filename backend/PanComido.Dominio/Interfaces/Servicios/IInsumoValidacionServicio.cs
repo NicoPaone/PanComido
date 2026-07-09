@@ -7,5 +7,6 @@ namespace PanComido.Dominio.Interfaces.Servicios
         Task<CategoriaInsumo> ObtenerYValidarCategoriaAsync(int categoriaId);
         Task<UnidadMedida> ObtenerYValidarUnidadMedidaAsync(int unidadMedidaId);
         Task ValidarInsumosDeRecetaBebidaAsync(int restauranteId, List<BebidaPreparadaInsumo> insumos);
+        Task ValidarInsumosActivosAsync(List<int> insumoIds, int restauranteId);
     }
 }

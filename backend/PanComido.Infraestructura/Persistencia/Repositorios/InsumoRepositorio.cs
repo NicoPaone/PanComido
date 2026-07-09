@@ -51,7 +51,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             var efLista = await BaseQuery(restauranteId)
                                 .Include(a => a.Insumo)
-                                    .ThenInclude(i => i.Lotes).ToListAsync();
+                                    .ThenInclude(i => i.Lotes.Where(l => !l.Eliminado)).ToListAsync();
 
             return efLista.Select(a => (DOM.Insumo)_mapper.paraDominio(a)).ToList();
         }
@@ -61,8 +61,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             // 1. Agregamos el Include de los Lotes y quitamos el .Select()
             var efLista = await BaseQuery(restauranteId)
                 .Include(a => a.Insumo)
-                    .ThenInclude(i => i.Lotes)
-                .Where(a => a.Insumo != null && a.Insumo.Lotes.Any(l => l.FechaVencimiento != null))
+                    .ThenInclude(i => i.Lotes.Where(l => !l.Eliminado))
+                .Where(a => a.Insumo != null && a.Insumo.Lotes.Any(l => l.FechaVencimiento != null && !l.Eliminado))
                 .ToListAsync();
 
             var domLista = new List<DOM.Insumo>();
@@ -125,7 +125,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             var efArticulo = await BaseQuery(restauranteId)
                 .Include(a => a.Insumo)
-                    .ThenInclude(i => i.Lotes)
+                    .ThenInclude(i => i.Lotes.Where(l => !l.Eliminado))
                 .Include(a => a.Insumo)
                     .ThenInclude(i => i.PedidoInsumos)
                         .ThenInclude(pi => pi.Pedido)
@@ -172,6 +172,21 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             efArticulo.Insumo.UnidadMedidaId = insumoDominio.UnidadDeMedidaId;
             efArticulo.Insumo.StockMinimo = insumoDominio.StockMinimo;
             efArticulo.Insumo.StockRecomendado = insumoDominio.StockRecomendado;
+        }
+
+        public async Task<bool> ExistenInsumosActivosAsync(List<int> insumoIds, int restauranteId)
+        {
+            if (insumoIds == null || !insumoIds.Any())
+                return true;
+
+            var idsDistintos = insumoIds.Distinct().ToList();
+            var count = await _ctx.Articulos
+                .CountAsync(a => a.RestauranteId == restauranteId 
+                              && a.Insumo != null 
+                              && !a.Eliminado 
+                              && idsDistintos.Contains(a.Id));
+
+            return count == idsDistintos.Count;
         }
     }
 }

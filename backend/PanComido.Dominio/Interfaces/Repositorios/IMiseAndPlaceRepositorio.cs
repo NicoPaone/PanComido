@@ -10,5 +10,6 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task<MiseAndPlaceListadoDominio> ObtenerPorIdAsync(int restauranteId, int miseAndPlaceId);
         Task<bool> EliminarMiseAndPlaceAsync(int restauranteId, int miseAndPlaceId);
         Task<bool> ModificarMiseAndPlaceAsync(int restauranteId, int miseAndPlaceId, ModificarMiseAndPlaceDominio datos);
+        Task<bool> ExisteInsumoEnMiseAndPlaceActivosAsync(int insumoId);
     }
 }
