@@ -45,5 +45,15 @@ namespace PanComido.Presentacion.Mappers
                 .Select(b => bodegaConInsumosADto(b))
                 .ToList();
         }
+        public DOM.Bodega aDominio(GuardarBodegaRequestDto dto, int? id = null)
+        {
+            if (dto == null) return null;
+            return new DOM.Bodega
+            {
+                Id = id ?? 0,
+                Nombre = dto.Nombre,
+                TipoBodegaId = dto.TipoBodegaId
+            };
+        }
     }
 }

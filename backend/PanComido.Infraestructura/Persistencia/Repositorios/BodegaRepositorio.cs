@@ -31,10 +31,70 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             List<EF.Bodega> bodegas = await _ctx.Bodegas
                 .Include(b => b.TipoBodega) 
-                .Where(b => b.RestauranteId == restauranteId)
+                .Where(b => b.RestauranteId == restauranteId && !b.Eliminado)
                 .ToListAsync();
 
             return bodegas.Select(b => _mapper.paraDominio(b)).ToList();
         }
+
+        public async Task<DOM.Bodega> ObtenerBodegaPorIdAsync(int id, int restauranteId)
+        {
+            var bodegaEF = await _ctx.Bodegas
+                .Include(b => b.TipoBodega)
+                .FirstOrDefaultAsync(b => b.Id == id && b.RestauranteId == restauranteId && !b.Eliminado);
+
+            return _mapper.paraDominio(bodegaEF);
+        }
+
+        public async Task<DOM.Bodega> CrearAsync(DOM.Bodega bodega, int restauranteId)
+        {
+            var bodegaEF = _mapper.paraEntity(bodega, restauranteId);
+            _ctx.Bodegas.Add(bodegaEF);
+            await _ctx.SaveChangesAsync();
+
+            return await ObtenerBodegaPorIdAsync(bodegaEF.Id, restauranteId);
+        }
+
+        public async Task<DOM.Bodega> ModificarAsync(DOM.Bodega bodega, int restauranteId)
+        {
+            var bodegaEF = await _ctx.Bodegas
+                .FirstOrDefaultAsync(b => b.Id == bodega.Id && b.RestauranteId == restauranteId && !b.Eliminado);
+
+            if (bodegaEF != null)
+            {
+                bodegaEF.Nombre = bodega.Nombre;
+                bodegaEF.TipoBodegaId = bodega.TipoBodegaId;
+
+                _ctx.Bodegas.Update(bodegaEF);
+                await _ctx.SaveChangesAsync();
+            }
+
+            return await ObtenerBodegaPorIdAsync(bodega.Id, restauranteId);
+        }
+
+        public async Task<bool> EliminarAsync(int id, int restauranteId)
+        {
+            var bodegaEF = await _ctx.Bodegas
+                .FirstOrDefaultAsync(b => b.Id == id && b.RestauranteId == restauranteId && !b.Eliminado);
+
+            if (bodegaEF == null) return false;
+
+            bodegaEF.Eliminado = true;
+            _ctx.Bodegas.Update(bodegaEF);
+            await _ctx.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> TieneLotesAsociadosAsync(int bodegaId)
+        {
+            return await _ctx.Bodegas
+                .Include(b => b.Lotes)
+                .Where(b => b.Id == bodegaId)
+                .SelectMany(b => b.Lotes)
+                .AnyAsync();
+        }
+
+
     }
 }

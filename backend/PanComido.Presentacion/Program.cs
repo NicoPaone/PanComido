@@ -234,11 +234,13 @@ builder.Services.AddScoped<DatosTransferenciaMapper>();
 builder.Services.AddScoped<MiseAndPlaceMapper>();
 builder.Services.AddScoped<EmpleadoMapper>();
 builder.Services.AddScoped<ReglaTiempoExtraMapper>();
+builder.Services.AddScoped<TipoBodegaMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
 builder.Services.AddScoped<ILoteRepositorio, LoteRepositorio>();
 builder.Services.AddScoped<IBodegaRepositorio, BodegaRepositorio>();
+builder.Services.AddScoped<ITipoBodegaRepositorio, TipoBodegaRepositorio>();
 builder.Services.AddScoped<IProveedorRepositorio, ProveedorRepositorio>();
 builder.Services.AddScoped<IPedidoRepositorio, PedidoRepositorio>();
 builder.Services.AddScoped<IComandaRepositorio, ComandaRepositorio>();
@@ -358,6 +360,8 @@ builder.Services.AddScoped<ObtenerIngredientesParaCrearMiseAndPlace>();
 builder.Services.AddScoped<CrearMiseAndPlaceCasoDeUso>();
 builder.Services.AddScoped<ObtenerTodosLosMiseAndPlaceCasoDeUso>();
 builder.Services.AddScoped<ObtenerMiseAndPlacePorIdCasoDeUso>();
+builder.Services.AddScoped<EliminarMiseAndPlaceCasoDeUso>();
+builder.Services.AddScoped<ModificarMiseAndPlaceCasoDeUso>();
 builder.Services.AddScoped<ListarEmpleadosCasoDeUso>();
 builder.Services.AddScoped<CrearEmpleadoCasoDeUso>();
 builder.Services.AddScoped<ModificarEmpleadoCasoDeUso>();
@@ -369,6 +373,11 @@ builder.Services.AddScoped<ObtenerReglasTiempoExtraCasoDeUso>();
 builder.Services.AddScoped<CrearReglaTiempoExtraCasoDeUso>();
 builder.Services.AddScoped<ModificarReglaTiempoExtraCasoDeUso>();
 builder.Services.AddScoped<EliminarReglaTiempoExtraCasoDeUso>();
+builder.Services.AddScoped<CrearBodegaCasoDeUso>();
+builder.Services.AddScoped<ModificarBodegaCasoDeUso>();
+builder.Services.AddScoped<EliminarBodegaCasoDeUso>();
+builder.Services.AddScoped<ListarTiposBodegaCasoDeUso>();
+
 builder.Services.AddScoped<ListarCierresDeCajaCasoDeUso>();
 builder.Services.AddScoped<GenerarCierreDeCajaCasoDeUso>();
 builder.Services.AddScoped<ObtenerDetalleCierreCasoDeUso>();
