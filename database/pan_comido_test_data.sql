@@ -418,8 +418,10 @@ INSERT INTO llamado (id, mozo_id, gerente_id, categoria_llamado_id, descripcion,
 
 INSERT INTO fila_virtual (id, restaurante_id, habilitada) VALUES (1, 1, TRUE);
 
-INSERT INTO turno_fila (id, fila_virtual_id, numero) VALUES
-    (1, 1, 1), (2, 1, 2), (3, 1, 3);
+INSERT INTO turno_fila (id, fila_virtual_id, numero, cantidad_comensales, fecha_hora_ingreso, estado_turno_mesa_id) VALUES
+    (1, 1, 1, 2, NOW() - INTERVAL '30 minutes', 1), 
+    (2, 1, 2, 4, NOW() - INTERVAL '20 minutes', 1), 
+    (3, 1, 3, 3, NOW() - INTERVAL '10 minutes', 1);
 
 -- ============================================================
 -- PROVEEDORES
