@@ -231,11 +231,13 @@ builder.Services.AddScoped<DatosTransferenciaMapper>();
 builder.Services.AddScoped<MiseAndPlaceMapper>();
 builder.Services.AddScoped<EmpleadoMapper>();
 builder.Services.AddScoped<ReglaTiempoExtraMapper>();
+builder.Services.AddScoped<TipoBodegaMapper>();
 
 // Repositorios
 builder.Services.AddScoped<IInsumoRepositorio, InsumoRepositorio>();
 builder.Services.AddScoped<ILoteRepositorio, LoteRepositorio>();
 builder.Services.AddScoped<IBodegaRepositorio, BodegaRepositorio>();
+builder.Services.AddScoped<ITipoBodegaRepositorio, TipoBodegaRepositorio>();
 builder.Services.AddScoped<IProveedorRepositorio, ProveedorRepositorio>();
 builder.Services.AddScoped<IPedidoRepositorio, PedidoRepositorio>();
 builder.Services.AddScoped<IComandaRepositorio, ComandaRepositorio>();
@@ -350,8 +352,6 @@ builder.Services.AddScoped<ModificarInsumoCasoDeUso>();
 builder.Services.AddScoped<ObtenerInsumoPorIdCasoDeUso>();
 builder.Services.AddScoped<EliminarInsumoCasoDeUso>();
 builder.Services.AddScoped<CrearEncuestaSatisfaccionCasoDeUso>();
-
-
 builder.Services.AddScoped<CrearEncuestaSatisfaccionCasoDeUso>();
 builder.Services.AddScoped<ObtenerIngredientesParaCrearMiseAndPlace>();
 builder.Services.AddScoped<CrearMiseAndPlaceCasoDeUso>();
@@ -361,15 +361,18 @@ builder.Services.AddScoped<ListarEmpleadosCasoDeUso>();
 builder.Services.AddScoped<CrearEmpleadoCasoDeUso>();
 builder.Services.AddScoped<ModificarEmpleadoCasoDeUso>();
 builder.Services.AddScoped<EliminarEmpleadoCasoDeUso>();
-
 builder.Services.AddScoped<GenerarReporteDashboardPdfCasoDeUso>();
 builder.Services.AddScoped<GenerarReportePersonalPdfCasoDeUso>();
 builder.Services.AddScoped<GenerarReporteVentasPdfCasoDeUso>();
-
 builder.Services.AddScoped<ObtenerReglasTiempoExtraCasoDeUso>();
 builder.Services.AddScoped<CrearReglaTiempoExtraCasoDeUso>();
 builder.Services.AddScoped<ModificarReglaTiempoExtraCasoDeUso>();
 builder.Services.AddScoped<EliminarReglaTiempoExtraCasoDeUso>();
+builder.Services.AddScoped<CrearBodegaCasoDeUso>();
+builder.Services.AddScoped<ModificarBodegaCasoDeUso>();
+builder.Services.AddScoped<EliminarBodegaCasoDeUso>();
+builder.Services.AddScoped<ListarTiposBodegaCasoDeUso>();
+
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
