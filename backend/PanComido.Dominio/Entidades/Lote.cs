@@ -1,4 +1,4 @@
-﻿namespace PanComido.Dominio.Entidades
+namespace PanComido.Dominio.Entidades
 {
     public class Lote
     {
@@ -9,5 +9,6 @@
         public DateOnly FechaAdquisicion { get; set; }
         public DateOnly? FechaVencimiento { get; set; }
         public int BodegaId { get; set; }
+        public bool Eliminado { get; set; }
     }
 }

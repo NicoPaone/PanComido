@@ -1,4 +1,4 @@
-﻿using DOM = PanComido.Dominio.Entidades;
+using DOM = PanComido.Dominio.Entidades;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,9 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task CrearLotesAsync(List<DOM.Lote> lotes);
         Task<int> ContarLotesConNombreBaseAsync(string nombreBase);
         Task<List<Lote>> ObtenerLotesPorRestauranteAsync(int restauranteId);
+        Task<Lote> ObtenerPorIdAsync(int restauranteId, int loteId);
         Task<List<Lote>> ObtenerLotesPorFechaVencimientoAscendenteAsync(int restauranteId, int insumoId);
         Task ActualizarLotesAsync(List<Lote> lotesModificados);
+        Task<bool> EliminarAsync(int restauranteId, int loteId);
     }
 }
