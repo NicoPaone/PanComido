@@ -33,8 +33,7 @@ namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
 
             await ValidarLotesAsync(lotesAGuardar, restauranteId);
 
-            if(pedido.ItemsInsumo.Count != itemsConPrecioConfirmado.Count)
-                throw new InvalidOperationException("La cantidad de items con precio confirmado no coincide con la cantidad de items del pedido.");
+            ValidarItemsConPrecioConfirmado(itemsConPrecioConfirmado, pedido);
 
             await _loteRepositorio.CrearLotesAsync(lotesAGuardar);
             await _pedidoRepositorio.MarcarComoRecibidoAsync(pedidoId, itemsConPrecioConfirmado);
@@ -42,7 +41,19 @@ namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
             _logger.LogInformation("Pedido recibido. PedidoId: {PedidoId}", pedidoId);
         }
 
-        private async Task ValidarLotesAsync(List<Lote> lotesAGuardar, int restauranteId)
+        private static void ValidarItemsConPrecioConfirmado(List<DOM.PedidoInsumo> itemsConPrecioConfirmado, DOM.Pedido pedido)
+        {
+            if (pedido.ItemsInsumo.Count != itemsConPrecioConfirmado.Count)
+                throw new InvalidOperationException("La cantidad de items con precio confirmado no coincide con la cantidad de items del pedido.");
+
+            foreach (var item in itemsConPrecioConfirmado)
+            {
+                if (item.PrecioCompra <= 0)
+                    throw new ArgumentException($"El precio de compra del insumo {item.InsumoId} debe ser mayor a cero.");
+            }
+        }
+
+        private async Task ValidarLotesAsync(List<DOM.Lote> lotesAGuardar, int restauranteId)
         {
             foreach (var lote in lotesAGuardar)
             {
