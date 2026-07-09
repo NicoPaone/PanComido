@@ -56,6 +56,7 @@ using PanComido.Presentacion.Servicios;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using QuestPDF.Infrastructure;
+using PanComido.Dominio.CasosDeUso.CierreCajaCasoDeUso;
 
 QuestPDF.Settings.License = LicenseType.Community;
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -194,6 +195,7 @@ builder.Services.AddScoped<PagoEntityMapper>();
 builder.Services.AddScoped<DatosTransferenciaEntityMapper>();
 builder.Services.AddScoped<ReglaTiempoExtraEntityMapper>();
 builder.Services.AddScoped<BebidaPreparadaEntityMapper>();
+builder.Services.AddScoped<CierreCajaEntityMapper>();
 
 
 
@@ -218,6 +220,7 @@ builder.Services.AddScoped<ArticuloCartaMapper>();
 builder.Services.AddScoped<MetodoDePagoMapper>();
 builder.Services.AddScoped<RestauranteMapper>();
 builder.Services.AddScoped<TurnoLaboralMapper>();
+builder.Services.AddScoped<CierreCajaMapper>();
 builder.Services.AddScoped<FilaVirtualMapper>();
 builder.Services.AddScoped<DashboardMapper>();
 builder.Services.AddScoped<PlatoAnalisisMapper>();
@@ -263,7 +266,7 @@ builder.Services.AddScoped<IReglaTiempoExtraRepositorio, ReglaTiempoExtraReposit
 builder.Services.AddScoped<ITransaccionPersistenciaServicio, TransaccionPersistenciaServicio>();
 builder.Services.AddScoped<IPoliticaDescuentoDashboardServicio, PoliticaDescuentoDashboardServicio>();
 builder.Services.AddScoped<IBebidaPreparadaRepositorio, BebidaPreparadaRepositorio>();
-
+builder.Services.AddScoped<ICierreCajaRepositorio, CierreCajaRepositorio>();
 
 // Casos de uso
 builder.Services.AddScoped<ListarInsumoCasoDeUso>();
@@ -350,8 +353,6 @@ builder.Services.AddScoped<ModificarInsumoCasoDeUso>();
 builder.Services.AddScoped<ObtenerInsumoPorIdCasoDeUso>();
 builder.Services.AddScoped<EliminarInsumoCasoDeUso>();
 builder.Services.AddScoped<CrearEncuestaSatisfaccionCasoDeUso>();
-
-
 builder.Services.AddScoped<CrearEncuestaSatisfaccionCasoDeUso>();
 builder.Services.AddScoped<ObtenerIngredientesParaCrearMiseAndPlace>();
 builder.Services.AddScoped<CrearMiseAndPlaceCasoDeUso>();
@@ -361,15 +362,16 @@ builder.Services.AddScoped<ListarEmpleadosCasoDeUso>();
 builder.Services.AddScoped<CrearEmpleadoCasoDeUso>();
 builder.Services.AddScoped<ModificarEmpleadoCasoDeUso>();
 builder.Services.AddScoped<EliminarEmpleadoCasoDeUso>();
-
 builder.Services.AddScoped<GenerarReporteDashboardPdfCasoDeUso>();
 builder.Services.AddScoped<GenerarReportePersonalPdfCasoDeUso>();
 builder.Services.AddScoped<GenerarReporteVentasPdfCasoDeUso>();
-
 builder.Services.AddScoped<ObtenerReglasTiempoExtraCasoDeUso>();
 builder.Services.AddScoped<CrearReglaTiempoExtraCasoDeUso>();
 builder.Services.AddScoped<ModificarReglaTiempoExtraCasoDeUso>();
 builder.Services.AddScoped<EliminarReglaTiempoExtraCasoDeUso>();
+builder.Services.AddScoped<ListarCierresDeCajaCasoDeUso>();
+builder.Services.AddScoped<GenerarCierreDeCajaCasoDeUso>();
+builder.Services.AddScoped<ObtenerDetalleCierreCasoDeUso>();
 
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
@@ -389,6 +391,7 @@ builder.Services.AddScoped<IRegistrarPagoServicio,  RegistrarPagoServicio>();
 builder.Services.AddScoped<IVerificarMetodoPagoHabilitadoServicio, VerificarMetodoPagoHabilitadoServicio>();
 builder.Services.AddScoped<IPdfGeneradorServicio, QuestPdfGeneradorServicio>();
 builder.Services.AddScoped<IGeneradorNombreLoteServicio, GeneradorNombreLoteServicio>();
+builder.Services.AddScoped<ICalculadorVentanaTurnoServicio, CalculadorVentanaTurnoServicio>();
 
 
 //Servicios externos

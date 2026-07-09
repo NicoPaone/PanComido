@@ -9,7 +9,7 @@ namespace PanComido.Dominio.Interfaces.Repositorios
 {
     public interface ICierreCajaRepositorio
     {
-        Task<Cierre> CrearCierreDeCajaAsync(Cierre cierre);
+        Task<Cierre> CrearCierreDeCajaAsync(Cierre cierre, List<int> pagoIds);
         Task<List<Cierre>> ObtenerCierresDeCajaAsync(int restauranteId);
     }
 }

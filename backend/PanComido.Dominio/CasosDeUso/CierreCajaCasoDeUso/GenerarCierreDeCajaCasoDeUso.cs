@@ -1,9 +1,10 @@
-﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Interfaces.Servicios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PanComido.Dominio.CasosDeUso.CierreCajaCasoDeUso
@@ -12,45 +13,64 @@ namespace PanComido.Dominio.CasosDeUso.CierreCajaCasoDeUso
     {
         private readonly IPagoRepositorio _pagoRepositorio;
         private readonly ITurnoLaboralRepositorio _turnoLaboralRepositorio;
+        private readonly ICalculadorVentanaTurnoServicio _calculadorVentanaTurnoServicio;
+        private readonly ICierreCajaRepositorio _cierreCajaRepositorio;
 
-        public GenerarCierreDeCajaCasoDeUso(IPagoRepositorio pagoRepositorio, ITurnoLaboralRepositorio turnoLaboralRepositorio)
+        public GenerarCierreDeCajaCasoDeUso(
+            IPagoRepositorio pagoRepositorio,
+            ITurnoLaboralRepositorio turnoLaboralRepositorio,
+            ICalculadorVentanaTurnoServicio calculadorVentanaTurnoServicio,
+            ICierreCajaRepositorio cierreCajaRepositorio)
         {
             _pagoRepositorio = pagoRepositorio;
             _turnoLaboralRepositorio = turnoLaboralRepositorio;
+            _calculadorVentanaTurnoServicio = calculadorVentanaTurnoServicio;
+            _cierreCajaRepositorio = cierreCajaRepositorio;
         }
 
-        public async Task<Cierre> EjecutarAsync(int restauranteId)
-        {
-
-        }
-
-        private List<Pago> ObtenerPagos(int restauranteId,
-                                        DateTime fechaInicio,
-                                        DateTime fechaFin)
-        {
-            return _pagoRepositorio.ObtenerPagosParaCierreAsync(restauranteId, fechaInicio, fechaFin).Result;
-        }
-        private async Task<DateTime?> ObtenerFechaInicio(int restauranteId)
+        public async Task<Cierre> EjecutarAsync(int restauranteId, int turnoLaboralId, decimal conteoCaja)
         {
             var turnos = await _turnoLaboralRepositorio.ObtenerTurnosLaboralesAsync(restauranteId);
-            if (turnos == null)
-            {
-                return null;
-            }
-            var horaInicio = turnos.Single(t => !t.EsNocturno).HorarioInicio.ToTimeSpan();
-            
-            return DateTime.Today.Add(horaInicio);
-        }
-        private async Task<DateTime?> ObtenerFechaFin(int restauranteId)
-        {
-            var turnos = await _turnoLaboralRepositorio.ObtenerTurnosLaboralesAsync(restauranteId);
-            if (turnos == null)
-            {
-                return null;
-            }
-            var horaFin = turnos.Single(t => t.EsNocturno).HorarioFin.ToTimeSpan();
+            var turno = turnos.FirstOrDefault(t => t.Id == turnoLaboralId);
+            if (turno == null) throw new KeyNotFoundException("Turno no encontrado.");
 
-            return DateTime.Today.AddDays(1).Add(horaFin);
+            var ventana = _calculadorVentanaTurnoServicio.CalcularVentana(turno, DateTime.Now);
+
+            var pagos = await _pagoRepositorio.ObtenerPagosParaCierreAsync(restauranteId, ventana.Inicio, ventana.Fin);
+
+            var totales = CalcularTotalesPorMetodo(pagos);
+
+            decimal diferencia = conteoCaja - totales.Efectivo;
+            decimal sobrante = diferencia > 0 ? diferencia : 0;
+
+            var cierre = new Cierre
+            {
+                RestauranteId = restauranteId,
+                TurnoLaboralId = turnoLaboralId,
+                Diferencia = diferencia,
+                Sobrante = sobrante,
+                TotalEfectivo = totales.Efectivo,
+                TotalTarjeta = totales.Tarjeta,
+                TotalTransferencia = totales.Transferencia,
+                TotalMercadoPago = totales.MercadoPago,
+                Fecha = DateOnly.FromDateTime(ventana.Inicio)
+            };
+
+            return await _cierreCajaRepositorio.CrearCierreDeCajaAsync(cierre, pagos.Select(p => p.PagoId).ToList());
+        }
+
+        private static (decimal Efectivo, decimal Tarjeta, decimal Transferencia, decimal MercadoPago) CalcularTotalesPorMetodo(List<Pago> pagos)
+        {
+            var totalesPorMetodo = pagos
+                .GroupBy(p => p.MetodoDePago)
+                .ToDictionary(g => g.Key, g => g.Sum(p => p.Total));
+
+            return (
+                totalesPorMetodo.GetValueOrDefault(MetodoPago.Efectivo),
+                totalesPorMetodo.GetValueOrDefault(MetodoPago.Tarjeta),
+                totalesPorMetodo.GetValueOrDefault(MetodoPago.Transferencia),
+                totalesPorMetodo.GetValueOrDefault(MetodoPago.MercadoPago)
+            );
         }
     }
 }

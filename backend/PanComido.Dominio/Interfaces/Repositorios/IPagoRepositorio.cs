@@ -17,5 +17,6 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task<List<Pago>> ObtenerPagosParaCierreAsync(int restauranteId,
                                                     DateTime horarioApertura,
                                                     DateTime horarioCierre);
+        Task<List<Pago>> ObtenerPagosPorCierreIdAsync(int cierreId);
     }
 }

@@ -7,6 +7,8 @@
         public string TurnoLaboralNombre { get; set; }
         public int CantidadTotalDePagos { get; set; }
         public decimal TotalRecaudado { get; set; }
+        public decimal Diferencia { get; set; }
+        public decimal Sobrante { get; set; }
         public List<DetallePagoDto> DetallePagos { get; set; }
     }
 

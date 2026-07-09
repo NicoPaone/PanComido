@@ -95,5 +95,14 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .Select(p => _pagoEntityMapper.paraDominio(p))
                 .ToList();
         }
+
+        public async Task<List<Pago>> ObtenerPagosPorCierreIdAsync(int cierreId)
+        {
+            var pagos = await _ctx.Pagos
+                .Where(p => p.CierreId == cierreId)
+                .ToListAsync();
+
+            return pagos.Select(p => _pagoEntityMapper.paraDominio(p)).ToList();
+        }
     }
 }

@@ -17,12 +17,22 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             _cierreCajaEntityMapper = cierreCajaEntityMapper;
         }
 
-        public async Task<DOM.Cierre> CrearCierreDeCajaAsync(DOM.Cierre cierre)
+        public async Task<DOM.Cierre> CrearCierreDeCajaAsync(DOM.Cierre cierre, List<int> pagoIds)
         {
             var efCierre = _cierreCajaEntityMapper.paraEntidad(cierre);
             await _ctx.Cierres.AddAsync(efCierre);
+
+            var pagos = await _ctx.Pagos
+                .Where(p => pagoIds.Contains(p.Id))
+                .ToListAsync();
+
+            foreach (var pago in pagos)
+            {
+                pago.Cierre = efCierre;
+            }
+
             await _ctx.SaveChangesAsync();
-            
+
             cierre.CierreId = efCierre.Id;
             return cierre;
         }
