@@ -363,6 +363,7 @@ builder.Services.AddScoped<ObtenerTodosLosMiseAndPlaceCasoDeUso>();
 builder.Services.AddScoped<ObtenerMiseAndPlacePorIdCasoDeUso>();
 builder.Services.AddScoped<EliminarMiseAndPlaceCasoDeUso>();
 builder.Services.AddScoped<ModificarMiseAndPlaceCasoDeUso>();
+builder.Services.AddScoped<ProducirMiseAndPlaceCasoDeUso>();
 builder.Services.AddScoped<ListarEmpleadosCasoDeUso>();
 builder.Services.AddScoped<CrearEmpleadoCasoDeUso>();
 builder.Services.AddScoped<ModificarEmpleadoCasoDeUso>();
