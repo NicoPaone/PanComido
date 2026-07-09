@@ -200,6 +200,7 @@ builder.Services.AddScoped<CierreCajaEntityMapper>();
 
 
 
+
 // Mappers de Presentacion (Dominio <-> DTOs)   
 builder.Services.AddScoped<InsumoMapper>();
 builder.Services.AddScoped<BodegaMapper>();
@@ -266,6 +267,9 @@ builder.Services.AddScoped<IDatosTransferenciaRepositorio, DatosTransferenciaRep
 builder.Services.AddScoped<IEncuestaSatisfaccionRepositorio, EncuestaSatisfaccionRepositorio>();
 builder.Services.AddScoped<IMiseAndPlaceRepositorio, MiseAndPlaceRepositorio>();
 builder.Services.AddScoped<IReglaTiempoExtraRepositorio, ReglaTiempoExtraRepositorio>();
+builder.Services.AddScoped<ITurnoFilaRepositorio, TurnoFilaRepositorio>();
+builder.Services.AddScoped<IFilaVirtualNotificador, FilaVirtualNotificadorSignalR>();
+
 builder.Services.AddScoped<ITransaccionPersistenciaServicio, TransaccionPersistenciaServicio>();
 builder.Services.AddScoped<IPoliticaDescuentoDashboardServicio, PoliticaDescuentoDashboardServicio>();
 builder.Services.AddScoped<IBebidaPreparadaRepositorio, BebidaPreparadaRepositorio>();
@@ -352,6 +356,11 @@ builder.Services.AddScoped<ObtenerDatosTransferenciaCasoDeUso>();
 builder.Services.AddScoped<ActualizarDatosTransferenciaCasoDeUso>();
 builder.Services.AddScoped<ObtenerResumenSatisfaccionCasoDeUso>();
 builder.Services.AddScoped<CrearEncuestaSatisfaccionCasoDeUso>();
+builder.Services.AddScoped<AnotarseEnFilaMesaCasoDeUso>();
+builder.Services.AddScoped<ObtenerEstadoFilaMesaCasoDeUso>();
+builder.Services.AddScoped<CancelarTurnoFilaCasoDeUso>();
+
+
 builder.Services.AddScoped<ModificarInsumoCasoDeUso>();
 builder.Services.AddScoped<ObtenerInsumoPorIdCasoDeUso>();
 builder.Services.AddScoped<EliminarInsumoCasoDeUso>();
@@ -363,6 +372,7 @@ builder.Services.AddScoped<ObtenerTodosLosMiseAndPlaceCasoDeUso>();
 builder.Services.AddScoped<ObtenerMiseAndPlacePorIdCasoDeUso>();
 builder.Services.AddScoped<EliminarMiseAndPlaceCasoDeUso>();
 builder.Services.AddScoped<ModificarMiseAndPlaceCasoDeUso>();
+builder.Services.AddScoped<ProducirMiseAndPlaceCasoDeUso>();
 builder.Services.AddScoped<ListarEmpleadosCasoDeUso>();
 builder.Services.AddScoped<CrearEmpleadoCasoDeUso>();
 builder.Services.AddScoped<ModificarEmpleadoCasoDeUso>();
@@ -405,6 +415,9 @@ builder.Services.AddScoped<ICrearLlamadoServicio, CrearLlamadoServicio>();
 builder.Services.AddScoped<IRegistrarPagoServicio,  RegistrarPagoServicio>();
 builder.Services.AddScoped<IVerificarMetodoPagoHabilitadoServicio, VerificarMetodoPagoHabilitadoServicio>();
 builder.Services.AddScoped<IPdfGeneradorServicio, QuestPdfGeneradorServicio>();
+builder.Services.AddScoped<ICacheServicio, MemoriaCacheServicio>();
+builder.Services.AddScoped<IExpirarTurnosVencidosCasoDeUso, ExpirarTurnosVencidosCasoDeUso>();
+
 builder.Services.AddScoped<IGeneradorNombreLoteServicio, GeneradorNombreLoteServicio>();
 builder.Services.AddScoped<ICalculadorVentanaTurnoServicio, CalculadorVentanaTurnoServicio>();
 
@@ -427,6 +440,11 @@ builder.Services.Configure<MercadoPagoConfiguracion>(builder.Configuration.GetSe
 
 // Excepcion Handler
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
+builder.Services.AddHostedService<MonitorExpiracionFilaBackgroundService>();
+
+builder.Services.AddMemoryCache();
+
 
 builder.Services.AddHttpClient();
 

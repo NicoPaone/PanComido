@@ -77,5 +77,18 @@ namespace PanComido.Dominio.Servicios
                 }
             }
         }
+
+        public async Task ValidarInsumosActivosAsync(List<int> insumoIds, int restauranteId)
+        {
+            if (insumoIds != null && insumoIds.Any())
+            {
+                bool insumosValidos = await _insumoRepositorio.ExistenInsumosActivosAsync(insumoIds, restauranteId);
+                if (!insumosValidos)
+                {
+                    _logger.LogWarning("Rechazo de validación: Uno o más insumos de la receta no existen o han sido eliminados para el restaurante {RestauranteId}.", restauranteId);
+                    throw new ArgumentException("Uno o más insumos de la receta no existen o han sido eliminados.");
+                }
+            }
+        }
     }
 }

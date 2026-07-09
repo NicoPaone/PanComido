@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
 
 
 namespace PanComido.Dominio.Interfaces.Repositorios
@@ -13,5 +13,6 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task<Pedido> EnviarPedidoAsync(int pedidoId, List<PedidoInsumo> itemsNuevos);
         Task<Pedido> ObtenerPedidoPorIdAsync(int pedidoId);
         Task MarcarComoRecibidoAsync(int pedidoId, List<PedidoInsumo> itemsConPrecioConfirmado);
+        Task<bool> ExisteInsumoEnPedidosPendientesAsync(int insumoId);
     }
 }

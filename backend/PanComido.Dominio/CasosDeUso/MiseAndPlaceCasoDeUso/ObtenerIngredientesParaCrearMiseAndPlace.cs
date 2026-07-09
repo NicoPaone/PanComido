@@ -1,5 +1,6 @@
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
+using PanComido.Dominio.Interfaces.Servicios;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,17 +13,20 @@ namespace PanComido.Dominio.CasosDeUso.MiseAndPlaceCasoDeUso
         private readonly ICategoriaInsumoRepositorio _categoriaRepositorio;
         private readonly IUnidadMedidaRepositorio _unidadMedidaRepositorio;
         private readonly IBodegaRepositorio _bodegaRepositorio;
+        private readonly IUltimoPrecioCompraInsumoServicio _ultimoPrecioServicio;
 
         public ObtenerIngredientesParaCrearMiseAndPlace(
             IFormularioPlatoRepositorio repositorio,
             ICategoriaInsumoRepositorio categoriaRepositorio,
             IUnidadMedidaRepositorio unidadMedidaRepositorio,
-            IBodegaRepositorio bodegaRepositorio)
+            IBodegaRepositorio bodegaRepositorio,
+            IUltimoPrecioCompraInsumoServicio ultimoPrecioServicio)
         {
             _repositorio = repositorio;
             _categoriaRepositorio = categoriaRepositorio;
             _unidadMedidaRepositorio = unidadMedidaRepositorio;
             _bodegaRepositorio = bodegaRepositorio;
+            _ultimoPrecioServicio = ultimoPrecioServicio;
         }
 
         public async Task<(List<Ingrediente>, List<CategoriaInsumo>, List<UnidadMedida>, List<Bodega>)> EjecutarAsync(int restauranteId)
@@ -31,6 +35,11 @@ namespace PanComido.Dominio.CasosDeUso.MiseAndPlaceCasoDeUso
             var categorias = await ObtenerCategoriasAsync();
             var unidades = await ObtenerUnidadesMedidaAsync();
             var bodegas = await ObtenerBodegasAsync(restauranteId);
+
+            foreach (var ing in ingredientes)
+            {
+                ing.CostoUnitario = _ultimoPrecioServicio.ObtenerUltimoPrecioCompraRecibido(ing.PedidoInsumos);
+            }
 
             return (ingredientes, categorias, unidades, bodegas);
         }

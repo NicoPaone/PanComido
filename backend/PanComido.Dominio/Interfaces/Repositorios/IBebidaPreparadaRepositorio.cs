@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
 
 namespace PanComido.Dominio.Interfaces.Repositorios
 {
@@ -9,5 +9,6 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task<BebidaPreparada> CrearAsync(BebidaPreparada bebidaPreparada);
         Task<BebidaPreparada> ActualizarAsync(BebidaPreparada bebidaPreparada);
         Task<BebidaPreparada> EliminarAsync(int bebidaPreparadaId, int restauranteId);
+        Task<bool> ExisteInsumoEnBebidasActivasAsync(int insumoId);
     }
 }

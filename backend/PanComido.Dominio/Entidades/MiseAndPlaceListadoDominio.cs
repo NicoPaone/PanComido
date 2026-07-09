@@ -11,6 +11,7 @@ namespace PanComido.Dominio.Entidades
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
         public decimal Cantidad { get; set; }
+        public decimal RendimientoBase { get; set; }
         public DateOnly? FechaVencimiento { get; set; }
         public string UnidadMedida { get; set; }
         public string Categoria { get; set; }
