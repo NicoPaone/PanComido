@@ -57,6 +57,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using QuestPDF.Infrastructure;
 using PanComido.Dominio.CasosDeUso.CierreCajaCasoDeUso;
+using PanComido.Dominio.CasosDeUso.LoteCasosDeUso;
 
 QuestPDF.Settings.License = LicenseType.Community;
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -377,6 +378,9 @@ builder.Services.AddScoped<CrearBodegaCasoDeUso>();
 builder.Services.AddScoped<ModificarBodegaCasoDeUso>();
 builder.Services.AddScoped<EliminarBodegaCasoDeUso>();
 builder.Services.AddScoped<ListarTiposBodegaCasoDeUso>();
+builder.Services.AddScoped<CrearLoteCasoDeUso>();
+builder.Services.AddScoped<ModificarLoteCasoDeUso>();
+builder.Services.AddScoped<EliminarLoteCasoDeUso>();
 
 builder.Services.AddScoped<ListarCierresDeCajaCasoDeUso>();
 builder.Services.AddScoped<GenerarCierreDeCajaCasoDeUso>();
