@@ -227,7 +227,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     DimensionMesaId = dimensionId,
                     TipoElemento = mesaNueva.TipoElemento,
                     Color = mesaNueva.Color,
-                    TextoObjeto = mesaNueva.TextoObjeto
+                    TextoObjeto = mesaNueva.TextoObjeto,
+                    Activo = true
                 };
                 _ctx.Mesas.Add(nuevaMesaEF);
             }
