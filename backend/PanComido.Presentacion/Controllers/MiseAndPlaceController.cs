@@ -118,5 +118,56 @@ namespace PanComido.Presentacion.Controllers
 
             return Ok(respuesta);
         }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Eliminar(int id, [FromServices] EliminarMiseAndPlaceCasoDeUso eliminarCasoDeUso)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+            var resultado = await eliminarCasoDeUso.EjecutarAsync(restauranteId, id);
+
+            if (!resultado)
+            {
+                return NotFound(new ErrorResponseDto { Error = "Mise and Place no encontrado o ya eliminado." });
+            }
+
+            return Ok(new { Mensaje = "Mise and Place eliminado exitosamente." });
+        }
+
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Modificar(int id, [FromBody] ModificarMiseAndPlaceDto dto, [FromServices] ModificarMiseAndPlaceCasoDeUso modificarCasoDeUso)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+
+            var dominio = new ModificarMiseAndPlaceDominio
+            {
+                LoteId = dto.LoteId,
+                Nombre = dto.Nombre,
+                Descripcion = dto.Descripcion,
+                Cantidad = dto.Cantidad,
+                FechaVencimiento = dto.FechaVencimiento,
+                UnidadMedidaId = dto.UnidadMedidaId,
+                CategoriaId = dto.CategoriaId,
+                BodegaId = dto.BodegaId,
+                Ingredientes = dto.Ingredientes.ConvertAll(i => new IngredienteDeMiseAndPlace
+                {
+                    IngredienteId = i.IngredienteId,
+                    Cantidad = i.Cantidad
+                })
+            };
+
+            var resultado = await modificarCasoDeUso.EjecutarAsync(restauranteId, id, dominio);
+
+            if (!resultado)
+            {
+                return NotFound(new ErrorResponseDto { Error = "Mise and Place o Lote no encontrado." });
+            }
+
+            return Ok(new { Mensaje = "Mise and Place modificado exitosamente." });
+        }
     }
 }
