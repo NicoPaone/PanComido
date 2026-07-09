@@ -50,6 +50,11 @@ namespace PanComido.Dominio.CasosDeUso.PlatoCasosDeUso
                 throw new ArgumentException("La cantidad de cada ingrediente debe ser mayor que cero.");
             }
 
+            if (plato.Ingredientes.Select(i => i.InsumoId).Distinct().Count() != plato.Ingredientes.Count)
+            {
+                throw new ArgumentException("No se puede repetir el mismo insumo en los ingredientes del plato.");
+            }
+
             bool existePlato = await _platoRepositorio.ExistePlatoConNombreAsync(restauranteID, plato.Nombre);
             if (existePlato)
             {
