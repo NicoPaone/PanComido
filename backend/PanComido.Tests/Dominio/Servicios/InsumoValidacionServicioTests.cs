@@ -104,6 +104,22 @@ namespace PanComido.Tests.Dominio.Servicios
         }
 
         [Fact]
+        public async Task ValidarInsumosDeRecetaBebidaAsync_CuandoLaCantidadEsCeroOMenor_LanzaArgumentException()
+        {
+            int restauranteId = 1;
+            var insumos = new List<BebidaPreparadaInsumo>
+            {
+                new BebidaPreparadaInsumo { InsumoId = 10, Cantidad = 0 }
+            };
+
+            ArgumentException excepcion = await Assert.ThrowsAsync<ArgumentException>(() =>
+                _servicio.ValidarInsumosDeRecetaBebidaAsync(restauranteId, insumos));
+
+            Assert.Equal("La cantidad de cada insumo debe ser mayor que cero.", excepcion.Message);
+            _insumoRepoMock.Verify(r => r.ObtenerPorIdAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+        }
+
+        [Fact]
         public async Task ValidarInsumosDeRecetaBebidaAsync_CuandoUnInsumoEsTipoIngrediente_LanzaArgumentException()
         {
             int restauranteId = 1;

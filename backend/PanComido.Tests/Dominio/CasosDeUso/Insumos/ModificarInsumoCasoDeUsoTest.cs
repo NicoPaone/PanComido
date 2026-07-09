@@ -18,6 +18,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
         private readonly Mock<IEstadoStockInsumoServicio> _estadoStockServicioMock;
         private readonly Mock<IImagenServicio> _imagenServicioMock;
         private readonly Mock<IInsumoValidacionServicio> _insumoValidacionServicioMock;
+        private readonly Mock<INormalizadorNombreServicio> _normalizadorNombreServicioMock;
         private readonly Mock<ILogger<ModificarInsumoCasoDeUso>> _loggerMock;
         private readonly ModificarInsumoCasoDeUso _casoDeUso;
 
@@ -27,6 +28,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
             _estadoStockServicioMock = new Mock<IEstadoStockInsumoServicio>();
             _imagenServicioMock = new Mock<IImagenServicio>();
             _insumoValidacionServicioMock = new Mock<IInsumoValidacionServicio>();
+            _normalizadorNombreServicioMock = new Mock<INormalizadorNombreServicio>();
+            _normalizadorNombreServicioMock.Setup(s => s.Normalizar(It.IsAny<string>())).Returns((string nombre) => nombre);
             _loggerMock = new Mock<ILogger<ModificarInsumoCasoDeUso>>();
 
             _casoDeUso = new ModificarInsumoCasoDeUso(
@@ -34,6 +37,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
                 _estadoStockServicioMock.Object,
                 _imagenServicioMock.Object,
                 _insumoValidacionServicioMock.Object,
+                _normalizadorNombreServicioMock.Object,
                 _loggerMock.Object);
         }
 

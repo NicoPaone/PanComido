@@ -11,6 +11,7 @@ namespace PanComido.Dominio.CasosDeUso.BebidaPreparadaCasosDeUso
         private readonly IInsumoValidacionServicio _insumoValidacionServicio;
         private readonly IBebidaPreparadaValidacionServicio _bebidaPreparadaValidacionServicio;
         private readonly IImagenServicio _imagenServicio;
+        private readonly INormalizadorNombreServicio _normalizadorNombreServicio;
         private readonly ILogger<CrearBebidaPreparadaCasoDeUso> _logger;
 
         public CrearBebidaPreparadaCasoDeUso(
@@ -18,12 +19,14 @@ namespace PanComido.Dominio.CasosDeUso.BebidaPreparadaCasosDeUso
             IInsumoValidacionServicio insumoValidacionServicio,
             IBebidaPreparadaValidacionServicio bebidaPreparadaValidacionServicio,
             IImagenServicio imagenServicio,
+            INormalizadorNombreServicio normalizadorNombreServicio,
             ILogger<CrearBebidaPreparadaCasoDeUso> logger)
         {
             _bebidaPreparadaRepositorio = bebidaPreparadaRepositorio;
             _insumoValidacionServicio = insumoValidacionServicio;
             _bebidaPreparadaValidacionServicio = bebidaPreparadaValidacionServicio;
             _imagenServicio = imagenServicio;
+            _normalizadorNombreServicio = normalizadorNombreServicio;
             _logger = logger;
         }
 
@@ -32,6 +35,8 @@ namespace PanComido.Dominio.CasosDeUso.BebidaPreparadaCasosDeUso
             _logger.LogInformation("Iniciando creación de la bebida preparada '{Nombre}' para el restaurante {RestauranteId}.", bebidaPreparada.Nombre, restauranteId);
 
             _bebidaPreparadaValidacionServicio.ValidarDatosBasicos(bebidaPreparada);
+
+            bebidaPreparada.Nombre = _normalizadorNombreServicio.Normalizar(bebidaPreparada.Nombre);
 
             bool existeNombre = await _bebidaPreparadaRepositorio.ExisteBebidaPreparadaConNombreAsync(restauranteId, bebidaPreparada.Nombre);
             if (existeNombre)

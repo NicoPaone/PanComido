@@ -27,6 +27,7 @@ namespace PanComido.Presentacion.DTOs.BebidaPreparada
         public int InsumoId { get; set; }
 
         [Required]
+        [Range(0.01, (double)decimal.MaxValue, ErrorMessage = "La cantidad de cada insumo debe ser mayor que cero.")]
         public decimal Cantidad { get; set; }
     }
 }

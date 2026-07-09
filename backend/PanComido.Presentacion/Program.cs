@@ -376,6 +376,8 @@ builder.Services.AddScoped<ObtenerDetalleCierreCasoDeUso>();
 // Servicios
 builder.Services.AddScoped<IEstadoStockInsumoServicio, EstadoStockInsumoServicio>();
 builder.Services.AddScoped<IInsumoValidacionServicio, InsumoValidacionServicio>();
+builder.Services.AddScoped<INormalizadorNombreServicio, NormalizadorNombreServicio>();
+
 builder.Services.AddScoped<IBebidaPreparadaValidacionServicio, BebidaPreparadaValidacionServicio>();
 builder.Services.AddScoped<IDisponibilidadArticuloServicio, DisponibilidadArticuloServicio>();
 builder.Services.AddScoped<ISugerenciaPlatosIAServicio, GeminiSugerenciaPlatosIAServicio >();

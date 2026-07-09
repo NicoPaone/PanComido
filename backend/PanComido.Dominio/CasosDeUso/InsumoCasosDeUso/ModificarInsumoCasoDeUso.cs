@@ -18,18 +18,21 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
         private readonly IEstadoStockInsumoServicio _estadoStockInsumoServicio;
         private readonly IImagenServicio _imagenServicio;
         private readonly IInsumoValidacionServicio _insumoValidacionServicio;
+        private readonly INormalizadorNombreServicio _normalizadorNombreServicio;
         private readonly ILogger<ModificarInsumoCasoDeUso> _logger;
 
         public ModificarInsumoCasoDeUso(IInsumoRepositorio insumoRepositorio,
                                             IEstadoStockInsumoServicio estadoStockInsumoServicio,
                                             IImagenServicio imagenServicio,
                                                         IInsumoValidacionServicio insumoValidacionServicio,
+                                            INormalizadorNombreServicio normalizadorNombreServicio,
                                             ILogger<ModificarInsumoCasoDeUso> logger)
         {
             _insumoRepositorio = insumoRepositorio;
             _estadoStockInsumoServicio = estadoStockInsumoServicio;
             _imagenServicio = imagenServicio;
             _insumoValidacionServicio = insumoValidacionServicio;
+            _normalizadorNombreServicio = normalizadorNombreServicio;
             _logger = logger;
         }
 
@@ -39,6 +42,7 @@ namespace PanComido.Dominio.CasosDeUso.InsumoCasosDeUso
             var insumoExistente = await _insumoRepositorio.ObtenerPorIdAsync(insumoModificado.Id, restauranteId);
             CategoriaInsumo categoria = await ValidarExistenciaYCategoria(insumoModificado, insumoExistente);
 
+            insumoModificado.Nombre = _normalizadorNombreServicio.Normalizar(insumoModificado.Nombre);
             await ValidarNombreDuplicadoAsync(restauranteId, insumoModificado.Nombre, insumoExistente.Nombre);
 
             UnidadMedida unidadMedida = await _insumoValidacionServicio.ObtenerYValidarUnidadMedidaAsync(insumoModificado.UnidadDeMedidaId);

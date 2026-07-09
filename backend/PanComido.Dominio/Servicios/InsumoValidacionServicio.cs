@@ -51,6 +51,12 @@ namespace PanComido.Dominio.Servicios
         {
             foreach (var item in insumos)
             {
+                if (item.Cantidad <= 0)
+                {
+                    _logger.LogWarning("Rechazo de validación: La cantidad del insumo {InsumoId} debe ser mayor que cero.", item.InsumoId);
+                    throw new ArgumentException("La cantidad de cada insumo debe ser mayor que cero.");
+                }
+
                 Insumo insumo = await _insumoRepositorio.ObtenerPorIdAsync(item.InsumoId, restauranteId);
                 if (insumo == null)
                 {
