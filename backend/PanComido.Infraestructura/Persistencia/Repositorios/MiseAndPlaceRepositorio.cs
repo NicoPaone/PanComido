@@ -221,5 +221,72 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 Receta = recetaDominio
             };
         }
+
+        public async Task<bool> EliminarMiseAndPlaceAsync(int restauranteId, int miseAndPlaceId)
+        {
+            var articulo = await _ctx.Articulos
+                .FirstOrDefaultAsync(a => a.Id == miseAndPlaceId && a.RestauranteId == restauranteId);
+
+            if (articulo == null || articulo.Eliminado)
+                return false;
+
+            articulo.Eliminado = true;
+            await _ctx.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ModificarMiseAndPlaceAsync(int restauranteId, int miseAndPlaceId, ModificarMiseAndPlaceDominio datos)
+        {
+            using var transaction = await _ctx.Database.BeginTransactionAsync();
+            try
+            {
+                var articulo = await _ctx.Articulos.FirstOrDefaultAsync(a => a.Id == miseAndPlaceId && a.RestauranteId == restauranteId);
+                var insumo = await _ctx.Insumos.FirstOrDefaultAsync(i => i.IdArticulo == miseAndPlaceId);
+                var lote = await _ctx.Lotes.FirstOrDefaultAsync(l => l.Id == datos.LoteId && l.InsumoId == miseAndPlaceId);
+
+                if (articulo == null || articulo.Eliminado || insumo == null || lote == null)
+                    return false;
+
+                // 1. Update Articulo and Insumo
+                articulo.Nombre = datos.Nombre;
+                articulo.Descripcion = datos.Descripcion;
+                insumo.CategoriaInsumoId = datos.CategoriaId;
+                insumo.UnidadMedidaId = datos.UnidadMedidaId;
+
+                // 2. Update Lote
+                lote.Cantidad = datos.Cantidad;
+                lote.FechaVencimiento = datos.FechaVencimiento;
+                lote.BodegaId = datos.BodegaId;
+
+                await _ctx.SaveChangesAsync();
+
+                // 3. Update Recipe (Delete old, Insert new)
+                var recetasViejas = await _ctx.IngredienteIngredientePreparados
+                    .Where(r => r.IngredientePreparadoId == miseAndPlaceId)
+                    .ToListAsync();
+                _ctx.IngredienteIngredientePreparados.RemoveRange(recetasViejas);
+
+                foreach (var ing in datos.Ingredientes)
+                {
+                    var nuevaReceta = new PanComido.Infraestructura.Persistencia.Entidades.IngredienteIngredientePreparado
+                    {
+                        IngredienteId = ing.IngredienteId,
+                        IngredientePreparadoId = miseAndPlaceId,
+                        Cantidad = ing.Cantidad
+                    };
+                    await _ctx.IngredienteIngredientePreparados.AddAsync(nuevaReceta);
+                }
+
+                await _ctx.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
     }
 }
