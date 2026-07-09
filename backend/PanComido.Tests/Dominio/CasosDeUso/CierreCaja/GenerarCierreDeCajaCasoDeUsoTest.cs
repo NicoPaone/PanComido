@@ -33,6 +33,9 @@ namespace PanComido.Tests.Dominio.CasosDeUso.CierreCaja
             _cierreCajaRepoMock
                 .Setup(r => r.CrearCierreDeCajaAsync(It.IsAny<DOM.Cierre>(), It.IsAny<List<int>>()))
                 .ReturnsAsync((DOM.Cierre c, List<int> _) => { c.CierreId = 99; return c; });
+            _cierreCajaRepoMock
+                .Setup(r => r.ObtenerCierresDeCajaAsync(It.IsAny<int>()))
+                .ReturnsAsync(new List<DOM.Cierre>());
         }
 
         private GenerarCierreDeCajaCasoDeUso CrearCasoDeUso() =>
@@ -60,6 +63,20 @@ namespace PanComido.Tests.Dominio.CasosDeUso.CierreCaja
                 .Throws<InvalidOperationException>();
 
             await Assert.ThrowsAsync<InvalidOperationException>(() => CrearCasoDeUso().EjecutarAsync(1, 1, 100));
+        }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoElTurnoYaFueCerrado_LanzaInvalidOperationException()
+        {
+            var fecha = DateOnly.FromDateTime(_ventana.Inicio);
+            _cierreCajaRepoMock
+                .Setup(r => r.ObtenerCierresDeCajaAsync(1))
+                .ReturnsAsync(new List<DOM.Cierre> { new() { TurnoLaboralId = 1, Fecha = fecha } });
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => CrearCasoDeUso().EjecutarAsync(1, 1, 100));
+
+            _pagoRepoMock.Verify(
+                r => r.ObtenerPagosParaCierreAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()), Times.Never);
         }
 
         [Fact]

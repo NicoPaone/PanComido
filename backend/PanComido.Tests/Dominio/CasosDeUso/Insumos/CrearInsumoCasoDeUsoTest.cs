@@ -91,6 +91,30 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Insumos
         }
 
         [Fact]
+        public async Task EjecutarAsync_CuandoElNombreYaExiste_LanzaArgumentException()
+        {
+            // 1. Preparar
+            int restauranteId = 1;
+            int bodegaId = 5;
+            int cantidadInicial = 20;
+
+            CrearInsumoCasoDeUso casoDeUso = CrearCasoDeUsoConReposMock();
+            Insumo insumo = new Insumo { Nombre = "Harina", CategoriaId = 1, UnidadDeMedidaId = 1, StockMinimo = 5 };
+
+            _insumoRepoMock.Setup(r => r.ExisteInsumoConNombreAsync(restauranteId, insumo.Nombre)).ReturnsAsync(true);
+
+            // 2. Ejecutar y 3.Verificar que lanza la excepcion
+            ArgumentException excepcion = await Assert.ThrowsAsync<ArgumentException>(() =>
+                casoDeUso.EjecutarAsync(restauranteId, insumo, cantidadInicial, bodegaId, DateOnly.FromDateTime(DateTime.UtcNow).AddDays(5), Stream.Null, "", ""));
+
+            Assert.Equal($"Ya existe un insumo con el nombre '{insumo.Nombre}' en el restaurante.", excepcion.Message);
+
+            // nunca llega a validar bodega ni a llamar al repositorio de creacion
+            _bodegaRepoMock.Verify(r => r.ExisteBodegaEnRestauranteAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+            _insumoRepoMock.Verify(r => r.CrearAsync(It.IsAny<Insumo>()), Times.Never);
+        }
+
+        [Fact]
         public async Task EjecutarAsync_CuandoCategoriaNoExiste_LanzaArgumentException()
         {
             // 1. Preparar

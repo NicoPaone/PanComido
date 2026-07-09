@@ -58,6 +58,44 @@ namespace PanComido.Tests.Dominio.CasosDeUso.BebidaPreparada
         }
 
         [Fact]
+        public async Task EjecutarAsync_CuandoElNuevoNombreYaLoUsaOtraBebida_LanzaArgumentException()
+        {
+            int restauranteId = 1;
+            var bebida = BebidaModificada();
+            var bebidaExistente = new DOM.BebidaPreparada { Id = 10, Nombre = "Gin Tonic" };
+
+            _bebidaPreparadaRepoMock.Setup(r => r.ObtenerPorIdAsync(bebida.Id, restauranteId))
+                .ReturnsAsync(bebidaExistente);
+            _bebidaPreparadaRepoMock.Setup(r => r.ExisteBebidaPreparadaConNombreAsync(restauranteId, bebida.Nombre))
+                .ReturnsAsync(true);
+
+            ArgumentException excepcion = await Assert.ThrowsAsync<ArgumentException>(() =>
+                _casoDeUso.EjecutarAsync(restauranteId, bebida, "carpeta", Stream.Null, ""));
+
+            Assert.Equal($"Ya existe una bebida preparada con el nombre '{bebida.Nombre}' en el restaurante.", excepcion.Message);
+            _insumoValidacionServicioMock.Verify(s => s.ValidarInsumosDeRecetaBebidaAsync(It.IsAny<int>(), It.IsAny<List<DOM.BebidaPreparadaInsumo>>()), Times.Never);
+            _bebidaPreparadaRepoMock.Verify(r => r.ActualizarAsync(It.IsAny<DOM.BebidaPreparada>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task EjecutarAsync_CuandoElNombreNoCambia_NoConsultaDuplicados()
+        {
+            int restauranteId = 1;
+            var bebida = BebidaModificada();
+            var bebidaExistente = new DOM.BebidaPreparada { Id = 10, Nombre = bebida.Nombre, UrlImagen = "url.jpg" };
+
+            _bebidaPreparadaRepoMock.Setup(r => r.ObtenerPorIdAsync(bebida.Id, restauranteId))
+                .ReturnsAsync(bebidaExistente);
+            _bebidaPreparadaRepoMock.Setup(r => r.ActualizarAsync(bebida))
+                .ReturnsAsync(bebida);
+
+            await _casoDeUso.EjecutarAsync(restauranteId, bebida, "carpeta", Stream.Null, "");
+
+            _bebidaPreparadaRepoMock.Verify(r => r.ExisteBebidaPreparadaConNombreAsync(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
+            _bebidaPreparadaRepoMock.Verify(r => r.ActualizarAsync(bebida), Times.Once);
+        }
+
+        [Fact]
         public async Task EjecutarAsync_SinImagenNueva_ConservaUrlImagenExistente()
         {
             int restauranteId = 1;

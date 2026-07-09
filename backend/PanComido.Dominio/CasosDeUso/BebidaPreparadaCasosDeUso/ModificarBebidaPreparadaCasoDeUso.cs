@@ -40,6 +40,8 @@ namespace PanComido.Dominio.CasosDeUso.BebidaPreparadaCasosDeUso
                 throw new KeyNotFoundException("La bebida preparada no existe o no pertenece al restaurante.");
             }
 
+            await ValidarNombreDuplicadoAsync(restauranteId, bebidaPreparada.Nombre, bebidaExistente.Nombre);
+
             await _insumoValidacionServicio.ValidarInsumosDeRecetaBebidaAsync(restauranteId, bebidaPreparada.Insumos);
 
             bebidaPreparada.RestauranteId = restauranteId;
@@ -55,6 +57,16 @@ namespace PanComido.Dominio.CasosDeUso.BebidaPreparadaCasosDeUso
             _logger.LogInformation("Bebida preparada '{Nombre}' (ID {Id}) modificada exitosamente en el restaurante {RestauranteId}.", bebidaActualizada.Nombre, bebidaActualizada.Id, restauranteId);
 
             return bebidaActualizada;
+        }
+
+        private async Task ValidarNombreDuplicadoAsync(int restauranteId, string nombreNuevo, string nombreActual)
+        {
+            bool elNombreCambio = !string.Equals(nombreNuevo, nombreActual, StringComparison.OrdinalIgnoreCase);
+            if (elNombreCambio && await _bebidaPreparadaRepositorio.ExisteBebidaPreparadaConNombreAsync(restauranteId, nombreNuevo))
+            {
+                _logger.LogWarning("Rechazo al modificar bebida preparada: Ya existe una con el nombre '{Nombre}' en el restaurante {RestauranteId}.", nombreNuevo, restauranteId);
+                throw new ArgumentException($"Ya existe una bebida preparada con el nombre '{nombreNuevo}' en el restaurante.");
+            }
         }
     }
 }

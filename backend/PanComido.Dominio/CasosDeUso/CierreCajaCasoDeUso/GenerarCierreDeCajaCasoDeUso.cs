@@ -35,6 +35,11 @@ namespace PanComido.Dominio.CasosDeUso.CierreCajaCasoDeUso
             if (turno == null) throw new KeyNotFoundException("Turno no encontrado.");
 
             var ventana = _calculadorVentanaTurnoServicio.CalcularVentana(turno, DateTime.Now);
+            var fecha = DateOnly.FromDateTime(ventana.Inicio);
+
+            var cierresExistentes = await _cierreCajaRepositorio.ObtenerCierresDeCajaAsync(restauranteId);
+            if (cierresExistentes.Any(c => c.TurnoLaboralId == turnoLaboralId && c.Fecha == fecha))
+                throw new InvalidOperationException("Este turno ya fue cerrado.");
 
             var pagos = await _pagoRepositorio.ObtenerPagosParaCierreAsync(restauranteId, ventana.Inicio, ventana.Fin);
 
@@ -53,7 +58,7 @@ namespace PanComido.Dominio.CasosDeUso.CierreCajaCasoDeUso
                 TotalTarjeta = totales.Tarjeta,
                 TotalTransferencia = totales.Transferencia,
                 TotalMercadoPago = totales.MercadoPago,
-                Fecha = DateOnly.FromDateTime(ventana.Inicio)
+                Fecha = fecha
             };
 
             return await _cierreCajaRepositorio.CrearCierreDeCajaAsync(cierre, pagos.Select(p => p.PagoId).ToList());
