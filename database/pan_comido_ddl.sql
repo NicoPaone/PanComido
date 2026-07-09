@@ -374,7 +374,8 @@ CREATE TABLE lote (
     nombre              TEXT NOT NULL,
     cantidad            DECIMAL NOT NULL,
     fecha_adquisicion   DATE NOT NULL,
-    fecha_vencimiento   DATE
+    fecha_vencimiento   DATE,
+    eliminado           BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 -- ============================================================
