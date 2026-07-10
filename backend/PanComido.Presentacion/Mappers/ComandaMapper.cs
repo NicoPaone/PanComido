@@ -19,8 +19,8 @@ namespace PanComido.Presentacion.Mappers
                 NumeroDeMesa = comanda.NumeroDeMesa,
                 CantComensales = comanda.CantComensales,
                 Estado = comanda.Estado.ToString(),
-                HoraInicio = comanda.HoraInicio.ToString("O"),
-                HoraFin = comanda.HoraFin?.ToString("O"),
+                HoraInicio = comanda.HoraInicio.ToString("dd/MM/yyyy HH:mm"),
+                HoraFin = comanda.HoraFin?.ToString("dd/MM/yyyy HH:mm"),
                   HoraUltimoCambioEstado = comanda.HoraUltimoCambioEstado?.ToString("O"),
 
                TiempoEstimadoTotal = comanda.Items
