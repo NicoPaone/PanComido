@@ -468,6 +468,19 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+var cultureInfo = new System.Globalization.CultureInfo("es-AR");
+System.Globalization.CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
+var localizationOptions = new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture(cultureInfo),
+    SupportedCultures = new List<System.Globalization.CultureInfo> { cultureInfo },
+    SupportedUICultures = new List<System.Globalization.CultureInfo> { cultureInfo }
+};
+app.UseRequestLocalization(localizationOptions);
+
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
