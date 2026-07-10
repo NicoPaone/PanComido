@@ -5,11 +5,25 @@
     <RootNamespace>PanComido.Infraestructura</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UserSecretsId>b90b1941-0327-48fd-8123-1f56fade02b9</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Persistencia\Repositorios\" />
-    <Folder Include="ServiciosExternos\" />
+    <ProjectReference Include="..\PanComido.Dominio\PanComido.Dominio.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />
+    <PackageReference Include="CloudinaryDotNet" Version="1.29.2" />
+	  <PackageReference Include="mercadopago-sdk" Version="3.2.0" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.*" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.*">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.*" />
+    <PackageReference Include="QuestPDF" Version="2026.7.0" />
   </ItemGroup>
 
 </Project>

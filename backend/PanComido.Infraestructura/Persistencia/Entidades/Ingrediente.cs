@@ -1,0 +1,31 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+
+namespace PanComido.Infraestructura.Persistencia.Entidades;
+
+[Table("ingrediente")]
+public partial class Ingrediente
+{
+    [Key]
+    [Column("id_insumo")]
+    public int IdInsumo { get; set; }
+
+    [InverseProperty("Ingrediente")]
+    public virtual ICollection<ArticuloComandaIngredienteExcluido> ArticuloComandaIngredienteExcluidos { get; set; } = new List<ArticuloComandaIngredienteExcluido>();
+
+    [ForeignKey("IdInsumo")]
+    [InverseProperty("Ingrediente")]
+    public virtual Insumo IdInsumoNavigation { get; set; } = null!;
+
+    [InverseProperty("Ingrediente")]
+    public virtual ICollection<IngredienteIngredientePreparado> IngredienteIngredientePreparados { get; set; } = new List<IngredienteIngredientePreparado>();
+
+    [InverseProperty("IdIngredienteNavigation")]
+    public virtual IngredientePreparado? IngredientePreparado { get; set; }
+
+    [InverseProperty("Ingrediente")]
+    public virtual ICollection<PlatoIngrediente> PlatoIngredientes { get; set; } = new List<PlatoIngrediente>();
+}

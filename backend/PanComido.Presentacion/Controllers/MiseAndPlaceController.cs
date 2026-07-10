@@ -1,0 +1,186 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
+using PanComido.Dominio.CasosDeUso.MiseAndPlaceCasoDeUso;
+using PanComido.Presentacion.DTOs.ErrorResponse;
+using PanComido.Presentacion.DTOs.MiseAndPlace;
+using PanComido.Presentacion.Mappers;
+using PanComido.Presentacion.Sesion;
+using PanComido.Dominio.Entidades;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace PanComido.Presentacion.Controllers
+{
+    [Route("/miseandplace")]
+    [ApiController]
+    [Authorize]
+    public class MiseAndPlaceController : ControllerBase
+    {
+        private readonly ObtenerIngredientesParaCrearMiseAndPlace _obtenerIngredientesCasoDeUso;
+        private readonly CrearMiseAndPlaceCasoDeUso _crearMiseAndPlaceCasoDeUso;
+        private readonly ObtenerTodosLosMiseAndPlaceCasoDeUso _obtenerTodosCasoDeUso;
+        private readonly ObtenerMiseAndPlacePorIdCasoDeUso _obtenerPorIdCasoDeUso;
+        private readonly MiseAndPlaceMapper _mapper;
+
+        public MiseAndPlaceController(
+            ObtenerIngredientesParaCrearMiseAndPlace obtenerIngredientesCasoDeUso, 
+            CrearMiseAndPlaceCasoDeUso crearMiseAndPlaceCasoDeUso,
+            ObtenerTodosLosMiseAndPlaceCasoDeUso obtenerTodosCasoDeUso,
+            ObtenerMiseAndPlacePorIdCasoDeUso obtenerPorIdCasoDeUso,
+            MiseAndPlaceMapper mapper)
+        {
+            _obtenerIngredientesCasoDeUso = obtenerIngredientesCasoDeUso;
+            _crearMiseAndPlaceCasoDeUso = crearMiseAndPlaceCasoDeUso;
+            _obtenerTodosCasoDeUso = obtenerTodosCasoDeUso;
+            _obtenerPorIdCasoDeUso = obtenerPorIdCasoDeUso;
+            _mapper = mapper;
+        }
+
+        [HttpGet("obtener-ingredientes")]
+        [ProducesResponseType(typeof(DatosFormularioMiseAndPlaceDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ObtenerIngredientes()
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+
+            var (ingredientesDominio, categoriasDominio, unidadesDominio, bodegasDominio) = await _obtenerIngredientesCasoDeUso.EjecutarAsync(restauranteId);
+
+            var respuesta = new DatosFormularioMiseAndPlaceDto
+            {
+                Ingredientes = _mapper.aDtoList(ingredientesDominio),
+                Categorias = categoriasDominio.ConvertAll(c => _mapper.aDtoCategoria(c)),
+                UnidadesMedida = unidadesDominio.ConvertAll(u => _mapper.aDtoUnidad(u)),
+                Bodegas = bodegasDominio.ConvertAll(b => _mapper.aDtoBodega(b))
+            };
+
+            return Ok(respuesta);
+        }
+        [HttpPost("crear")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CrearMiseAndPlace([FromBody] CrearMiseAndPlaceDto dto)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+
+            var nuevoMiseAndPlace = new NuevoMiseAndPlace
+            {
+                Nombre = dto.Nombre,
+                Descripcion = dto.Descripcion,
+                UnidadMedidaId = dto.UnidadMedidaId,
+                CategoriaId = dto.CategoriaId,
+                StockMinimo = dto.StockMinimo,
+                StockRecomendado = dto.StockRecomendado,
+                RestauranteId = restauranteId,
+                Ingredientes = dto.Ingredientes.ConvertAll(i => new IngredienteDeMiseAndPlace
+                {
+                    IngredienteId = i.IngredienteId,
+                    Cantidad = i.Cantidad
+                })
+            };
+         int id = await _crearMiseAndPlaceCasoDeUso.EjecutarAsync(nuevoMiseAndPlace);
+         var dominio = await _obtenerPorIdCasoDeUso.EjecutarAsync(restauranteId, id);
+
+         return CreatedAtAction(nameof(ObtenerPorId), new { id }, _mapper.aDtoListado(dominio));
+      }
+
+      [HttpGet("listar")]
+        [ProducesResponseType(typeof(List<MiseAndPlaceListadoDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ListarMiseAndPlace()
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+
+            var listadoDominio = await _obtenerTodosCasoDeUso.EjecutarAsync(restauranteId);
+
+            var respuesta = listadoDominio.ConvertAll(m => _mapper.aDtoListado(m));
+
+            return Ok(respuesta);
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(MiseAndPlaceListadoDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ObtenerPorId(int id)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+
+            var dominio = await _obtenerPorIdCasoDeUso.EjecutarAsync(restauranteId, id);
+
+            if (dominio == null)
+            {
+                return NotFound(new ErrorResponseDto { Error = "Mise and Place no encontrado." });
+            }
+
+            var respuesta = _mapper.aDtoListado(dominio);
+
+            return Ok(respuesta);
+        }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Eliminar(int id, [FromServices] EliminarInsumoCasoDeUso eliminarCasoDeUso)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+            await eliminarCasoDeUso.EjecutarAsync(id, restauranteId);
+
+            return Ok(new { Mensaje = "Mise and Place eliminado exitosamente." });
+        }
+
+        [HttpPost("{id}/producir")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ProducirMiseAndPlace(
+            int id,
+            [FromBody] ProducirMiseAndPlaceDto request,
+            [FromServices] ProducirMiseAndPlaceCasoDeUso producirCasoDeUso)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+            var loteId = await producirCasoDeUso.EjecutarAsync(
+                restauranteId,
+                id,
+                request.Cantidad,
+                request.FechaVencimiento,
+                request.BodegaId);
+
+            return Ok(new { Mensaje = $"Producción registrada con éxito. Lote físico creado con ID: {loteId}" });
+        }
+
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Modificar(int id, [FromBody] ModificarMiseAndPlaceDto dto, [FromServices] ModificarMiseAndPlaceCasoDeUso modificarCasoDeUso)
+        {
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+
+            var dominio = new ModificarMiseAndPlaceDominio
+            {
+                Nombre = dto.Nombre,
+                Descripcion = dto.Descripcion,
+                UnidadMedidaId = dto.UnidadMedidaId,
+                CategoriaId = dto.CategoriaId,
+                StockMinimo = dto.StockMinimo,
+                StockRecomendado = dto.StockRecomendado,
+                Ingredientes = dto.Ingredientes.ConvertAll(i => new IngredienteDeMiseAndPlace
+                {
+                    IngredienteId = i.IngredienteId,
+                    Cantidad = i.Cantidad
+                })
+            };
+
+            var resultado = await modificarCasoDeUso.EjecutarAsync(restauranteId, id, dominio);
+
+            if (!resultado)
+            {
+                return NotFound(new ErrorResponseDto { Error = "Mise and Place no encontrado." });
+            }
+
+            var modificado = await _obtenerPorIdCasoDeUso.EjecutarAsync(restauranteId, id);
+            return Ok(_mapper.aDtoListado(modificado));
+        }
+    }
+}

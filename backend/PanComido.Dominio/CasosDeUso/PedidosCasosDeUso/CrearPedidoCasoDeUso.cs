@@ -1,0 +1,54 @@
+﻿using Microsoft.Extensions.Logging;
+using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades.Enums;
+using PanComido.Dominio.Interfaces.Repositorios;
+
+
+namespace PanComido.Dominio.CasosDeUso.PedidosCasosDeUso
+{
+    public class CrearPedidoCasoDeUso
+    {
+        private readonly IPedidoRepositorio _pedidoRepositorio;
+        private readonly IProveedorRepositorio _proveedorRepositorio;
+        private readonly IInsumoRepositorio _insumoRepositorio;
+        private readonly ILogger<CrearPedidoCasoDeUso> _logger;
+
+
+        public CrearPedidoCasoDeUso(
+            IPedidoRepositorio pedidoRepositorio,
+            IProveedorRepositorio proveedorRepositorio,
+            IInsumoRepositorio insumoRepositorio,
+            ILogger<CrearPedidoCasoDeUso> logger)
+        {
+            _pedidoRepositorio = pedidoRepositorio;
+            _proveedorRepositorio = proveedorRepositorio;
+            _insumoRepositorio = insumoRepositorio;
+            _logger = logger;
+        }
+
+        public async Task<Pedido> EjecutarAsync(Pedido pedido, int restauranteId)
+        {
+            if (pedido.ItemsInsumo.Select(i => i.InsumoId).Distinct().Count() != pedido.ItemsInsumo.Count)
+                throw new InvalidOperationException("Hay insumos duplicados");
+
+            Proveedor proveedor = await _proveedorRepositorio.ObtenerProveedorPorIdAsync(pedido.ProveedorId);
+            if (proveedor == null || proveedor.RestauranteId != restauranteId)
+            {
+                throw new KeyNotFoundException("Proveedor no encontrado");
+            }
+
+            List<Insumo> insumos = await _insumoRepositorio.ObtenerInsumosDelProveedorAsync(proveedor.Id, restauranteId);
+
+            var idsValidos = insumos.Select(i => i.Id).ToHashSet();
+            if (pedido.ItemsInsumo.Any(item => !idsValidos.Contains(item.InsumoId)))
+                throw new ArgumentException("Hay insumos que no pertenecen al proveedor");
+
+            pedido.Fecha = DateOnly.FromDateTime(DateTime.Now);
+            pedido.Estado = EstadoPedidoProveedor.Pendiente;
+
+            Pedido pedidoCreado = await _pedidoRepositorio.CrearPedidoAsync(pedido);
+            _logger.LogInformation("Pedido creado. PedidoId: {PedidoId}, ProveedorId: {ProveedorId}, RestauranteId: {RestauranteId}, Items: {CantidadItems}", pedidoCreado.Id, pedidoCreado.ProveedorId, restauranteId, pedidoCreado.ItemsInsumo.Count);
+            return pedidoCreado;
+        }
+    }
+}
