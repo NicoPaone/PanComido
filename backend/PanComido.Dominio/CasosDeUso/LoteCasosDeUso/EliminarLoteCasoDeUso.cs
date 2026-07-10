@@ -21,11 +21,6 @@ namespace PanComido.Dominio.CasosDeUso.LoteCasosDeUso
                 return false;
             }
 
-            if (lote.Cantidad > 0)
-            {
-                throw new InvalidOperationException("No se puede eliminar el lote porque todavía tiene stock disponible. Debe registrar su consumo o pérdida (cantidad = 0) antes de eliminarlo.");
-            }
-
             return await _loteRepositorio.EliminarAsync(restauranteId, loteId);
         }
     }

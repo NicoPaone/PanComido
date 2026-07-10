@@ -1,4 +1,4 @@
-﻿using PanComido.Dominio.Entidades;
+using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Dominio.Interfaces.Servicios;
@@ -25,15 +25,17 @@ namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
             var insumosProveedor = await _insumoRepositorio.ObtenerInsumosDelProveedorAsync(proveedorId, restauranteId);
             var insumosResto = await _insumoRepositorio.ObtenerInsumosAsync(restauranteId);
             List<int> insumoEnPedidoPendiente = await _pedidoRepositorio.ObtenerInsumosEnPedidosNoRecibidosAsync(proveedorId);
+            var stockDisponible = await _loteRepositorio.ObtenerStockTotalDeInsumosDisponible(restauranteId, DateOnly.FromDateTime(DateTime.UtcNow));
 
-            return await FiltrarInsumosBajoStockMinimoAsync(insumosResto, insumosProveedor, insumoEnPedidoPendiente, proveedorId);
+            return await FiltrarInsumosBajoStockMinimoAsync(insumosResto, insumosProveedor, insumoEnPedidoPendiente, proveedorId, stockDisponible);
         }
 
         private async Task<List<InsumoConSugerencia>> FiltrarInsumosBajoStockMinimoAsync(
             List<Insumo> insumosResto,
             List<Insumo> insumosProveedor,
             List<int> insumoEnPedidoPendiente,
-            int proveedorId)
+            int proveedorId,
+            Dictionary<int, decimal> stockDisponible)
         {
             var insumosConSugerencia = new List<InsumoConSugerencia>();
 
@@ -42,7 +44,7 @@ namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
                 if (insumo.Id == 0 || insumosProveedor.All(i => i.Id != insumo.Id)) continue;
                 if (insumoEnPedidoPendiente.Contains(insumo.Id)) continue;
 
-                decimal stockActualInsumo = await _loteRepositorio.ObtenerStockTotalDeInsumo(insumo.Id);
+                decimal stockActualInsumo = stockDisponible.TryGetValue(insumo.Id, out var s) ? s : 0m;
                 var estadoStock = _estadoStockInsumoServicio.CalcularEstadoStock(stockActualInsumo, insumo.StockMinimo, insumo.StockRecomendado);
 
                 decimal cantidadSugerida;

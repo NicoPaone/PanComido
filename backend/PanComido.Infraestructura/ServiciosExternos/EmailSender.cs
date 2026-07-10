@@ -1,17 +1,27 @@
 using System.Net;
 using System.Net.Mail;
-using System.Threading.Tasks;
 using PanComido.Dominio.Interfaces.Servicios;
+using Microsoft.Extensions.Configuration;
 
 namespace PanComido.Infraestructura.ServiciosExternos
 {
     public class EmailSender : IEmailSender
     {
+        private readonly IConfiguration _configuration;
+
+        public EmailSender(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public async Task EnviarEmailAsync(string emailDestino, string asunto, string cuerpo)
         {
-            var fromAddress = new MailAddress("pancomido.unlam@gmail.com", "Pan Comido");
+            var emailOrigen = _configuration["Smtp:Email"] ?? "pancomido.unlam@gmail.com";
+            var passwordOrigen = _configuration["Smtp:Password"] ?? "jqci xwmo uqgq kgii";
+
+            var fromAddress = new MailAddress(emailOrigen, "Pan Comido");
             var toAddress = new MailAddress(emailDestino);
-            const string fromPassword = "jqci xwmo uqgq kgii";
+            var fromPassword = passwordOrigen;
 
             using var smtp = new SmtpClient
             {

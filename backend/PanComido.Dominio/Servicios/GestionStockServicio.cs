@@ -99,6 +99,12 @@ namespace PanComido.Dominio.Servicios
                     decimal aDescontarDeEsteLote = Math.Min(cantidadPorDescontar, lote.Cantidad);
                     lote.Cantidad -= aDescontarDeEsteLote;
                     cantidadPorDescontar -= aDescontarDeEsteLote;
+                    
+                    if (lote.Cantidad <= 0)
+                    {
+                        lote.Eliminado = true;
+                    }
+
                     lotesModificados.Add(lote);
                 }
 

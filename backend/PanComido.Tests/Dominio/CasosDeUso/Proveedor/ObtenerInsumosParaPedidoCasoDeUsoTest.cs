@@ -48,8 +48,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
                 .ReturnsAsync(insumosResto);
 
             _loteRepoMock
-               .Setup(r => r.ObtenerStockTotalDeInsumo(insumosResto[0].Id))
-               .ReturnsAsync(2);
+               .Setup(r => r.ObtenerStockTotalDeInsumosDisponible(restauranteId, It.IsAny<DateOnly>()))
+               .ReturnsAsync(new Dictionary<int, decimal> { { insumosResto[0].Id, 2 } });
 
             _estadoInsumoServicioMock
                 .Setup(r => r.CalcularEstadoStock(2, 10, It.IsAny<decimal>()))
@@ -100,8 +100,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
                 .ReturnsAsync(insumosResto);
 
             _loteRepoMock
-               .Setup(r => r.ObtenerStockTotalDeInsumo(insumosResto[0].Id))
-               .ReturnsAsync(8);
+               .Setup(r => r.ObtenerStockTotalDeInsumosDisponible(restauranteId, It.IsAny<DateOnly>()))
+               .ReturnsAsync(new Dictionary<int, decimal> { { insumosResto[0].Id, 8 } });
 
             _estadoInsumoServicioMock
                 .Setup(r => r.CalcularEstadoStock(8, 10, It.IsAny<decimal>()))
@@ -152,8 +152,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
                 .ReturnsAsync(insumosResto);
 
             _loteRepoMock
-               .Setup(r => r.ObtenerStockTotalDeInsumo(insumosResto[0].Id))
-               .ReturnsAsync(30);
+               .Setup(r => r.ObtenerStockTotalDeInsumosDisponible(restauranteId, It.IsAny<DateOnly>()))
+               .ReturnsAsync(new Dictionary<int, decimal> { { insumosResto[0].Id, 30 } });
 
             _estadoInsumoServicioMock
                 .Setup(r => r.CalcularEstadoStock(30, 10, It.IsAny<decimal>()))
@@ -196,8 +196,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
                 .Setup(r => r.ObtenerInsumosAsync(restauranteId))
                 .ReturnsAsync(insumosResto);
             _loteRepoMock
-                .Setup(r => r.ObtenerStockTotalDeInsumo(99))
-                .ReturnsAsync(2);
+                .Setup(r => r.ObtenerStockTotalDeInsumosDisponible(restauranteId, It.IsAny<DateOnly>()))
+                .ReturnsAsync(new Dictionary<int, decimal> { { 99, 2 } });
             _estadoInsumoServicioMock
                 .Setup(r => r.CalcularEstadoStock(2, 10, It.IsAny<decimal>()))
                 .Returns(EstadoStock.Critico);
