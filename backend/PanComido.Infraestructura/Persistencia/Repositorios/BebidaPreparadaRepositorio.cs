@@ -49,7 +49,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                         .ThenInclude(bpi => bpi.Insumo)
                             .ThenInclude(i => i.CategoriaInsumo)
                 .Include(a => a.ConfiguracionArticulos)
-                .FirstOrDefaultAsync(a => a.Id == bebidaPreparadaId && a.RestauranteId == restauranteId && a.BebidaPreparadum != null);
+                .FirstOrDefaultAsync(a => a.Id == bebidaPreparadaId && a.RestauranteId == restauranteId && a.BebidaPreparadum != null && !a.Eliminado);
 
             if (efArticulo == null) return null;
 

@@ -75,6 +75,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     .ThenInclude(bpi => bpi.Insumo)
                         .ThenInclude(i => i.CategoriaInsumo)
             .Where(a => a.RestauranteId == restauranteId
+                     && !a.Eliminado
                      && a.ConfiguracionArticulos.Any(c => c.Id == (int)ConfiguracionArticuloEnum.VisibleEnCarta))
             .ToListAsync();
 
@@ -107,7 +108,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                         .ThenInclude(bpi => bpi.Insumo)
                             .ThenInclude(i => i.CategoriaInsumo)
                 .Include(a => a.ConfiguracionArticulos)
-                .FirstOrDefaultAsync(a => a.Id == articuloId && a.RestauranteId == restauranteId);
+                .FirstOrDefaultAsync(a => a.Id == articuloId && a.RestauranteId == restauranteId && !a.Eliminado);
 
             if (efArticulo == null) return null;
 

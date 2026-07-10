@@ -13,12 +13,14 @@ namespace PanComido.Tests.Dominio.Servicios
     public class GestionStockServicioTest
     {
         private readonly Mock<ILoteRepositorio> _loteRepositorioMock;
+        private readonly Mock<IInsumoRepositorio> _insumoRepositorioMock;
         private readonly GestionStockServicio _servicio;
 
         public GestionStockServicioTest()
         {
             _loteRepositorioMock = new Mock<ILoteRepositorio>();
-            _servicio = new GestionStockServicio(_loteRepositorioMock.Object);
+            _insumoRepositorioMock = new Mock<IInsumoRepositorio>();
+            _servicio = new GestionStockServicio(_loteRepositorioMock.Object, _insumoRepositorioMock.Object);
         }
 
         [Fact]
