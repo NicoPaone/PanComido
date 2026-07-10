@@ -12,7 +12,7 @@ namespace PanComido.Presentacion.Controllers
 {
     [Route("bodega")]
     [ApiController]
-    [Authorize(Roles = "Gerente")]
+    [Authorize(Roles = "Gerente, Cocina")]
     public class BodegaController : ControllerBase
     {
         private readonly ListarBodegasConInsumosCasoDeUso _listarBodegasConInsumosCasoDeUso;

@@ -56,7 +56,7 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("obtener-articulos")]
-        [Authorize(Roles = "Gerente")]
+        [Authorize(Roles = "Gerente, Cocina")]
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObtenerArticulosParaCarta()

@@ -14,9 +14,9 @@ namespace PanComido.Presentacion.Controllers
 {
     [Route("/plato")]
     [ApiController]
-   [Authorize]
+    [Authorize]
 
-   public class PlatoController : ControllerBase
+    public class PlatoController : ControllerBase
     {
 
         private readonly ObtenerDatosParaFormularioCrearPlato _obtenerDatosCasoDeUso;
@@ -39,7 +39,7 @@ namespace PanComido.Presentacion.Controllers
             _eliminarPlatoCasoDeUso = eliminarPlatoCasoDeUso;
         }
 
-        
+
         [HttpGet("{id}")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
@@ -58,7 +58,7 @@ namespace PanComido.Presentacion.Controllers
             }
 
             var platoDominio = await _obtenerPlatoPorIdCasoDeUso.EjecutarAsync(id, restauranteId);
-            
+
             if (platoDominio == null)
             {
                 return NotFound(new { mensaje = "El plato no existe." });
@@ -68,6 +68,7 @@ namespace PanComido.Presentacion.Controllers
         }
 
         [HttpGet("formulario-plato")]
+        [Authorize(Roles = "Gerente, Cocina")]
         [ProducesResponseType(typeof(List<DatosFormularioCrearPlatoResponseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<DatosFormularioCrearPlatoResponseDto>> ObtenerDatosFormulario()
@@ -78,31 +79,32 @@ namespace PanComido.Presentacion.Controllers
 
             return Ok(_mapper.aDto(datosDominio));
         }
-        
-      [HttpPost]
+
+        [HttpPost]
+        [Authorize(Roles = "Gerente, Cocina")]
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Crear([FromForm] CrearPlatoDto request, IFormFile? imagen)
-      {
-         if (!ModelState.IsValid)
-         {
-            return BadRequest(ModelState);
-         }
-         
-         int restauranteId = HttpContext.ObtenerRestauranteId();
-         var platoDominio = _platoMapper.aDominio(request);
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-         Stream? stream = imagen?.OpenReadStream();
-         string? nombreArchivo = imagen?.FileName;
-         
-         await _crearPlatoCasoDeUso.EjecutarAsync(restauranteId, platoDominio,
-               RutasCloudinary.MenuPlatos,
-               stream,
-               nombreArchivo);
-               
-         return StatusCode(201, new { mensaje = "Plato creado correctamente." });
-      }
+            int restauranteId = HttpContext.ObtenerRestauranteId();
+            var platoDominio = _platoMapper.aDominio(request);
+
+            Stream? stream = imagen?.OpenReadStream();
+            string? nombreArchivo = imagen?.FileName;
+
+            await _crearPlatoCasoDeUso.EjecutarAsync(restauranteId, platoDominio,
+                  RutasCloudinary.MenuPlatos,
+                  stream,
+                  nombreArchivo);
+
+            return StatusCode(201, new { mensaje = "Plato creado correctamente." });
+        }
 
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
