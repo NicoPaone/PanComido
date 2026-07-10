@@ -41,9 +41,22 @@ namespace PanComido.Dominio.CasosDeUso.ComandaCasosDeUso
             var mozoId = await _mesaRepositorio.ObtenerMozoIdsPorMesaAsync(comandaModificada.MesaId);
             await _comandaNotificador.NotificarEstadoModificadoAsync(comandaModificada, mozoId);
 
-            comandaModificada.Items = comandaModificada.Items.Where(i => i.Articulo is Plato).ToList();
+            Comanda comandaRetorno = new Comanda
+            {
+                Id = comandaModificada.Id,
+                MesaId = comandaModificada.MesaId,
+                NumeroDeMesa = comandaModificada.NumeroDeMesa,
+                RestauranteId = comandaModificada.RestauranteId,
+                Estado = comandaModificada.Estado,
+                CantComensales = comandaModificada.CantComensales,
+                HoraInicio = comandaModificada.HoraInicio,
+                HoraFin = comandaModificada.HoraFin,
+                HoraUltimoCambioEstado = comandaModificada.HoraUltimoCambioEstado,
+                Items = comandaModificada.Items.Where(i => i.Articulo is Plato).ToList(),
+                MozoId = comandaModificada.MozoId
+            };
 
-            return comandaModificada;
+            return comandaRetorno;
         }
     }
 }
