@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PanComido.Dominio.CasosDeUso.InsumoCasosDeUso;
 using PanComido.Dominio.CasosDeUso.MiseAndPlaceCasoDeUso;
 using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.DTOs.MiseAndPlace;
@@ -67,12 +68,10 @@ namespace PanComido.Presentacion.Controllers
             {
                 Nombre = dto.Nombre,
                 Descripcion = dto.Descripcion,
-                Cantidad = dto.Cantidad,
-                RendimientoBase = dto.RendimientoBase,
-                FechaVencimiento = dto.FechaVencimiento,
                 UnidadMedidaId = dto.UnidadMedidaId,
                 CategoriaId = dto.CategoriaId,
-                BodegaId = dto.BodegaId,
+                StockMinimo = dto.StockMinimo,
+                StockRecomendado = dto.StockRecomendado,
                 RestauranteId = restauranteId,
                 Ingredientes = dto.Ingredientes.ConvertAll(i => new IngredienteDeMiseAndPlace
                 {
@@ -123,15 +122,10 @@ namespace PanComido.Presentacion.Controllers
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Eliminar(int id, [FromServices] EliminarMiseAndPlaceCasoDeUso eliminarCasoDeUso)
+        public async Task<IActionResult> Eliminar(int id, [FromServices] EliminarInsumoCasoDeUso eliminarCasoDeUso)
         {
             int restauranteId = HttpContext.ObtenerRestauranteId();
-            var resultado = await eliminarCasoDeUso.EjecutarAsync(restauranteId, id);
-
-            if (!resultado)
-            {
-                return NotFound(new ErrorResponseDto { Error = "Mise and Place no encontrado o ya eliminado." });
-            }
+            await eliminarCasoDeUso.EjecutarAsync(id, restauranteId);
 
             return Ok(new { Mensaje = "Mise and Place eliminado exitosamente." });
         }
@@ -165,14 +159,12 @@ namespace PanComido.Presentacion.Controllers
 
             var dominio = new ModificarMiseAndPlaceDominio
             {
-                LoteId = dto.LoteId,
                 Nombre = dto.Nombre,
                 Descripcion = dto.Descripcion,
-                RendimientoBase = dto.RendimientoBase,
-                FechaVencimiento = dto.FechaVencimiento,
                 UnidadMedidaId = dto.UnidadMedidaId,
                 CategoriaId = dto.CategoriaId,
-                BodegaId = dto.BodegaId,
+                StockMinimo = dto.StockMinimo,
+                StockRecomendado = dto.StockRecomendado,
                 Ingredientes = dto.Ingredientes.ConvertAll(i => new IngredienteDeMiseAndPlace
                 {
                     IngredienteId = i.IngredienteId,
@@ -184,7 +176,7 @@ namespace PanComido.Presentacion.Controllers
 
             if (!resultado)
             {
-                return NotFound(new ErrorResponseDto { Error = "Mise and Place o Lote no encontrado." });
+                return NotFound(new ErrorResponseDto { Error = "Mise and Place no encontrado." });
             }
 
             var modificado = await _obtenerPorIdCasoDeUso.EjecutarAsync(restauranteId, id);
