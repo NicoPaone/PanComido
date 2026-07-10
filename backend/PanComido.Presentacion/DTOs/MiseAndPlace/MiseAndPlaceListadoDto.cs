@@ -15,6 +15,8 @@ namespace PanComido.Presentacion.DTOs.MiseAndPlace
         public string UnidadMedida { get; set; }
         public string Categoria { get; set; }
         public string Bodega { get; set; }
+        public decimal StockMinimo { get; set; }
+        public decimal StockRecomendado { get; set; }
         public decimal CostoUnitario { get; set; }
         public decimal Costo { get; set; }
         public List<RecetaItemDto> Receta { get; set; } = new List<RecetaItemDto>();
