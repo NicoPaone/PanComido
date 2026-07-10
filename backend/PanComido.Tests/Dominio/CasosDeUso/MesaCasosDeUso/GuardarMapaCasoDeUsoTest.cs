@@ -52,7 +52,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.MesaCasosDeUso
             var casoDeUso = new GuardarMapaCasoDeUso(_mesaMockRepo.Object);
 
             var excepcion = await Assert.ThrowsAsync<InvalidOperationException>(() => casoDeUso.EjecutarAsync(restauranteId, mesas));
-            Assert.Contains("están superpuestos", excepcion.Message);
+            Assert.Contains("están superpuestas", excepcion.Message);
 
             _mesaMockRepo.Verify(r => r.GuardarMapaMasivoAsync(It.IsAny<int>(), It.IsAny<List<MesaMapaDominio>>()), Times.Never());
         }
