@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using DominioEnums = PanComido.Dominio.Entidades.Enums;
 
 namespace PanComido.Infraestructura.Persistencia.Repositorios
 {
@@ -124,6 +125,11 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     .ThenInclude(receta => receta.Ingrediente)
                         .ThenInclude(ing => ing.IdInsumoNavigation)
                             .ThenInclude(ins => ins.UnidadMedida)
+                .Include(ip => ip.IngredienteIngredientePreparados)
+                    .ThenInclude(receta => receta.Ingrediente)
+                        .ThenInclude(ing => ing.IdInsumoNavigation)
+                            .ThenInclude(ins => ins.PedidoInsumos)
+                                .ThenInclude(pi => pi.Pedido)
                 .Where(ip => ip.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.RestauranteId == restauranteId &&
                              !ip.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.Eliminado)
                 .ToListAsync();
@@ -140,7 +146,12 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     IngredienteId = r.IngredienteId,
                     NombreIngrediente = r.Ingrediente.IdInsumoNavigation.IdArticuloNavigation.Nombre,
                     Cantidad = r.Cantidad,
-                    UnidadMedida = r.Ingrediente.IdInsumoNavigation.UnidadMedida.Nombre
+                    UnidadMedida = r.Ingrediente.IdInsumoNavigation.UnidadMedida.Nombre,
+                    CostoUnitario = r.Ingrediente.IdInsumoNavigation.PedidoInsumos
+                        .Where(pi => pi.Pedido.EstadoPedidoId == (int)DominioEnums.EstadoPedido.Recibido)
+                        .OrderByDescending(pi => pi.Pedido.Fecha)
+                        .Select(pi => pi.PrecioCompra)
+                        .FirstOrDefault()
                 }).ToList();
 
                 foreach (var lote in insumo.Lotes)
@@ -153,6 +164,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                         Nombre = articulo.Nombre,
                         Descripcion = articulo.Descripcion,
                         Cantidad = lote.Cantidad,
+                        RendimientoBase = ip.RendimientoBase,
                         FechaVencimiento = lote.FechaVencimiento,
                         UnidadMedida = insumo.UnidadMedida.Nombre,
                         Categoria = insumo.CategoriaInsumo.Descripcion,
@@ -189,6 +201,11 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     .ThenInclude(receta => receta.Ingrediente)
                         .ThenInclude(ing => ing.IdInsumoNavigation)
                             .ThenInclude(ins => ins.UnidadMedida)
+                .Include(i => i.IngredienteIngredientePreparados)
+                    .ThenInclude(receta => receta.Ingrediente)
+                        .ThenInclude(ing => ing.IdInsumoNavigation)
+                            .ThenInclude(ins => ins.PedidoInsumos)
+                                .ThenInclude(pi => pi.Pedido)
                 .FirstOrDefaultAsync(i => 
                     i.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.RestauranteId == restauranteId &&
                     !i.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.Eliminado &&
@@ -204,7 +221,12 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 IngredienteId = r.IngredienteId,
                 NombreIngrediente = r.Ingrediente.IdInsumoNavigation.IdArticuloNavigation.Nombre,
                 Cantidad = r.Cantidad,
-                UnidadMedida = r.Ingrediente.IdInsumoNavigation.UnidadMedida.Nombre
+                UnidadMedida = r.Ingrediente.IdInsumoNavigation.UnidadMedida.Nombre,
+                CostoUnitario = r.Ingrediente.IdInsumoNavigation.PedidoInsumos
+                    .Where(pi => pi.Pedido.EstadoPedidoId == (int)DominioEnums.EstadoPedido.Recibido)
+                    .OrderByDescending(pi => pi.Pedido.Fecha)
+                    .Select(pi => pi.PrecioCompra)
+                    .FirstOrDefault()
             }).ToList();
 
             var lastLote = insumo.Lotes.OrderByDescending(l => l.FechaAdquisicion).FirstOrDefault();

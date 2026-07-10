@@ -25,5 +25,6 @@ namespace PanComido.Dominio.Entidades
         public string NombreIngrediente { get; set; }
         public decimal Cantidad { get; set; }
         public string UnidadMedida { get; set; }
+        public decimal CostoUnitario { get; set; }
     }
 }
