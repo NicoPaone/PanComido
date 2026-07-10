@@ -45,7 +45,7 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
                     {
                         var desc1 = m1.TipoElemento == 1 ? $"La mesa {m1.Numero}" : "Un objeto";
                         var desc2 = m2.TipoElemento == 1 ? $"la mesa {m2.Numero}" : "un objeto";
-                        throw new InvalidOperationException($"{desc1} y {desc2} están superpuestos. Por favor separalos.");
+                        throw new InvalidOperationException($"{desc1} y {desc2} están superpuestas. Por favor separalas.");
                     }
                 }
             }
