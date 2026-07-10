@@ -193,13 +193,15 @@ CREATE TABLE porcentaje_categoria_bebida (
 -- ============================================================
 
 CREATE TABLE empleado (
-    id              SERIAL PRIMARY KEY,
-    restaurante_id  INTEGER NOT NULL REFERENCES restaurante(id),
-    nombre          TEXT NOT NULL,
-    email           TEXT NOT NULL,
-    contrasena      TEXT NOT NULL,
-    estado          TEXT NOT NULL DEFAULT 'activo',
-    eliminado       BOOLEAN NOT NULL DEFAULT FALSE
+    id                  SERIAL PRIMARY KEY,
+    restaurante_id      INTEGER NOT NULL REFERENCES restaurante(id),
+    nombre              TEXT NOT NULL,
+    email               TEXT NOT NULL,
+    contrasena          TEXT NOT NULL,
+    estado              TEXT NOT NULL DEFAULT 'activo',
+    eliminado           BOOLEAN NOT NULL DEFAULT FALSE,
+    reset_token         TEXT,
+    reset_token_expires TIMESTAMP
 );
 
 CREATE TABLE gerente (

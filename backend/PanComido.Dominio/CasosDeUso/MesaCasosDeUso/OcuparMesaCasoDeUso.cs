@@ -46,24 +46,30 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
             {
                 // FLUJO FILA VIRTUAL
                 var turno = await _turnoFilaRepositorio.ObtenerPorIdAsync(turnoId.Value);
-                if (turno != null && turno.ComandaPreArmadaId.HasValue)
+                if (turno != null)
                 {
-                    mesa.idComanda = turno.ComandaPreArmadaId.Value;
-                    
-                    var comandaPreArmada = await _comandaRepositorio.ObtenerComandaPorIdAsync(mesa.idComanda.Value);
-                    if (comandaPreArmada != null)
+                    turno.Estado = EstadoTurnoMesa.Completado;
+                    await _turnoFilaRepositorio.ActualizarAsync(turno);
+
+                    if (turno.ComandaPreArmadaId.HasValue)
                     {
-                        comandaPreArmada.MesaId = mesaId;
-                        comandaPreArmada.Estado = EstadoComanda.EnEspera; // Borrador, no dispara a cocina
-                        await _comandaRepositorio.ActualizarAsync(comandaPreArmada);
+                        mesa.idComanda = turno.ComandaPreArmadaId.Value;
+                        
+                        var comandaPreArmada = await _comandaRepositorio.ObtenerComandaPorIdAsync(mesa.idComanda.Value);
+                        if (comandaPreArmada != null)
+                        {
+                            comandaPreArmada.MesaId = mesaId;
+                            comandaPreArmada.Estado = EstadoComanda.EnEspera; // Borrador, no dispara a cocina
+                            await _comandaRepositorio.ActualizarAsync(comandaPreArmada);
+                        }
+                        _logger.LogInformation("Mesa {MesaId} ocupada por cliente de Fila Virtual. Se asoció la comanda precargada {ComandaId} en estado EnEspera.", mesaId, mesa.idComanda);
                     }
-                    _logger.LogInformation("Mesa {MesaId} ocupada por cliente de Fila Virtual. Se asoció la comanda precargada {ComandaId} en estado EnEspera.", mesaId, mesa.idComanda);
-                }
-                else
-                {
-                    // Fallback por si el turno no tenía comanda precargada por algún error
-                    mesa.idComanda = await GenerarComandaParaMesaOcupadaAsync(mesaId, restauranteId, cantComensales);
-                    _logger.LogInformation("Mesa {MesaId} ocupada (Fila Virtual sin comanda). Se creó nueva comanda {ComandaId}.", mesaId, mesa.idComanda);
+                    else
+                    {
+                        // Fallback por si el turno no tenía comanda precargada por algún error
+                        mesa.idComanda = await GenerarComandaParaMesaOcupadaAsync(mesaId, restauranteId, cantComensales);
+                        _logger.LogInformation("Mesa {MesaId} ocupada (Fila Virtual sin comanda). Se creó nueva comanda {ComandaId}.", mesaId, mesa.idComanda);
+                    }
                 }
             }
             else

@@ -13,6 +13,7 @@ namespace PanComido.Dominio.Interfaces.Repositorios
       Task<Empleado?> ObtenerPorIdYRestauranteAsync(int id, int restauranteId);
       Task CrearAsync(Empleado empleado, List<int> turnosIds);
       Task ModificarAsync(Empleado empleado, List<int> turnosIds);
+      Task ActualizarAsync(Empleado empleado);
       Task EliminarLogicoAsync(int id, int restauranteId);
    }
 }
