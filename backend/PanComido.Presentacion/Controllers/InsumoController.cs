@@ -15,9 +15,9 @@ namespace PanComido.Presentacion.Controllers
 {
     [Route("insumo")]
     [ApiController]
-   [Authorize(Roles = "Gerente")]
+    [Authorize(Roles = "Gerente, Cocina")]
 
-   public class InsumoController : ControllerBase
+    public class InsumoController : ControllerBase
     {
         private readonly ListarInsumoCasoDeUso _listarInsumoCasoDeUso;
         private readonly CrearInsumoCasoDeUso _crearInsumoCasoDeUso;
