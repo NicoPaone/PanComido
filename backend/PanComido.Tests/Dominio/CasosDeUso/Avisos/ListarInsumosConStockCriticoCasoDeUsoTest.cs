@@ -43,12 +43,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Avisos
                 .ReturnsAsync(new List<Insumo> { insumoCritico, insumoNormal });
 
             loteRepoMock
-                .Setup(r => r.ObtenerStockTotalDeInsumo(1))
-                .ReturnsAsync(5);
-
-            loteRepoMock
-                .Setup(r => r.ObtenerStockTotalDeInsumo(2))
-                .ReturnsAsync(20);
+                .Setup(r => r.ObtenerStockTotalDeInsumosDisponible(restauranteId, It.IsAny<DateOnly>()))
+                .ReturnsAsync(new Dictionary<int, decimal> { { 1, 5 }, { 2, 20 } });
 
             loteRepoMock
                 .Setup(r => r.ObtenerFechaDeVencimientoMasProximaDeInsumo(It.IsAny<int>()))
@@ -100,8 +96,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Avisos
                 .ReturnsAsync(new List<Insumo> { insumo });
 
             loteRepoMock
-                .Setup(r => r.ObtenerStockTotalDeInsumo(insumo.Id))
-                .ReturnsAsync(20);
+                .Setup(r => r.ObtenerStockTotalDeInsumosDisponible(restauranteId, It.IsAny<DateOnly>()))
+                .ReturnsAsync(new Dictionary<int, decimal> { { insumo.Id, 20 } });
 
             loteRepoMock
                 .Setup(r => r.ObtenerFechaDeVencimientoMasProximaDeInsumo(insumo.Id))
@@ -152,8 +148,8 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Avisos
                 .ReturnsAsync(new List<Insumo> { insumo });
 
             loteRepoMock
-                .Setup(r => r.ObtenerStockTotalDeInsumo(insumo.Id))
-                .ReturnsAsync(3);
+                .Setup(r => r.ObtenerStockTotalDeInsumosDisponible(restauranteId, It.IsAny<DateOnly>()))
+                .ReturnsAsync(new Dictionary<int, decimal> { { insumo.Id, 3 } });
 
             loteRepoMock
                 .Setup(r => r.ObtenerFechaDeVencimientoMasProximaDeInsumo(insumo.Id))

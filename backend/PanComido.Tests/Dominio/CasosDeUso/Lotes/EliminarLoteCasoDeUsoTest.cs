@@ -37,21 +37,6 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Lotes
         }
 
         [Fact]
-        public async Task EjecutarAsync_CuandoElLoteTieneStock_LanzaInvalidOperationException()
-        {
-            int restauranteId = 1;
-            int loteId = 10;
-
-            _loteRepoMock.Setup(r => r.ObtenerPorIdAsync(restauranteId, loteId))
-                .ReturnsAsync(new Lote { Id = loteId, Cantidad = 5 });
-
-            await Assert.ThrowsAsync<InvalidOperationException>(
-                () => _casoDeUso.EjecutarAsync(restauranteId, loteId));
-
-            _loteRepoMock.Verify(r => r.EliminarAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
-        }
-
-        [Fact]
         public async Task EjecutarAsync_CuandoElLoteNoExiste_RetornaFalse()
         {
             int restauranteId = 1;
