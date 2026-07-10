@@ -6,5 +6,8 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso.Resultados
         public int NumeroTurno { get; set; }
         public int TurnosAdelante { get; set; }
         public int TiempoEstimadoMinutos { get; set; }
+        public bool MesaLista { get; set; }
+        public int? MesaAsignadaId { get; set; }
+        public int? MinutosRestantesParaOcupar { get; set; }
     }
 }

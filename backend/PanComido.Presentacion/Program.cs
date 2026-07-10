@@ -168,6 +168,9 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<JwtTokenServicio>();
 builder.Services.AddScoped<AutenticacionMapper>();
 builder.Services.AddScoped<LoginCasoDeUso>();
+builder.Services.AddScoped<SolicitarRecuperacionContraseniaCasoDeUso>();
+builder.Services.AddScoped<EjecutarRecuperacionContraseniaCasoDeUso>();
+builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IEmpleadoRepositorio, EmpleadoRepositorio>();
 builder.Services.AddScoped<IContraseniaHasher, ContraseniaHasher>();
 
