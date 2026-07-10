@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Infraestructura.Persistencia.Mappers;
 using DOM = PanComido.Dominio.Entidades;
@@ -49,7 +49,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                         .ThenInclude(bpi => bpi.Insumo)
                             .ThenInclude(i => i.CategoriaInsumo)
                 .Include(a => a.ConfiguracionArticulos)
-                .FirstOrDefaultAsync(a => a.Id == bebidaPreparadaId && a.RestauranteId == restauranteId && a.BebidaPreparadum != null);
+                .FirstOrDefaultAsync(a => a.Id == bebidaPreparadaId && a.RestauranteId == restauranteId && a.BebidaPreparadum != null && !a.Eliminado);
 
             if (efArticulo == null) return null;
 
@@ -122,6 +122,14 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     });
                 }
             }
+        }
+
+        public async Task<bool> ExisteInsumoEnBebidasActivasAsync(int insumoId)
+        {
+            return await _ctx.Articulos
+                .AnyAsync(a => a.BebidaPreparadum != null 
+                            && !a.Eliminado
+                            && a.BebidaPreparadum.BebidaPreparadaInsumos.Any(bpi => bpi.InsumoId == insumoId));
         }
     }
 }

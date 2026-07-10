@@ -89,7 +89,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task<bool> TieneLotesAsociadosAsync(int bodegaId)
         {
             return await _ctx.Lotes
-                .AnyAsync(l => l.BodegaId == bodegaId && !l.Insumo.IdArticuloNavigation.Eliminado);
+                .AnyAsync(l => l.BodegaId == bodegaId && !l.Eliminado && !l.Insumo.IdArticuloNavigation.Eliminado);
         }
 
         public async Task<bool> ExisteBodegaPorNombreAsync(string nombre, int restauranteId, int? idExcluido = null)

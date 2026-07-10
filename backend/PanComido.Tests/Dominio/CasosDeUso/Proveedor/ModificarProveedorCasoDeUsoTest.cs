@@ -110,6 +110,24 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Proveedor
         }
 
         [Fact]
+        public async Task EjecutarAsync_CuandoElNumeroTelefonoWspEsVacio_LanzaArgumentException()
+        {
+            var proveedorDominio = new DOM.Proveedor
+            {
+                Id = 2,
+                Nombre = "Proveedor Test",
+                NumeroTelefonoWsp = "",
+                CategoriaIds = new List<int>() { 1, 2 }
+            };
+
+            _proveedorRepoMock
+                .Setup(r => r.ObtenerProveedorPorIdAsync(2))
+                .ReturnsAsync(new DOM.Proveedor { Id = 2, Nombre = "Proveedor de frutas" });
+
+            await Assert.ThrowsAsync<ArgumentException>(() => CrearCasoDeUso().EjecutarAsync(proveedorDominio));
+        }
+
+        [Fact]
         public async Task EjecutarAsync_CuandoYaExisteOtroProveedorConEseNombre_LanzaArgumentException()
         {
             var proveedorDominio = new DOM.Proveedor

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace PanComido.Presentacion.DTOs.Mesas
 {
@@ -7,5 +7,7 @@ namespace PanComido.Presentacion.DTOs.Mesas
         [Required(ErrorMessage = "Debe indicar la cantidad de comensales.")]
         [Range(1, 30, ErrorMessage = "La cantidad de comensales debe ser entre 1 y 30.")]
         public int? CantidadComensales { get; set; }
+
+        public int? TurnoId { get; set; }
     }
 }

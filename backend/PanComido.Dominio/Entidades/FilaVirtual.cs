@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +11,6 @@ namespace PanComido.Dominio.Entidades
         public int Id { get; set; }
         public int RestauranteId { get; set; }
         public bool Habilitada { get; set; }
+        public int TiempoPromedioComidaMinutos { get; set; } = 40;
     }
 }

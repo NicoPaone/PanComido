@@ -55,7 +55,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             List<EF.Mesa> mesasEF = await BaseQuery(restauranteId)
                 .AsNoTracking()
-                .Where(m => m.EstadoMesaId == (int)DOM.Enums.EstadoMesa.Ocupada)
+                .Where(m => m.EstadoMesaId == (int)DOM.Enums.EstadoMesa.Ocupada && m.TipoElemento == 1)
                 .ToListAsync();
 
             return mesasEF
@@ -67,7 +67,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             List<EF.Mesa> mesasEF = await BaseQuery(restauranteId)
                 .AsNoTracking()
-                .Where(m => m.EstadoMesaId == (int)DOM.Enums.EstadoMesa.Disponible)
+                .Where(m => m.EstadoMesaId == (int)DOM.Enums.EstadoMesa.Disponible && m.TipoElemento == 1)
                 .ToListAsync();
 
             return mesasEF
@@ -227,7 +227,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     DimensionMesaId = dimensionId,
                     TipoElemento = mesaNueva.TipoElemento,
                     Color = mesaNueva.Color,
-                    TextoObjeto = mesaNueva.TextoObjeto
+                    TextoObjeto = mesaNueva.TextoObjeto,
+                    Activo = true
                 };
                 _ctx.Mesas.Add(nuevaMesaEF);
             }
@@ -273,6 +274,25 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             return await _ctx.Mesas
                 .Where(m => mesaIds.Contains(m.Id))
                 .AnyAsync(m => m.Mozos.Any());
+        }
+
+        public async Task<List<MesaFilaVirtualDto>> ObtenerMesasParaFilaVirtualAsync(int restauranteId)
+        {
+            return await _ctx.Mesas
+                .AsNoTracking()
+                .Where(m => m.Grilla.RestauranteId == restauranteId && m.Activo && m.TipoElemento == 1)
+                .Select(m => new MesaFilaVirtualDto
+                {
+                    Id = m.Id,
+                    CantPersonasMax = m.CantPersonasMax,
+                    EstadoMesa = (DOM.Enums.EstadoMesa)m.EstadoMesaId,
+                    HoraInicioComandaActiva = m.Comanda
+                        .Where(c => c.EstadoComandaId != (int)DOM.Enums.EstadoComanda.Finalizada)
+                        .OrderByDescending(c => c.HoraInicio)
+                        .Select(c => (DateTime?)c.HoraInicio)
+                        .FirstOrDefault()
+                })
+                .ToListAsync();
         }
     }
 }

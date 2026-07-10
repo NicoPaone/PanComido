@@ -11,17 +11,20 @@ namespace PanComido.Dominio.CasosDeUso.MiseAndPlaceCasoDeUso
     public class CrearMiseAndPlaceCasoDeUso
     {
         private readonly IMiseAndPlaceRepositorio _miseAndPlaceRepositorio;
+        private readonly IInsumoValidacionServicio _insumoValidacionServicio;
         private readonly IGeneradorNombreLoteServicio _generadorNombreLoteServicio;
         private readonly IGestionStockServicio _gestionStockServicio;
         private readonly IInsumoRepositorio _insumoRepositorio;
 
         public CrearMiseAndPlaceCasoDeUso(
             IMiseAndPlaceRepositorio miseAndPlaceRepositorio,
+            IInsumoValidacionServicio insumoValidacionServicio,
             IGeneradorNombreLoteServicio generadorNombreLoteServicio,
             IGestionStockServicio gestionStockServicio,
             IInsumoRepositorio insumoRepositorio)
         {
             _miseAndPlaceRepositorio = miseAndPlaceRepositorio;
+            _insumoValidacionServicio = insumoValidacionServicio;
             _generadorNombreLoteServicio = generadorNombreLoteServicio;
             _gestionStockServicio = gestionStockServicio;
             _insumoRepositorio = insumoRepositorio;
@@ -33,6 +36,12 @@ namespace PanComido.Dominio.CasosDeUso.MiseAndPlaceCasoDeUso
             if (duplicates.Any())
             {
                 throw new ArgumentException("Un ingrediente preparado no puede contener el mismo ingrediente más de una vez.");
+            }
+
+            if (nuevoMiseAndPlace.Ingredientes != null && nuevoMiseAndPlace.Ingredientes.Any())
+            {
+                var insumoIds = nuevoMiseAndPlace.Ingredientes.Select(i => i.IngredienteId).ToList();
+                await _insumoValidacionServicio.ValidarInsumosActivosAsync(insumoIds, nuevoMiseAndPlace.RestauranteId);
             }
 
             bool existeNombre = await _insumoRepositorio.ExisteInsumoConNombreAsync(nuevoMiseAndPlace.RestauranteId, nuevoMiseAndPlace.Nombre);
@@ -56,18 +65,12 @@ namespace PanComido.Dominio.CasosDeUso.MiseAndPlaceCasoDeUso
 
             foreach (var ingrediente in nuevoMiseAndPlace.Ingredientes)
             {
-                bool insumoValido = await _insumoRepositorio.ExisteInsumoAsync(ingrediente.IngredienteId, nuevoMiseAndPlace.RestauranteId);
-                if (!insumoValido)
-                {
-                    throw new ArgumentException($"El ingrediente con ID {ingrediente.IngredienteId} no existe o no pertenece a su restaurante.");
-                }
-
+                // La validación de existencia y actividad ya se hizo arriba con ValidarInsumosActivosAsync
                 decimal cantidadADescontar = ingrediente.Cantidad * factorMultiplicador;
                 insumosARestar[ingrediente.IngredienteId] = cantidadADescontar;
             }
 
             await _gestionStockServicio.DescontarStockInsumosAsync(nuevoMiseAndPlace.RestauranteId, insumosARestar);
-
             string nombreLote = await _generadorNombreLoteServicio.GenerarNombreUnicoAsync(nuevoMiseAndPlace.Nombre);
 
             return await _miseAndPlaceRepositorio.CrearMiseAndPlaceAsync(nuevoMiseAndPlace, nombreLote);

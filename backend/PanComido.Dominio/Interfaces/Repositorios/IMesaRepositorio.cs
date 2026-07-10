@@ -19,5 +19,6 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task<List<int>> ObtenerIdsMesasActivasAsync(int restauranteId);
         Task<bool> TieneComandasActivasAsync(List<int> mesaIds);
         Task<bool> TieneMozosAsignadosAsync(List<int> mesaIds);
+        Task<List<MesaFilaVirtualDto>> ObtenerMesasParaFilaVirtualAsync(int restauranteId);
     }
 }

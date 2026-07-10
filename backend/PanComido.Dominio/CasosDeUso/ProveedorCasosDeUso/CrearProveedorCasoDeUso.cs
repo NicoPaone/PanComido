@@ -33,6 +33,8 @@ namespace PanComido.Dominio.CasosDeUso.ProveedorCasosDeUso
 
             if(proveedor.CategoriaIds == null || proveedor.CategoriaIds.Count == 0) throw new ArgumentException("El proveedor debe tener al menos una categoría asociada.");
 
+            if (string.IsNullOrWhiteSpace(proveedor.NumeroTelefonoWsp)) throw new ArgumentException("El teléfono del proveedor es obligatorio.");
+
             bool nombreExistente = await _proveedorRepositorio.ExisteProveedorConNombreAsync(proveedor.RestauranteId, proveedor.Nombre);
             if (nombreExistente)
                 throw new ArgumentException($"Ya existe un proveedor con el nombre '{proveedor.Nombre}' en este restaurante.");

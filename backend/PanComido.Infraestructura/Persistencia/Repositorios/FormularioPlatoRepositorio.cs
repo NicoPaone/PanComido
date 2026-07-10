@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Interfaces.Repositorios;
 using PanComido.Infraestructura.Persistencia.Mappers;
@@ -46,7 +46,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                     .ThenInclude(ins => ins.PedidoInsumos)
                         .ThenInclude(pi => pi.Pedido)
 
-                .Where(i => i.IdInsumoNavigation.IdArticuloNavigation.RestauranteId == restauranteId)
+                .Where(i => i.IdInsumoNavigation.IdArticuloNavigation.RestauranteId == restauranteId && !i.IdInsumoNavigation.IdArticuloNavigation.Eliminado)
                 .ToListAsync();
 
             return lista.Select(x => _mapper.paraDominio(x)).ToList();
@@ -61,7 +61,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .Include(ip => ip.IdIngredienteNavigation)
                     .ThenInclude(ing => ing.IdInsumoNavigation)
                         .ThenInclude(ins => ins.UnidadMedida)
-                .Where(ip => ip.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.RestauranteId == restauranteId)
+                .Where(ip => ip.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.RestauranteId == restauranteId && !ip.IdIngredienteNavigation.IdInsumoNavigation.IdArticuloNavigation.Eliminado)
                 .ToListAsync();
 
             return lista.Select(x => _ingredientePreparadoMapper.ParaDominio(x)).ToList();
