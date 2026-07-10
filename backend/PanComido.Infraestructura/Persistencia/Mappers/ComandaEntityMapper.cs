@@ -28,7 +28,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
                 CantComensales = efComanda.CantComensales,
                 HoraInicio = DateTime.SpecifyKind(efComanda.HoraInicio, DateTimeKind.Local),
                 HoraFin = efComanda.HoraFin.HasValue ? DateTime.SpecifyKind(efComanda.HoraFin.Value, DateTimeKind.Local) : null,
-                HoraUltimoCambioEstado = efComanda.HoraUltimoCambioEstado.HasValue ? DateTime.SpecifyKind(efComanda.HoraUltimoCambioEstado.Value, DateTimeKind.Local) : null,
+                HoraUltimoCambioEstado = DateTime.SpecifyKind(efComanda.HoraUltimoCambioEstado, DateTimeKind.Local),
                 Estado = (EstadoComanda)efComanda.EstadoComandaId,
 
                 Items = new List<DOM.ArticuloComanda>(),
