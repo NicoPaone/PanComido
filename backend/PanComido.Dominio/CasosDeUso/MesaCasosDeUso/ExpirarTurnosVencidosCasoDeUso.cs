@@ -36,8 +36,11 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
             var fechaLimite = DateTime.UtcNow.AddMinutes(-7);
             var turnosExpirados = await _turnoFilaRepositorio.ObtenerTurnosAsignadosExpiradosAsync(fechaLimite);
 
+            Console.WriteLine($"[ExpirarTurnos] Evaluando {turnosExpirados.Count} turnos expirados antes de {fechaLimite:HH:mm:ss}");
+
             foreach (var turno in turnosExpirados)
             {
+                Console.WriteLine($"[ExpirarTurnos] Cancelando turno {turno.Id}");
                 // 1. Cambiamos el estado a Cancelado
                 turno.Estado = EstadoTurnoMesa.Cancelado;
                 await _turnoFilaRepositorio.ActualizarAsync(turno);

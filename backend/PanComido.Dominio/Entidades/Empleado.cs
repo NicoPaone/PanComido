@@ -12,6 +12,10 @@ namespace PanComido.Dominio.Entidades
       public string ContraseniaHash { get; set; } = string.Empty;
       public string Estado { get; set; } = string.Empty;
       public string Rol { get; set; } = string.Empty;
+      
+      public string? ResetToken { get; set; }
+      public DateTime? ResetTokenExpires { get; set; }
+
       public List<TurnoLaboral> Turnos { get; set; } = new();
    }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -30,6 +30,12 @@ public partial class Empleado
 
     [Column("eliminado")]
     public bool Eliminado { get; set; }
+
+    [Column("reset_token")]
+    public string? ResetToken { get; set; }
+
+    [Column("reset_token_expires")]
+    public DateTime? ResetTokenExpires { get; set; }
 
     [InverseProperty("IdEmpleadoNavigation")]
     public virtual Cocina? Cocina { get; set; }

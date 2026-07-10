@@ -42,7 +42,9 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             Email = entidad.Email,
             ContraseniaHash = entidad.Contrasena,
             Estado = entidad.Estado,
-            Rol = rol
+            Rol = rol,
+            ResetToken = entidad.ResetToken,
+            ResetTokenExpires = entidad.ResetTokenExpires
          };
       }
 
@@ -81,6 +83,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                ContraseniaHash = entidad.Contrasena,
                Estado = entidad.Estado,
                Rol = rol,
+               ResetToken = entidad.ResetToken,
+               ResetTokenExpires = entidad.ResetTokenExpires,
                Turnos = entidad.TurnoLaborals.Select(t => new TurnoLaboral
                {
                   Id = t.Id,
@@ -118,6 +122,8 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             ContraseniaHash = entidad.Contrasena,
             Estado = entidad.Estado,
             Rol = rol,
+            ResetToken = entidad.ResetToken,
+            ResetTokenExpires = entidad.ResetTokenExpires,
             Turnos = entidad.TurnoLaborals.Select(t => new TurnoLaboral
             {
                Id = t.Id,
@@ -232,6 +238,18 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
          }
 
          await _ctx.SaveChangesAsync();
+      }
+
+      public async Task ActualizarAsync(Empleado empleado)
+      {
+         var efEmpleado = await _ctx.Empleados.FirstOrDefaultAsync(e => e.Id == empleado.Id);
+         if (efEmpleado != null)
+         {
+            efEmpleado.Contrasena = empleado.ContraseniaHash;
+            efEmpleado.ResetToken = empleado.ResetToken;
+            efEmpleado.ResetTokenExpires = empleado.ResetTokenExpires;
+            await _ctx.SaveChangesAsync();
+         }
       }
 
       public async Task EliminarLogicoAsync(int id, int restauranteId)

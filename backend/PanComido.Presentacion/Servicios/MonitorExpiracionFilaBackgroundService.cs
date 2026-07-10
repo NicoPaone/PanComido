@@ -20,15 +20,22 @@ namespace PanComido.Presentacion.Servicios
         {
             using var timer = new PeriodicTimer(TimeSpan.FromMinutes(1));
 
+            Console.WriteLine("MonitorExpiracionFilaBackgroundService INICIADO");
             while (await timer.WaitForNextTickAsync(stoppingToken))
             {
-                // Abrimos un scope para resolver el caso de uso scoped dentro del singleton del HostedService
-                using var scope = _serviceProvider.CreateScope();
-                
-                var expirarCasoDeUso = scope.ServiceProvider.GetRequiredService<IExpirarTurnosVencidosCasoDeUso>();
-
-                // Delegamos toda la lógica de reglas de negocio, EF y notificaciones al Dominio/CasosDeUso
-                await expirarCasoDeUso.EjecutarAsync();
+                try
+                {
+                    Console.WriteLine($"[{DateTime.UtcNow:HH:mm:ss}] Ejecutando ExpirarTurnosVencidos...");
+                    using var scope = _serviceProvider.CreateScope();
+                    var expirarCasoDeUso = scope.ServiceProvider.GetRequiredService<IExpirarTurnosVencidosCasoDeUso>();
+                    await expirarCasoDeUso.EjecutarAsync();
+                    Console.WriteLine($"[{DateTime.UtcNow:HH:mm:ss}] ExpirarTurnosVencidos ejecutado OK.");
+                }
+                catch (Exception ex)
+                {
+                    // Log silencioso o ignorar, lo importante es que no se rompa el loop
+                    Console.WriteLine($"Error en MonitorExpiracionFilaBackgroundService: {ex.Message}");
+                }
             }
         }
     }
