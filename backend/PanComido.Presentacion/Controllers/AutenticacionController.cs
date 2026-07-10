@@ -5,6 +5,7 @@ using PanComido.Presentacion.DTOs.Autenticacion;
 using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Servicios;
+using Microsoft.Extensions.Configuration;
 
 namespace PanComido.Presentacion.Controllers
 {
@@ -17,19 +18,22 @@ namespace PanComido.Presentacion.Controllers
         private readonly AutenticacionMapper _autenticacionMapper;
         private readonly SolicitarRecuperacionContraseniaCasoDeUso _solicitarRecuperacionCasoDeUso;
         private readonly EjecutarRecuperacionContraseniaCasoDeUso _ejecutarRecuperacionCasoDeUso;
+        private readonly IConfiguration _configuration;
 
         public AutenticacionController(
             LoginCasoDeUso loginCasoDeUso, 
             JwtTokenServicio jwtTokenServicio, 
             AutenticacionMapper authMapper,
             SolicitarRecuperacionContraseniaCasoDeUso solicitarRecuperacionCasoDeUso,
-            EjecutarRecuperacionContraseniaCasoDeUso ejecutarRecuperacionCasoDeUso)
+            EjecutarRecuperacionContraseniaCasoDeUso ejecutarRecuperacionCasoDeUso,
+            IConfiguration configuration)
         {
             _loginCasoDeUso = loginCasoDeUso;
             _jwtTokenServicio = jwtTokenServicio;
             _autenticacionMapper = authMapper;
             _solicitarRecuperacionCasoDeUso = solicitarRecuperacionCasoDeUso;
             _ejecutarRecuperacionCasoDeUso = ejecutarRecuperacionCasoDeUso;
+            _configuration = configuration;
         }
 
         [HttpPost("login")]
@@ -56,7 +60,8 @@ namespace PanComido.Presentacion.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> SolicitarRecuperacion([FromBody] SolicitarResetDto request)
         {
-            var urlFrontend = "http://localhost:4200"; // En prod, leer de IConfiguration
+            // Usamos el primer origen de CORS que generalmente es la URL del frontend.
+            var urlFrontend = _configuration["CorsSettings:AllowedOrigins:0"] ?? "http://localhost:4200"; 
             await _solicitarRecuperacionCasoDeUso.EjecutarAsync(request.Email, urlFrontend);
             return Ok(new { Mensaje = "Si el correo es válido, se envió un enlace de recuperación." });
         }
