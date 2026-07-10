@@ -187,7 +187,8 @@ namespace PanComido.Presentacion.Controllers
                 return NotFound(new ErrorResponseDto { Error = "Mise and Place o Lote no encontrado." });
             }
 
-            return Ok(new { Mensaje = "Mise and Place modificado exitosamente." });
+            var modificado = await _obtenerPorIdCasoDeUso.EjecutarAsync(restauranteId, id);
+            return Ok(_mapper.aDtoListado(modificado));
         }
     }
 }
