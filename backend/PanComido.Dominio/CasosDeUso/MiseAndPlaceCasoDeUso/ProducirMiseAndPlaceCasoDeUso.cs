@@ -37,17 +37,11 @@ namespace PanComido.Dominio.CasosDeUso.MiseAndPlaceCasoDeUso
                 throw new ArgumentException("Mise And Place no encontrado.");
             }
 
-            if (miseAndPlace.RendimientoBase <= 0)
-            {
-                throw new InvalidOperationException("El rendimiento base de la receta no es válido.");
-            }
-
             var insumosARestar = new Dictionary<int, decimal>();
-            decimal factorMultiplicador = cantidadAProducir / miseAndPlace.RendimientoBase;
 
             foreach (var ingrediente in miseAndPlace.Receta)
             {
-                decimal cantidadADescontar = ingrediente.Cantidad * factorMultiplicador;
+                decimal cantidadADescontar = ingrediente.Cantidad * cantidadAProducir;
                 insumosARestar[ingrediente.IngredienteId] = cantidadADescontar;
             }
 

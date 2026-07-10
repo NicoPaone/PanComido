@@ -57,10 +57,7 @@ namespace PanComido.Presentacion.Mappers
 
         public MiseAndPlaceListadoDto aDtoListado(MiseAndPlaceListadoDominio dominio)
         {
-            var costoUnitario = dominio.RendimientoBase > 0
-                ? dominio.Receta.Sum(r => r.Cantidad * r.CostoUnitario) / dominio.RendimientoBase
-                : 0;
-            costoUnitario = Math.Round(costoUnitario, 4);
+            var costoUnitario = Math.Round(dominio.Receta.Sum(r => r.Cantidad * r.CostoUnitario), 4);
 
             return new MiseAndPlaceListadoDto
             {
@@ -74,6 +71,8 @@ namespace PanComido.Presentacion.Mappers
                 UnidadMedida = dominio.UnidadMedida,
                 Categoria = dominio.Categoria,
                 Bodega = dominio.Bodega,
+                StockMinimo = dominio.StockMinimo,
+                StockRecomendado = dominio.StockRecomendado,
                 CostoUnitario = costoUnitario,
                 Costo = Math.Round(costoUnitario * dominio.Cantidad, 2),
                 Receta = dominio.Receta.Select(r => new RecetaItemDto
