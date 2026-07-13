@@ -15,6 +15,7 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
         private readonly IMesaNotificador _mesaNotificador;
         private readonly ITurnoFilaRepositorio _turnoFilaRepositorio;
         private readonly IFilaVirtualNotificador _filaVirtualNotificador;
+        private readonly IComandaRepositorio _comandaRepositorio;
 
         public CambiarEstadoMesaCasoDeUso(
             IMesaRepositorio mesaRepositorio, 
@@ -22,7 +23,8 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
             ILlamadoRepositorio llamadoRepositorio, 
             IMesaNotificador mesaNotificador,
             ITurnoFilaRepositorio turnoFilaRepositorio,
-            IFilaVirtualNotificador filaVirtualNotificador)
+            IFilaVirtualNotificador filaVirtualNotificador,
+            IComandaRepositorio comandarepositorio)
         {
             _mesaRepositorio = mesaRepositorio;
             _llamadoNotificador = llamadoNotificador;
@@ -30,6 +32,7 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
             _mesaNotificador = mesaNotificador;
             _turnoFilaRepositorio = turnoFilaRepositorio;
             _filaVirtualNotificador = filaVirtualNotificador;
+            _comandaRepositorio = comandarepositorio;
         }
 
         public async Task<MesaConPosiciones> EjecutarAsync(int restauranteId, int mesaId, EstadoMesa nuevoEstado)
@@ -38,6 +41,13 @@ namespace PanComido.Dominio.CasosDeUso.MesaCasosDeUso
 
             if (mesa == null)
                 throw new ArgumentException("La mesa no existe o no pertenece al restaurante.");
+
+            if(nuevoEstado == EstadoMesa.Disponible)
+            {
+                var comandaActiva = await _comandaRepositorio.ObtenerComandaPorIdMesaAsync(mesaId);
+                if (comandaActiva != null)
+                    throw new InvalidOperationException("No se puede cambiar el estado de la mesa mientras tenga una comanda activa.");
+            }
 
             mesa.EstadoMesa = nuevoEstado;
             await _mesaRepositorio.ActualizarEstadoAsync(mesaId, nuevoEstado);

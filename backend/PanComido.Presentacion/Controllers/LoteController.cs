@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PanComido.Dominio.CasosDeUso.LoteCasosDeUso;
 using PanComido.Presentacion.DTOs.ErrorResponse;
 using PanComido.Presentacion.DTOs.Lote;
-
+using PanComido.Presentacion.Mappers;
 using PanComido.Presentacion.Sesion;
 using System;
 using System.Threading.Tasks;
@@ -16,6 +16,13 @@ namespace PanComido.Presentacion.Controllers
     [Authorize]
     public class LoteController : ControllerBase
     {
+        private readonly LoteMapper _loteMapper;
+
+        public LoteController(LoteMapper loteMapper)
+        {
+            _loteMapper = loteMapper;
+        }
+
         [HttpPost("crear")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
@@ -24,7 +31,7 @@ namespace PanComido.Presentacion.Controllers
         {
             int restauranteId = HttpContext.ObtenerRestauranteId();
 
-            await crearLoteCasoDeUso.EjecutarAsync(
+            var loteCreado = await crearLoteCasoDeUso.EjecutarAsync(
                 restauranteId,
                 dto.InsumoId,
                 dto.Cantidad,
@@ -32,7 +39,11 @@ namespace PanComido.Presentacion.Controllers
                 dto.BodegaId
             );
 
-            return Created("", new { Mensaje = "Lote creado exitosamente." });
+            return StatusCode(201, new
+            {
+                mensaje = "Lote creado exitosamente.",
+                lote = _loteMapper.aDto(loteCreado)
+            });
         }
 
         [HttpPut("{id}")]

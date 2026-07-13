@@ -1,9 +1,4 @@
 using DOM = PanComido.Dominio.Entidades;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PanComido.Dominio.Entidades;
 
 namespace PanComido.Dominio.Interfaces.Repositorios
@@ -20,7 +15,7 @@ namespace PanComido.Dominio.Interfaces.Repositorios
         Task<Dictionary<(int insumoId, int bodegaId), DateOnly?>> ObtenerVencimientosPorBodega(int restauranteId);
         Task<Dictionary<int, decimal>> ObtenerStockTotalDeInsumosDisponible(int restauranteId, DateOnly fechaYHora);
 
-        Task CrearLotesAsync(List<DOM.Lote> lotes);
+        Task<List<Lote>> CrearLotesAsync(List<DOM.Lote> lotes);
         Task<int> ContarLotesConNombreBaseAsync(string nombreBase);
         Task<List<Lote>> ObtenerLotesPorRestauranteAsync(int restauranteId);
         Task<Lote> ObtenerPorIdAsync(int restauranteId, int loteId);

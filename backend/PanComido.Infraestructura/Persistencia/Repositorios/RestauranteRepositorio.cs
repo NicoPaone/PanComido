@@ -30,6 +30,7 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         public async Task ActualizarDatosDelLocalAsync(int restauranteId, Restaurante datosActualizados)
         {
             var efRestaurante = await _ctx.Restaurantes
+                .Include(r => r.Direccion)
                 .FirstOrDefaultAsync(r => r.Id == restauranteId);
 
             if (efRestaurante == null) return;

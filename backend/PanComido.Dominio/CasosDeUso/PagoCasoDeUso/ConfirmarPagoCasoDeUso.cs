@@ -45,8 +45,7 @@ IRegistrarPagoServicio registrarPagoServicio, IVerificarMetodoPagoHabilitadoServ
                 throw new ArgumentException("El pago con Mercado Pago se confirma mediante webhook, no manualmente.");
 
             var comanda = await _comandaRepositorio.ObtenerComandaPorIdAsync(comandaId);
-            if (comanda == null || comanda.RestauranteId != restauranteId) throw new
-        KeyNotFoundException("Comanda no encontrada");
+            if (comanda == null || comanda.RestauranteId != restauranteId) throw new KeyNotFoundException("Comanda no encontrada");
             await VerificarEstadoComandaYPagoAsync(comanda);
             await VerificarMetodoHabilitadoAsync(restauranteId, metodoPago);
 

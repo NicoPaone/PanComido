@@ -31,7 +31,8 @@ namespace PanComido.Presentacion.Mappers
                 ColorPrincipal = restauranteRequest.ColorPrincipal,
                 ColorSecundario = restauranteRequest.ColorSecundario,
                 FamiliaTipograficaId = restauranteRequest.FamiliaTipograficaId,
-                LinkResenaGoogleMaps = restauranteRequest.LinkResenaGoogleMaps
+                LinkResenaGoogleMaps = restauranteRequest.LinkResenaGoogleMaps,
+                Ubicacion = new DOM.Ubicacion { Direccion = restauranteRequest.Direccion }
             };
         }
     }
