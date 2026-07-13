@@ -131,10 +131,10 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
         {
             return _ctx.Comanda
                 .Include(c => c.EstadoComanda)
-                .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.ConfiguracionArticulos.Any(ca => ca.Id == (int)ConfiguracionArticuloEnum.Vendible)))
+                .Include(c => c.ArticuloComanda)
                     .ThenInclude(ac => ac.Articulo)
                         .ThenInclude(a => a.Plato)
-                .Include(c => c.ArticuloComanda.Where(ac => ac.Articulo.ConfiguracionArticulos.Any(ca => ca.Id == (int)ConfiguracionArticuloEnum.Vendible)))
+                .Include(c => c.ArticuloComanda)
                     .ThenInclude(ac => ac.Articulo)
                         .ThenInclude(a => a.Insumo)
                 .Include(c => c.ArticuloComanda)
