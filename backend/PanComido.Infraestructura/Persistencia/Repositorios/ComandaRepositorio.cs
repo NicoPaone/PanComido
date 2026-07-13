@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.Entidades;
 using PanComido.Dominio.Entidades.Enums;
 using PanComido.Dominio.Interfaces.Repositorios;
-using PanComido.Infraestructura.Persistencia.Entidades;
 using PanComido.Infraestructura.Persistencia.Mappers;
 using DOM = PanComido.Dominio.Entidades;
 using EF = PanComido.Infraestructura.Persistencia.Entidades;

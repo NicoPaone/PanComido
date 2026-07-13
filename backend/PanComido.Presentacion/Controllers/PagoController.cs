@@ -61,7 +61,10 @@ namespace PanComido.Presentacion.Controllers
             var restauranteId = HttpContext.ObtenerRestauranteId();
             var pagoConfirmado = await _confirmarPagoCasoDeUso.EjecutarAsync(comandaId, restauranteId, request.MetodoPago);
             var dto = _pagoMapper.aDto(pagoConfirmado);
-            return Ok(dto);
+            return Ok(new
+            {
+                dto, message = "Pago confirmado"
+            });
         }
 
         [HttpPost("solicitar-mp/{comandaId}/comensal/{restauranteId}")]

@@ -42,6 +42,7 @@ namespace PanComido.Infraestructura.Persistencia.Mappers
             efRestoDatosExistentes.ColorSecundario = restauranteDatosNuevos.ColorSecundario;
             efRestoDatosExistentes.FamiliaTipograficaId = restauranteDatosNuevos.FamiliaTipograficaId;
             efRestoDatosExistentes.LinkResenaGoogleMaps = restauranteDatosNuevos.LinkResenaGoogleMaps;
+            efRestoDatosExistentes.Direccion.Direccion = restauranteDatosNuevos.Ubicacion?.Direccion;
         }
     }
 }

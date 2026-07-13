@@ -1,12 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PanComido.Dominio.Interfaces.Repositorios;
 using DOM = PanComido.Dominio.Entidades;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using EF = PanComido.Infraestructura.Persistencia.Entidades;
 using PanComido.Infraestructura.Persistencia.Mappers;
 namespace PanComido.Infraestructura.Persistencia.Repositorios
@@ -64,11 +58,12 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
                 .ToDictionaryAsync(x => (x.InsumoId, x.BodegaId), x => x.StockTotal);
         }
 
-        public async Task CrearLotesAsync(List<DOM.Lote> lotes)
+        public async Task<List<DOM.Lote>> CrearLotesAsync(List<DOM.Lote> lotes)
         {
             var efLote = lotes.Select(_loteEntityMapper.paraEntidad).ToList();
             _ctx.Lotes.AddRange(efLote);
             await _ctx.SaveChangesAsync();
+            return efLote.Select(_loteEntityMapper.paraDominio).ToList();
         }
 
         public async Task<int> ContarLotesConNombreBaseAsync(string nombreBase)

@@ -23,13 +23,12 @@ namespace PanComido.Dominio.CasosDeUso.LoteCasosDeUso
             _generadorNombreLoteServicio = generadorNombreLoteServicio;
         }
 
-        public async Task<int> EjecutarAsync(int restauranteId, int insumoId, decimal cantidad, DateOnly fechaVencimiento, int bodegaId)
+        public async Task<Lote> EjecutarAsync(int restauranteId, int insumoId, decimal cantidad, DateOnly fechaVencimiento, int bodegaId)
         {
             var insumo = await _insumoRepositorio.ObtenerPorIdAsync(insumoId, restauranteId);
-            if (insumo == null)
-            {
-                throw new Exception("El insumo especificado no existe.");
-            }
+            if (insumo == null) throw new KeyNotFoundException("El insumo especificado no existe.");
+
+            if(fechaVencimiento < DateOnly.FromDateTime(DateTime.Today)) throw new ArgumentException("La fecha de vencimiento debe ser posterior a la de hoy");
 
             string nombreLote = await _generadorNombreLoteServicio.GenerarNombreUnicoAsync(insumo.Nombre);
 
@@ -43,11 +42,9 @@ namespace PanComido.Dominio.CasosDeUso.LoteCasosDeUso
                 FechaVencimiento = fechaVencimiento
             };
 
-            await _loteRepositorio.CrearLotesAsync(new List<Lote> { nuevoLote });
+            var lotesCreados =  await _loteRepositorio.CrearLotesAsync(new List<Lote> { nuevoLote });
 
-            // Since CrearLotesAsync doesn't return the ID, and we don't strictly need it right now for the response, 
-            // we can just return a success indicator or 0. If we need the ID, ILoteRepositorio would need an update.
-            return 1;
+            return lotesCreados.First();
         }
     }
 }
