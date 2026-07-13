@@ -60,7 +60,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.PedidoProveedor
 
             _loteRepoMock
                 .Setup(r => r.CrearLotesAsync(It.IsAny<List<DOM.Lote>>()))
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync(lotes);
 
             _pedidoRepoMock
                 .Setup(r => r.MarcarComoRecibidoAsync(pedidoId, itemsConPrecioConfirmado))
