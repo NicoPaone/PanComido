@@ -47,6 +47,17 @@ namespace PanComido.Infraestructura.Persistencia.Repositorios
             return efLista.Select(a => (DOM.Insumo)_mapper.paraDominio(a)).ToList();
         }
 
+        public async Task<List<DOM.Insumo>> ObtenerInsumosSinPreparadosAsync(int restauranteId)
+        {
+            var efLista = await BaseQuery(restauranteId)
+                .Where(a => a.Insumo.Ingrediente == null || a.Insumo.Ingrediente.IngredientePreparado == null)
+                .Include(a => a.Insumo)
+                    .ThenInclude(i => i.PedidoInsumos)
+                        .ThenInclude(pi => pi.Pedido)
+                .ToListAsync();
+            return efLista.Select(a => (DOM.Insumo)_mapper.paraDominio(a)).ToList();
+        }
+
         public async Task<List<DOM.Insumo>> ObtenerInsumosConLotesAsync(int restauranteId)
         {
             var efLista = await BaseQuery(restauranteId)

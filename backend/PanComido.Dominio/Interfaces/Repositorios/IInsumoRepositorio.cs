@@ -10,6 +10,7 @@ namespace PanComido.Dominio.Interfaces.Repositorios
     public interface IInsumoRepositorio
     {
         Task<List<Insumo>> ObtenerInsumosAsync(int restauranteId);
+        Task<List<Insumo>> ObtenerInsumosSinPreparadosAsync(int restauranteId);
         Task<List<Insumo>> ObtenerInsumosDelProveedorAsync(int proveedorId, int restauranteId);
         Task <Insumo> CrearAsync(Insumo insumo);
         Task<bool> ExisteInsumoConNombreAsync(int restauranteId, string nombre);

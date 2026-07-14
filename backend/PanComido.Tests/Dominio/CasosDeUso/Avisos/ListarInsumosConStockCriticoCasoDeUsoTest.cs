@@ -39,7 +39,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Avisos
             var estadoStockMock = new Mock<IEstadoStockInsumoServicio>();
 
             insumoRepoMock
-                .Setup(r => r.ObtenerInsumosAsync(restauranteId))
+                .Setup(r => r.ObtenerInsumosSinPreparadosAsync(restauranteId))
                 .ReturnsAsync(new List<Insumo> { insumoCritico, insumoNormal });
 
             loteRepoMock
@@ -67,7 +67,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Avisos
             var resultado = await casoDeUso.EjecutarAsync(restauranteId);
 
             // 3. Verificar
-            insumoRepoMock.Verify(r => r.ObtenerInsumosAsync(restauranteId), Times.Once);
+            insumoRepoMock.Verify(r => r.ObtenerInsumosSinPreparadosAsync(restauranteId), Times.Once);
 
             Assert.Single(resultado);
             Assert.Equal("Harina", resultado[0].Nombre);
@@ -92,7 +92,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Avisos
             var estadoStockMock = new Mock<IEstadoStockInsumoServicio>();
 
             insumoRepoMock
-                .Setup(r => r.ObtenerInsumosAsync(restauranteId))
+                .Setup(r => r.ObtenerInsumosSinPreparadosAsync(restauranteId))
                 .ReturnsAsync(new List<Insumo> { insumo });
 
             loteRepoMock
@@ -119,7 +119,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Avisos
             Assert.Empty(resultado);
 
             insumoRepoMock.Verify(
-                r => r.ObtenerInsumosAsync(restauranteId),
+                r => r.ObtenerInsumosSinPreparadosAsync(restauranteId),
                 Times.Once);
         }
 
@@ -144,7 +144,7 @@ namespace PanComido.Tests.Dominio.CasosDeUso.Avisos
             var estadoStockMock = new Mock<IEstadoStockInsumoServicio>();
 
             insumoRepoMock
-                .Setup(r => r.ObtenerInsumosAsync(restauranteId))
+                .Setup(r => r.ObtenerInsumosSinPreparadosAsync(restauranteId))
                 .ReturnsAsync(new List<Insumo> { insumo });
 
             loteRepoMock
