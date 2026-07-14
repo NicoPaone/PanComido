@@ -28,7 +28,7 @@ namespace PanComido.Dominio.CasosDeUso.AvisosCasosDeUso
 
         public async Task<List<Insumo>> EjecutarAsync(int restauranteId)
         {
-            List<Insumo> insumos = await _insumoRepositorio.ObtenerInsumosAsync(restauranteId);
+            List<Insumo> insumos = await _insumoRepositorio.ObtenerInsumosSinPreparadosAsync(restauranteId);
             List<Insumo> insumosConStockCritico = new List<Insumo>();
             var stockDisponible = await _loteRepositorio.ObtenerStockTotalDeInsumosDisponible(restauranteId, DateOnly.FromDateTime(DateTime.UtcNow));
 
